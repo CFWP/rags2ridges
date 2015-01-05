@@ -1,22 +1,22 @@
 ######################################################################################################################
 ######################################################################################################################
 ######################################################################################################################
-## 
-## Name:		rags2ridges
-## Authors:		Carel F.W. Peeters & Wessel N. van Wieringen
+##
+## Name: rags2ridges
+## Authors: Carel F.W. Peeters & Wessel N. van Wieringen
 ##			Molecular Biostatistics Unit
 ##			Dept. of Epidemiology & Biostatistics
 ##			VU University medical center
 ##			Amsterdam, the Netherlands
 ## Email:		cf.peeters@vumc.nl
-## 
+##
 ## Version:		1.4
 ## Last Update:	25/11/2014
 ## Description:	Ridge estimation, with supporting functions, for high-dimensional precision matrices
 ##
 ## Publications:	[1] Wessel N. van Wieringen & Carel F.W. Peeters (2014)
 ##			"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"
-##			arXiv:1403.0904 [stat.ME]. 
+##			arXiv:1403.0904 [stat.ME].
 ## 			[2] Carel F.W. Peeters & Wessel N. van Wieringen (in preparation)
 ##			"The Spectral Condition Number Plot for Regularization Parameter Selection"
 ##
@@ -30,7 +30,7 @@
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section 0: Support Functions
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@
 ######################################################################################################################
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Hidden support functions
 ##
 ##---------------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@
 	# - P > precision matrix (possibly regularized inverse of covariance or correlation matrix)
 	#####################################################################################################
 
-    	LL <- -log(det(P)) + .trace(S %*% P) 
+    	LL <- -log(det(P)) + .trace(S %*% P)
     	return(LL)
 }
 
@@ -235,13 +235,13 @@
 			slhNe1Ne2 <- get.all.shortest.paths(Gt, nei1t[v1], nei2t[v2])$res
 			slhNe2No2 <- get.all.shortest.paths(Gt, nei2t[v2], node2t)$res
 			for (uNo1Ne1 in 1:length(slhNo1Ne1)){
-				for (uNe1Ne2 in 1:length(slhNe1Ne2)){			
+				for (uNe1Ne2 in 1:length(slhNe1Ne2)){
 					for (uNe2No2 in 1:length(slhNe2No2)){
 						fullPath <- c(slhNo1Ne1[[uNo1Ne1]], slhNe1Ne2[[uNe1Ne2]][-1], slhNe2No2[[uNe2No2]][-1])
 						if (length(unique(fullPath)) == (length(fullPath))){
-							pName <- .path2string(fullPath)				
+							pName <- .path2string(fullPath)
 							if (!(pName %in% c(pathNames, rownames(pathStatsTemp)))){
-								pathsTemp[[length(pathsTemp)+1]] <- fullPath 
+								pathsTemp[[length(pathsTemp)+1]] <- fullPath
 								pathStatsTemp <- rbind(pathStatsTemp, c(length(fullPath)-1, .pathContribution(P0t, fullPath, detP0t)))
 								rownames(pathStatsTemp)[nrow(pathStatsTemp)] <- pName
 							}
@@ -270,7 +270,7 @@
 		S   <- covML(Y[-i, ])
 		slh <- c(slh, .LL(t(Y[i, , drop = FALSE]) %*% Y[i, , drop = FALSE], ridgeS(S, lambda, target = target, type = type)))
 	}
-	return(mean(slh))        
+	return(mean(slh))
 }
 
 
@@ -287,7 +287,7 @@
 	# - lambdaInit > initial value for lambda for starting optimization
 	# - target     > target (precision terms) for Type I estimators
 	# - type       > must be one of {"Alt", "ArchI", "ArchII"}
-	#####################################################################################################  
+	#####################################################################################################
 
 	reshuffle    <- sample(1:nrow(Y), nrow(Y))
 	Y[, id == 1] <- Y[reshuffle, id == 1]
@@ -305,7 +305,7 @@
 	# - lambda > value penalty parameter
 	# - target > target (precision terms) for Type I estimators
 	# - type   > must be one of {"Alt", "ArchI", "ArchII"}
-	##################################################################################################### 
+	#####################################################################################################
 
 	reshuffle    <- sample(1:nrow(Y), nrow(Y))
 	Y[, id == 1] <- Y[reshuffle, id == 1]
@@ -317,7 +317,7 @@
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Support functions
 ##
 ##---------------------------------------------------------------------------------------------------------
@@ -418,16 +418,16 @@ evaluateS <- function(S, verbose = TRUE){
 	# Dependencies
 	# require("base")
 	# require("stats")
-	
+
 	if (!is.matrix(S)){
 		stop("S should be a matrix")
-	} 
+	}
 	else if (nrow(S) != ncol(S)){
 		stop("S should be a square matrix")
 	}
 	else if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	else {
 		Sproperties <- list()
 
@@ -435,8 +435,8 @@ evaluateS <- function(S, verbose = TRUE){
 		Sproperties$symm <- isSymmetric(S)
 
 		# Are eigenvalues S real and positive?
-		evs                   <- eigen(S)$values 
-		Sproperties$realEigen <- all(Im(evs) == 0) 
+		evs                   <- eigen(S)$values
+		Sproperties$realEigen <- all(Im(evs) == 0)
 		Sproperties$posEigen  <- all(evs > 0)
 
 		# Is S diagonally dominant?
@@ -447,7 +447,7 @@ evaluateS <- function(S, verbose = TRUE){
 		Sproperties$det   <- det(S)
 
 		# Spectral condition number S
-		Sproperties$condNumber <- abs(max(evs) / min(evs))	
+		Sproperties$condNumber <- abs(max(evs) / min(evs))
 
 		if (verbose){
 			cat("Properties of input matrix:", "\n")
@@ -494,7 +494,7 @@ pcor <- function(P, pc = TRUE){
 			diag(P) <- -diag(P)
 			Pcor    <- cov2cor(P)
 			return(Pcor)
-		} 
+		}
 
 		# Compute standardized precision matrix
 		else {
@@ -506,23 +506,23 @@ pcor <- function(P, pc = TRUE){
 
 
 
-default.target <- function(S, type = "DAIE", fraction = 1e-04, const){ 
+default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 	#####################################################################################################
 	# - Function that generates a (data-driven) default target for usage in ridge-type shrinkage estimation
 	# - The target that is generated is to be understood in precision terms
 	# - See function 'ridgeS'
 	# S        > sample covariance/correlation matrix
 	# type     > character determining the type of default target; default = "DAIE" (see notes below)
-	# fraction > fraction of largest eigenvalue below which an eigenvalue is considered zero 
+	# fraction > fraction of largest eigenvalue below which an eigenvalue is considered zero
 	#            Only when type = "DAIE"
 	# const    > numeric constant that represents the partial variance. Only when type = "DCPV"
 	#
 	# Notes:
 	# - The van Wieringen-Peeters type I estimator and the archetypal I estimator utilize a p.d. target
 	# - DAIE: diagonal average inverse eigenvalue
-	#   Diagonal matrix with average of inverse nonzero eigenvalues of S as entries 
+	#   Diagonal matrix with average of inverse nonzero eigenvalues of S as entries
 	# - DIAES: diagonal inverse average eigenvalue S
-	#   Diagonal matrix with inverse of average of eigenvalues of S as entries 
+	#   Diagonal matrix with inverse of average of eigenvalues of S as entries
 	# - DUPV: diagonal unit partial variance
 	#   Diagonal matrix with unit partial variance as entries (identity matrix)
 	# - DAPV: diagonal average partial variance
@@ -543,7 +543,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 
 	if (!is.matrix(S)){
 		stop("Input (S) should be a matrix")
-	} 
+	}
 	else if (!isSymmetric(S)){
 		stop("Input (S) should be a symmetric matrix")
 	}
@@ -555,7 +555,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 	}
 	else {
 		# Compute and return a default target matrix
-		# Diagonal matrix with average of inverse nonzero eigenvalues of S as entries 
+		# Diagonal matrix with average of inverse nonzero eigenvalues of S as entries
 		if (type == "DAIE"){
 			if (class(fraction) != "numeric"){
 				stop("Input (fraction) is of wrong class")
@@ -570,7 +570,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 			}
 		}
 
-		# Diagonal matrix with inverse of average of eigenvalues of S as entries 
+		# Diagonal matrix with inverse of average of eigenvalues of S as entries
 		if (type == "DIAES"){
 			Eigs   <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
 			const  <- 1/mean(Eigs)
@@ -625,7 +625,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section A: rags2ridges Core
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -633,7 +633,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 ######################################################################################################################
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Function for Ridge Estimators of the Precision matrix
 ##
 ##---------------------------------------------------------------------------------------------------------
@@ -729,13 +729,13 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Functions for Penalty Parameter selection
 ##
 ##---------------------------------------------------------------------------------------------------------
 
-optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(covML(Y)), 
-                         output = "light", graph = TRUE, verbose = TRUE){ 
+optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(covML(Y)),
+                         output = "light", graph = TRUE, verbose = TRUE){
 	#####################################################################################################
 	# - Function that selects the optimal penalty parameter by leave-one-out cross-validation
 	# - Y           > (raw) Data matrix, variables in columns
@@ -756,28 +756,28 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target
 
 	if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	if (verbose){
 		cat("Perform input checks...", "\n")
 	}
 	if (!is.matrix(Y)){
 		stop("Input (Y) should be a matrix")
-	} 
+	}
 	else if (class(lambdaMin) != "numeric"){
 		stop("Input (lambdaMin) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMin) != 1){
 		stop("Input (lambdaMin) must be a scalar")
-	} 
+	}
 	else if (lambdaMin <= 0){
 		stop("Input (lambdaMin) must be positive")
-	} 
+	}
 	else if (class(lambdaMax) != "numeric"){
 		stop("Input (lambdaMax) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMax) != 1){
 		stop("Input (lambdaMax) must be a scalar")
-	} 
+	}
 	else if (lambdaMax <= lambdaMin){
 		stop("Input (lambdaMax) must be larger than lambdaMin")
 	}
@@ -809,7 +809,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target
 				S   <- covML(Y[-i,])
 				slh <- c(slh, .LL(t(Y[i,,drop = F]) %*% Y[i,,drop = F], ridgeS(S, lambdas[k], type = type, target = target)))
 			}
-			
+
 			LLs <- c(LLs, mean(slh))
 			if (verbose){cat(paste("lambda = ", lambdas[k], " done", sep = ""), "\n")}
 		}
@@ -824,7 +824,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target
 			axis(2, ylim = c(min(LLs),max(LLs)), col = "black", lwd = 1)
 			axis(1, col = "black", lwd = 1)
 			abline(h = min(LLs), v = log(optLambda), col = "red")
-			legend("topright", legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3), sep = ""), 
+			legend("topright", legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3), sep = ""),
 			paste("Opt. penalty: ", optLambda, sep = "")), cex = .8)
 		}
 
@@ -841,7 +841,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target
 
 
 
-optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(covML(Y)), 
+optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(covML(Y)),
                               output = "light", graph = TRUE, verbose = TRUE){
 	#####################################################################################################
 	# - Function that selects the optimal penalty parameter by approximate leave-one-out cross-validation
@@ -862,28 +862,28 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", targe
 
 	if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	if (verbose){
 		cat("Perform input checks...", "\n")
 	}
 	if (!is.matrix(Y)){
 		stop("Input (Y) should be a matrix")
-	} 
+	}
 	else if (class(lambdaMin) != "numeric"){
 		stop("Input (lambdaMin) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMin) != 1){
 		stop("Input (lambdaMin) must be a scalar")
-	} 
+	}
 	else if (lambdaMin <= 0){
 		stop("Input (lambdaMin) must be positive")
-	} 
+	}
 	else if (class(lambdaMax) != "numeric"){
 		stop("Input (lambdaMax) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMax) != 1){
 		stop("Input (lambdaMax) must be a scalar")
-	} 
+	}
 	else if (lambdaMax <= lambdaMin){
 		stop("Input (lambdaMax) must be larger than lambdaMin")
 	}
@@ -933,7 +933,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", targe
 					aLOOCVs <- c(aLOOCVs, nLL + 1/(2 * n^2 - 2 * n) * sum(isum))
 					if (verbose){cat(paste("lambda = ", lambdas[k], " done", sep = ""), "\n")}
 				}
-			}					
+			}
 		} else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) & (length(unique(diag(target))) == 1)){
 			if (!isSymmetric(target)){
 				stop("Shrinkage target should be symmetric")
@@ -986,7 +986,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", targe
 			axis(2, ylim = c(min(aLOOCVs),max(aLOOCVs)), col = "black", lwd = 1)
 			axis(1, col = "black", lwd = 1)
 			abline(h = min(aLOOCVs), v = log(optLambda), col = "red")
-			legend("topright", legend = c(paste("min. approx. LOOCV neg. LL: ", round(min(aLOOCVs),3), sep = ""), 
+			legend("topright", legend = c(paste("min. approx. LOOCV neg. LL: ", round(min(aLOOCVs),3), sep = ""),
 			paste("Opt. penalty: ", optLambda, sep = "")), cex = .8)
 		}
 
@@ -1002,8 +1002,8 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt", targe
 
 
 
-optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax, lambdaInit = (lambdaMin+lambdaMax)/2, 
-                                  target = default.target(covML(Y)), type = "Alt"){ 
+optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax, lambdaInit = (lambdaMin+lambdaMax)/2,
+                                  target = default.target(covML(Y)), type = "Alt"){
 	#####################################################################################################
 	# - Function that determines the optimal value of the penalty parameter by application of the Brent
 	#   algorithm to the (leave-one-out) cross-validated log-likelihood
@@ -1017,45 +1017,45 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax, lambdaInit = (lambdaM
 
 	# Dependencies
 	# require("base")
-	# require("stats")    
+	# require("stats")
 
 	# input checks
 	if (!is.matrix(Y)){
 		stop("Input (Y) if of wrong class")
-	} 
+	}
 	else if (sum(is.na(Y)) != 0){
 		stop("Input matrix (Y) should not contain missings")
 	}
 	else if (class(lambdaMin) != "numeric"){
 		stop("Input (lambdaMin) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMin) != 1){
 		stop("Input (lambdaMin) must be a scalar")
-	} 
+	}
 	else if (lambdaMin <= 0){
 		stop("Input (lambdaMin) must be strictly positive")
-	} 
+	}
 	else if (class(lambdaMax) != "numeric"){
 		stop("Input (lambdaMax) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMax) != 1){
 		stop("Input (lambdaMax) must be a scalar")
-	} 
+	}
 	else if (lambdaMax <= lambdaMin){
 		stop("Input (lambdaMax) must be larger than lambdaMin")
 	}
 	else if (class(lambdaInit) != "numeric"){
 		stop("Input (lambdaInit) is of wrong class")
-	} 
+	}
 	else if (length(lambdaInit) != 1){
 		stop("Input (lambdaInit) must be a scalar")
-	} 
+	}
 	else if (lambdaInit <= lambdaMin){
 		stop("Input (lambdaInit) must be larger than input (lambdaMin)")
-	} 
+	}
 	else if (lambdaMax <= lambdaInit){
 		stop("Input (lambdaInit) must be smaller than input (lambdaMax)")
-	} 
+	}
 	else {
 		# determine optimal value of ridge penalty parameter
 		optLambda <- optim(lambdaInit, .cvl, method = "Brent", lower = lambdaMin, upper = lambdaMax, Y = Y, target = target, type = type)$par
@@ -1068,14 +1068,14 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax, lambdaInit = (lambdaM
 
 
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S),
-				        norm = "2", rlDist = FALSE, verticle = FALSE, value, main = TRUE, 
+				        norm = "2", rlDist = FALSE, verticle = FALSE, value, main = TRUE,
                                 nOutput = FALSE, verbose = TRUE){
 	#####################################################################################################
 	# - Function that visualizes the spectral condition number against the regularization parameter
 	# - Can be used to heuristically determine the (minimal) value of the penalty parameter
 	# - The ridges are rotation equivariant, meaning they work by shrinking the eigenvalues
 	# - Maximum shrinkage implies that all eigenvalues will be equal
-	# - Ratio of maximum and minimum eigenvalue of P can then function as a heuristic 
+	# - Ratio of maximum and minimum eigenvalue of P can then function as a heuristic
 	# - It's point of stabilization can give an acceptable value for the penalty
 	# - The ratio boils down to the (spectral) condition number of a matrix
 	# - S         > sample covariance/correlation matrix
@@ -1089,7 +1089,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
 	#               plotted. Default = FALSE
 	# - verticle  > optional argument for visualization verticle line in graph output, default = FALSE
 	#               Can be used to indicate the value of, e.g., the optimal penalty as indicated by some
-	#               routine. Can be used to assess if this optimal penalty will lead to a 
+	#               routine. Can be used to assess if this optimal penalty will lead to a
 	#               well-conditioned estimate
 	# - value     > indicates constant on which to base verticle line when verticle = TRUE
 	# - main      > logical indicating if plot should contain type of estimator as main title
@@ -1104,31 +1104,31 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
 
 	if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	if (verbose){
 		cat("Perform input checks...", "\n")
 	}
 	if (!is.matrix(S)){
 		stop("S should be a matrix")
-	} 
+	}
 	else if (!isSymmetric(S)){
 		stop("S should be a covariance matrix")
 	}
 	else if (class(lambdaMin) != "numeric"){
 		stop("Input (lambdaMin) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMin) != 1){
 		stop("lambdaMin must be a scalar")
-	} 
+	}
 	else if (lambdaMin <= 0){
 		stop("lambdaMin must be positive")
-	} 
+	}
 	else if (class(lambdaMax) != "numeric"){
 		stop("Input (lambdaMax) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMax) != 1){
 		stop("lambdaMax must be a scalar")
-	} 
+	}
 	else if (lambdaMax <= lambdaMin){
 		stop("lambdaMax must be larger than lambdaMin")
 	}
@@ -1146,7 +1146,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
 	}
 	else if (!isSymmetric(target)){
 		stop("Shrinkage target should be symmetric")
-	} 
+	}
 	else if (dim(target)[1] != dim(S)[1]){
 		stop("S and target should be of the same dimension")
 	}
@@ -1262,17 +1262,17 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Functions for Block Independence Testing
 ##
 ##---------------------------------------------------------------------------------------------------------
 
 if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 
-GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax, lambdaInit = (lambdaMin+lambdaMax)/2, 
+GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax, lambdaInit = (lambdaMin+lambdaMax)/2,
                                 target = default.target(covML(Y)), type = "Alt", ncpus = 1){
 	#####################################################################################################
-	# - Function generating the distribution of the penalty parameter 
+	# - Function generating the distribution of the penalty parameter
 	# - It does so under the null hypothesis of block independence
 	# - The optimal value of the penalty parameter is determined under multiple permutations
 	# - Optimal penalty determined using the 'optPenalty.LOOCVauto' function
@@ -1302,7 +1302,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax, lambdaI
 	}
 	else if (class(id) != "numeric" & class(id) != "integer"){
 		stop("Input (id) is of wrong class")
-	} 
+	}
 	else if (!(all(unique(id) %in% c(0, 1)))){
 		stop("Input (id) has unlawful entries")
 	}
@@ -1311,62 +1311,62 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax, lambdaI
 	}
 	else if (class(nPerm) != "numeric" & class(nPerm) != "integer"){
 		stop("Input (nPerm) is of wrong class")
-	} 
+	}
 	else if (!.is.int(nPerm)){
 		stop("Input (nPerm) is expected to be a (numeric) integer")
-	} 
+	}
 	else if (nPerm <= 0){
 		stop("Input (nPerm) must be strictly positive")
 	}
 	else if (class(lambdaMin) != "numeric"){
 		stop("Input (lambdaMin) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMin) != 1){
 		stop("Input (lambdaMin) must be a scalar")
-	} 
+	}
 	else if (lambdaMin <= 0){
 		stop("Input (lambdaMin) must be strictly positive")
-	} 
+	}
 	else if (class(lambdaMax) != "numeric"){
 		stop("Input (lambdaMax) is of wrong class")
-	} 
+	}
 	else if (length(lambdaMax) != 1){
 		stop("Input (lambdaMax) must be a scalar")
-	} 
+	}
 	else if (lambdaMax <= lambdaMin){
 		stop("Input (lambdaMax) must be larger than input (lambdaMin)")
 	}
 	else if (class(lambdaInit) != "numeric"){
 		stop("Input (lambdaInit) is of wrong class")
-	} 
+	}
 	else if (length(lambdaInit) != 1){
 		stop("Input (lambdaInit) must be a scalar")
-	} 
+	}
 	else if (lambdaInit <= lambdaMin){
 		stop("Input (lambdaInit) must be larger than input (lambdaMin)")
-	} 
+	}
 	else if (lambdaMax <= lambdaInit){
 		stop("Input (lambdaInit) must be smaller than input (lambdaMax)")
-	} 
+	}
 	else if (class(ncpus) != "numeric" & class(ncpus) != "integer"){
 		stop("Input (ncpus) is of wrong class")
-	} 
+	}
 	else if (!.is.int(ncpus)){
 		stop("Input (ncpus) is expected to be a (numeric) integer")
-	} 
+	}
 	else if (ncpus <= 0){
 		stop("Input (ncpus) must be strictly positive")
 	}
 	else {
 		# Determine null distribution
 		if (ncpus == 1){
-			lambdaNull <- sapply(1:nPerm, .lambdaNullDist, Y = Y, id = id, lambdaMin = lambdaMin, 
+			lambdaNull <- sapply(1:nPerm, .lambdaNullDist, Y = Y, id = id, lambdaMin = lambdaMin,
                                        lambdaMax = lambdaMax, lambdaInit = lambdaInit, target = target, type = type)
 		}
 		if (ncpus > 1){
 			sfInit(parallel = TRUE, cpus = ncpus)
 			sfLibrary(rags2ridges, verbose = FALSE)
-			lambdaNull <- sfSapply(1:nPerm, .lambdaNullDist, Y = Y, id = id, lambdaMin = lambdaMin, 
+			lambdaNull <- sfSapply(1:nPerm, .lambdaNullDist, Y = Y, id = id, lambdaMin = lambdaMin,
                                          lambdaMax = lambdaMax, lambdaInit = lambdaInit, target = target, type = type)
 			sfStop()
 		}
@@ -1378,7 +1378,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax, lambdaI
 
 
 
-GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(covML(Y)), type = "Alt", 
+GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(covML(Y)), type = "Alt",
                           lowCiThres = 0.1, ncpus = 1, verbose = TRUE){
 	#####################################################################################################
 	# - Function performing a permutation test for block structure in the precision matrix
@@ -1389,7 +1389,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 	# - lambda     > the penalty parameter employed in the permutation test
 	# - target     > target (precision terms) for Type I estimators, default = default.target(covML(Y))
 	# - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-	# - lowCiThres > A value between 0 and 1, determining speed of efficient p-value calculation 
+	# - lowCiThres > A value between 0 and 1, determining speed of efficient p-value calculation
 	# - ncpus      > desired number of cpus
 	# - verbose    > logical indicating if progress/output should be printed on screen
 	#
@@ -1397,8 +1397,8 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 	# - Dependency on 'snowfall' when ncpus > 1
 	# - When verbose = TRUE, also graphical output is given: a histogram of the null-distribution
 	# - The value for 'lambda' ideally stems from 'GGMblockNullPenalty'
-	# - If the probability of a p-value being below 'lowCiThres' is smaller than 0.001 (meaning: the test 
-	#   is unlikely to become significant), the permutation analysis is terminated and a p-value of 
+	# - If the probability of a p-value being below 'lowCiThres' is smaller than 0.001 (meaning: the test
+	#   is unlikely to become significant), the permutation analysis is terminated and a p-value of
 	#   unity (1) is reported
 	#####################################################################################################
 
@@ -1415,7 +1415,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 	}
 	else if (class(id) != "numeric" & class(id) != "integer"){
 		stop("Input (id) is of wrong class")
-	} 
+	}
 	else if (!(all(unique(id) %in% c(0, 1)))){
 		stop("Input (id) has unlawful entries")
 	}
@@ -1424,25 +1424,25 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 	}
 	else if (class(nPerm) != "numeric" & class(nPerm) != "integer"){
 		stop("Input (nPerm) is of wrong class")
-	} 
+	}
 	else if (!.is.int(nPerm)){
 		stop("Input (nPerm) is expected to be a (numeric) integer")
-	} 
+	}
 	else if (nPerm <= 0){
 		stop("Input (nPerm) must be strictly positive")
 	}
 	else if (class(lambda) != "numeric"){
 		stop("Input (lambda) is of wrong class")
-	} 
+	}
 	else if (length(lambda) != 1){
 		stop("Input (lambda) must be a scalar")
-	} 
+	}
 	else if (lambda <= 0){
 		stop("Input (lambda) must be strictly positive")
-	} 
+	}
 	else if (class(lowCiThres) != "numeric"){
 		stop("Input (lowCiThres) is of wrong class")
-	} 
+	}
 	else if (length(lowCiThres) != 1){
 			stop("Input (lowCiThres) must be a scalar")
 	}
@@ -1451,26 +1451,26 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 	}
 	else if (class(ncpus) != "numeric" & class(ncpus) != "integer"){
 		stop("Input (ncpus) is of wrong class")
-	} 
+	}
 	else if (!.is.int(ncpus)){
 		stop("Input (ncpus) is expected to be a (numeric) integer")
-	} 
+	}
 	else if (ncpus <= 0){
 		stop("Input (ncpus) must be strictly positive")
 	}
 	else if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	else {
 		# Observed test statistics
 		S     <- solve(ridgeS(covML(Y), lambda = lambda, target = target, type = type))
 		llObs <- log(det(S[id == 0, id == 0, drop = FALSE])) + log(det(S[id == 1, id == 1, drop = FALSE])) - log(det(S))
-    
+
 		# Define steps at which the possibility of significance should be evaluated
-		steps <- sort(unique(c(0, 25, 50, 100, 150, 200, seq(from = 250, to = 2750, by = 250), seq(from = 3000, to = 10000, by = 500), 
+		steps <- sort(unique(c(0, 25, 50, 100, 150, 200, seq(from = 250, to = 2750, by = 250), seq(from = 3000, to = 10000, by = 500),
                           seq(from = 11000, to = 50000, by = 1000), nPerm)))
 		steps <- steps[steps <= nPerm]
-    
+
 		# Generate null distribution
 		nullDist <- numeric()
 		if (ceiling(ncpus) > 1){
@@ -1484,7 +1484,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 				nullDistPart <- sapply(c((steps[j] + 1):steps[j + 1]), .blockTestStat, Y = Y, id = id, lambda = lambda, target = target, type = type)
 			}
 			if (ncpus > 1){
-				nullDistPart <- sfSapply(c((steps[j] + 1):steps[j + 1]), .blockTestStat, Y = Y, id = id, lambda = lambda, target = target, type = type)        
+				nullDistPart <- sfSapply(c((steps[j] + 1):steps[j + 1]), .blockTestStat, Y = Y, id = id, lambda = lambda, target = target, type = type)
 			}
 			nullDist <- c(nullDist, nullDistPart); rm(nullDistPart); gc()
 			pVal     <- sum(nullDist >= as.numeric(llObs))/steps[j + 1]
@@ -1495,18 +1495,18 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 		}
 
 		if (ncpus > 1){sfStop()}
-	
+
 		# Generating on screen (graphical) output
 		if (verbose){
 			# Visual summary of test results
-			xlims     <- c(min(c(llObs, nullDist)), max(c(llObs, nullDist)))         
+			xlims     <- c(min(c(llObs, nullDist)), max(c(llObs, nullDist)))
 			histFreqs <- hist(nullDist, n = sqrt(sum(nPerm))+1, plot = FALSE)$counts
-			hist(nullDist, xlim = xlims, n = sqrt(sum(nPerm))+1, col = "blue", border = "lightblue", xlab = "null statistics", 
+			hist(nullDist, xlim = xlims, n = sqrt(sum(nPerm))+1, col = "blue", border = "lightblue", xlab = "null statistics",
                        ylab = "frequency", main = "Histogram of null distribution")
 			lines(rep(llObs, max(histFreqs)), 0.9 * (c(1:max(histFreqs))-1), col = "red", lwd = 2)
 			text(quantile(c(nullDist, llObs), probs = 0.05), 0.95 * max(histFreqs), paste("p-value:", pVal))
 			text(llObs, 0.95 * max(histFreqs), "test stat.")
-        
+
 			# Summary of test results
 			cat("\n")
 			cat(paste("Likelihood ratio test for block independence", sep = ""), "\n")
@@ -1516,11 +1516,11 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 			cat(paste("-> p-value                : ", round(pVal, digits = 3), sep = ""), "\n")
 			cat(paste("-> remark                 : ", if (significanceUnlikely){"resampling terminated prematurely due to unlikely significance"} else{"none"}, sep = ""), "\n")
 			cat("----------------------------------------", "\n")
-			cat("\n") 
+			cat("\n")
 		}
-	
+
 		# Return
-		return(list(statistic = llObs, pvalue = pVal, nulldist = nullDist, nperm = nPerm, 
+		return(list(statistic = llObs, pvalue = pVal, nulldist = nullDist, nperm = nPerm,
                    remark = if (significanceUnlikely){"resampling terminated prematurely due to unlikely significance"} else {"none"}))
 	}
 }
@@ -1529,12 +1529,12 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda, target = default.target(c
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Test for Vanishing Partial Correlations
 ##
 ##---------------------------------------------------------------------------------------------------------
 
-sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCut = .25, FDRcut = .9, 
+sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCut = .25, FDRcut = .9,
                      top = 10, output = "heavy", verbose = TRUE){
 	#####################################################################################################
 	# - Function that sparsifies/determines support of a partial correlation matrix
@@ -1544,7 +1544,7 @@ sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCu
 	# - Function is to some extent a wrapper around certain 'fdrtool' functions
 	# - P           > (possibly shrunken) precision matrix
 	# - threshold   > signifies type of thresholding
-	# - absValueCut > cut-off for partial correlation elements selection based on absolute value 
+	# - absValueCut > cut-off for partial correlation elements selection based on absolute value
 	#                 thresholding. Only when threshold = 'absValue'. Default = .25
 	# - FDRcut      > cut-off for partial correlation element selection based on local FDR thresholding
 	#                 Only when threshold = 'localFDR'. Default = .9
@@ -1555,15 +1555,15 @@ sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCu
 	#                 Only when threshold = 'localFDR'. Default = TRUE
 	#
 	# NOTES:
-	# - Input (P) may be the partial correlation matrix or the standardized precision matrix. These are 
+	# - Input (P) may be the partial correlation matrix or the standardized precision matrix. These are
 	#   identical up to the signs of off-diagonal elements. Either can be used as it has no effect
 	#   on the thresholding operator and the ensuing sparsified result
-	# - Input (P) may also be the unstandardized precision matrix. The function converts it to the 
+	# - Input (P) may also be the unstandardized precision matrix. The function converts it to the
 	#   partial correlation matrix
-	# - The function evaluates if the input (P) is a partial correlation/standardized precision matrix or 
+	# - The function evaluates if the input (P) is a partial correlation/standardized precision matrix or
 	#   an unstandardized precision matrix. If the input amounts to the latter both the sparsified partial
 	#   correlation matrix and the corresponding sparsified precision matrix are given as output (when
-	#   output = "heavy"). Otherwise, the ouput consists of the sparsified partial correlation/standardized 
+	#   output = "heavy"). Otherwise, the ouput consists of the sparsified partial correlation/standardized
 	#   precision matrix.
 	# - When output = "light", only the (matrix) positions of the zero and non-zero elements are returned
 	#####################################################################################################
@@ -1680,7 +1680,7 @@ sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCu
 				colnames(P0)  = rownames(P0)  <- colnames(P)
 				return(list(sparseParCor = PC0, sparsePrecision = P0))
 			}
-		} 
+		}
 		if (output == "light"){
 			return(list(zeros = which(PC0 == 0, arr.ind = TRUE), nonzeros = which(PC0 != 0, arr.ind = TRUE)))
 		}
@@ -1691,7 +1691,7 @@ sparsify <- function(P, threshold = c("absValue", "localFDR", "top"), absValueCu
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Functions for Loss/Entropy/Fit Evaluation
 ##
 ##---------------------------------------------------------------------------------------------------------
@@ -1707,13 +1707,13 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 
 	if (!is.matrix(E)){
 		stop("Input (E) is of wrong class")
-	} 
+	}
 	else if (!isSymmetric(E)){
 		stop("E should be a symmetric matrix")
 	}
 	else if (!is.matrix(T)){
 		stop("Input (T) is of wrong class")
-	} 
+	}
 	else if (!isSymmetric(T)){
 		stop("T should be a symmetric matrix")
 	}
@@ -1764,19 +1764,19 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 
 	if (class(Mtest) != "numeric"){
 		stop("Input (Mtest) is of wrong class")
-	} 
+	}
 	else if (class(Mref) != "numeric"){
 		stop("Input (Mref) is of wrong class")
-	} 
+	}
 	else if (length(Mtest) != length(Mref)){
 		stop("Mtest and Mref should be of same length")
-	} 
+	}
 	else if (!is.matrix(Stest)){
 		stop("Input (Stest) is of wrong class")
-	} 
+	}
 	else if (!is.matrix(Sref)){
 		stop("Input (Sref) is of wrong class")
-	} 
+	}
 	else if (!isSymmetric(Stest)){
 		stop("Stest should be symmetric")
 	}
@@ -1791,15 +1791,15 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 	}
 	else if (class(symmetric) != "logical"){
 		stop("Input (symmetric) is of wrong class")
-	} 
+	}
 	else {
 		# Evaluate KL divergence
-		KLd <- (sum(diag(solve(Stest) %*% Sref)) + t(Mtest - Mref) %*% solve(Stest) %*% (Mtest - Mref) 
+		KLd <- (sum(diag(solve(Stest) %*% Sref)) + t(Mtest - Mref) %*% solve(Stest) %*% (Mtest - Mref)
 			  - nrow(Sref) - log(det(Sref)) + log(det(Stest)))/2
 
 		# Evaluate (original) symmetric version KL divergence
 		if (symmetric){
-			KLd <- KLd + (sum(diag(solve(Sref) %*% Stest)) + t(Mref - Mtest) %*% solve(Sref) %*% (Mref - Mtest) 
+			KLd <- KLd + (sum(diag(solve(Sref) %*% Stest)) + t(Mref - Mtest) %*% solve(Sref) %*% (Mref - Mtest)
 				 	  - nrow(Sref) - log(det(Stest)) + log(det(Sref)))/2
 		}
 
@@ -1870,8 +1870,8 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 		if (fileType == "pdf"){pdf(paste(dir, "QQplot_covariances_", nameExt, ".pdf"))}
 		if (fileType == "eps"){setEPS(); postscript(paste(dir, "QQplot_covariances_", nameExt, ".eps"))}
 		if (diag){cObs <- as.numeric(S[upper.tri(S, diag = TRUE)]); cFit <- as.numeric(Shat[upper.tri(Shat, diag = TRUE)])}
-		if (!diag){cObs <- as.numeric(S[upper.tri(S)]); cFit <- as.numeric(Shat[upper.tri(Shat)])}      
-		op <- par(pty = "s") 
+		if (!diag){cObs <- as.numeric(S[upper.tri(S)]); cFit <- as.numeric(Shat[upper.tri(Shat)])}
+		op <- par(pty = "s")
 		qqplot(x = cObs, y = cFit, pch = 20, xlab = "sample covariances", ylab = "fits", main = "QQ-plot, covariances")
 		lines(seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), col = "grey", lty = 2)
 		par(op); dev.off()
@@ -1879,20 +1879,20 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 		# plot 2: Comparison of covariances by heatmap
 		if (fileType == "pdf"){pdf(paste(dir, "heatmap_covariances_", nameExt, ".pdf"))}
 		if (fileType == "eps"){setEPS(); postscript(paste(dir, "heatmap_covariances_", nameExt, ".eps"))}
-		op  <- par(pty = "s")  
+		op  <- par(pty = "s")
 		slh <- S
 		slh[lower.tri(slh)] <- Shat[lower.tri(Shat)]
 		gplot <- edgeHeat(slh, diag = diag, legend = FALSE, main = "Covariances")
-		print(gplot); par(op); dev.off()   
+		print(gplot); par(op); dev.off()
 
 
 		print("Visualizing correlation fit")
     		# plot 3: QQ-plot of correlations
 		if (fileType == "pdf"){pdf(paste(dir, "QQplot_correlations_", nameExt, ".pdf"))}
 		if (fileType == "eps"){setEPS(); postscript(paste(dir, "QQplot_correlations_", nameExt, ".eps"))}
-		if (diag){cObs <- as.numeric(cov2cor(S)[upper.tri(S, diag = TRUE)]); cFit <- as.numeric(cov2cor(Shat)[upper.tri(Shat, diag = TRUE)])} 
+		if (diag){cObs <- as.numeric(cov2cor(S)[upper.tri(S, diag = TRUE)]); cFit <- as.numeric(cov2cor(Shat)[upper.tri(Shat, diag = TRUE)])}
 		if (!diag){cObs <- as.numeric(cov2cor(S)[upper.tri(S)]); cFit <- as.numeric(cov2cor(Shat)[upper.tri(Shat)])}
-		op <- par(pty = "s") 
+		op <- par(pty = "s")
 		qqplot(x = cObs, y = cFit, pch = 20, xlab = "sample correlations", ylab = "fits", main = "QQ-plot, correlations")
 		lines(seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), col = "grey", lty = 2)
 		par(op); dev.off()
@@ -1900,11 +1900,11 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 		# plot 4: Comparison of correlations by heatmap
 		if (fileType == "pdf"){pdf(paste(dir, "heatmap_correlations_", nameExt, ".pdf"))}
 		if (fileType == "eps"){setEPS(); postscript(paste(dir, "heatmap_correlations_", nameExt, ".eps"))}
-		op  <- par(pty = "s")  
+		op  <- par(pty = "s")
 		slh <- cov2cor(S)
 		slh[lower.tri(slh)] <- cov2cor(Shat)[lower.tri(Shat)]
 		gplot <- edgeHeat(slh, diag = diag, legend = FALSE, main = "Correlations")
-		print(gplot); par(op); dev.off()   
+		print(gplot); par(op); dev.off()
 
 
 		print("Visualizing partial correlation fit")
@@ -1916,7 +1916,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 			if (fileType == "eps"){setEPS(); postscript(paste(dir, "QQplot_partCorrelations_", nameExt, ".eps"))}
 			if (diag){cObs <- as.numeric(pcor(solve(S))[upper.tri(S)], diag = TRUE); cFit <- as.numeric(pcor(Phat)[upper.tri(Phat, diag = TRUE)])}
 			if (!diag){cObs <- as.numeric(pcor(solve(S))[upper.tri(S)]); cFit <- as.numeric(pcor(Phat)[upper.tri(Phat)])}
-			op <- par(pty = "s")  
+			op <- par(pty = "s")
 			qqplot(x = cObs, y = cFit, pch = 20, xlab = "sample partial correlations", ylab = "fits", main = "QQ-plot, partial correlations")
 			lines(seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), seq(min(cFit, cObs), max(cFit, cObs), length.out = 100), col = "grey", lty = 2)
 			par(op); dev.off()
@@ -1924,7 +1924,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 			# plot 6: Comparison of partial correlations by heatmap
 			if (fileType == "pdf"){pdf(paste(dir, "heatmap_partCorrelations_", nameExt, ".pdf"))}
 			if (fileType == "eps"){setEPS(); postscript(paste(dir, "heatmap_partCorrelations_", nameExt, ".eps"))}
-			op  <- par(pty = "s")  
+			op  <- par(pty = "s")
 			slh <- pcor(solve(S))
 			slh[lower.tri(slh)] <- pcor(Phat)[lower.tri(Phat)]
 			gplot <- edgeHeat(slh, diag = diag, legend = FALSE, main = "Partial correlations")
@@ -1940,12 +1940,12 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "", 
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Functions for Visualization
 ##
 ##---------------------------------------------------------------------------------------------------------
 
-ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S), 
+ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S),
                         plotType = "pcor", diag = FALSE, verticle = FALSE, value, verbose = TRUE){
 	#####################################################################################################
 	# - Function that visualizes the regularization path
@@ -1958,11 +1958,11 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt", target = de
 	# - target    > target (precision terms) for Type I estimators, default = default.target(S)
 	# - plotType  > specificies the elements for which the regularization path is to be visualized.
 	#               Must be one of {"pcor", "cor", "cov", "prec"}, default = "pcor"
-	# - diag      > logical indicating if the diagonal elements should be retained for plotting, 
+	# - diag      > logical indicating if the diagonal elements should be retained for plotting,
 	#               default = FALSE
 	# - verticle  > optional argument for visualization verticle line in graph output, default = FALSE
 	#               Can be used to indicate the value of, e.g., the optimal penalty as indicated by some
-	#               routine. Can be used to assess the whereabouts of this optimal penalty along the 
+	#               routine. Can be used to assess the whereabouts of this optimal penalty along the
 	#               regularization path
 	# - value     > indicates constant on which to base verticle line when verticle = TRUE
 	# - verbose   > logical indicating if intermediate output should be printed on screen
@@ -2156,7 +2156,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10, dia
 	}
 	else if (textsize <= 0){
 			stop("textsize must be positive")
-	} 
+	}
 	else if (class(diag) != "logical"){
 		stop("Input (diag) is of wrong class")
 	}
@@ -2172,10 +2172,10 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10, dia
 		Mmelt    <- melt(M)
 		Mmelt$X1 <- factor(as.character(Mmelt$X1), levels = unique(Mmelt$X1), ordered = TRUE)
 		Mmelt$X2 <- factor(as.character(Mmelt$X2), levels = unique(Mmelt$X2), ordered = TRUE)
-	
+
 		# Visualize
 		if (legend){
-			ggplot(Mmelt, aes(X2, X1, fill = value)) + geom_tile() + 
+			ggplot(Mmelt, aes(X2, X1, fill = value)) + geom_tile() +
          	 	 	 scale_fill_gradient2("", low = lowColor,  mid = "white", high = highColor, midpoint = 0) +
 		 	 	 theme(axis.ticks = element_blank()) +
 				 theme(axis.text.y = element_text(size = textsize)) +
@@ -2184,7 +2184,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10, dia
          		 	 ylim(rev(levels(Mmelt$X1))) +
 				 ggtitle(main)
 		} else {
-			ggplot(Mmelt, aes(X2, X1, fill = value)) + geom_tile() + 
+			ggplot(Mmelt, aes(X2, X1, fill = value)) + geom_tile() +
          	 	 	 scale_fill_gradient2("", low = lowColor,  mid = "white", high = highColor, midpoint = 0) +
 		 	 	 theme(axis.ticks = element_blank()) +
 				 theme(axis.text.y = element_text(size = textsize)) +
@@ -2199,9 +2199,9 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10, dia
 
 
 
-Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circle, Vsize = 15, Vcex = 1, 
-			 Vcolor = "orangered", VBcolor = "darkred", VLcolor = "black", prune = FALSE, legend = FALSE, 
-			 label = "", Lcex = 1.3, PTcex = 4, cut = .5, scale = 10, pEcolor = "black", nEcolor = "grey", 
+Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circle, Vsize = 15, Vcex = 1,
+			 Vcolor = "orangered", VBcolor = "darkred", VLcolor = "black", prune = FALSE, legend = FALSE,
+			 label = "", Lcex = 1.3, PTcex = 4, cut = .5, scale = 10, pEcolor = "black", nEcolor = "grey",
 			 main = ""){
 	#####################################################################################################
 	# - Function that visualizes the sparsified precision matrix as an undirected graph
@@ -2231,7 +2231,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circl
 	#             when type = "weighted"
 	# - nEcolor > gives edge color for edges tied to negative precision elements, default = "grey"; only
 	#             when type = "weighted"
-	# - main    > character specifying heading figure, default = "" 
+	# - main    > character specifying heading figure, default = ""
 	#####################################################################################################
 
 	# Dependencies
@@ -2303,7 +2303,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circl
 
 		# Plain graph
 		if (type == "plain"){
-			plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex, 
+			plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex,
 			     vertex.color = Vcolor, vertex.frame.color = VBcolor, vertex.label.color = VLcolor, main = main)
 		}
 
@@ -2324,10 +2324,10 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circl
 				E(GA)$weight <- Mmelt$value
 				E(GA)$color  <- "grey"
 				E(GA)[E(GA)$weight < 0]$style <- "dashed"
-				E(GA)[E(GA)$weight > 0]$style <- "solid"		
+				E(GA)[E(GA)$weight > 0]$style <- "solid"
 				E(GA)[abs(E(GA)$weight) > cut]$color <- "black"
-				plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex, 
-				     vertex.color = Vcolor, vertex.frame.color = VBcolor, vertex.label.color = VLcolor, 
+				plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex,
+				     vertex.color = Vcolor, vertex.frame.color = VBcolor, vertex.label.color = VLcolor,
 				     edge.color = E(GA)$color, edge.lty = E(GA)$style, main = main)
 			}
 		}
@@ -2357,12 +2357,12 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circl
 				E(GA)$weight <- Mmelt$value
 				E(GA)[E(GA)$weight < 0]$color <- nEcolor
 				E(GA)[E(GA)$weight > 0]$color <- pEcolor
-				plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex, 
-				     vertex.color = Vcolor, vertex.frame.color = VBcolor, vertex.label.color = VLcolor, 
+				plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex,
+				     vertex.color = Vcolor, vertex.frame.color = VBcolor, vertex.label.color = VLcolor,
 				     edge.color = E(GA)$color, edge.width = scale*abs(E(GA)$weight), main = main)
 			}
 		}
-				
+
 		# Legend
 		if (legend){
 			if (class(label) != "character"){
@@ -2392,7 +2392,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"), lay = layout.circl
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Functions for Topology Statistics
 ##
 ##---------------------------------------------------------------------------------------------------------
@@ -2404,7 +2404,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 	# - The sparse precision matrix is taken to represent a conditional independence graph
 	# - sparseP  > sparse precision/partial correlation matrix
 	# - as.table > logical indicating if output should be returned as table; default = FALSE
-	# 
+	#
 	# - NOTES (network statistics produced):
 	# - Node degree
 	# - Betweenness centrality
@@ -2437,7 +2437,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 	}
 	else if (class(as.table) != "logical"){
 		stop("Input (as.table) is of wrong class")
-	} 
+	}
 	else{
 		# Some warnings
 		if (all(sparseP != 0)){warning("Given input (sparseP) implies a saturated conditional independence graph")}
@@ -2450,10 +2450,10 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
     		# Calculate nodes' mutual information
     		MI        <- unlist(lapply(1:nrow(S), function(j, S){ log(det(S[-j,-j])) - log(det(S[-j,-j] - S[-j,j,drop=FALSE] %*% S[j,-j,drop=FALSE] / S[j,j])) }, S = S))
 		names(MI) <- colnames(sparseP)
-    	
+
 		# Signs of edges
-		diag(sparseP) <- 0 
-		nPos <- apply(sign(sparseP), 2, function(Z){ sum(Z == 1) }) 
+		diag(sparseP) <- 0
+		nPos <- apply(sign(sparseP), 2, function(Z){ sum(Z == 1) })
 		nNeg <- apply(sign(sparseP), 2, function(Z){ sum(Z == -1) })
 
     		# Adjacency to graphical object
@@ -2465,7 +2465,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 			networkStats <- cbind(degree(CIG), betweenness(CIG), closeness(CIG), evcent(CIG)$vector, nNeg, nPos, MI, diag(S), pvars)
 			colnames(networkStats) <- c("degree", "betweenness", "closeness", "eigenCentrality", "nNeg", "nPos", "mutualInfo", "variance", "partialVar")
 			return(networkStats)
-		} 
+		}
 		if (!as.table){
 			return(list(degree = degree(CIG), betweenness = betweenness(CIG), closeness = closeness(CIG), eigenCentrality = evcent(CIG)$vector,
                          nNeg = nNeg, nPos = nPos, chordal = is.chordal(CIG)$chordal, mutualInfo = MI, variance = diag(S), partialVar = pvars))
@@ -2475,23 +2475,23 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
 
 
-GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE, nrPaths = 2, 
-                         lay = layout.circle, nodecol = "skyblue", Vsize = 15, Vcex = .6, VBcolor = "darkblue", 
+GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE, nrPaths = 2,
+                         lay = layout.circle, nodecol = "skyblue", Vsize = 15, Vcex = .6, VBcolor = "darkblue",
                          VLcolor = "black", all.edges = TRUE, prune = TRUE, legend = TRUE, scale = 1,
                          Lcex = .8, PTcex = 2, main = ""){
 	#####################################################################################################
-	# - Function that expresses the covariance between a pair of variables as a sum of path weights 
+	# - Function that expresses the covariance between a pair of variables as a sum of path weights
 	# - The sum of path weights is based on the shortest paths connecting the pair in an undirected graph
 	# - P0            > sparse precision/partial correlation matrix
 	# - node1         > start node of the path
 	# - node2         > end node of the path
-	# - neiExpansions > a numeric determining how many times the neighborhood around the start and end 
+	# - neiExpansions > a numeric determining how many times the neighborhood around the start and end
 	#                   node should be expanded in the search for shortest paths between the node pair.
 	#                   Default = 2
 	# - verbose       > logical indicating if output should also be printed on screen. Default = TRUE
 	# - graph         > Optional argument for visualization strongest paths, default = TRUE
 	# - nrPaths		> indicates the number of paths with the highest contribution to the marginal covariance
-	#                   between the indicated node pair (node1 and node2) to be visualized/highlighted; 
+	#                   between the indicated node pair (node1 and node2) to be visualized/highlighted;
 	#                   only when graph = TRUE
 	# - lay           > determines layout of the graph. All layouts in 'layout{igraph}' are accepted.
 	#		        Default = layout.circle, giving circular layout; only when graph = TRUE
@@ -2511,11 +2511,11 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 	#                   a scaling factor vis-a-vis the unimplied edges); only when all.edges = TRUE
 	# - Lcex          > scaling legend box, default = .8; only when legend = TRUE
 	# - PTcex         > scaling node in legend box, default = 2; only when legend = TRUE
-	# - main          > character specifying heading figure, default = "" 
+	# - main          > character specifying heading figure, default = ""
 	#
 	# - NOTES:
 	# - As in Jones & West (2005), paths whose weights have an opposite sign to the marginal covariance
-	#   (between endnodes of the path) are referred to as 'moderating paths' while paths whose weights 
+	#   (between endnodes of the path) are referred to as 'moderating paths' while paths whose weights
 	#   have the same sign as the marginal covariance are referred to as 'mediating' paths
 	#####################################################################################################
 
@@ -2538,7 +2538,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 	}
 	else if (length(node1) != 1){
 		stop("Length input (node1) must be 1")
-	} 
+	}
 	else if (!.is.int(node1)){
 		stop("Input (node1) should be a numeric integer")
 	}
@@ -2583,7 +2583,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 	}
 	else if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	else {
 		# Some warnings
 		if (all(P0 != 0)){warning("Given input (P0) implies a saturated conditional independence graph")}
@@ -2612,16 +2612,16 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 
 			# Shortest paths between the nodes
 			slh <- get.all.shortest.paths(G, node1, node2)$res
-			for (u in 1:length(slh)){ 
-				fullPath <- slh[[u]] 
+			for (u in 1:length(slh)){
+				fullPath <- slh[[u]]
 				pName <- .path2string(fullPath)
-				paths[[length(paths)+1]] <- fullPath 
+				paths[[length(paths)+1]] <- fullPath
 				pathStats <- rbind(pathStats, c(length(slh[[u]])-1, .pathContribution(P0, fullPath, detP0)))
 				rownames(pathStats)[nrow(pathStats)] <- pName
 			}
 			nei1 <- node1
 			nei2 <- node2
-		
+
 			for (u in 1:neiExpansions){
 				# Consider longer paths between the nodes
 				nei1temp <- nei1
@@ -2659,9 +2659,9 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 				cat(paste("Covariance between node pair : ", round(covNo1No2, 5), sep=""), "\n")
 				cat("----------------------------------------", "\n")
 				print(statsTable, quote=FALSE)
-	            	cat("----------------------------------------", "\n")			
+	            	cat("----------------------------------------", "\n")
 				cat(paste("Sum path contributions       : ", round(covNo1No2expl, 5), sep=""), "\n")
-	
+
 			}
 
 			# Visualize
@@ -2711,7 +2711,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 				} else {
 					# Preliminaries
 					AM <- adjacentMat(P0)
-					GA <- graph.adjacency(AM, mode = "undirected")	
+					GA <- graph.adjacency(AM, mode = "undirected")
 					colnames(P0) = rownames(P0) <- seq(1, ncol(P0), by = 1)
 					Mmelt <- melt(P0)
 					Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
@@ -2721,7 +2721,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 					for (k in 1:nrPaths){
 						Path <- unlist(paths[k])
 						if (sign(covNo1No2) == sign(pathStats[k,2])){COL = "green"}
-						if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}		
+						if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}
 						for (i in 1:(length(Path) - 1)){
 							if (Path[i] > Path[i + 1]){
 								tempX1 <- Path[i]
@@ -2754,13 +2754,13 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 							E(GA)[E(GA)$color == "green"]$weight <- 2
 							E(GA)[E(GA)$color == "red"]$weight   <- 2
 							if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
-							plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex, 
+							plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex,
 							     edge.width = scale*abs(E(GA)$weight), vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
                                                vertex.label.color = VLcolor, main = main)
 						}
-					} else {		
-						if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}				
-						plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex, 
+					} else {
+						if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
+						plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans", vertex.label.cex = Vcex,
 						     vertex.color = V(GA)$color, vertex.frame.color = VBcolor, vertex.label.color = VLcolor, main = main)
 					}
 
@@ -2779,7 +2779,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 						} else if (PTcex <= 0){
 							stop("Input (PTcex) must be strictly positive")
 						} else {
-							legend("bottomright", c("mediating path", "moderating path"), lty=c(1,1), 
+							legend("bottomright", c("mediating path", "moderating path"), lty=c(1,1),
 							col = c("green", "red"), cex = Lcex, pt.cex = PTcex)
 						}
 					}
@@ -2799,12 +2799,12 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE, gr
 
 
 ##---------------------------------------------------------------------------------------------------------
-## 
+##
 ## Wrapper function
 ##
 ##---------------------------------------------------------------------------------------------------------
 
-fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)), dir = getwd(), 
+fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)), dir = getwd(),
                        fileTypeFig = "pdf", FDRcut = .9, nOutput = TRUE, verbose = TRUE){
 	#####################################################################################################
 	# - Function that forms a wrapper around the rags2ridges functionalities
@@ -2833,7 +2833,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	# require("base")
 	# require("stats")
 	# require("graphics")
-	# require("Hmisc")  
+	# require("Hmisc")
 	# require("fdrtool")
 	# require("igraph")
 	# require("reshape")
@@ -2850,7 +2850,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	}
 	else if (class(verbose) != "logical"){
 		stop("Input (verbose) is of wrong class")
-	} 
+	}
 	else {
 		# In case one does not know:
 		cat("Output files are stored in the following directory:", dir, "\n")
@@ -2865,10 +2865,10 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 		if (verbose){cat("Generating condition number plot...", "\n")}
 		if (fileTypeFig == "pdf"){pdf(paste(dir, "Condition_Number_Plot.pdf"))}
 		if (fileTypeFig == "eps"){setEPS(); postscript(paste(dir, "Condition_Number_Plot.eps"))}
-		conditionNumberPlot(covML(Y), lambdaMin = lambdaMin, lambdaMax = lambdaMax, step = 100000, target = target, verticle = TRUE, 
+		conditionNumberPlot(covML(Y), lambdaMin = lambdaMin, lambdaMax = lambdaMax, step = 100000, target = target, verticle = TRUE,
 					  value = optimal$optLambda, main = FALSE, verbose = FALSE)
 		dev.off()
-		
+
 		# Sparsify the precision matrix
 		if (verbose){cat("Determining support...", "\n")}
 		PC0 <- sparsify(optimal$optPrec, threshold = "localFDR", FDRcut = FDRcut, output = "heavy", verbose = FALSE)$sparseParCor
@@ -2880,7 +2880,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 		Ugraph(PC0, type = "fancy", Vsize = ncol(PC0)/10, Vcex = ncol(PC0)/130,)
 		dev.off()
 
-		# Calculate network statistics 
+		# Calculate network statistics
 		if (verbose){cat("Calculating network statistics...", "\n")}
 		Stats <- GGMnetworkStats(PC0, as.table = TRUE)
 		capture.output(print(Stats), file = paste(dir, "Network_Statistics.txt"))
@@ -2903,7 +2903,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section B: rags2ridges Fused
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -2920,7 +2920,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section C: rags2ridges Robust
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -2937,7 +2937,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section D: rags2ridges XY or rags2ridges 2 DCMG
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -2954,7 +2954,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section E: Miscellaneous
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -2970,8 +2970,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	cat("
             ##########################
             ##########################
-            Get ridge or die trying. 
-                              - 2Cents 
+            Get ridge or die trying.
+                              - 2Cents
             ##########################
             ########################## \n")
 }
@@ -2986,8 +2986,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	cat("
             ##############################################
             ##############################################
-            To be Bold & Beautiful, one has to go Ridge. 
-                                            - Brooke Logan 
+            To be Bold & Beautiful, one has to go Ridge.
+                                            - Brooke Logan
             ##############################################
             ############################################## \n")
 }
@@ -3000,7 +3000,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 ######################################################################################################################
 ######################################################################################################################
 ##--------------------------------------------------------------------------------------------------------------------
-## 
+##
 ## Section F: Update NOTES
 ##
 ##--------------------------------------------------------------------------------------------------------------------
@@ -3028,7 +3028,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 #- Inclusion function for visualization of regularization paths: 'ridgePathS'
 #- Inclusion function for default target matrix generation: 'default.target'
 #- New features updated 'evaluateS' function:
-	# The printed output of the 'evaluateS' function is now aligned 
+	# The printed output of the 'evaluateS' function is now aligned
 	# Calculation spectral condition number has been improved
 #- 'conditionNumber' function now called 'conditionNumberPlot'. Updated function has new features:
 	# Main plot can now be obtained with either the spectral (l2) or the (approximation to) l1 condition number
@@ -3078,7 +3078,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	# Optional graph now plots the LOOCV negative log-likelihood instead of ln(LOOCV negative log-likelihood)
 	# Legend in optional graph has been adapated accordingly
 #- New features updated 'default.target' function:
-	# Inclusion new default target option: 'type = DIAES'. Gives diagonal matrix with inverse of average of eigenvalues of S as entries 
+	# Inclusion new default target option: 'type = DIAES'. Gives diagonal matrix with inverse of average of eigenvalues of S as entries
 #- New features updated 'GGMnetworkStats' function:
 	# Now also assesses (and returns a logical) if graph/network is chordal
 	# Now also includes assesment of the eigenvalue centrality
@@ -3088,13 +3088,13 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)
 	# By avoidance of redundant eigendecompositions and inversions
 	# Now catches breakdown due to rounding preculiarities when plotType = "pcor"
 #- New features updated 'sparsify' function:
-	# Inclusion new thresholding function 'top': retainment of top elements based on absolute partial correlation 
+	# Inclusion new thresholding function 'top': retainment of top elements based on absolute partial correlation
 	# Inclusion output option: When output = "light", only the (matrix) positions of the zero and non-zero elements are returned
 	# Function no longer dependent on GeneNet; now makes direct use of fdrtool
 	# Function now also prints some general information on the number of edges retained
 #- Corrected small error in 'evaluateSfit' function
 	# The 'dir' argument was not properly used previously. Corrected.
 
- 
+
 
 
