@@ -104,7 +104,7 @@ fusedRidgeS <- function(SList, targetList, ns, lambda1, lambda2,
   diffs <- rep(NA, K)
   for (i in seq_len(max.ite)) {
     for (k in seq_len(K)) {
-      tmpOmega <- .fusedUpdate(k = k, OmegaList = OmegaList, SList = SList,
+      tmpOmega <- .fusedUpdate(k0 = k, OmegaList = OmegaList, SList = SList,
                                targetList = targetList, ns = ns,
                                lambda1 = lambda1, lambda2 = lambda2)
 
