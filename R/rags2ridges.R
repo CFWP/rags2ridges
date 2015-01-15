@@ -721,10 +721,10 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
   # require("base")
   # require("expm")
 
-  if (!isSymmetric(S)){
-    stop("S should be a covariance matrix")
+  if (!isSymmetric(S)) {
+    stop("S should be a symmetric matrix")
   }
-  else if (lambda <= 0){
+  else if (lambda <= 0) {
     stop("lambda should be positive")
   }
   else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
@@ -1213,7 +1213,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
     stop("S should be a matrix")
   }
   else if (!isSymmetric(S)){
-    stop("S should be a covariance matrix")
+    stop("S should be a symmetric matrix")
   }
   else if (class(lambdaMin) != "numeric"){
     stop("Input (lambdaMin) is of wrong class")
@@ -3232,7 +3232,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
     # Sparsify the precision matrix
     if (verbose){cat("Determining support...", "\n")}
-    PC0 <- sparsify(optimal$optPrec, threshold = "localFDR", FDRcut = FDRcut, output = "heavy", verbose = FALSE)$sparseParCor
+    PC0 <- sparsify(optimal$optPrec, threshold = "localFDR", FDRcut = FDRcut,
+                    output = "heavy", verbose = FALSE)$sparseParCor
 
     # Visualize the network
     if (verbose){cat("Visualizing network...", "\n")}
@@ -3274,6 +3275,19 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
 # In development for rags2ridges 2.0 and up
 
+
+.FLL <- function(Slist, Plist, n){
+  ##############################################################################
+  # - Function that computes the value of the (negative) combined log-likelihood
+  # - Slist > A list sample covariance matrices for each class
+  # - Plist > A list of the same length as (Slist) of precision matrices
+  #  (possibly regularized inverse of covariance or correlation matrices)
+  # - n > A vector of sample sizes of the same length as Slist.
+  ##############################################################################
+
+  LLs <- mapply(.LL, Slist, Plist)
+  return(sum(n*LLs))
+}
 
 
 
