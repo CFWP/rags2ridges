@@ -3273,21 +3273,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 ################################################################################
 ################################################################################
 
-# In development for rags2ridges 2.0 and up
+# See R/fusedRidge.R
 
-
-.FLL <- function(Slist, Plist, n){
-  ##############################################################################
-  # - Function that computes the value of the (negative) combined log-likelihood
-  # - Slist > A list sample covariance matrices for each class
-  # - Plist > A list of the same length as (Slist) of precision matrices
-  #  (possibly regularized inverse of covariance or correlation matrices)
-  # - n > A vector of sample sizes of the same length as Slist.
-  ##############################################################################
-
-  LLs <- mapply(.LL, Slist, Plist)
-  return(sum(n*LLs))
-}
 
 
 
@@ -3303,7 +3290,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 ################################################################################
 ################################################################################
 
-# See R/fusedRidge.R
+# In development for rags2ridges 2.0 and up
 
 
 

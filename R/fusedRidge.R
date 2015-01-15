@@ -1,4 +1,5 @@
 
+
 createS <- function(n, p) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrolated noise
@@ -33,6 +34,20 @@ symmetrize <- function(X) {
   ##############################################################################
 
   return((X + t(X))/2)
+}
+
+
+.FLL <- function(SList, PList, n){
+  ##############################################################################
+  # - Function that computes the value of the (negative) combined log-likelihood
+  # - Slist > A list sample covariance matrices for each class
+  # - Plist > A list of the same length as (Slist) of precision matrices
+  #  (possibly regularized inverse of covariance or correlation matrices)
+  # - n > A vector of sample sizes of the same length as Slist.
+  ##############################################################################
+
+  LLs <- mapply(.LL, SList, PList)
+  return(sum(n*LLs))
 }
 
 
