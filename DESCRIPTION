@@ -12,7 +12,3 @@ Depends: R (>= 2.15.1)
 Imports: igraph, stats, expm, reshape, ggplot2, Hmisc, fdrtool,
         snowfall
 License: GPL (>= 2)
-Packaged: 2014-11-27 08:36:15 UTC; Carel
-NeedsCompilation: no
-Repository: CRAN
-Date/Publication: 2014-11-27 12:47:10
