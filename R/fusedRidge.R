@@ -76,7 +76,7 @@ symmetrize <- function(X) {
 
 
 fusedRidgeS <- function(SList, TList, ns, lambda1, lambda2,
-                        max.ite = 100L, verbose = TRUE, eps = 1e-6) {
+                        max.ite = 100L, verbose = TRUE, eps = 1e-7) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
   # - SList   > A list of sample correlation matrices.
@@ -120,9 +120,6 @@ fusedRidgeS <- function(SList, TList, ns, lambda1, lambda2,
     }
     if (verbose) cat(": i =", sprintf("%-2d", i), "| diffs = (", diffs, ")\n")
     if (max(diffs) < eps) {
-      if (any(diffs < 0)) {
-        warning("Some Omega differences where negative.")
-      }
       break
     }
   }
