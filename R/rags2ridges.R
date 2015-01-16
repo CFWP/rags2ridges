@@ -1169,7 +1169,7 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
 
 
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S),
-                                norm = "2", rlDist = FALSE, verticle = FALSE, value, main = TRUE,
+                                norm = "2", rlDist = FALSE, vertical = FALSE, value, main = TRUE,
                                 nOutput = FALSE, verbose = TRUE){
   #####################################################################################################
   # - Function that visualizes the spectral condition number against the regularization parameter
@@ -1188,11 +1188,11 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
   # - norm      > indicates the norm under which the condition number is to be estimated
   # - rlDist    > logical indicating if relative distance to set of singular matrices should also be
   #               plotted. Default = FALSE
-  # - verticle  > optional argument for visualization verticle line in graph output, default = FALSE
+  # - vertical  > optional argument for visualization vertical line in graph output, default = FALSE
   #               Can be used to indicate the value of, e.g., the optimal penalty as indicated by some
   #               routine. Can be used to assess if this optimal penalty will lead to a
   #               well-conditioned estimate
-  # - value     > indicates constant on which to base verticle line when verticle = TRUE
+  # - value     > indicates constant on which to base vertical line when vertical = TRUE
   # - main      > logical indicating if plot should contain type of estimator as main title
   # - nOutput   > logical indicating if numeric output should be given (lambdas and condition numbers)
   # - verbose   > logical indicating if intermediate output should be printed on screen
@@ -1268,8 +1268,8 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
   else if (class(rlDist) != "logical"){
     stop("Input (rlDist) is of wrong class")
   }
-  else if (class(verticle) != "logical"){
-    stop("Input (verticle) is of wrong class")
+  else if (class(vertical) != "logical"){
+    stop("Input (vertical) is of wrong class")
   }
   else if (class(main) != "logical"){
     stop("Input (main) is of wrong class")
@@ -1289,7 +1289,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
         Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
         for (k in 1:length(lambdas)){
           Eigshrink <- .eigShrink(Spectral, lambdas[k])
-          condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+          condNR[k] <- as.numeric(max(Eigshrink)/mins(Eigshrink))
         }
       } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
                    (length(unique(diag(target))) == 1)){
@@ -1344,7 +1344,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
       legend("top", col=c("blue4","green3"), lty = 1,
              legend = c("Condition number", "Relative distance"), cex = .8)
     }
-    if (verticle){
+    if (vertical){
       if (missing(value)){
         stop("Need to specify input (value)")
       } else if (class(value) != "numeric"){
@@ -2162,7 +2162,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 
 ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
                         target = default.target(S), plotType = "pcor",
-                        diag = FALSE, verticle = FALSE, value, verbose = TRUE){
+                        diag = FALSE, vertical = FALSE, value, verbose = TRUE){
   ##############################################################################
   # - Function that visualizes the regularization path
   # - Regularization path may be visualized for (partial) correlations,
@@ -2181,14 +2181,14 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   #               default = "pcor"
   # - diag      > logical indicating if the diagonal elements should be retained
   #               for plotting, default = FALSE.
-  # - verticle  > optional argument for visualization verticle line in graph
+  # - vertical  > optional argument for visualization vertical line in graph
   #               output, default = FALSE
   #               Can be used to indicate the value of, e.g., the optimal
   #               penalty as indicated by some
   #               routine. Can be used to assess the whereabouts of this optimal
   #               penalty along the regularization path.
-  # - value     > indicates constant on which to base verticle line when
-  #               verticle = TRUE
+  # - value     > indicates constant on which to base vertical line when
+  #               vertical = TRUE
   # - verbose   > logical indicating if intermediate output should be printed
   #               on screen
   ##############################################################################
@@ -2247,8 +2247,8 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   if (class(diag) != "logical") {
     stop("Input (diag) is of wrong class")
   }
-  else if (class(verticle) != "logical"){
-    stop("Input (verticle) is of wrong class")
+  else if (class(vertical) != "logical"){
+    stop("Input (vertical) is of wrong class")
   }
   else {
     # Set preliminaries
@@ -2355,7 +2355,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
     }
     axis(2, col = "black", lwd = 1)
     axis(1, col = "black", lwd = 1)
-    if (verticle){
+    if (vertical){
       if (missing(value)){
         stop("Need to specify input (value)")
       } else if (class(value) != "numeric"){
@@ -3226,7 +3226,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
       postscript(paste(dir, "Condition_Number_Plot.eps"))
     }
     conditionNumberPlot(covML(Y), lambdaMin = lambdaMin, lambdaMax = lambdaMax,
-                        step = 100000, target = target, verticle = TRUE,
+                        step = 100000, target = target, vertical = TRUE,
                         value = optimal$optLambda, main = FALSE, verbose =FALSE)
     dev.off()
 
@@ -3456,7 +3456,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 #- Corrected small error in 'evaluateSfit' function
 # The 'dir' argument was not properly used previously. Corrected.
 
-
-
-
+## Updates from version 1.4 to 1.5
+#- Arguments "verticle" in various functions have been renamed to "vertical"
 
