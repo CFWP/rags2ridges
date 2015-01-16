@@ -1,7 +1,7 @@
 **rags2ridges**
 ---------------
 
-The R-package **rags2ridges** performs L2-penalized estimation of precison and covariance matrices. It features fast and efficient algorithms and tools for analysis of relevance networks and gaussian graphical models.
+The R-package **rags2ridges** performs L2-penalized estimation of precison and covariance matrices. The package contains *proper* L2-penalized ML estimators for the precision matrix as well as supporting functions to employ these estimators in a graphical modeling setting. It features fast and efficient algorithms and tools for analysis of relevance networks and gaussian graphical models.
 
 ## Installation
 
