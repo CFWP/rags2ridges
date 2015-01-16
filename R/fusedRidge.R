@@ -51,50 +51,48 @@ symmetrize <- function(X) {
 }
 
 
-.fusedUpdate <- function(k0, OmegaList, SList, targetList,
+.fusedUpdate <- function(k0, OList, SList, TList,
                          ns, lambda1, lambda2) {
   ##############################################################################
   # - (Internal) Update the scatter matrices
-  # - k0         > An integer giving the class estimate to be updated.
-  # - OmegaList  > A list of matrices giving the current estimate.
-  # - SList      > A list of sample correlation matrices the
-  #                same size as OmegaList.
-  # - targetList > A list of target matrices the same size as SList
-  # - ns         > A vector giving the sample sizes.
-  # - lambda1    > The ridge penalty (a postive number).
-  # - labmda2    > The fused penalty (a non-negative number).
+  # - k0      > An integer giving the class estimate to be updated.
+  # - OList   > A list of matrices giving the current estimate (Omega).
+  # - SList   > A list of sample correlation matrices the same size as OList.
+  # - TList   > A list of target matrices the same size as SList
+  # - ns      > A vector giving the sample sizes.
+  # - lambda1 > The ridge penalty (a postive number).
+  # - labmda2 > The fused penalty (a non-negative number).
   ##############################################################################
 
   # Modify sample covariance matrices
   b <- lambda2/ns[k0]                                    # Modified penalty2
-  OmT <- mapply(`-`, OmegaList[-k0], targetList[-k0])    # Omega minus Target
+  OmT <- mapply(`-`, OList[-k0], TList[-k0])    # Omega minus Target
   S0 <- SList[[k0]] - b*Reduce(`+`, OmT)                 # Modified S
 
   # Modified lambda
   a <- (lambda1 + 2*(length(SList) - 1)*lambda2)/ns[k0]  # Modified penalty2
-  return(ridgeS(S0, lambda = a, target = targetList[[k0]]))
+  return(ridgeS(S0, lambda = a, target = TList[[k0]]))
 }
 
 
-fusedRidgeS <- function(SList, targetList, ns, lambda1, lambda2,
+fusedRidgeS <- function(SList, TList, ns, lambda1, lambda2,
                         max.ite = 100L, verbose = TRUE, eps = 1e-6) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
-  # - SList      > A list of sample correlation matrices.
-  # - targetList > A list as SList of target matrices with
-  #                the same structure as SList.
-  # - ns         > A vector with the same length as SList giving the sample
-  #                sizes.
-  # - lambda1    > The ridge penalty (a postive number)
-  # - labmda2    > The fused penalty (a non-negative number)
-  # - max.ite    > integer. The maximum number of interations, default is 100.
-  # - verbose    > logical. Should the function print extra info. Defaults to
-  #                TRUE.
-  # - eps        > numeric. A positive convergence criterion.
+  # - SList   > A list of sample correlation matrices.
+  # - TList   > A list as SList of target matrices with the same structure as
+  #             SList.
+  # - ns      > A vector with the same length as SList giving the sample
+  #             sizes.
+  # - lambda1 > The ridge penalty (a postive number)
+  # - labmda2 > The fused penalty (a non-negative number)
+  # - max.ite > integer. The maximum number of interations, default is 100.
+  # - verbose > logical. Should the function print extra info. Defaults to TRUE.
+  # - eps     > numeric. A positive convergence criterion.
   ##############################################################################
 
   K <- length(SList)  # Number of groups
-  OmegaList <- SList  # Initialize estimates
+  OList <- SList  # Initialize estimates
 
   if (verbose) {
     cat("Iteration:  | Diff. in Omega in Frobenious norm for k = 1, ..., K\n")
@@ -102,21 +100,23 @@ fusedRidgeS <- function(SList, targetList, ns, lambda1, lambda2,
   diffs <- rep(NA, K)
   for (i in seq_len(max.ite)) {
     for (k in seq_len(K)) {
-      tmpOmega <- .fusedUpdate(k0 = k, OmegaList = OmegaList, SList = SList,
-                               targetList = targetList, ns = ns,
+      tmpOmega <- .fusedUpdate(k0 = k, OList = OList, SList = SList,
+                               TList = TList, ns = ns,
                                lambda1 = lambda1, lambda2 = lambda2)
 
       if (!isSymmetric(tmpOmega)) {
         # Unfortunalty we need to do this check, the current isSymmetric is too
         # strict in the floating point precision.
+        # (tol should be ~ sqrt(.Machine$double.eps) and not
+        # 100*.Machine$double.eps)
         if (verbose) cat("S")
         tmpOmega <- symmetrize(tmpOmega)
       } else {
         if (verbose) cat(" ")
       }
 
-      diffs[k] <- .FrobeniusLoss(tmpOmega, OmegaList[[k]])/sum(tmpOmega^2)
-      OmegaList[[k]] <- tmpOmega
+      diffs[k] <- .FrobeniusLoss(tmpOmega, OList[[k]])/sum(tmpOmega^2)
+      OList[[k]] <- tmpOmega
     }
     if (verbose) cat(": i =", sprintf("%-2d", i), "| diffs = (", diffs, ")\n")
     if (max(diffs) < eps) {
@@ -129,7 +129,7 @@ fusedRidgeS <- function(SList, targetList, ns, lambda1, lambda2,
   if (i == max.ite) {
     warning("Maximum iterations (", max.ite, ") hit")
   }
-  return(OmegaList)
+  return(OList)
 }
 
 
