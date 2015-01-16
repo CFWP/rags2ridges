@@ -27,7 +27,7 @@ createS <- function(n, p) {
 }
 
 
-symmetrize <- function(X) {
+.symmetrize <- function(X) {
   ##############################################################################
   # - Ensure a matrix is symmetric by the average
   # - X > A square matrix
@@ -109,16 +109,18 @@ fusedRidgeS <- function(SList, TList, ns, lambda1, lambda2,
         # strict in the floating point precision.
         # (tol should be ~ sqrt(.Machine$double.eps) and not
         # 100*.Machine$double.eps)
-        if (verbose) cat("S")
-        tmpOmega <- symmetrize(tmpOmega)
+        if (verbose) {cat("S")}
+        tmpOmega <- .symmetrize(tmpOmega)
       } else {
-        if (verbose) cat(" ")
+        if (verbose) {cat(" ")}
       }
 
       diffs[k] <- .FrobeniusLoss(tmpOmega, OList[[k]])/sum(tmpOmega^2)
       OList[[k]] <- tmpOmega
     }
-    if (verbose) cat(": i =", sprintf("%-2d", i), "| diffs = (", diffs, ")\n")
+    if (verbose) {
+      cat(": i =", sprintf("%-2d", i), "| diffs = (", diffs, ")\n")
+    }
     if (max(diffs) < eps) {
       break
     }
