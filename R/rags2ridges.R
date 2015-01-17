@@ -83,7 +83,14 @@
   return(LL)
 }
 
+.Frobenius <- function(X) {
+  ##############################################################################
+  # - Function computing Frobenius norm - the sum of the squarred entries.
+  # - X > A numeric
+  ##############################################################################
 
+  return(sum(X^2))
+}
 
 .FrobeniusLoss <- function(O, P){
   ##############################################################################
@@ -92,10 +99,19 @@
   # - P > True (population) precision matrix
   ##############################################################################
 
-  return(sum(abs(O - P)^2))
+  return(.Frobenius(O - P))
 }
 
+.RelativeFrobeniusLoss <- function(O, P) {
+  ##############################################################################
+  # - Function computing the frobenius loss relative to the (frobenious) norm
+  #   of O.
+  # - O > Estimated (possibly regularized) precision matrix
+  # - P > True (population) precision matrix
+  ##############################################################################
 
+  return(.FrobeniusLoss(O, P)/.Frobenius(O))
+}
 
 .QuadraticLoss <- function(O, C){
   ##############################################################################
@@ -104,7 +120,7 @@
   # - C > True (population) covariance matrix
   ##############################################################################
 
-  return((sum(abs((O %*% C - diag(ncol(O))))^2)))
+  return((sum(((O %*% C - diag(ncol(O))))^2)))
 }
 
 

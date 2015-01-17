@@ -63,17 +63,17 @@ createS <- function(n, p) {
   # - labmda2 > The fused penalty (a non-negative number).
   ##############################################################################
 
-  b <- lambda2/ns[k0]                                       # Modified penalty2
-  OmT <- mapply(`-`, PList[-k0], TList[-k0])                # Omega minus Target
-  S0 <- SList[[k0]] - b*Reduce(`+`, OmT)                    # Modified S
-  a <- 0.5*(lambda1 + 2*(length(SList) - 1)*lambda2)/ns[k0] # Modified penalty1
+  b <- lambda2/ns[k0]                                          # Modded penalty2
+  OmT <- mapply(`-`, PList[-k0], TList[-k0], SIMPLIFY = FALSE) # Omega - Target
+  S0 <- SList[[k0]] - b*Reduce(`+`, OmT)                       # Modded S
+  a <- 0.5*(lambda1 + 2*(length(SList) - 1)*lambda2)/ns[k0]    # Modded penalty1
   return(ridgeS(S0, lambda = a, target = TList[[k0]]))
 }
 
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
                         lambda1, lambda2,
-                        max.ite = 100L, verbose = TRUE, eps = 1e-7) {
+                        max.ite = 100L, verbose = TRUE, eps = 1e-5) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
   # - SList   > A list of sample correlation matrices.
@@ -112,7 +112,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
         if (verbose) {cat(" ")}
       }
 
-      diffs[k] <- .FrobeniusLoss(tmpOmega, PList[[k]])/sum(tmpOmega^2)
+      diffs[k] <- .RelativeFrobeniusLoss(tmpOmega, PList[[k]])
       PList[[k]] <- tmpOmega
     }
     if (verbose) {
