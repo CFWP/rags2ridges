@@ -27,15 +27,6 @@ createS <- function(n, p) {
 }
 
 
-.symmetrize <- function(X) {
-  ##############################################################################
-  # - Ensure a matrix is symmetric by the average
-  # - X > A square matrix
-  ##############################################################################
-
-  return((X + t(X))/2)
-}
-
 
 .FLL <- function(SList, PList, n){
   ##############################################################################
@@ -107,7 +98,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
         # (tol should be ~ sqrt(.Machine$double.eps) and not
         # 100*.Machine$double.eps)
         if (verbose) {cat("S")}
-        tmpOmega <- .symmetrize(tmpOmega)
+        tmpOmega <- symm(tmpOmega)
       } else {
         if (verbose) {cat(" ")}
       }

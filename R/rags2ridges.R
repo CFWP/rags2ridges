@@ -2,15 +2,15 @@
 ################################################################################
 ################################################################################
 ##
-## Name:  	rags2ridges
-## Authors:		Carel F.W. Peeters & Wessel N. van Wieringen
+## Name: rags2ridges
+## Authors: Carel F.W. Peeters & Wessel N. van Wieringen
 ##			Molecular Biostatistics Unit
 ##			Dept. of Epidemiology & Biostatistics
 ##			VU University medical center
 ##			Amsterdam, the Netherlands
-## Email:		cf.peeters@vumc.nl
+## Email:	cf.peeters@vumc.nl
 ##
-## Version:		1.4
+## Version: 1.4
 ## Last Update:	25/11/2014
 ## Description:	Ridge estimation, with supporting functions, for
 ##   high-dimensional precision matrices
@@ -83,6 +83,8 @@
   return(LL)
 }
 
+
+
 .Frobenius <- function(X) {
   ##############################################################################
   # - Function computing Frobenius norm - the sum of the squarred entries.
@@ -91,6 +93,8 @@
 
   return(sum(X^2))
 }
+
+
 
 .FrobeniusLoss <- function(O, P){
   ##############################################################################
@@ -101,6 +105,8 @@
 
   return(.Frobenius(O - P))
 }
+
+
 
 .RelativeFrobeniusLoss <- function(O, P) {
   ##############################################################################
