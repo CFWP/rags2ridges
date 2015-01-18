@@ -456,7 +456,7 @@ covML <- function(Y){
   }
   else {
     Ys  <- scale(Y, center = TRUE, scale = FALSE)
-    Sml <- (t(Ys) %*% Ys)/nrow(Ys)
+    Sml <- crossprod(YS)/nrow(Ys)  # (t(Ys) %*% Ys)/nrow(Ys)
     return(Sml)
   }
 }
