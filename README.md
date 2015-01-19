@@ -9,7 +9,7 @@ The released and tested version of **rags2ridges** is available at
 [CRAN](http://cran.r-project.org/package=rags2ridges) (Comprehensive R Archive Network). It can be easily be installed from within R by running
 
 ```R
-install.packages("GMCM")
+install.packages("rags2ridges")
 ```
 
 If you wish to install the latest version of **rags2ridges** directly from the master branch here at GitHub, run
