@@ -28,17 +28,17 @@ createS <- function(n, p) {
 
 
 
-.FLL <- function(SList, PList, n){
+.FLL <- function(SList, PList, ns){
   ##############################################################################
   # - Function that computes the value of the (negative) combined log-likelihood
   # - Slist > A list sample covariance matrices for each class
   # - Plist > A list of the same length as (Slist) of precision matrices
   #   (possibly regularized inverse of covariance or correlation matrices)
-  # - n > A vector of sample sizes of the same length as Slist.
+  # - ns > A vector of sample sizes of the same length as Slist.
   ##############################################################################
 
   LLs <- mapply(.LL, SList, PList)
-  return(sum(n*LLs))
+  return(sum(ns*LLs))
 }
 
 
@@ -79,6 +79,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   # - eps     > numeric. A positive convergence criterion.
   ##############################################################################
 
+  stopifnot(length(SList) == length(TList))
   K <- length(SList)  # Number of groups
   PList <- SList      # Initialize estimates
 
@@ -122,3 +123,47 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
+
+optFusedPenalty.LOOCV <- function(YList,
+                                  lambda1Min, lambda1Max, step1 = 100,
+                                  lambda2Min = lambda1Min,
+                                  lambda2Max = lambda1Max, step2 = step1,
+                                  TList, verbose = TRUE) {
+  if (missing(TList)) {  # If TList is not provided
+    TList <- lapply(YList, function(Y) default.target(covML(Y)))
+  }
+
+  LLs     <- numeric()
+  lambda1s <- exp(seq(log(lambda1Min), log(lambda1Max), length.out = step1))
+  lambda2s <- exp(seq(log(lambda2Min), log(lambda2Max), length.out = step2))
+
+  # Calculate CV scores
+  if (verbose) {
+    cat("Calculating cross-validated negative log-likelihoods...\n")
+  }
+  slh <- matrix(NA, step1, step2)
+  total.n <- sum(sapply(YList, nrow))
+  for (l1 in seq_along(lambda1s)) {
+    for (l2 in seq_along(lambda2s)) {
+      for (k in seq_along(YList)) {
+        for (i in seq_len(nrow(YList[[k]]))) {
+
+          SList <- lapply(YList, covML)
+          SList[[k]] <- covML(YList[[k]][-i, , drop = FALSE])
+
+          PList <- fusedRidgeS(SList, ns, TList,
+                               lambda1 = lambda1s[l1],
+                               lambda2 = lambda2s[l2], verbose = FALSE)
+
+          SList[[k]] <- crossprod(YList[[k]][i, , drop = FALSE])
+          slh[l1, l2] <- .FLL(SList, PList, ns)
+          if (verbose){
+            cat(sprintf("lambda1 = %.3f, lambda2 = %.3f, i = %-6d\n",
+                        lambda1s[l1], lambda2s[l2], i, total.n))
+          }
+        }
+      }
+    }
+  }
+  return(list(lambda1s, lambda2s, slh))
+}
