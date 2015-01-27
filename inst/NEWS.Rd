@@ -7,6 +7,9 @@
     \item Added this \code{NEWS} file!
     \item Arguments \code{verticle} in various functions have been renamed to
       \code{vertical}.
+    \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadilo} with
+      core functions written in \code{C++} and the package
+      should be notably faster in many cases.
   }
 }
 
