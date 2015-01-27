@@ -6,17 +6,50 @@
 
 using namespace Rcpp;
 
-// RcppArmadilloRidgeS
-arma::mat RcppArmadilloRidgeS(arma::mat& S, arma::mat& target, double lambda);
-RcppExport SEXP rags2ridges_RcppArmadilloRidgeS(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+// armaRidgeSAnyTarget
+arma::mat armaRidgeSAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeSAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::mat& >::type S(SSEXP );
-        Rcpp::traits::input_parameter< arma::mat& >::type target(targetSEXP );
-        Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP );
-        arma::mat __result = RcppArmadilloRidgeS(S, target, lambda);
+        Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP );
+        Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
+        arma::mat __result = armaRidgeSAnyTarget(S, target, lambda);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// armaRidgeSZeroTarget
+arma::mat armaRidgeSZeroTarget(const arma::mat& S, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeSZeroTarget(SEXP SSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
+        Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
+        arma::mat __result = armaRidgeSZeroTarget(S, lambda);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// armaRidgeSEqualDiagTarget
+arma::mat armaRidgeSEqualDiagTarget(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeSEqualDiagTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP );
+        Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
+        arma::mat __result = armaRidgeSEqualDiagTarget(S, target, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

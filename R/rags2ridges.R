@@ -119,6 +119,8 @@
   return(.FrobeniusLoss(O, P)/.Frobenius(O))
 }
 
+
+
 .QuadraticLoss <- function(O, C){
   ##############################################################################
   # - Function computing Quadratic loss
@@ -368,9 +370,6 @@
   return(log(det(S[id == 0, id == 0])) +
            log(det(S[id == 1, id == 1])) - log(det(S)))
 }
-
-
-
 
 ##------------------------------------------------------------------------------
 ##
@@ -815,6 +814,93 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 
 
+ridgeSArma <- function(S, lambda, type = "Alt", target = default.target(S)){
+  ##############################################################################
+  # - Function that calculates ridge estimators of a precision matrix
+  # - which use the RcppArmadillo implementation.
+  # - S       > sample covariance matrix
+  # - lambda  > penalty parameter (choose in accordance with type of Ridge
+  #             estimator)
+  # - type    > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+  # - Alt     > van Wieringen-Peeters alternative ridge estimator of a precision
+  #             matrix
+  # - ArchI   > Archetypal I ridge estimator of a precision matrix
+  # - ArchII  > Archetypal II ridge estimator of a precision matrix
+  # - target  > target (precision terms) for Type I estimators,
+  #             default = default.target(S)
+  #
+  # - NOTES:
+  # - When type = "Alt" and target is p.d., one obtains the
+  #   van Wieringen-Peeters type I estimator
+  # - When type = "Alt" and target is null-matrix, one obtains the
+  #   van Wieringen-Peeters type II est.
+  # - When target is not the null-matrix it is expected to be p.d. for the
+  #   vWP type I estimator
+  # - The target is always expected to be p.d. in case of the archetypal I
+  #   estimator
+  # - When type = "Alt" and target is null matrix or of form c * diag(p), a
+  #   rotation equivariant estimator ensues. In these cases the expensive
+  #   matrix square root can be circumvented
+  ##############################################################################
+
+  if (!isSymmetric(S)) {
+    stop("S should be a symmetric matrix")
+  }
+  else if (lambda <= 0) {
+    stop("lambda should be positive")
+  }
+  else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
+    stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
+  }
+  else{
+    # Calculate Ridge estimator
+    # Alternative estimator
+    if (type == "Alt"){
+      if (!isSymmetric(target)) {
+        stop("Shrinkage target should be symmetric")
+      } else if (dim(target)[1] != dim(S)[1]) {
+        stop("S and target should be of the same dimension")
+      } else if (!all(target == 0) &
+                   any(eigen(target, symmetric = TRUE,
+                             only.values = TRUE)$values <= 0)){
+        stop("When target is not a null-matrix it should be p.d. for this ",
+             "type of ridge estimator")
+      } else if (all(target == 0)){
+        P_Alt <- armaRidgeSZeroTarget(S, lambda)
+      } else if (all(target[lower.tri(target)] == 0) &&
+                   length(unique(diag(target))) == 1) {
+        P_Alt <- armaRidgeSEqualDiagTarget(S, target, lambda)
+      } else {
+        P_Alt <- armaRidgeSAnyTarget(S, target, lambda)
+      }
+      dimnames(P_Alt) <- dimnames(S)
+      return(P_Alt)
+    }
+
+    # Archetypal I
+    if (type == "ArchI"){
+      if (lambda > 1){
+        stop("lambda should be in (0,1] for this type of Ridge estimator")
+      } else if (!isSymmetric(target)){
+        stop("Shrinkage target should be symmetric")
+      } else if (dim(target)[1] != dim(S)[1]){
+        stop("S and target should be of the same dimension")
+      } else if (any(eigen(target, symmetric = TRUE,
+                           only.values = TRUE)$values <= 0)){
+        stop("Target should always be p.d. for this type of ridge estimator")
+      } else {
+        P_ArchI <- solve((1-lambda) * S + lambda * solve(target))
+        return(P_ArchI)
+      }
+    }
+
+    # Archetypal II
+    if (type == "ArchII"){
+      P_ArchII <- solve(S + lambda * diag(nrow(S)))
+      return(P_ArchII)
+    }
+  }
+}
 
 ##------------------------------------------------------------------------------
 ##
