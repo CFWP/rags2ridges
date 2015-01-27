@@ -11,4 +11,5 @@ Description: Package contains proper L2-penalized ML estimators for the
 Depends: R (>= 2.15.1)
 Imports: igraph, stats, expm, reshape, ggplot2, Hmisc, fdrtool, snowfall
 LinkingTo: Rcpp, RcppArmadillo
+KeepSource: yes
 License: GPL (>= 2)
