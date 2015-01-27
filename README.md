@@ -26,4 +26,21 @@ When installed, run `news(package = "rags2ridges")` to view the latest notable c
 
 For previous versions of **rags2ridges**, visit the old [releases at GitHub](https://github.com/AEBilgrau/rags2ridges/releases) or the [archive at CRAN.](http://cran.r-project.org/src/contrib/Archive/rags2ridges/)
 
+
+## References
+
+Relevant publications to **rags2ridges** include:
+
+ * Peeters, C.F.W. and van Wieringen, W.N. (2014) "rags2ridges: Ridge Estimation of
+   Precision Matrices from High-Dimensional Data. R package"", version 1.5.
+ * Wessel N. van Wieringen & Carel F.W. Peeters (2014)
+   "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional
+   Data", arXiv:1403.0904 [stat.ME].
+ * Carel F.W. Peeters & Wessel N. van Wieringen (in preparation)
+   "The Spectral Condition Number Plot for Regularization Parameter
+   Selection"
+ * Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN 
+   (in preperation) "Fused Ridge Estimation of Multiple Inverse Covariance 
+   Matrices from High-Dimensional Data Classes"
+    
 ---
