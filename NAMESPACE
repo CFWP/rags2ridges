@@ -15,3 +15,8 @@ importFrom("ggplot2", ggplot, aes, geom_tile, scale_fill_gradient2, theme, eleme
 import("reshape")
 
 exportPattern("^[[:alpha:]]+")
+
+# To make Rcpp work
+importFrom(Rcpp,evalCpp) # Import anything from Rcpp
+useDynLib(rags2ridges)
+
