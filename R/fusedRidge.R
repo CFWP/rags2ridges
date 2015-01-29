@@ -2,9 +2,10 @@
 
 createS <- function(n, p) {
   ##############################################################################
-  # - Simulate some random symmetric square matrices from uncorrolated noise
+  # - Simulate some random symmetric square matrices from uncorrelated noise
   # - n > A vector of sample sizes
   # - p > An integer giving the dimension
+  # - Returns a list of matrices if n has length greater than 1
   ##############################################################################
 
   K <- length(n)
@@ -42,38 +43,49 @@ createS <- function(n, p) {
 }
 
 
-.fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, lambda2) {
+.fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
   ##############################################################################
   # - (Internal) Update the scatter matrices
   # - k0      > An integer giving the class estimate to be updated.
-  # - PList   > A list of matrices giving the current precision estimates.
-  # - SList   > A list of sample correlation matrices the same size as PList.
-  # - TList   > A list of target matrices the same size as SList
-  # - ns      > A vector giving the sample sizes.
+  # - PList   > A list of length K of matrices giving the current precision
+  #             estimates.
+  # - SList   > A list of length K of sample correlation matrices the same size
+  #             as those of PList.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList
+  # - ns      > A vector of length K giving the sample sizes.
   # - lambda1 > The ridge penalty (a postive number).
-  # - labmda2 > The fused penalty (a non-negative number).
+  # - LambdaP > The K by K symmetric adjacency matrix fused penalty graph
+  #             with non-negative entries where LambdaP[k1, k2] determine the
+  #             retainment of similarities between estimates in classes
+  #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
-  b <- lambda2/ns[k0]                                          # Modded penalty2
+  diag(LambdaP) <- 0  # Make sure there's zeros in the diagonal
+  a <- (sum(LambdaP[k0, ]) + lambda1)/ns[k0]
+
   OmT <- mapply(`-`, PList[-k0], TList[-k0], SIMPLIFY = FALSE) # Omega - Target
-  S0 <- SList[[k0]] - b*Reduce(`+`, OmT)                       # Modded S
-  a <- 0.5*(lambda1 + 2*(length(SList) - 1)*lambda2)/ns[k0]    # Modded penalty1
-  return(ridgeS(S0, lambda = a, target = TList[[k0]]))
+  OmT <- mapply(`*`, LambdaP[k0, -k0]/ns[k0], OmT, SIMPLIFY = FALSE)
+  S0 <- SList[[k0]] - Reduce(`+`, OmT)
+  return(ridgeSArma(S0, lambda = a, target = TList[[k0]]))
 }
 
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
-                        lambda1, lambda2,
+                        lambda1, LambdaP,
                         max.ite = 100L, verbose = TRUE, eps = 1e-5) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
-  # - SList   > A list of sample correlation matrices.
-  # - TList   > A list as SList of target matrices with the same structure as
-  #             SList. Default is given by default.target.
-  # - ns      > A vector with the same length as SList giving the sample
-  #             sizes.
+  # - SList   > A list of length K of sample correlation matrices the same size
+  #             as those of PList.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList. Default is given by default.target.
+  # - ns      > A vector of length K giving the sample sizes.
   # - lambda1 > The ridge penalty (a postive number)
-  # - lambda2 > The fused penalty (a non-negative number)
+  # - LambdaP > The K by K symmetric adjacency matrix fused penalty graph
+  #             with non-negative entries where LambdaP[k1, k2] determine the
+  #             retainment of similarities between estimates in classes
+  #             corresponding to SList[k1] and SList[k1].
   # - max.ite > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   # - eps     > numeric. A positive convergence criterion.
@@ -90,19 +102,8 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   for (i in seq_len(max.ite)) {
     for (k in seq_len(K)) {
       tmpOmega <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
-                               TList = TList, ns = ns,
-                               lambda1 = lambda1, lambda2 = lambda2)
-
-      if (!isSymmetric(tmpOmega)) {
-        # Unfortunalty we need to do this check, the current isSymmetric is too
-        # strict in the floating point precision.
-        # (tol should be ~ sqrt(.Machine$double.eps) and not
-        # 100*.Machine$double.eps)
-        if (verbose) {cat("S")}
-        tmpOmega <- symm(tmpOmega)
-      } else {
-        if (verbose) {cat(" ")}
-      }
+                                TList = TList, ns = ns,
+                                lambda1 = lambda1, LambdaP = LambdaP)
 
       diffs[k] <- .RelativeFrobeniusLoss(tmpOmega, PList[[k]])
       PList[[k]] <- tmpOmega
@@ -123,11 +124,12 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-
 optFusedPenalty.LOOCV <- function(YList,
-                                  lambda1Min, lambda1Max, step1 = 100,
+                                  lambda1Min, lambda1Max,
+                                  step1 = 100,
                                   lambda2Min = lambda1Min,
-                                  lambda2Max = lambda1Max, step2 = step1,
+                                  lambda2Max = lambda1Max,
+                                  step2 = step1,
                                   TList, verbose = TRUE) {
   if (missing(TList)) {  # If TList is not provided
     TList <- lapply(YList, function(Y) default.target(covML(Y)))
