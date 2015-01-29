@@ -509,17 +509,16 @@ evaluateS <- function(S, verbose = TRUE){
     Sproperties$condNumber <- abs(max(evs) / min(evs))
 
     if (verbose){
-      cat("Properties of input matrix:", "\n")
-      cat("----------------------------------------", "\n")
-      cat(paste("       symmetric : ", Sproperties$symm, sep=""), "\n")
-      cat(paste("eigenvalues real : ", Sproperties$realEigen, sep=""), "\n")
-      cat(paste(" eigenvalues > 0 : ", Sproperties$posEigen, sep=""), "\n")
-      cat(paste("  diag. dominant : ", Sproperties$diagDom, sep=""), "\n")
-      cat("", "\n")
-      cat(paste("           trace : ", round(Sproperties$trace, 5), sep=""),"\n")
-      cat(paste("     determinant : ", round(Sproperties$det, 5), sep=""),"\n")
-      cat(paste(" l2 cond. number : ", round(Sproperties$condNumber, 5), sep=""),"\n")
-      cat("----------------------------------------", "\n")
+      cat("Properties of input matrix:\n")
+      cat("----------------------------------------\n")
+      cat("       symmetric : ", Sproperties$symm, "\n", sep="")
+      cat("eigenvalues real : ", Sproperties$realEigen, "\n", sep="")
+      cat(" eigenvalues > 0 : ", Sproperties$posEigen, "\n", sep="")
+      cat("  diag. dominant : ", Sproperties$diagDom, "\n\n", sep="")
+      cat("           trace : ", round(Sproperties$trace, 5), "\n", sep="")
+      cat("     determinant : ", round(Sproperties$det, 5), "\n", sep="")
+      cat(" l2 cond. number : ", round(Sproperties$condNumber, 5), "\n", sep="")
+      cat("----------------------------------------\n")
     }
 
     # Return
@@ -1257,44 +1256,63 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
   }
   else {
     # determine optimal value of ridge penalty parameter
-    optLambda <- optim(lambdaInit, .cvl, method = "Brent", lower = lambdaMin, upper = lambdaMax, Y = Y, target = target, type = type)$par
+    optLambda <- optim(lambdaInit, .cvl, method = "Brent", lower = lambdaMin,
+                       upper = lambdaMax, Y = Y, target = target,
+                       type = type)$par
 
     # Return
-    return(list(optLambda = optLambda, optPrec = ridgeS(covML(Y), optLambda, type = type, target = target)))
+    return(list(optLambda = optLambda,
+                optPrec = ridgeS(covML(Y), optLambda,
+                                 type = type, target = target)))
   }
 }
 
 
 
-conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S),
-                                norm = "2", rlDist = FALSE, vertical = FALSE, value, main = TRUE,
+conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
+                                target = default.target(S),
+                                norm = "2", rlDist = FALSE, vertical = FALSE,
+                                value, main = TRUE,
                                 nOutput = FALSE, verbose = TRUE){
-  #####################################################################################################
-  # - Function that visualizes the spectral condition number against the regularization parameter
-  # - Can be used to heuristically determine the (minimal) value of the penalty parameter
-  # - The ridges are rotation equivariant, meaning they work by shrinking the eigenvalues
+  ##############################################################################
+  # - Function that visualizes the spectral condition number against the
+  # - regularization parameter
+  # - Can be used to heuristically determine the (minimal) value of the penalty
+  # - parameter
+  # - The ridges are rotation equivariant, meaning they work by shrinking the
+  # - eigenvalues
   # - Maximum shrinkage implies that all eigenvalues will be equal
-  # - Ratio of maximum and minimum eigenvalue of P can then function as a heuristic
+  # - Ratio of maximum and minimum eigenvalue of P can then function as a
+  # - heuristic
   # - It's point of stabilization can give an acceptable value for the penalty
   # - The ratio boils down to the (spectral) condition number of a matrix
   # - S         > sample covariance/correlation matrix
   # - lambdaMin > minimum value penalty parameter (dependent on 'type')
   # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid [lambdaMin, lambdaMax]
+  # - step      > determines the coarseness in searching the grid
+  #               [lambdaMin, lambdaMax]
   # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators, default = default.target(S)
-  # - norm      > indicates the norm under which the condition number is to be estimated
-  # - rlDist    > logical indicating if relative distance to set of singular matrices should also be
-  #               plotted. Default = FALSE
-  # - vertical  > optional argument for visualization vertical line in graph output, default = FALSE
-  #               Can be used to indicate the value of, e.g., the optimal penalty as indicated by some
-  #               routine. Can be used to assess if this optimal penalty will lead to a
-  #               well-conditioned estimate
-  # - value     > indicates constant on which to base vertical line when vertical = TRUE
-  # - main      > logical indicating if plot should contain type of estimator as main title
-  # - nOutput   > logical indicating if numeric output should be given (lambdas and condition numbers)
-  # - verbose   > logical indicating if intermediate output should be printed on screen
-  #####################################################################################################
+  # - target    > target (precision terms) for Type I estimators,
+  #               default = default.target(S)
+  # - norm      > indicates the norm under which the condition number is to be
+  #               estimated
+  # - rlDist    > logical indicating if relative distance to set of singular
+  #               matrices should also be plotted. Default = FALSE
+  # - vertical  > optional argument for visualization vertical line in graph
+  #               output, default = FALSE
+  #               Can be used to indicate the value of, e.g., the optimal
+  #               penalty as indicated by some routine. Can be used to assess
+  #               if this optimal penalty will lead to a well-conditioned
+  #               estimate
+  # - value     > indicates constant on which to base vertical line when
+  #               vertical = TRUE
+  # - main      > logical indicating if plot should contain type of estimator
+  #               as main title
+  # - nOutput   > logical indicating if numeric output should be given (lambdas
+  #               and condition numbers)
+  # - verbose   > logical indicating if intermediate output should be printed
+  #               on screen
+  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -1402,7 +1420,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
           P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
           Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
           condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-          if (verbose){cat(paste("lambda = ", lambdas[k], " done", sep = ""), "\n")}
+          if (verbose){cat("lambda = ", lambdas[k], " done\n", sep = "")}
         }
       }
     }
@@ -1413,7 +1431,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt", tar
       for (k in 1:length(lambdas)){
         P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
         condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        if (verbose){cat(paste("lambda = ", lambdas[k], " done\n", sep = ""))}
+        if (verbose){cat("lambda = ", lambdas[k], " done\n", sep = "")}
       }
     }
 
@@ -1619,7 +1637,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   # - If the probability of a p-value being below 'lowCiThres' is smaller than
   #   0.001 (meaning: the test is unlikely to become significant), the
   #   permutation analysis is terminated and a p-value of unity (1) is reported
-  #####################################################################################################
+  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -1747,13 +1765,13 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
                "resampling terminated prematurely due to unlikely significance",
                "none")
       cat("\n")
-      cat(paste("Likelihood ratio test for block independence", sep = ""), "\n")
-      cat("----------------------------------------", "\n")
-      cat(paste("-> number of permutations : ", nPerm, sep = ""), "\n")
-      cat(paste("-> test statistic         : ", round(llObs, digits = 3), sep = ""), "\n")
-      cat(paste("-> p-value                : ", round(pVal, digits = 3), sep = ""), "\n")
-      cat(paste("-> remark                 : ", remark, sep = ""), "\n")
-      cat("----------------------------------------", "\n")
+      cat("Likelihood ratio test for block independence\n")
+      cat("----------------------------------------\n")
+      cat("-> number of permutations : ", nPerm, "\n", sep="")
+      cat("-> test statistic         : ", round(llObs, digits = 3), "\n",sep="")
+      cat("-> p-value                : ", round(pVal, digits = 3), "\n", sep="")
+      cat("-> remark                 : ", remark, "\n", sep="")
+      cat("----------------------------------------\n")
       cat("\n")
     }
 
@@ -2050,13 +2068,15 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
   }
   else {
     # Evaluate KL divergence
-    KLd <- (sum(diag(solve(Stest) %*% Sref)) + t(Mtest - Mref) %*% solve(Stest) %*% (Mtest - Mref)
-            - nrow(Sref) - log(det(Sref)) + log(det(Stest)))/2
+    KLd <- (sum(diag(solve(Stest) %*% Sref)) +
+              t(Mtest - Mref) %*% solve(Stest) %*% (Mtest - Mref) -
+              nrow(Sref) - log(det(Sref)) + log(det(Stest)))/2
 
     # Evaluate (original) symmetric version KL divergence
     if (symmetric){
-      KLd <- KLd + (sum(diag(solve(Sref) %*% Stest)) + t(Mref - Mtest) %*% solve(Sref) %*% (Mref - Mtest)
-                    - nrow(Sref) - log(det(Stest)) + log(det(Sref)))/2
+      KLd <- KLd + (sum(diag(solve(Sref) %*% Stest)) +
+                      t(Mref - Mtest) %*% solve(Sref) %*% (Mref - Mtest) -
+                      nrow(Sref) - log(det(Stest)) + log(det(Sref)))/2
     }
 
     # Return
@@ -2201,7 +2221,8 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 
 
     print("Visualizing partial correlation fit")
-    # If sample covariance matrix non-singular, also evaluate partial correlation fit
+    # If the sample covariance matrix non-singular,
+    # also evaluate partial correlation fit
     if (evaluateS(S, verbose = FALSE)$posEigen){
 
       # plot 5: QQ-plot of partial correlations
@@ -2847,7 +2868,8 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
       unlist(lapply(1:nrow(S),
                     function(j, S){
                       log(det(S[-j,-j])) -
-                        log(det(S[-j,-j]-S[-j,j,drop=FALSE]%*%S[j,-j,drop=FALSE]/S[j,j]))
+                        log(det(S[-j,-j] - S[-j,j,drop=FALSE] %*%
+                                  S[j,-j,drop=FALSE]/S[j,j]))
                     }, S = S))
     names(MI) <- colnames(sparseP)
 
@@ -3092,11 +3114,11 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
         colnames(statsTable) <- c("path", "length", "contribution")
 
         # Print results on screen
-        cat(paste("Covariance between node pair : ", round(covNo1No2, 5), sep=""), "\n")
-        cat("----------------------------------------", "\n")
+        cat("Covariance between node pair :", round(covNo1No2, 5), "\n")
+        cat("----------------------------------------\n")
         print(statsTable, quote=FALSE)
-        cat("----------------------------------------", "\n")
-        cat(paste("Sum path contributions       : ", round(covNo1No2expl, 5), sep=""), "\n")
+        cat("----------------------------------------\n")
+        cat("Sum path contributions       :", round(covNo1No2expl, 5), "\n")
 
       }
 
