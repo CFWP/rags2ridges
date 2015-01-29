@@ -16,7 +16,7 @@ arma::mat armaEigShrink(const arma::vec eigvals,
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
 }
 
-
+// Case of general invariant target
 // [[Rcpp::export]]
 arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const arma::mat & target,
@@ -34,48 +34,50 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
 }
 
+// Case of rotational invariant target
 // [[Rcpp::export]]
-arma::mat armaRidgeSZeroTarget(const arma::mat & S,
-                               const double lambda) {
+arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
+                                            const double alpha,
+                                            const double lambda) {
   // S is the sample covariance matrix
+  // alpha is a scaling of the identity matrix
   // lambda is the ridge penalty
-  // Here, the target is the zero matrix (and hence not explicitly needed)
   arma::vec eigvals;
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, S, "dc");  // Eigen decomposition
 
-  eigvals = armaEigShrink(eigvals, lambda, 0.0f);
+  eigvals = armaEigShrink(eigvals, lambda, alpha);
 
   return inv_sympd(eigvecs*diagmat(eigvals)*eigvecs.t());
 }
 
+
+
+// Choose method
 // [[Rcpp::export]]
-arma::mat armaRidgeSEqualDiagTarget(const arma::mat & S,
-                                    const arma::mat & target,
-                                    const double lambda) {
-  // S is the sample covariance matrix
-  // target is the zero target matrix
-  // lambda is the ridge penalty
-  arma::vec var_phi = unique(target.diag());
-  if (var_phi.n_elem != 1) {
-    throw std::runtime_error("Number of unique elements in diagnoal is not 1");
+arma::mat armaRidgeS(const arma::mat & S,
+                     const arma::mat & target,
+                     const double lambda) {
+  int n = S.n_rows;
+  double alpha = target(0, 0);
+  arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
+  if (arma::all(arma::all(target == alphaI))) {
+    return armaRidgeSRotationInvariantTarget(S, alpha, lambda);
+  } else {
+    return armaRidgeSAnyTarget(S, target, lambda);
   }
-
-  arma::vec eigvals;
-  arma::mat eigvecs;
-  arma::eig_sym(eigvals, eigvecs, S, "dc");  // Eigen decomposition
-
-  eigvals = armaEigShrink(eigvals, lambda, var_phi(0));
-
-  return inv_sympd(eigvecs*diagmat(eigvals)*eigvecs.t());
 }
+
+
+
+
 
 
 /*** R
 # Testing
 library("rags2ridges")
 library("microbenchmark")
-S  <- createS(n = 10, p = 50)
+S  <- createS(n = 10, p = 10)
 target <- default.target(S, type = "DEPV")
 lambda <- 2
 
@@ -87,9 +89,10 @@ ridgeS1 <- function(S, target, lambda) {
 }
 
 microbenchmark(A1 <- ridgeS1(S, target, lambda),
-               B1 <- armaRidgeSAnyTarget(S, target, lambda))
+               B1 <- armaRidgeSAnyTarget(S, target, lambda),
+               C1 <- armaRidgeS(S, target, lambda))
 stopifnot(all.equal(unname(A1), B1))
-
+stopifnot(all.equal(unname(A1), C1))
 
 # NULL TARGET
 ridgeS2 <- function(S, lambda) {
@@ -97,12 +100,14 @@ ridgeS2 <- function(S, lambda) {
   Eigshrink <- rags2ridges:::.eigShrink(Spectral$values, lambda)
   return(solve(Spectral$vectors %*% diag(Eigshrink) %*% t(Spectral$vectors)))
 }
+target <- default.target(S, "Null")
 microbenchmark(A2 <- ridgeS2(S, lambda),
-               B2 <- armaRidgeSZeroTarget(S, lambda))
+               B2 <- armaRidgeSRotationInvariantTarget(S, 0.0, lambda),
+               C2 <- armaRidgeS(S, target, lambda))
 stopifnot(all.equal(unname(A2), unname(B2)))
+stopifnot(all.equal(unname(A2), unname(C2)))
 
-
-# Equal diagnoal target
+# Equal diagnonal target
 ridgeS3 <- function(S, target, lambda) {
   varPhi    <- unique(diag(target))
   Spectral  <- eigen(S, symmetric = TRUE)
@@ -112,8 +117,11 @@ ridgeS3 <- function(S, target, lambda) {
 
 target <- default.target(S) # Equal diagnoal
 microbenchmark(A3 <- ridgeS3(S, target, lambda),
-               B3 <- armaRidgeSEqualDiagTarget(S, target, lambda))
+               B3 <- armaRidgeSRotationInvariantTarget(S, target[1,1], lambda),
+               C3 <- armaRidgeS(S, target, lambda))
 stopifnot(all.equal(unname(A3), unname(B3)))
+stopifnot(all.equal(unname(A3), unname(C3)))
+
 
 
 library("rags2ridges")
@@ -123,7 +131,7 @@ target <- default.target(S, type = "DEPV")#default.target(S)#
 lambda <- 2
 system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
 microbenchmark(A <- ridgeS(S, target = target, lambda = lambda),
-               B <- ridgeSArma(S, target = target, lambda = lambda),
+               B <- armaRidgeS(S, target = target, lambda = lambda),
                times = 1)
 stopifnot(all.equal(A, B))
 

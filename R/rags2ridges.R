@@ -860,18 +860,8 @@ ridgeSArma <- function(S, lambda, type = "Alt", target = default.target(S)){
         stop("Shrinkage target should be symmetric")
       } else if (dim(target)[1] != dim(S)[1]) {
         stop("S and target should be of the same dimension")
-      } else if (!all(target == 0) &
-                   any(eigen(target, symmetric = TRUE,
-                             only.values = TRUE)$values <= 0)){
-        stop("When target is not a null-matrix it should be p.d. for this ",
-             "type of ridge estimator")
-      } else if (all(target == 0)){
-        P_Alt <- armaRidgeSZeroTarget(S, lambda)
-      } else if (all(target[lower.tri(target)] == 0) &&
-                   length(unique(diag(target))) == 1) {
-        P_Alt <- armaRidgeSEqualDiagTarget(S, target, lambda)
       } else {
-        P_Alt <- armaRidgeSAnyTarget(S, target, lambda)
+        P_Alt <- armaRidgeS(S, target, lambda)
       }
       dimnames(P_Alt) <- dimnames(S)
       return(P_Alt)

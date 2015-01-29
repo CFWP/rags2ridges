@@ -5,11 +5,11 @@ armaRidgeSAnyTarget <- function(S, target, lambda) {
     .Call('rags2ridges_armaRidgeSAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
-armaRidgeSZeroTarget <- function(S, lambda) {
-    .Call('rags2ridges_armaRidgeSZeroTarget', PACKAGE = 'rags2ridges', S, lambda)
+armaRidgeSRotationInvariantTarget <- function(S, alpha, lambda) {
+    .Call('rags2ridges_armaRidgeSRotationInvariantTarget', PACKAGE = 'rags2ridges', S, alpha, lambda)
 }
 
-armaRidgeSEqualDiagTarget <- function(S, target, lambda) {
-    .Call('rags2ridges_armaRidgeSEqualDiagTarget', PACKAGE = 'rags2ridges', S, target, lambda)
+armaRidgeS <- function(S, target, lambda) {
+    .Call('rags2ridges_armaRidgeS', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 

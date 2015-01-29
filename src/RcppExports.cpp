@@ -23,25 +23,26 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// armaRidgeSZeroTarget
-arma::mat armaRidgeSZeroTarget(const arma::mat& S, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeSZeroTarget(SEXP SSEXP, SEXP lambdaSEXP) {
+// armaRidgeSRotationInvariantTarget
+arma::mat armaRidgeSRotationInvariantTarget(const arma::mat& S, const double alpha, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeSRotationInvariantTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
+        Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
-        arma::mat __result = armaRidgeSZeroTarget(S, lambda);
+        arma::mat __result = armaRidgeSRotationInvariantTarget(S, alpha, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// armaRidgeSEqualDiagTarget
-arma::mat armaRidgeSEqualDiagTarget(const arma::mat& S, const arma::mat& target, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeSEqualDiagTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+// armaRidgeS
+arma::mat armaRidgeS(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeS(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -49,7 +50,7 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
-        arma::mat __result = armaRidgeSEqualDiagTarget(S, target, lambda);
+        arma::mat __result = armaRidgeS(S, target, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
