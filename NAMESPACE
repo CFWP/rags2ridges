@@ -17,6 +17,5 @@ import("reshape")
 exportPattern("^[[:alpha:]]+")
 
 # To make Rcpp work
-importFrom(Rcpp,evalCpp) # Import anything from Rcpp
 useDynLib(rags2ridges)
 
