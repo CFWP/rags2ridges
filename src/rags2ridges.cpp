@@ -16,8 +16,7 @@ arma::mat armaEigShrink(const arma::vec eigvals,
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
 }
 
-// Case of general invariant target
-// [[Rcpp::export]]
+// General target
 arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
@@ -34,8 +33,7 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
 }
 
-// Case of rotational invariant target
-// [[Rcpp::export]]
+// Rotational invariant target
 arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
