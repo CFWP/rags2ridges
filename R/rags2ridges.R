@@ -79,7 +79,7 @@
   #     correlation matrix)
   ##############################################################################
 
-  LL <- -log(det(P)) + .trace(S %*% P)
+  LL <- -log(det(P)) + sum(S*P) #.trace(S %*% P)
   return(LL)
 }
 
