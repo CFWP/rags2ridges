@@ -132,14 +132,14 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-
 .fcvl <- function(lambdas, YList, TList) {
   ##############################################################################
   # - Helper function to perform fused LOOCV
   # - lambdas > A vector of penalties where lambdas[1] is lambda1 and
   #             lambdas[2] is lambda2.
   # - YList   > A list of length K of matrices of observations with samples
-  #             in the rows and variables in the columns.
+  #             in the rows and variables in the columns. A least 2
+  #             samples (rows) are needed in each entry.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
   ##############################################################################
@@ -159,7 +159,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       Sik    <- crossprod(YList[[k]][i,  , drop = FALSE])
       PList  <- fusedRidgeS(SList = SList, ns = ns, TList = TList,
                             lambda1 = lambdas[1], lambda2 = lambdas[2],
-                            max.ite = 100, verbose = FALSE, eps = 1e-4)
+                            max.ite = 1000, verbose = FALSE, eps = 1e-4)
       slh <- c(slh, .LL(Sik, PList[[k]]))
     }
   }
@@ -178,8 +178,9 @@ optFusedPenalty.LOOCV <- function(YList,
                                   TList,
                                   verbose = TRUE) {
   ##############################################################################
-  # - Simple leave one-out cross validation for a grid to determine optimal
-  #   lambda1 and lambda2.
+  # - Simple leave one-out cross validation for the fused ridge estimator
+  # - on a grid to determine optimal lambda1 and lambda2.
+  # - The complete penalty graph is used here.
   # - YList      > A list of length K of matrices of observations with samples
   #                in the rows and variables in the columns.
   # - lambda1Min > Start lambda1 value, the ridge penalty
@@ -202,6 +203,8 @@ optFusedPenalty.LOOCV <- function(YList,
 
   lambda1s <- exp(seq(log(lambda1Min), log(lambda1Max), length.out = step1))
   lambda2s <- exp(seq(log(lambda2Min), log(lambda2Max), length.out = step2))
+  stopifnot(all(is.finite(lambda1s)))
+  stopifnot(all(is.finite(lambda2s)))
 
   # Calculate CV scores
   if (verbose) {
@@ -213,13 +216,45 @@ optFusedPenalty.LOOCV <- function(YList,
   for (l1 in seq_along(lambda1s)) {
     for (l2 in seq_along(lambda2s)) {
       slh[l1, l2] <-
-        .fcvl(lambdas = c(lambda1s[l1], lambda1s[l2]),
+        .fcvl(lambdas = c(lambda1s[l1], lambda2s[l2]),
               YList = YList, TList = TList)
       if (verbose){
-        cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d)\n",
-                   lambda1s[l1],  l1, lambda2s[l2], l2))
+        cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d), -ll = %.3f\n",
+                   lambda1s[l1],  l1, lambda2s[l2], l2, slh[l1, l2]))
       }
     }
   }
   return(list(lambda1 = lambda1s, lambda2 = lambda2s, fcvl = slh))
 }
+
+
+optFusedPenalty.LOOCVauto <- function(YList,
+                                      TList,
+                                      verbose = TRUE, ...) {
+  ##############################################################################
+  # - Selection of the optimal penalties w.r.t. leave-one-out cross-validation
+  # - using 2-dimensional BFGS optimization.
+  # - The complete penalty graph is used here.
+  # - YList   > A list of length K of matrices of observations with samples
+  #             in the rows and variables in the columns.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList. Default is given by default.target.
+  # - verbose > logical. Should the function print extra info. Defaults to TRUE.
+  # - ...     > arguments passed to optim.
+  ##############################################################################
+
+  efcvl <- function(x) {  # Local reparameterized function
+    .fcvl(exp(x), tYList, tTList)
+  }
+
+  # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
+  st <- optimize(function(x) efcvl(c(x, 0)), lower = 0, upper = 50)
+
+  # Start at lambda2 point 0
+  ans <- optim(c(st$minimum, 0), fn = efcvl, ...,
+               method = "BFGS", control = list(trace = verbose))
+
+  return(ans)
+}
+
+
