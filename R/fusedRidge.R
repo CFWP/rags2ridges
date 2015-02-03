@@ -74,7 +74,7 @@ createS <- function(n, p) {
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
                         lambda1, LambdaP, lambda2,
-                        max.ite = 100L, verbose = TRUE, eps = 1e-5) {
+                        maxit = 100L, verbose = TRUE, eps = 1e-5) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
   # - SList   > A list of length K of sample correlation matrices the same size
@@ -89,7 +89,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   #             corresponding to SList[k1] and SList[k1].
   # - lambda2 > The non-negative fused penalty. Alternative to LambdaP if
   #             all pairwise penalties equal.
-  # - max.ite > integer. The maximum number of interations, default is 100.
+  # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   # - eps     > numeric. A positive convergence criterion.
   ##############################################################################
@@ -110,7 +110,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     cat("Iteration:  | Difference in Frobenious norm for k = ( 1 2 ... K )\n")
   }
   diffs <- rep(NA, K)
-  for (i in seq_len(max.ite)) {
+  for (i in seq_len(maxit)) {
     for (k in seq_len(K)) {
       tmpOmega <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
                                TList = TList, ns = ns, lambda1 = lambda1,
@@ -126,8 +126,8 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       break
     }
   }
-  if (i == max.ite) {
-    warning("Maximum iterations (", max.ite, ") hit")
+  if (i == maxit) {
+    warning("Maximum iterations (", maxit, ") hit")
   }
   return(PList)
 }
@@ -160,7 +160,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       Sik    <- crossprod(YList[[k]][i,  , drop = FALSE])
       PList  <- fusedRidgeS(SList = SList, ns = ns, TList = TList,
                             lambda1 = lambdas[1], lambda2 = lambdas[2],
-                            max.ite = 1000, verbose = FALSE, eps = 1e-4)
+                            maxit = 1000, verbose = FALSE, eps = 1e-4)
       slh <- c(slh, .LL(Sik, PList[[k]]))
     }
   }
