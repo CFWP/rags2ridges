@@ -42,6 +42,7 @@ createS <- function(n, p) {
 }
 
 
+
 .fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
   ##############################################################################
   # - (Internal) Update the scatter matrices
@@ -54,9 +55,9 @@ createS <- function(n, p) {
   #             as those of PList
   # - ns      > A vector of length K giving the sample sizes.
   # - lambda1 > The ridge penalty (a postive number).
-  # - LambdaP > The K by K symmetric adjacency matrix fused penalty graph
-  #             with non-negative entries where LambdaP[k1, k2] determine the
-  #             retainment of similarities between estimates in classes
+  # - LambdaP > A K by K symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where LambdaP[k1, k2] determine
+  #             the (rate of) shrinkage between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
@@ -68,6 +69,7 @@ createS <- function(n, p) {
   S0 <- SList[[k0]] - Reduce(`+`, OmT)
   return(ridgeSArma(S0, lambda = a, target = TList[[k0]]))
 }
+
 
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
@@ -131,7 +133,6 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 }
 
 
-
 .fcvl <- function(lambdas, YList, TList) {
   ##############################################################################
   # - Helper function to perform fused LOOCV
@@ -168,6 +169,39 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
+.afcvl <- function(lambdas, YList, TList) {
+  ##############################################################################
+  # - (Internal) For at given lambda1 and lambda2, compute the approximate
+  # - LOOCV loos
+  # - The complete penalty graph is assumed  here.
+  # - YList   > A list of length K of matrices of observations with samples
+  #             in the rows and variables in the columns.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList. Default is given by default.target.
+  ##############################################################################
+
+  ns <- sapply(YList, nrow)
+  K <- length(ns)
+  SList <- lapply(YList, covML)
+  PList <- fusedRidgeS(SList = SList, TList = TList, ns = ns,
+                       lambda1 = lambdas[1], lambda2 = lambdas[2],
+                       verbose = FALSE)
+  n.tot <- sum(ns)
+  nll <- rags2ridges:::.FLL(SList = SList, PList = PList, ns)/n.tot
+  denom <- n.tot*(n.tot - 1)
+  bias <- 0
+  for (k in seq_along(ns)) {
+    for (i in seq_len(ns[k])) {
+      Sik <- crossprod(YList[[k]][i, , drop = FALSE])
+      fac1 <- diag(nrow(Sik)) - Sik %*% PList[[k]]
+      fac2 <- PList[[k]] %*% (SList[[k]] - Sik) %*% PList[[k]]
+      bias <- bias  + sum(fac1 * fac2)/denom
+    }
+  }
+  return(nll + bias)
+}
+
+
 
 optFusedPenalty.LOOCV <- function(YList,
                                   lambda1Min, lambda1Max,
@@ -176,6 +210,7 @@ optFusedPenalty.LOOCV <- function(YList,
                                   lambda2Max = lambda1Max,
                                   step2 = step1,
                                   TList,
+                                  approximate = FALSE,
                                   verbose = TRUE) {
   ##############################################################################
   # - Simple leave one-out cross validation for the fused ridge estimator
@@ -189,8 +224,10 @@ optFusedPenalty.LOOCV <- function(YList,
   # - lambda2Min > As lambda1Min for the fused penalty. Default is lambda1Min.
   # - lambda2Max > As lambda1Max for the fused penalty. Default is lambda1Max.
   # - step2      > As step1 for the fused penalty. Default is step1.
-  # - TList   > A list of length K of target matrices the same size
-  #             as those of PList. Default is given by default.target.
+  # - TList      > A list of length K of target matrices the same size
+  #                as those of PList. Default is given by default.target.
+  # - approximate > Should approximate LOOCV be used? Defaults to FALSE.
+  #                 Approximate LOOCV is much faster.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   ##############################################################################
 
@@ -201,10 +238,17 @@ optFusedPenalty.LOOCV <- function(YList,
   K <- length(YList)
   ns <- sapply(YList, nrow)
 
+  # Choose lambdas log-equidistantly
   lambda1s <- exp(seq(log(lambda1Min), log(lambda1Max), length.out = step1))
   lambda2s <- exp(seq(log(lambda2Min), log(lambda2Max), length.out = step2))
   stopifnot(all(is.finite(lambda1s)))
   stopifnot(all(is.finite(lambda2s)))
+
+  if (approximate) {
+    cvl <- .afcvl
+  } else {
+    cvl <- .fcvl
+  }
 
   # Calculate CV scores
   if (verbose) {
@@ -216,8 +260,8 @@ optFusedPenalty.LOOCV <- function(YList,
   for (l1 in seq_along(lambda1s)) {
     for (l2 in seq_along(lambda2s)) {
       slh[l1, l2] <-
-        .fcvl(lambdas = c(lambda1s[l1], lambda2s[l2]),
-              YList = YList, TList = TList)
+        cvl(lambdas = c(lambda1s[l1], lambda2s[l2]),
+            YList = YList, TList = TList)
       if (verbose){
         cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d), -ll = %.3f\n",
                    lambda1s[l1],  l1, lambda2s[l2], l2, slh[l1, l2]))
@@ -230,6 +274,7 @@ optFusedPenalty.LOOCV <- function(YList,
 
 optFusedPenalty.LOOCVauto <- function(YList,
                                       TList,
+                                      approximate = FALSE,
                                       verbose = TRUE, ...) {
   ##############################################################################
   # - Selection of the optimal penalties w.r.t. leave-one-out cross-validation
@@ -239,12 +284,19 @@ optFusedPenalty.LOOCVauto <- function(YList,
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
+  # - approximate > logical. Should approximate LOOCV be used?
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   # - ...     > arguments passed to optim.
   ##############################################################################
 
+  if (approximate) {  # Determine what function to use
+    cvl <- .afcvl
+  } else {
+    cvl <- .fcvl
+  }
+
   efcvl <- function(x) {  # Local reparameterized function
-    .fcvl(exp(x), tYList, tTList)
+    cvl(exp(x), tYList, tTList)
   }
 
   # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
@@ -256,5 +308,8 @@ optFusedPenalty.LOOCVauto <- function(YList,
 
   return(ans)
 }
+
+
+
 
 
