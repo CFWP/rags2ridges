@@ -219,22 +219,22 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 }
 
 
+
 .parseLambda <- function(Lambda) {
   ##############################################################################
   # - A function to parse a character matrix that defines the class of penalty
-  #   graphs and entries to cross validate over.
-  #   Returns a list of indices for each factors to be penalized equally.
-  # - Lambda > A square character matrix defining the class penalty matrices
-  #            to use.
-  # - Looks for unique levels. Pairs that should be left out are specified
-  #   with NA, "NA", "" (the empty string), or "0".
+  #   graphs and unique parameters for cross validation. Returns a list of
+  #   indices for each level to be penalized equally.
+  #   This list is to be used to construct numeric matrices of penalties.
+  # - Lambda > A square K by K character matrix defining the class penalty
+  #            matrices to use. Entries with NA, "NA", "" (the empty string),
+  #            or "0" are used specify that the pair should be omitted.
   ##############################################################################
 
   stopifnot(is.character(Lambda))
   stopifnot(is.matrix(Lambda))
   stopifnot(nrow(Lambda) == ncol(Lambda))
 
-  # Make all NA or "0" into ""
   Lambda[is.na(Lambda)] <- ""
   Lambda[Lambda %in% c("0", "NA")] <- ""
 
@@ -247,12 +247,16 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   return(ans)
 }
 
+
+
 .reconstructLambda <- function(lambdas, parsedLambda, K) {
   ##############################################################################
-  # - Reconstruct matrix Lambda from vector (lambdas) using output
-  #   from parsedLambda
-  # - lambdas      >
-  # - parsedLambda >
+  # - Reconstruct the numeric penalty matrix Lambda from vector (lambdas) using
+  #   output from .parseLambda output.
+  # - lambdas      > A numeric vector of length K+1 where the first entry is the
+  #                  ridge penalty and the remaining are the fused penalties.
+  # - parsedLambda > A list of length K of matrix indicies.
+  #                  Should be the output from .parseLambda.
   ##############################################################################
 
   stopifnot(length(lambdas) == length(parsedLambda) + 1)
@@ -262,9 +266,6 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   }
   return(LambdaP)
 }
-
-
-
 
 
 
@@ -279,23 +280,25 @@ optFusedPenalty.LOOCV <- function(YList,
                                   ...,
                                   verbose = TRUE) {
   ##############################################################################
-  # - Simple leave one-out cross validation for the fused ridge estimator
-  # - on a grid to determine optimal lambda1 and lambda2.
-  # - The complete penalty graph is used here.
-  # - YList      > A list of length K of matrices of observations with samples
-  #                in the rows and variables in the columns.
-  # - lambda1Min > Start lambda1 value, the ridge penalty
-  # - lambda1Max > End lambda1 value
-  # - step1      > Number of evaluations
-  # - lambda2Min > As lambda1Min for the fused penalty. Default is lambda1Min.
-  # - lambda2Max > As lambda1Max for the fused penalty. Default is lambda1Max.
-  # - step2      > As step1 for the fused penalty. Default is step1.
-  # - TList      > A list of length K of target matrices the same size
-  #                as those of PList. Default is given by default.target.
-  # - approximate > Should approximate LOOCV be used? Defaults to FALSE.
+  #   Simple (approximate) leave one-out cross validation for the fused ridge
+  #   estimator on a grid to determine optimal lambda1 and lambda2.
+  #   The complete penalty graph is assumed.
+  # - YList       > A list of length K of matrices of observations with samples
+  #                 in the rows and variables in the columns.
+  # - lambda1Min  > Start of lambda1 value, the ridge penalty
+  # - lambda1Max  > End of lambda1 value
+  # - step1       > Number of evaluations
+  # - lambda2Min  > As lambda1Min for the fused penalty. Default is lambda1Min.
+  # - lambda2Max  > As lambda1Max for the fused penalty. Default is lambda1Max.
+  # - step2       > As step1 for the fused penalty. Default is step1.
+  # - TList       > A list of length K of target matrices the same size
+  #                 as those of PList. Default is given by default.target.
+  # - approximate > Should approximate LOOCV be used? Defaults is FALSE.
   #                 Approximate LOOCV is much faster.
   # - ...         > Arguments passed to fusedRidgeS
-  # - verbose > logical. Should the function print extra info. Defaults to TRUE.
+  # - verbose     > logical. Print extra information. Defaults is TRUE.
+  #
+  # The function evaluates the loss on a log-equidistant grid.
   ##############################################################################
 
   if (missing(TList)) {  # If TList is not provided
@@ -340,7 +343,6 @@ optFusedPenalty.LOOCV <- function(YList,
 
 
 
-
 optFusedPenalty.LOOCVauto <- function(YList,
                                       TList,
                                       Lambda,
@@ -350,8 +352,10 @@ optFusedPenalty.LOOCVauto <- function(YList,
                                       maxit.optim = 1000,
                                       ...) {
   ##############################################################################
-  # - Selection of the optimal penalties w.r.t. leave-one-out cross-validation
-  # - using 2-dimensional BFGS optimization.
+  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
+  #   leave-one-out cross-validation using multi-dimensional BFGS optimization
+  #   routines.
+  #
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
@@ -399,11 +403,11 @@ optFusedPenalty.LOOCVauto <- function(YList,
     }
   }
 
-  # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
+  # Get sensible starting value for lambda1 (choosing LambdaP to be zero)
   st <- optimize(function(x) cvl(c(x, rep(0, n.lambdas - 1))),
                  lower = -30, upper = 30)
 
-  # Start at lambda2 point 0
+  # Start LambdaP at 0
   lambdas.init <- c(st$minimum, rep(0, n.lambdas - 1))
   ans <- optim(lambdas.init, fn = cvl, ...,
                method = "BFGS",
