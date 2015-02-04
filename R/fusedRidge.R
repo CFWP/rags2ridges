@@ -74,7 +74,7 @@ createS <- function(n, p) {
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
                         lambda1, LambdaP, lambda2,
-                        maxit = 100L, verbose = TRUE, eps = 1e-5) {
+                        maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and lambda2
   # - SList   > A list of length K of sample correlation matrices the same size
@@ -91,7 +91,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   #             all pairwise penalties equal.
   # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
-  # - eps     > numeric. A positive convergence criterion.
+  # - eps     > numeric. A positive convergence criterion. Default is 1e-4.
   ##############################################################################
 
   stopifnot(length(SList) == length(TList))
@@ -119,8 +119,11 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       diffs[k] <- .RelativeFrobeniusLoss(tmpOmega, PList[[k]])
       PList[[k]] <- tmpOmega
     }
+
     if (verbose) {
-      cat("i =", sprintf("%-2d", i), "| diffs = (", diffs, ")\n")
+      max.frob <- max(sapply(PList, .Frobenius))
+      cat(sprintf("i = %-2d | max(diffs) = %.5f | max(Frob) = %.5f\n",
+                  i, max(diffs), max.frob))
     }
     if (max(diffs) < eps) {
       break
@@ -133,7 +136,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 }
 
 
-.fcvl <- function(lambdas, YList, TList) {
+.fcvl <- function(lambdas, YList, TList, ...) {
   ##############################################################################
   # - Helper function to perform fused LOOCV
   # - lambdas > A vector of penalties where lambdas[1] is lambda1 and
@@ -143,6 +146,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   #             samples (rows) are needed in each entry.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
+  # - ...     > Arguments passed to fusedRidgeS
   ##############################################################################
 
   K <- length(YList)
@@ -160,7 +164,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       Sik    <- crossprod(YList[[k]][i,  , drop = FALSE])
       PList  <- fusedRidgeS(SList = SList, ns = ns, TList = TList,
                             lambda1 = lambdas[1], lambda2 = lambdas[2],
-                            maxit = 1000, verbose = FALSE, eps = 1e-4)
+                            ...)
       slh <- c(slh, .LL(Sik, PList[[k]]))
     }
   }
@@ -169,7 +173,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-.afcvl <- function(lambdas, YList, TList) {
+.afcvl <- function(lambdas, YList, TList, ...) {
   ##############################################################################
   # - (Internal) For at given lambda1 and lambda2, compute the approximate
   # - LOOCV loos
@@ -178,6 +182,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
+  # - ...     > Arguments passed to fusedRidgeS
   ##############################################################################
 
   ns <- sapply(YList, nrow)
@@ -185,9 +190,9 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   SList <- lapply(YList, covML)
   PList <- fusedRidgeS(SList = SList, TList = TList, ns = ns,
                        lambda1 = lambdas[1], lambda2 = lambdas[2],
-                       verbose = FALSE)
+                       ...)
   n.tot <- sum(ns)
-  nll <- rags2ridges:::.FLL(SList = SList, PList = PList, ns)/n.tot
+  nll <- .FLL(SList = SList, PList = PList, ns)/n.tot
   denom <- n.tot*(n.tot - 1)
   bias <- 0
   for (k in seq_along(ns)) {
@@ -211,6 +216,7 @@ optFusedPenalty.LOOCV <- function(YList,
                                   step2 = step1,
                                   TList,
                                   approximate = FALSE,
+                                  ...,
                                   verbose = TRUE) {
   ##############################################################################
   # - Simple leave one-out cross validation for the fused ridge estimator
@@ -228,6 +234,7 @@ optFusedPenalty.LOOCV <- function(YList,
   #                as those of PList. Default is given by default.target.
   # - approximate > Should approximate LOOCV be used? Defaults to FALSE.
   #                 Approximate LOOCV is much faster.
+  # - ...         > Arguments passed to fusedRidgeS
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   ##############################################################################
 
@@ -261,7 +268,7 @@ optFusedPenalty.LOOCV <- function(YList,
     for (l2 in seq_along(lambda2s)) {
       slh[l1, l2] <-
         cvl(lambdas = c(lambda1s[l1], lambda2s[l2]),
-            YList = YList, TList = TList)
+            YList = YList, TList = TList, verbose = FALSE, ...)
       if (verbose){
         cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d), -ll = %.3f\n",
                    lambda1s[l1],  l1, lambda2s[l2], l2, slh[l1, l2]))
@@ -275,7 +282,10 @@ optFusedPenalty.LOOCV <- function(YList,
 optFusedPenalty.LOOCVauto <- function(YList,
                                       TList,
                                       approximate = FALSE,
-                                      verbose = TRUE, ...) {
+                                      verbose = TRUE,
+                                      maxit.fusedRidgeS = 1000,
+                                      maxit.optim = 1000,
+                                      ...) {
   ##############################################################################
   # - Selection of the optimal penalties w.r.t. leave-one-out cross-validation
   # - using 2-dimensional BFGS optimization.
@@ -285,8 +295,11 @@ optFusedPenalty.LOOCVauto <- function(YList,
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
   # - approximate > logical. Should approximate LOOCV be used?
-  # - verbose > logical. Should the function print extra info. Defaults to TRUE.
-  # - ...     > arguments passed to optim.
+  # - verbose     > logical. Should the function print extra info. Defaults to
+  #                 TRUE.
+  # - maxit.fusedRidgeS > integer. maximum number of iterations for fusedRidgeS
+  # - maxit.optim       > integer. maximum number of iterations for optim.
+  # - ...               > arguments passed to optim.
   ##############################################################################
 
   if (approximate) {  # Determine what function to use
@@ -296,15 +309,16 @@ optFusedPenalty.LOOCVauto <- function(YList,
   }
 
   efcvl <- function(x) {  # Local reparameterized function
-    cvl(exp(x), tYList, tTList)
+    cvl(exp(x), tYList, tTList, verbose = FALSE, maxit = maxit.fusedRidgeS)
   }
 
   # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
-  st <- optimize(function(x) efcvl(c(x, 0)), lower = 0, upper = 50)
+  st <- optimize(function(x) efcvl(c(x, 0)), lower = -30, upper = 30)
 
   # Start at lambda2 point 0
   ans <- optim(c(st$minimum, 0), fn = efcvl, ...,
-               method = "BFGS", control = list(trace = verbose))
+               method = "BFGS",
+               control = list(trace = verbose, maxit = maxit.optim))
 
   return(ans)
 }
