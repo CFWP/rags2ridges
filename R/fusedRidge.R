@@ -350,6 +350,7 @@ optFusedPenalty.LOOCVauto <- function(YList,
                                       verbose = TRUE,
                                       maxit.fusedRidgeS = 1000,
                                       maxit.optim = 1000,
+                                      optim.debug = FALSE,
                                       ...) {
   ##############################################################################
   # - Selection of the optimal penalties w.r.t. to (possibly approximate)
@@ -367,9 +368,16 @@ optFusedPenalty.LOOCVauto <- function(YList,
   # - approximate > logical. Should approximate LOOCV be used?
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
-  # - maxit.fusedRidgeS > integer. maximum number of iterations for fusedRidgeS
-  # - maxit.optim       > integer. maximum number of iterations for optim.
+  # - maxit.fusedRidgeS > integer. Maximum number of iterations for fusedRidgeS
+  # - maxit.optim       > integer. Maximum number of iterations for optim.
+  # - optim.debug       > logical. If TRUE the raw output from optim is added
+  #                       as an attribute to the output.
   # - ...               > arguments passed to optim.
+  #
+  # The function returns a list of length 4 with entries (1) lambda1,
+  # (2) lambda2, (3) the optimal penalty matrix LambdaP, and (4) the value of
+  # the loss in the optimum. If LambdaP is the complete graph, then lambda2 is
+  # given. Otherwise lambda2 is NA.
   ##############################################################################
 
   K <- length(YList)
@@ -422,6 +430,10 @@ optFusedPenalty.LOOCVauto <- function(YList,
   lambda2 <- unique(opt.lambdas[-1])
   if (length(lambda2) == 1) {
     res$lambda2 <- lambda2
+  }
+
+  if (optim.debug) {
+    attr(res, "optim.debug") <- ans
   }
   return(res)
 }
