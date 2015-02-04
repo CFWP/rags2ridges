@@ -111,12 +111,12 @@
 .RelativeFrobeniusLoss <- function(O, P) {
   ##############################################################################
   # - Function computing the frobenius loss relative to the (frobenious) norm
-  #   of O.
+  #   of P.
   # - O > Estimated (possibly regularized) precision matrix
   # - P > True (population) precision matrix
   ##############################################################################
 
-  return(.FrobeniusLoss(O, P)/.Frobenius(O))
+  return(.FrobeniusLoss(O, P)/.Frobenius(P))
 }
 
 
@@ -1126,7 +1126,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
       } else if (dim(target)[1] != dim(S)[1]){
         stop("Covariance matrix based on data input (Y) and target should be ",
              "of the same dimension")
-      } else if (any(diag(target) <= 0)){
+      } else if (any(diag(target) <= 0)){  ## THIS TEST IS NOT CORRECT I GUESS?
         stop("Input (target) should be p.d.")
       } else {
         varPhi   <- unique(diag(target))
@@ -2410,7 +2410,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
         stop("Input (target) should be symmetric")
       } else if (dim(target)[1] != dim(S)[1]){
         stop("Inputs ('S' and 'target') should be of the same dimension")
-      } else if (any(diag(target) <= 0)){
+      } else if (any(diag(target) <= 0)){  ## THIS TEST IS NOT CORRECT I GUESS?
         stop("Input (target) should be p.d.")
       } else {
         varPhi   <- unique(diag(target))
