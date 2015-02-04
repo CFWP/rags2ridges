@@ -105,7 +105,7 @@ createS <- function(n, p) {
 
 
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
-                        lambda1, LambdaP, lambda2,
+                        lambda1, LambdaP, lambda2, PList,
                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda1 and LambdaP
@@ -128,10 +128,17 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
   stopifnot(length(SList) == length(TList))
   K <- length(SList)  # Number of groups
-  PList <- SList      # Initialize estimates
 
   # Initialize estimates with the regular ridge for each class
-  PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
+  if (missing(PList)) {
+    Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
+    PList <- list()
+    for (i in seq_len(K)) {
+      PList[[i]] <- ridgeS(Spool, lambda = lambda1, target = TList[[i]])
+    }
+    #PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
+  }
+  stopifnot(length(SList) == length(PList))
 
   if (!missing(LambdaP) && !missing(lambda2)) {
     stop("Supply only either LambdaP or lambda2.")
@@ -142,23 +149,26 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   }
 
   if (verbose) {
-    cat("Iter:  | max diff. in Frobenius norm\n")
+    cat("Iter:   | difference in Frobenius norm        | -penalized log-lik\n")
+    cat("init    | diffs = (", sprintf("%11e", rep(NA, K)), ")")
+    cat(sprintf(" | -pll = %g\n", .PFLL(SList,PList,ns,TList,lambda1,LambdaP)))
   }
 
+  tmpPList <- list()
   diffs <- rep(NA, K)
   i <- 1
   while (i <= maxit) {
     for (k in seq_len(K)) {
-      tmpOmega <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
-                               TList = TList, ns = ns, lambda1 = lambda1,
-                               LambdaP = LambdaP)
-
-      diffs[k] <- .RelativeFrobeniusLoss(tmpOmega, PList[[k]])
-      PList[[k]] <- tmpOmega
+      tmpPList[[k]] <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
+                                    TList = TList, ns = ns, lambda1 = lambda1,
+                                    LambdaP = LambdaP)
+      diffs[k] <- .FrobeniusLoss(tmpPList[[k]], PList[[k]])
+      PList[[k]] <- tmpPList[[k]]
     }
 
     if (verbose) {
-      cat(sprintf("i = %-2d | max(diffs) = %g\n", i, max(diffs)))
+      cat(sprintf("i = %-3d", i), "| diffs = (", sprintf("%6.5e", diffs), ")")
+      cat(sprintf(" | -pll = %g\n",.PFLL(SList,PList,ns,TList,lambda1,LambdaP)))
     }
 
     if (max(diffs) < eps) {
@@ -168,7 +178,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     i <- i + 1
   }
 
-  if (i == maxit) {
+  if (i == maxit + 1) {
     warning("Maximum iterations (", maxit, ") hit")
   }
   return(PList)
