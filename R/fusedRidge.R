@@ -136,11 +136,22 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 }
 
 
-.fcvl <- function(lambdas, YList, TList, ...) {
+
+################################################################################
+## -------------------------------------------------------------------------- ##
+##
+## Leave-one-out cross-validation (and approximation) in the fused setting
+##
+## -------------------------------------------------------------------------- ##
+################################################################################
+
+
+
+.fcvl <- function(lambda1, LambdaP, YList, TList, ...) {
   ##############################################################################
-  # - Helper function to perform fused LOOCV
-  # - lambdas > A vector of penalties where lambdas[1] is lambda1 and
-  #             lambdas[2] is lambda2.
+  # - A function to perform fused LOOCV
+  # - lambda1 > numeric of length 1 giving ridge penalty.
+  # - LambdaP > numeric matrix giving the fused penalty matrix.
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns. A least 2
   #             samples (rows) are needed in each entry.
@@ -163,8 +174,8 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
       SList[[k]] <- covML(YList[[k]][-i, , drop = FALSE])
       Sik    <- crossprod(YList[[k]][i,  , drop = FALSE])
       PList  <- fusedRidgeS(SList = SList, ns = ns, TList = TList,
-                            lambda1 = lambdas[1], lambda2 = lambdas[2],
-                            ...)
+                            lambda1 = lambda1, LambdaP = LambdaP,
+                            verbose = FALSE, ...)
       slh <- c(slh, .LL(Sik, PList[[k]]))
     }
   }
@@ -173,11 +184,12 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-.afcvl <- function(lambdas, YList, TList, ...) {
+.afcvl <- function(lambda1, LambdaP, YList, TList, ...) {
   ##############################################################################
   # - (Internal) For at given lambda1 and lambda2, compute the approximate
-  # - LOOCV loos
-  # - The complete penalty graph is assumed  here.
+  # - LOOCV loss
+  # - lambda1 > numeric of length 1 giving ridge penalty.
+  # - LambdaP > numeric matrix giving the fused penalty matrix.
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
@@ -189,8 +201,8 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   K <- length(ns)
   SList <- lapply(YList, covML)
   PList <- fusedRidgeS(SList = SList, TList = TList, ns = ns,
-                       lambda1 = lambdas[1], lambda2 = lambdas[2],
-                       ...)
+                       lambda1 = lambda1, LambdaP = LambdaP,
+                       verbose = FALSE, ...)
   n.tot <- sum(ns)
   nll <- .FLL(SList = SList, PList = PList, ns)/n.tot
   denom <- n.tot*(n.tot - 1)
@@ -205,6 +217,54 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   }
   return(nll + bias)
 }
+
+
+.parseLambda <- function(Lambda) {
+  ##############################################################################
+  # - A function to parse a character matrix that defines the class of penalty
+  #   graphs and entries to cross validate over.
+  #   Returns a list of indices for each factors to be penalized equally.
+  # - Lambda > A square character matrix defining the class penalty matrices
+  #            to use.
+  # - Looks for unique levels. Pairs that should be left out are specified
+  #   with NA, "NA", "" (the empty string), or "0".
+  ##############################################################################
+
+  stopifnot(is.character(Lambda))
+  stopifnot(is.matrix(Lambda))
+  stopifnot(nrow(Lambda) == ncol(Lambda))
+
+  # Make all NA or "0" into ""
+  Lambda[is.na(Lambda)] <- ""
+  Lambda[Lambda %in% c("0", "NA")] <- ""
+
+  lvls <- unique(c(Lambda))
+  lvls <- lvls[lvls != ""]
+
+  # For each non-empty level get boolean matrices
+  ans <- lapply(lvls, function(lvl) which(lvl == Lambda, arr.ind = TRUE))
+  names(ans) <- lvls
+  return(ans)
+}
+
+.reconstructLambda <- function(lambdas, parsedLambda, K) {
+  ##############################################################################
+  # - Reconstruct matrix Lambda from vector (lambdas) using output
+  #   from parsedLambda
+  # - lambdas      >
+  # - parsedLambda >
+  ##############################################################################
+
+  stopifnot(length(lambdas) == length(parsedLambda) + 1)
+  LambdaP <- matrix(0, K, K)
+  for (i in seq_along(parsedLambda)) {
+    LambdaP[parsedLambda[[i]]] <- lambdas[i + 1]
+  }
+  return(LambdaP)
+}
+
+
+
 
 
 
@@ -267,8 +327,8 @@ optFusedPenalty.LOOCV <- function(YList,
   for (l1 in seq_along(lambda1s)) {
     for (l2 in seq_along(lambda2s)) {
       slh[l1, l2] <-
-        cvl(lambdas = c(lambda1s[l1], lambda2s[l2]),
-            YList = YList, TList = TList, verbose = FALSE, ...)
+        cvl(lambda1 = lambda1s[l1], LambdaP = matrix(lambda2s[l2], K, K),
+            YList = YList, TList = TList, ...)
       if (verbose){
         cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d), -ll = %.3f\n",
                    lambda1s[l1],  l1, lambda2s[l2], l2, slh[l1, l2]))
@@ -279,8 +339,11 @@ optFusedPenalty.LOOCV <- function(YList,
 }
 
 
+
+
 optFusedPenalty.LOOCVauto <- function(YList,
                                       TList,
+                                      Lambda,
                                       approximate = FALSE,
                                       verbose = TRUE,
                                       maxit.fusedRidgeS = 1000,
@@ -289,11 +352,13 @@ optFusedPenalty.LOOCVauto <- function(YList,
   ##############################################################################
   # - Selection of the optimal penalties w.r.t. leave-one-out cross-validation
   # - using 2-dimensional BFGS optimization.
-  # - The complete penalty graph is used here.
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
+  # - Lambda  > A K by K character matrix defining the class of penalty graph
+  #             to use. The unique elements of Lambda specify the penalties to
+  #             determine. Pairs can be left out by "", NA, "NA" or "0".
   # - approximate > logical. Should approximate LOOCV be used?
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
@@ -302,21 +367,44 @@ optFusedPenalty.LOOCVauto <- function(YList,
   # - ...               > arguments passed to optim.
   ##############################################################################
 
-  if (approximate) {  # Determine what function to use
-    cvl <- .afcvl
-  } else {
-    cvl <- .fcvl
+  K <- length(YList)
+
+  # Handle Lambda
+  if (missing(Lambda)) {
+    Lambda <- matrix("A", K, K)
+    diag(Lambda) <- ""
   }
 
-  efcvl <- function(x) {  # Local reparameterized function
-    cvl(exp(x), tYList, tTList, verbose = FALSE, maxit = maxit.fusedRidgeS)
+  parsedLambda <- .parseLambda(Lambda)
+  n.lambdas <- length(parsedLambda) + 1
+
+  # Determine what loss function to use
+  if (approximate) {
+    cvl <- function(lambdas, ...) {
+      .afcvl(lambda1 = lambdas[1],
+             LambdaP = .reconstructLambda(lambdas, parsedLambda, K),
+             ...)
+    }
+  } else {
+    cvl <- function(lambdas, ...) {
+      .fcvl(lambda1 = lambdas[1],
+            LambdaP = .reconstructLambda(lambdas, parsedLambda, K),
+            ...)
+    }
+  }
+
+  # Local reparameterized cvl function
+  ecvl <- function(x) {
+    cvl(exp(x), YList, TList, maxit = maxit.fusedRidgeS)
   }
 
   # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
-  st <- optimize(function(x) efcvl(c(x, 0)), lower = -30, upper = 30)
+  st <- optimize(function(x) ecvl(c(x, rep(0, n.lambdas - 1))),
+                 lower = -30, upper = 30)
 
   # Start at lambda2 point 0
-  ans <- optim(c(st$minimum, 0), fn = efcvl, ...,
+  lambdas.init <- c(st$minimum, rep(0, n.lambdas - 1))
+  ans <- optim(lambdas.init, fn = ecvl, ...,
                method = "BFGS",
                control = list(trace = verbose, maxit = maxit.optim))
 
