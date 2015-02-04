@@ -358,7 +358,8 @@ optFusedPenalty.LOOCVauto <- function(YList,
   #             as those of PList. Default is given by default.target.
   # - Lambda  > A K by K character matrix defining the class of penalty graph
   #             to use. The unique elements of Lambda specify the penalties to
-  #             determine. Pairs can be left out by "", NA, "NA" or "0".
+  #             determine. Pairs can be left out using either of "", NA,
+  #             "NA" or "0".
   # - approximate > logical. Should approximate LOOCV be used?
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
@@ -411,8 +412,13 @@ optFusedPenalty.LOOCVauto <- function(YList,
   # Format optimal values
   opt.lambdas <- exp(ans$par)
   res <- list(lambda1 = opt.lambdas[1],
+              lambda2 = NA,
               LambdaP = .reconstructLambda(opt.lambdas, parsedLambda, K),
               value = ans$value)
+  lambda2 <- unique(opt.lambdas[-1])
+  if (length(lambda2) == 1) {
+    res$lambda2 <- lambda2
+  }
   return(res)
 }
 
