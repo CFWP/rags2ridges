@@ -379,36 +379,41 @@ optFusedPenalty.LOOCVauto <- function(YList,
   n.lambdas <- length(parsedLambda) + 1
 
   # Determine what loss function to use
+  # lambdas[1] is the regular ridge penalty, while the remaning lambdas[-1]
+  # correspond to the penalty matrix.
+  # We also reparameterize to work on log-scale
   if (approximate) {
     cvl <- function(lambdas, ...) {
-      .afcvl(lambda1 = lambdas[1],
-             LambdaP = .reconstructLambda(lambdas, parsedLambda, K),
-             ...)
+      elambdas <- exp(lambdas)
+      .afcvl(lambda1 = elambdas[1],
+             LambdaP = .reconstructLambda(elambdas, parsedLambda, K),
+             YList = YList, TList = TList, maxit = maxit.fusedRidgeS, ...)
     }
   } else {
     cvl <- function(lambdas, ...) {
-      .fcvl(lambda1 = lambdas[1],
-            LambdaP = .reconstructLambda(lambdas, parsedLambda, K),
-            ...)
+      elambdas <- exp(lambdas)
+      .fcvl(lambda1 = elambdas[1],
+            LambdaP = .reconstructLambda(elambdas, parsedLambda, K),
+            YList = YList, TList = TList, maxit = maxit.fusedRidgeS, ...)
     }
   }
 
-  # Local reparameterized cvl function
-  ecvl <- function(x) {
-    cvl(exp(x), YList, TList, maxit = maxit.fusedRidgeS)
-  }
-
   # Get sensible starting value for lambda1 (choosing lambda2 to be zero)
-  st <- optimize(function(x) ecvl(c(x, rep(0, n.lambdas - 1))),
+  st <- optimize(function(x) cvl(c(x, rep(0, n.lambdas - 1))),
                  lower = -30, upper = 30)
 
   # Start at lambda2 point 0
   lambdas.init <- c(st$minimum, rep(0, n.lambdas - 1))
-  ans <- optim(lambdas.init, fn = ecvl, ...,
+  ans <- optim(lambdas.init, fn = cvl, ...,
                method = "BFGS",
                control = list(trace = verbose, maxit = maxit.optim))
 
-  return(ans)
+  # Format optimal values
+  opt.lambdas <- exp(ans$par)
+  res <- list(lambda1 = opt.lambdas[1],
+              LambdaP = .reconstructLambda(opt.lambdas, parsedLambda, K),
+              value = ans$value)
+  return(res)
 }
 
 
