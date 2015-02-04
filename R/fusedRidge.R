@@ -41,6 +41,38 @@ createS <- function(n, p) {
   return(sum(ns*LLs))
 }
 
+.PFLL <- function(SList, PList, ns, TList, lambda1, LambdaP){
+  ##############################################################################
+  # - Function that computes the value of the (negative) penalized combined
+  #   log-likelihood
+  # - Slist   > A list sample covariance matrices for each class
+  # - Plist   > A list of the same length as (Slist) of precision matrices
+  #             (possibly regularized inverse of covariance  matrices)
+  # - ns      > A vector of sample sizes of the same length as Slist.
+  # - TList   > List of target matrices
+  # - lambda1 > ridge penalty
+  # - LambdaP > fused penalty matrix
+  ##############################################################################
+
+  penalty <- 0
+  for (k1 in seq_along(SList)) {
+    for (k2 in seq_len(k1)) {
+      if (k1 == k2) { # Ridge penalty
+        penalty <- penalty +
+          lambda1*.FrobeniusLoss(SList[[k1]], TList[[k1]])
+      } else {  # Fused contribution
+        penalty <- penalty +
+          LambdaP[k1, k2]*.FrobeniusLoss(SList[[k1]] - TList[[k1]],
+                                         SList[[k2]] - TList[[k2]])
+      }
+    }
+  }
+  penalty <- penalty/2
+
+  ans <- .FLL(SList, PList, ns) + penalty
+  return(ans)
+}
+
 
 
 .fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
