@@ -76,7 +76,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
                         lambda1, LambdaP, lambda2,
                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
-  # - The fused ridge estimate for a given lambda1 and lambda2
+  # - The fused ridge estimate for a given lambda1 and LambdaP
   # - SList   > A list of length K of sample correlation matrices the same size
   #             as those of PList.
   # - TList   > A list of length K of target matrices the same size
@@ -98,6 +98,9 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   K <- length(SList)  # Number of groups
   PList <- SList      # Initialize estimates
 
+  # Initialize estimates with the regular ridge for each class
+  PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
+
   if (!missing(LambdaP) && !missing(lambda2)) {
     stop("Supply only either LambdaP or lambda2.")
   } else if (missing(LambdaP) && missing(lambda2)) {
@@ -107,10 +110,12 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   }
 
   if (verbose) {
-    cat("Iteration:  | Difference in Frobenious norm for k = ( 1 2 ... K )\n")
+    cat("Iter:  | max diff. in Frobenius norm\n")
   }
+
   diffs <- rep(NA, K)
-  for (i in seq_len(maxit)) {
+  i <- 1
+  while (i <= maxit) {
     for (k in seq_len(K)) {
       tmpOmega <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
                                TList = TList, ns = ns, lambda1 = lambda1,
@@ -121,14 +126,16 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     }
 
     if (verbose) {
-      max.frob <- max(sapply(PList, .Frobenius))
-      cat(sprintf("i = %-2d | max(diffs) = %.5f | max(Frob) = %.5f\n",
-                  i, max(diffs), max.frob))
+      cat(sprintf("i = %-2d | max(diffs) = %.5f\n", i, max(diffs)))
     }
+
     if (max(diffs) < eps) {
       break
     }
+
+    i <- i + 1
   }
+
   if (i == maxit) {
     warning("Maximum iterations (", maxit, ") hit")
   }
