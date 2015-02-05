@@ -172,6 +172,9 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   }
   stopifnot(length(SList) == length(PList))
 
+  # Initialize estimates with the regular ridge for each class
+  PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
+
   if (!missing(LambdaP) && !missing(lambda2)) {
     stop("Supply only either LambdaP or lambda2.")
   } else if (missing(LambdaP) && missing(lambda2)) {
@@ -185,6 +188,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     cat("init    | diffs = (", sprintf("%11e", rep(NA, K)), ")")
     cat(sprintf(" | -pll = %g\n", .PFLL(SList,PList,ns,TList,lambda1,LambdaP)))
   }
+
 
   tmpPList <- list()
   diffs <- rep(NA, K)
