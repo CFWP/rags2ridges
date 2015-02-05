@@ -1,0 +1,87 @@
+\name{default.penalty}
+\alias{default.penalty}
+\title{
+  Construct commonly used penalty matrices
+}
+\description{
+  Function that constructs default or commonly use penalty matrices
+  according to a study design.
+  The constructed penalty matrix can be used directly in
+  \code{\link{optFusedPenalty.LOOCVauto}} or serve as basis for modification.
+}
+\usage{
+  default.penalty(K, df,
+                  type = c("Complete", "CartesianEqual", "CartesianUnequal"))
+}
+\arguments{
+  \item{K}{
+    A \code{numeric} giving the number of classes. Can also be a \code{list} of length \code{K} such as the usual argument \code{SList} from other \pkg{rags2ridges} functions.
+    Can be omitted if \code{df} is given.
+  }
+  \item{df}{
+    A \code{data.frame} with \code{K} rows and factors in the columns.
+    Can be omitted when \code{K} is given and \code{type == "Complete"}.
+  }
+  \item{type}{
+    A character giving the type of fused penalty graph to construct.
+    Should be \code{'Complete'} (default), \code{'CartesianEqual'}, or
+    \code{'CartesianUnequal'}. See details.
+  }
+}
+\details{
+ The \code{type} gives a number of common choices for the penalty matrix:
+ \itemize{
+   \item \code{'Complete'} is the complete penalty graph with equal
+     penalties.
+   \item \code{'CartesianEqual'} corresponds to a penalizing along each
+     "direction" of factors with a common penalty. The choice is named
+     Cartesian as it is the graph Cartesian product of the complete penalty
+     graphs for the individual factors.
+   \item \code{'CartesianUnequal'} corresponds to a penalizing each
+     direction of factors with individual penalties.
+  }
+}
+\value{
+  Returns a \code{K} by \code{K} character matrix which specify the class
+  of penalty graphs to be used.
+  The output is suitable as input for the penalty matrix
+  used in \code{\link{optFusedPenalty.LOOCVauto}}.
+}
+\author{
+  Anders E. Bilgrau, \cr
+  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Wessel N. van Wieringen
+}
+\seealso{
+  \code{\link{fusedRidgeS}},
+  \code{\link{optFusedPenalty.LOOCVauto}},
+  \code{\link{default.target}}
+}
+\examples{
+  # Handling one-way designs
+  default.penalty(2)
+  default.penalty(4)
+  SList <- vector("list", 6)
+  default.penalty(SList)   # The function uses only the length of the list
+  df0 <- expand.grid(Factor = c("lvl1", "lvl2"))
+  default.penalty(df0)
+
+  # A more elaborate example
+  df1 <- expand.grid(DS = c("DS1", "DS2", "DS3"), ER = c("ER+", "ER-"))
+
+  # Usage (various interface demonstrations)
+  default.penalty(6, df1, type = "Complete")
+  default.penalty(6, type = "CartesianEqual")  # GIVES WARNING
+  default.penalty(6, df1, type = "CartesianEqual")
+  default.penalty(SList, df1, type = "CartesianEqual")
+  default.penalty(6, df1, type = "CartesianUnequal")
+  default.penalty(df1)
+
+  # A 2 by 2 by 2 design
+  df2 <- expand.grid(A = c("A1", "A2"), B = c("B1", "B2"), C = c("C1", "C3"))
+  default.penalty(df2)
+  default.penalty(df2, type = "CartesianEqual")
+  default.penalty(df2, type = "CartesianUnequal")
+}
+
+

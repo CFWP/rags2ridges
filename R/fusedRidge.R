@@ -527,3 +527,150 @@ optFusedPenalty.LOOCVauto <- function(YList,
 
 
 
+################################################################################
+## -------------------------------------------------------------------------- ##
+##
+## Automatic penalty matrix constructor
+##
+## -------------------------------------------------------------------------- ##
+################################################################################
+
+
+
+.charAdjMat <- function(fac, name = "X") {
+  ##############################################################################
+  # Create a character adjacency matrix from a factor
+  # - fac  > A factor of some length.
+  # - name > A character giving the text which should appear in the adjacent
+  #          entries. If not a character, the object name is used.
+  # Examples:
+  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
+  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "Y")
+  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = NULL)
+  ##############################################################################
+
+  p <- nlevels(fac)
+  if (is.character(name)) {
+    lab <- name
+  } else {
+    lab <- deparse(substitute(fac))
+  }
+  M <- matrix(lab, p, p)
+  diag(M) <- ""
+  dimnames(M) <- replicate(2, levels(fac), simplify = FALSE)
+  return(M)
+}
+
+.char2num <- function(X) {
+  ##############################################################################
+  # Create a character adjacency matrix to a numeric one
+  # - X  > A character matrix where "" signify non-adjacency.
+  # Examples:
+  # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
+  # rags2ridges:::.char2num(A)
+  ##############################################################################
+
+  X[X != ""] <- "1"
+  X[X == ""] <- "0"
+  Y <- structure(as.numeric(X), dim = dim(X), dimnames = dimnames(X))
+  return(Y)
+}
+
+.cartesianProd <- function(A, B) {
+  ##############################################################################
+  # Create a character adjacency matrix to a numeric one
+  # - A     > A character matrix where "" signify non-adjacency.
+  # - B     > A character matrix where "" signify non-adjacency.
+  # Examples:
+  # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "X")
+  # B <- rags2ridges:::.charAdjMat(factor(letters[4:5]), name = "Y")
+  # rags2ridges:::.cartesianProd(A, B)
+  ##############################################################################
+
+  AI <- kronecker(.char2num(A), diag(nrow(B)), make.dimnames = TRUE)
+  IB <- kronecker(diag(nrow(A)), .char2num(B), make.dimnames = TRUE)
+  prod <- AI + IB
+
+  ans <- kronecker(A, B, FUN = paste0, make.dimnames = TRUE)
+  ans[!as.logical(prod)] <- ""
+  return(ans)
+}
+
+
+default.penalty <- function(K, df,
+                            type = c("Complete", "CartesianEqual",
+                                     "CartesianUnequal")) {
+  ##############################################################################
+  # Select a one of standard penalty matrix types from a dataframe
+  # - K     > The number of classes. Can also be list of length K such as
+  #           the usual argument "SList".
+  #           Can be omitted if 'df' is given.
+  # - df    > A data.frame with K rows and with factors in the columns.
+  #           Columns of type character are coerced to factors.
+  #           Can be omitted when 'type == "Complete"'.
+  # - type  > A character giving the type of fused penalty graph to construct.
+  #           Should be 'Complete' (default), 'CartesianEqual', or
+  #           'CartesianUnequal'.
+  # Setting type == 'Complete' is the complete penalty graph with equal
+  # penalties.
+  # Setting type == 'CartesianEqual' corresponds to a penalizing along each
+  # "direction" of factors with a common penalty.
+  # Setting type == 'CartesianUnequal' corresponds to a penalizing each
+  # direction of factors with individual penalties.
+  ##############################################################################
+  type <- match.arg(type)
+
+  if (is.data.frame(K)) {
+    df <- K
+    K <- nrow(df)
+  }
+
+  if (missing(K) && !missing(df)) {
+    K <- nrow(df)
+  }
+
+  if (is.list(K)) {
+    K <- length(K)
+  }
+
+  if (missing(df)) {
+    if (type != "Complete") {
+      warning("No data.frame 'df' given and 'type' does not equal 'Complete'.",
+              " Setting 'type' to 'Complete'")
+      type <- "Complete"
+    }
+    df <- data.frame(Class = factor(seq_len(K)))
+  }
+
+  if (!all(sapply(df, is.factor))) {
+    stop("Not all columns in the data.frame 'df' are factors")
+  }
+
+  stopifnot(K == nrow(df))
+
+  if (type == "Complete") {
+
+    M <- matrix("f", K, K)
+    rownames(M) <- colnames(M) <- Reduce(":", df)
+    diag(M) <- ""
+    return(M)
+
+  } else if (type == "CartesianEqual" || type == "CartesianUnequal") {
+
+    adj.mats <- lapply(seq_along(df),
+                       function(i) .charAdjMat(df[[i]], name = names(df)[i]))
+    M <- Reduce(.cartesianProd, adj.mats)
+
+    if (type == "CartesianEqual") {
+      M[M != ""] <- "f"
+    }
+    return(M)
+
+  } else {
+    stop("type", type, "not implemented yet!")
+  }
+}
+
+
+
+
