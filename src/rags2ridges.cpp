@@ -66,9 +66,9 @@ arma::mat armaRidgeS(const arma::mat & S,
   // - S      > the sample covariance matrix (a numeric matrix on the R side)
   // - target > target matrix (a numeric matrix on the R side, same size as S)
   // - lambda > the penalty (a numeric of length one on the R side)
-  int n = S.n_rows;
-  double alpha = target(0, 0);
-  arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
+  const int n = S.n_rows;
+  const double alpha = target(0, 0);
+  const arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
   if (arma::all(arma::all(target == alphaI))) {
     return armaRidgeSRotationInvariantTarget(S, alpha, lambda);
   } else {
