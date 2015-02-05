@@ -167,9 +167,8 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
     PList <- list()
     for (i in seq_len(K)) {
-      PList[[i]] <- ridgeS(Spool, lambda = lambda1, target = TList[[i]])
+      PList[[i]] <- ridgeSArma(Spool, lambda = lambda1, target = TList[[i]])
     }
-    #PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
   }
   stopifnot(length(SList) == length(PList))
 
