@@ -105,6 +105,38 @@ createS <- function(n, p) {
 
 
 
+.fusedUpdate2 <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
+  ##############################################################################
+  # - (Internal) "Update" the covariance matrices and use the regular
+  #   ridge estimate.
+  # - k0      > An integer giving the class estimate to be updated.
+  # - PList   > A list of length K of matrices giving the current precision
+  #             estimates.
+  # - SList   > A list of length K of sample correlation matrices the same size
+  #             as those of PList.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList
+  # - ns      > A vector of length K giving the sample sizes.
+  # - lambda1 > The ridge penalty (a postive number).
+  # - LambdaP > A K by K symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where LambdaP[k1, k2] determine
+  #             the (rate of) shrinkage between estimates in classes
+  #             corresponding to SList[k1] and SList[k1].
+  ##############################################################################
+
+  lambdaa <- (lambda1 + sum(LambdaP[k0, -k0]))/ns[k0]
+
+  p <- nrow(PList[[1]])
+  M <- matrix(0, p, p)
+  for (k in setdiff(seq_along(PList), k0)) {
+    M <- M + (LambdaP[k, k0]/ns[k0])*(PList[[k]] - TList[[k]])
+  }
+  stopifnot(isSymmetric(M))
+  return(ridgeSArma(SList[[k0]] - M, lambda = lambdaa, target = TList[[k0]]))
+}
+
+
+
 fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
                         lambda1, LambdaP, lambda2, PList,
                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
