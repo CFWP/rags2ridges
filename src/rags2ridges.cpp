@@ -10,19 +10,24 @@
 arma::mat armaEigShrink(const arma::vec eigvals,
                         const double lambda,
                         const double constant) {
-  // Function that shrinks the eigenvalues in an eigenvector
+  // Function that shrinks the eigenvalues
   // Shrinkage is that of the rotation equivariant alternative ridge estimator
+  // - eigvals is vector on eigenvalues
+  // - lambda is a double giving the penalty
+  // - constant is the unique diagonal value in the rotaional equivariant target
   arma::vec seigvals = eigvals - lambda*constant;
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
 }
 
-// General target
+
+
 arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
-  // S is the sample covariance matrix
-  // target is the target matrix with the same size as S
-  // lambda is the ridge penalty
+  // Compute the ridge estimate for general targets.
+  // - S is the sample covariance matrix
+  // - target is the target matrix with the same size as S
+  // - lambda is the ridge penalty
   const int n = S.n_cols;
 
   const arma::mat E = symmatl(S) - lambda * symmatl(target);
@@ -33,13 +38,15 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
 }
 
-// Rotational invariant target
+
+
 arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
-  // S is the sample covariance matrix
-  // alpha is a scaling of the identity matrix
-  // lambda is the ridge penalty
+  // Compute the ridge estimate for rotational equivariate target.
+  // - S is the sample covariance matrix
+  // - alpha is a scaling of the identity matrix
+  // - lambda is the ridge penalty
   arma::vec eigvals;
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, S, "dc");  // Eigen decomposition
@@ -51,11 +58,14 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
 
 
 
-// Choose method
 // [[Rcpp::export]]
 arma::mat armaRidgeS(const arma::mat & S,
                      const arma::mat & target,
                      const double lambda) {
+  // The ridge estimator
+  // - S      > the sample covariance matrix (a numeric matrix on the R side)
+  // - target > target matrix (a numeric matrix on the R side, same size as S)
+  // - lambda > the penalty (a numeric of length one on the R side)
   int n = S.n_rows;
   double alpha = target(0, 0);
   arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
