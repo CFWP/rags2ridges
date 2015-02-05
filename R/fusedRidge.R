@@ -77,7 +77,8 @@ createS <- function(n, p) {
 
 .fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
   ##############################################################################
-  # - (Internal) Update the scatter matrices
+  # - (Internal) "Update" the covariance matrices and use the regular
+  #   ridge estimate.
   # - k0      > An integer giving the class estimate to be updated.
   # - PList   > A list of length K of matrices giving the current precision
   #             estimates.
