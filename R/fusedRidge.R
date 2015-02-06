@@ -578,7 +578,7 @@ optFusedPenalty.LOOCVauto <- function(YList,
 
 .cartesianProd <- function(A, B) {
   ##############################################################################
-  # Create a character adjacency matrix to a numeric one
+  # Construct the Cartesian product graph from two "character" matrices.
   # - A     > A character matrix where "" signify non-adjacency.
   # - B     > A character matrix where "" signify non-adjacency.
   # Examples:
@@ -589,17 +589,39 @@ optFusedPenalty.LOOCVauto <- function(YList,
 
   AI <- kronecker(.char2num(A), diag(nrow(B)), make.dimnames = TRUE)
   IB <- kronecker(diag(nrow(A)), .char2num(B), make.dimnames = TRUE)
-  prod <- AI + IB
+  gprod <- AI + IB  # Kronecker sum
 
   ans <- kronecker(A, B, FUN = paste0, make.dimnames = TRUE)
-  ans[!as.logical(prod)] <- ""
+  ans[!as.logical(gprod)] <- ""
   return(ans)
 }
 
 
+
+.tensorProd <- function(A, B) {
+  ##############################################################################
+  # Construct the Tensor (or categorical) product graph from two "character"
+  # matrices.
+  # - A     > A character matrix where "" signify non-adjacency.
+  # - B     > A character matrix where "" signify non-adjacency.
+  # Examples:
+  # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "X")
+  # B <- rags2ridges:::.charAdjMat(factor(letters[4:5]), name = "Y")
+  # rags2ridges:::.tensorProd(A, B)
+  ##############################################################################
+
+  gprod <- kronecker(.char2num(A), .char2num(B), make.dimnames = TRUE)
+
+  ans <- kronecker(A, B, FUN = paste0, make.dimnames = TRUE)
+  ans[!as.logical(gprod)] <- ""
+  return(ans)
+}
+
+
+
 default.penalty <- function(K, df,
                             type = c("Complete", "CartesianEqual",
-                                     "CartesianUnequal")) {
+                                     "CartesianUnequal", "TensorProd")) {
   ##############################################################################
   # Select a one of standard penalty matrix types from a dataframe
   # - K     > The number of classes. Can also be list of length K such as
@@ -609,8 +631,9 @@ default.penalty <- function(K, df,
   #           Columns of type character are coerced to factors.
   #           Can be omitted when 'type == "Complete"'.
   # - type  > A character giving the type of fused penalty graph to construct.
-  #           Should be 'Complete' (default), 'CartesianEqual', or
-  #           'CartesianUnequal'.
+  #           Should be one of 'Complete' (default), 'CartesianEqual',
+  #           'CartesianUnequal', or 'TensorProd' or an unique abbreviation
+  #           hereof.
   # Setting type == 'Complete' is the complete penalty graph with equal
   # penalties.
   # Setting type == 'CartesianEqual' corresponds to a penalizing along each
@@ -666,8 +689,17 @@ default.penalty <- function(K, df,
     }
     return(M)
 
+  } else if (type == "TensorProd") {
+
+    adj.mats <- lapply(seq_along(df),
+                       function(i) .charAdjMat(df[[i]], name = names(df)[i]))
+    M <- Reduce(.tensorProd, adj.mats)
+    return(M)
+
   } else {
-    stop("type", type, "not implemented yet!")
+
+    stop("type =", type, "not implemented yet!")
+
   }
 }
 

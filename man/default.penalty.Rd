@@ -15,7 +15,9 @@
 }
 \arguments{
   \item{K}{
-    A \code{numeric} giving the number of classes. Can also be a \code{list} of length \code{K} such as the usual argument \code{SList} from other \pkg{rags2ridges} functions.
+    A \code{numeric} giving the number of classes. Can also be a \code{list} of length
+    \code{K} such as the usual argument \code{SList} from other \pkg{rags2ridges}
+    functions.
     Can be omitted if \code{df} is given.
   }
   \item{df}{
@@ -25,7 +27,8 @@
   \item{type}{
     A character giving the type of fused penalty graph to construct.
     Should be \code{'Complete'} (default), \code{'CartesianEqual'}, or
-    \code{'CartesianUnequal'}. See details.
+    \code{'CartesianUnequal'} or \code{'TensorProd'} or an unique abbreviation
+   hereof. See details.
   }
 }
 \details{
@@ -35,10 +38,13 @@
      penalties.
    \item \code{'CartesianEqual'} corresponds to a penalizing along each
      "direction" of factors with a common penalty. The choice is named
-     Cartesian as it is the graph Cartesian product of the complete penalty
+     Cartesian as it is the Cartesian graph product of the complete penalty
      graphs for the individual factors.
    \item \code{'CartesianUnequal'} corresponds to a penalizing each
      direction of factors with individual penalties.
+   \item \code{'TensorProd'} correspond to penalizing the "diagonals" only.
+     It is equivalent to the graph tensor products of the complete graphs
+     for each individual factor.
   }
 }
 \value{
