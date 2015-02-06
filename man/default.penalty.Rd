@@ -11,7 +11,8 @@
 }
 \usage{
   default.penalty(K, df,
-                  type = c("Complete", "CartesianEqual", "CartesianUnequal"))
+                  type = c("Complete", "CartesianEqual",
+                           "CartesianUnequal", "TensorProd"))
 }
 \arguments{
   \item{K}{
