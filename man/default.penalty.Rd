@@ -53,6 +53,11 @@
   The output is suitable as input for the penalty matrix
   used in \code{\link{optFusedPenalty.LOOCVauto}}.
 }
+\references{
+Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
+(in preparation) "Fused Ridge Estimation of Multiple Inverse Covariance
+Matrices from High-Dimensional Data Classes"
+}
 \author{
   Anders E. Bilgrau, \cr
   Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
