@@ -106,7 +106,7 @@ createS <- function(n, p, covariance = TRUE) {
   OmT <- mapply(`-`, PList[-k0], TList[-k0], SIMPLIFY = FALSE) # Omega - Target
   OmT <- mapply(`*`, LambdaP[k0, -k0]/ns[k0], OmT, SIMPLIFY = FALSE)
   S0 <- SList[[k0]] - Reduce(`+`, OmT)
-  return(ridgeSArma(S0, lambda = a, target = TList[[k0]]))
+  return(armaRidgeS(S0, target = TList[[k0]], lambda = a))
 }
 
 
@@ -138,7 +138,7 @@ createS <- function(n, p, covariance = TRUE) {
     M <- M + (LambdaP[k, k0]/ns[k0])*(PList[[k]] - TList[[k]])
   }
   stopifnot(isSymmetric(M))
-  return(ridgeSArma(SList[[k0]] - M, lambda = lambdaa, target = TList[[k0]]))
+  return(armaRidgeS(SList[[k0]] - M, target = TList[[k0]], lambda = lambdaa))
 }
 
 
@@ -173,7 +173,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
     PList <- list()
     for (i in seq_len(K)) {
-      PList[[i]] <- ridgeSArma(Spool, lambda = lambda1, target = TList[[i]])
+      PList[[i]] <- armaRidgeS(Spool, target = TList[[i]], lambda = lambda1)
     }
   }
   stopifnot(length(SList) == length(PList))
