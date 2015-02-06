@@ -1,10 +1,13 @@
 
-createS <- function(n, p) {
+createS <- function(n, p, covariance = TRUE) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
-  # - n > A vector of sample sizes
-  # - p > An integer giving the dimension
-  # - Returns a list of matrices if n has length greater than 1
+  #   or datasets
+  # - n          > A vector of sample sizes
+  # - p          > An integer giving the dimension
+  # - covariance > logical. Should covariances be returned?
+  # - Returns a list of matrices if n > 1
+  # - Returns the matrices if n = 1.
   ##############################################################################
 
   K <- length(n)
@@ -17,9 +20,12 @@ createS <- function(n, p) {
   # Construct list
   ans <- list()
   for (i in seq_len(K)) {
-    ans[[i]] <- covML(matrix(rnorm(n[i]*p), nrow = n[i], ncol = p))
-    if (p <= 17576) {
-      colnames(ans[[i]]) <- rownames(ans[[i]]) <- nms[1:p]
+    ans[[i]] <- matrix(rnorm(n[i]*p), nrow = n[i], ncol = p)
+    if (p <= 17576) {  # Only give names for "small" dimensions
+      colnames(ans[[i]]) <- nms[1:p]
+    }
+    if (covariance) {
+      ans[[i]] <- covML(ans[[i]])
     }
   }
   if (K == 1) {ans <- ans[[1]]}  # Simplify output is ns is length 1
