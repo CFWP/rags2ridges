@@ -361,29 +361,29 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 optFusedPenalty.LOOCV <- function(YList,
+                                  TList,
                                   lambda1Min, lambda1Max,
                                   step1 = 20,
                                   lambda2Min = lambda1Min,
                                   lambda2Max = lambda1Max,
                                   step2 = step1,
-                                  TList,
                                   approximate = FALSE,
-                                  ...,
-                                  verbose = TRUE) {
+                                  verbose = TRUE,
+                                  ...) {
   ##############################################################################
   #   Simple (approximate) leave one-out cross validation for the fused ridge
   #   estimator on a grid to determine optimal lambda1 and lambda2.
   #   The complete penalty graph is assumed.
   # - YList       > A list of length K of matrices of observations with samples
   #                 in the rows and variables in the columns.
+  # - TList       > A list of length K of target matrices the same size
+  #                 as those of PList. Default is given by default.target.
   # - lambda1Min  > Start of lambda1 value, the ridge penalty
   # - lambda1Max  > End of lambda1 value
   # - step1       > Number of evaluations
   # - lambda2Min  > As lambda1Min for the fused penalty. Default is lambda1Min.
   # - lambda2Max  > As lambda1Max for the fused penalty. Default is lambda1Max.
   # - step2       > As step1 for the fused penalty. Default is step1.
-  # - TList       > A list of length K of target matrices the same size
-  #                 as those of PList. Default is given by default.target.
   # - approximate > Should approximate LOOCV be used? Defaults is FALSE.
   #                 Approximate LOOCV is much faster.
   # - ...         > Arguments passed to fusedRidgeS
