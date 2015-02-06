@@ -168,7 +168,7 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
   stopifnot(length(SList) == length(TList))
   K <- length(SList)  # Number of groups
 
-  # Initialize estimates with the regular ridge for each class
+  # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(PList)) {
     Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
     PList <- list()
@@ -177,9 +177,6 @@ fusedRidgeS <- function(SList, ns, TList = lapply(SList, default.target),
     }
   }
   stopifnot(length(SList) == length(PList))
-
-  # Initialize estimates with the regular ridge for each class
-  PList <- mapply(ridgeS, SList, lambda1, SIMPLIFY = FALSE)
 
   if (!missing(LambdaP) && !missing(lambda2)) {
     stop("Supply only either LambdaP or lambda2.")
