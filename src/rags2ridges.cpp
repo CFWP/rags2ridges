@@ -7,16 +7,36 @@
 //// [[Rcpp::depends(RcppArmadillo)]]
 
 
+
 arma::mat armaEigShrink(const arma::vec eigvals,
                         const double lambda,
-                        const double constant) {
+                        const double alpha) {
   // Function that shrinks the eigenvalues
   // Shrinkage is that of the rotation equivariant alternative ridge estimator
   // - eigvals is vector on eigenvalues
   // - lambda is a double giving the penalty
-  // - constant is the unique diagonal value in the rotaional equivariant target
-  arma::vec seigvals = eigvals - lambda*constant;
+  // - alpha is the unique diagonal value in the rotaional equivariant target
+  arma::vec seigvals = eigvals - lambda*alpha;
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
+}
+
+
+
+arma::mat armaRidgeSAnyTargetOld(const arma::mat & S,
+                                 const arma::mat & target,
+                                 const double lambda) {
+  // Compute the ridge estimate for general targets.
+  // - S is the sample covariance matrix
+  // - target is the target matrix with the same size as S
+  // - lambda is the ridge penalty
+  const int n = S.n_cols;
+  const arma::mat E = symmatl(S) - lambda * symmatl(target);
+
+  arma::vec eigval;
+  arma::mat eigvec;
+  arma::eig_sym(eigval, eigvec, 0.25f*E*E + lambda*arma::eye(n, n), "dc");
+
+  return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
 }
 
 
@@ -29,13 +49,33 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   // - target is the target matrix with the same size as S
   // - lambda is the ridge penalty
   const int n = S.n_cols;
-
+  const double inv_lambda = 1.0f/lambda;
   const arma::mat E = symmatl(S) - lambda * symmatl(target);
+
   arma::vec eigval;
   arma::mat eigvec;
-
   arma::eig_sym(eigval, eigvec, 0.25f*E*E + lambda*arma::eye(n, n), "dc");
-  return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
+
+  eigval = inv_lambda*sqrt(eigval);
+  return (-0.5f*inv_lambda)*E + eigvec*diagmat(eigval)*eigvec.t();
+}
+
+
+
+arma::mat armaRidgeSRotationInvariantTargetOld(const arma::mat & S,
+                                               const double alpha,
+                                               const double lambda) {
+  // Compute the ridge estimate for rotational equivariate target.
+  // - S is the sample covariance matrix
+  // - alpha is a scaling of the identity matrix
+  // - lambda is the ridge penalty
+  arma::vec eigvals;
+  arma::mat eigvecs;
+  arma::eig_sym(eigvals, eigvecs, symmatl(S), "dc");  // Eigen decomposition
+
+  eigvals = armaEigShrink(eigvals, lambda, alpha);
+
+  return inv_sympd(eigvecs*diagmat(eigvals)*eigvecs.t());
 }
 
 
@@ -47,13 +87,17 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
   // - S is the sample covariance matrix
   // - alpha is a scaling of the identity matrix
   // - lambda is the ridge penalty
+  const double inv_lambda = 1.0f/lambda;
+  arma::mat E = symmatl(S);
+  E.diag() -= alpha*lambda;
+
   arma::vec eigvals;
   arma::mat eigvecs;
-  arma::eig_sym(eigvals, eigvecs, S, "dc");  // Eigen decomposition
+  arma::eig_sym(eigvals, eigvecs, symmatl(S), "dc");  // Eigen decomposition
 
   eigvals = armaEigShrink(eigvals, lambda, alpha);
 
-  return inv_sympd(eigvecs*diagmat(eigvals)*eigvecs.t());
+  return inv_lambda*(symmatl(eigvecs*diagmat(eigvals)*eigvecs.t())-symmatl(E));
 }
 
 
