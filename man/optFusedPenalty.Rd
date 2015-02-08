@@ -153,7 +153,7 @@ filled.contour(log(a$lambda1), log(a$lambda2), log(a$fcvl), color = heat.colors,
                plot.axes = {points(amin[1], amin[2], pch = 16);
                             points(aamin[1], aamin[2], pch = 16, col = "purple");
                             axis(1); axis(2)},
-               main = "LOOCV")
+               xlab = "lambda1", ylab = "lambda2", main = "LOOCV")
 
 # Approximate LOOCV
 # Get minimums and plot
@@ -164,6 +164,26 @@ filled.contour(log(b$lambda1), log(b$lambda2), log(b$fcvl), color = heat.colors,
                plot.axes = {points(bmin[1], bmin[2], pch = 16);
                             points(bbmin[1], bbmin[2], pch = 16, col = "purple");
                             axis(1); axis(2)},
-               main = "Approximate LOOCV")
+               xlab = "lambda1", ylab = "lambda2", main = "Approximate LOOCV")
+
+
+
+#
+# Arbitrary penalty graphs
+#
+
+# Generate some new high-dimensional data and a 2 by 2 factorial design
+ns <- c(6, 5, 3, 2)
+df <- expand.grid(Factor1 = LETTERS[1:2], Factor2 = letters[3:4])
+YList <- createS(n = ns, p = 4, covariance = FALSE)
+TList <- lapply(lapply(YList, covML), default.target, type = "Null")
+
+# Construct penalty matrix
+Lambda <- default.penalty(df, type = "CartesianUnequal")
+
+# Find optimal parameters
+ans <- optFusedPenalty.LOOCVauto(YList, TList,
+                                 Lambda = Lambda, approximate = TRUE)
+ans
 }
 
