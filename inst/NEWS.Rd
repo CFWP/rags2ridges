@@ -6,9 +6,12 @@
   \itemize{
     \item Added this \code{NEWS} file!
     \item Arguments \code{verticle} in various functions have been renamed to
-      \code{vertical}.
+      \code{vertical}. Sorry for any inconvinience.
     \item Added fused ridge estimation functionality for estimation of multiple
       precision matrices for multiple classes.
+    \item Added LOOCV and approximations hereof to determine optimal ridge and
+      fused penalties. The fused pairs to cross-validate over are specified by
+      a character matrix.
     \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadilo} with
       core functions written in \code{C++} and the package
       should be notably faster in many cases.
