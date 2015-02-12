@@ -453,12 +453,13 @@ optPenalty.fused.LOOCVauto <- function(YList,
                                        approximate = FALSE,
                                        verbose = TRUE,
                                        maxit.ridgeS.fused = 1000,
-                                       maxit.optim = 1000,
-                                       optim.debug = FALSE,
+                                       optimizer = "optim",
+                                       maxit.optimizer = 1000,
+                                       debug = FALSE,
                                        ...) {
   ##############################################################################
   # - Selection of the optimal penalties w.r.t. to (possibly approximate)
-  #   leave-one-out cross-validation using multi-dimensional BFGS optimization
+  #   leave-one-out cross-validation using multi-dimensional optimization
   #   routines.
   #
   # - YList       > A list of length K of matrices of observations with samples
@@ -473,10 +474,12 @@ optPenalty.fused.LOOCVauto <- function(YList,
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
   # - maxit.ridgeS.fused > integer. Max. number of iterations for ridgeS.fused
-  # - maxit.optim        > integer. Max. number of iterations for optim.
-  # - optim.debug        > logical. If TRUE the raw output from optim is added
-  #                        as an attribute to the output.
-  # - ...                > arguments passed to optim.
+  # - optimizer          > character giving the stadard optimizer.
+  #                        Either "optim" or "nlm".
+  # - maxit.optimizer    > integer. Max. number of iterations for the optimizer.
+  # - debug              > logical. If TRUE the raw output from the optimizer is
+  #                        appended as an attribute to the output.
+  # - ...                > arguments passed to the optimizer.
   #
   # The function returns a list of length 4 with entries (1) lambda,
   # (2) lambdaF, (3) the optimal penalty matrix lambdaFmat, and (4) the value of
@@ -521,24 +524,37 @@ optPenalty.fused.LOOCVauto <- function(YList,
 
   # Start lambdaFmat at 0
   lambdas.init <- c(st$minimum, rep(0, n.lambdas - 1))
-  ans <- optim(lambdas.init, fn = cvl, ...,
-               method = "BFGS",
-               control = list(trace = verbose, maxit = maxit.optim))
+
+  if (optimizer == "optim") {
+
+    ans <- optim(lambdas.init, fn = cvl, ...,
+                 control = list(trace = verbose, maxit = maxit.optimizer))
+    par <- ans$par
+    val <- ans$value
+
+  } else if (optimizer == "nlm") {
+
+    ans <- nlm(cvl, lambdas.init, iterlim = maxit.optimizer, ...)
+    par <- ans$estimate
+    val <- ans$minimum
+
+  }
 
   # Format optimal values
-  opt.lambdas <- exp(ans$par)
+  opt.lambdas <- exp(par)
   res <- list(lambda = opt.lambdas[1],
               lambdaF = NA,
               lambdaFmat = .reconstructLambda(opt.lambdas, parsedLambda, K),
-              value = ans$value)
+              value = val)
   lambdaF <- unique(opt.lambdas[-1])
   if (length(lambdaF) == 1) {
     res$lambdaF <- lambdaF
   }
 
-  if (optim.debug) {
+  if (debug) {
     attr(res, "optim.debug") <- ans
   }
+
   return(res)
 }
 

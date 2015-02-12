@@ -12,10 +12,10 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat,
-                           approximate = FALSE, verbose = TRUE,
-                           maxit.ridgeS.fused = 1000, maxit.optim = 1000,
-                           optim.debug = FALSE, ...)
+optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat, approximate = FALSE,
+                           verbose = TRUE, maxit.ridgeS.fused = 1000,
+                           optimizer = "optim", maxit.optimizer = 1000,
+                           debug = FALSE, ...)
 optPenalty.fused.LOOCV(YList, TList,
                        lambdaMin, lambdaMax, step1 = 20,
                        lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
@@ -47,17 +47,20 @@ optPenalty.fused.LOOCV(YList, TList,
   A \code{integer} giving the maximum number of iterations allowed for each
   fused ridge fit.
 }
-  \item{maxit.optim}{
+  \item{optimizer}{
+  A \code{character} equally either \code{"optim"} or \code{"nlm"} determining
+  which optimizer to use.
+}
+  \item{maxit.optimizer}{
   A \code{integer} giving the maximum number of iterations allowed in the
   optimization procedure.
 }
-  \item{optim.debug}{
-  \code{logical}. If \code{TRUE} additional output from optim is appended to the
+  \item{debug}{
+  \code{logical}. If \code{TRUE} additional output from the optimizer is appended to the
   output as an attribute.
 }
   \item{lambdaMin}{
   A single positive \code{numeric}. Minimum ridge penalty \eqn{lambda}.
-
 }
   \item{lambdaMax}{
   A single positive \code{numeric}. Maximum ridge penalty \eqn{lambda}.
@@ -75,7 +78,8 @@ optPenalty.fused.LOOCV(YList, TList,
   A single non-negative \code{integer}. As for \code{step1}, but for the fused penalty.
 }
   \item{\dots}{
-  Arguments passed to \code{optim} for \code{optPenalty.fused.LOOCVauto} and \code{fusedRidgeS} for \code{optPenalty.fused.LOOCV}.
+  Arguments passed to the optimizer in \code{optPenalty.fused.LOOCVauto} and
+  arguments passed to \code{fusedRidgeS} in \code{optPenalty.fused.LOOCV}.
 }
 }
 \details{
@@ -118,7 +122,7 @@ See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 ns <- c(4, 5, 6)
 YList <- createS(n = ns, p = 6, covariance = FALSE)
 SList <- lapply(YList, covML)
-TList <- lapply(SList, default.target, type = "DIAES")
+TList <- default.target.fused(SList, ns, type = "DIAES", equal = FALSE)
 
 
 # Grid-based
@@ -133,9 +137,11 @@ b <- optPenalty.fused.LOOCV(YList, TList,
 
 
 # Numerical optimization
-aa <- optPenalty.fused.LOOCVauto(YList, TList, approximate = FALSE)
+aa <- optPenalty.fused.LOOCVauto(YList, TList, approximate = FALSE,
+                                 method = "BFGS")
 print(aa)
-bb <- optPenalty.fused.LOOCVauto(YList, TList, approximate = TRUE)
+bb <- optPenalty.fused.LOOCVauto(YList, TList, approximate = TRUE,
+                                 method = "BFGS")
 print(bb)
 
 #
@@ -180,9 +186,23 @@ TList <- lapply(lapply(YList, covML), default.target, type = "Null")
 # Construct penalty matrix
 lambdaFmat <- default.penalty(df, type = "CartesianUnequal")
 
-# Find optimal parameters
-ans <- optPenalty.fused.LOOCVauto(YList, TList,
-                                  lambdaFmat = lambdaFmat, approximate = TRUE)
-ans
+# Find optimal parameters,
+# Using optim with method "Nelder-Mead"
+ans1 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+                                   approximate = TRUE, verbose = FALSE)
+print(ans1)
+\dontrun{
+# Using optim with method "BFGS"
+ans2 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+                                   approximate = TRUE, verbose = FALSE,
+                                   method = "BFGS")
+# Using nlm
+print(ans2)
+ans3 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+                                   approximate = TRUE, verbose = FALSE,
+                                   optimizer = "nlm")
+print(ans3)
+# Quite different results!
+}
 }
 
