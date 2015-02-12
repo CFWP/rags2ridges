@@ -9,7 +9,7 @@
 }
 \usage{
 ridgeS.fused(SList, ns, TList = lapply(SList, default.target),
-             lambda, LambdaFmat, lambdaF,
+             lambda, lambdaFmat, lambdaF,
              PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
