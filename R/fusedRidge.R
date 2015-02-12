@@ -47,7 +47,7 @@ createS <- function(n, p, covariance = TRUE) {
   return(sum(ns*LLs))
 }
 
-.PFLL <- function(SList, PList, ns, TList, lambda1, LambdaP){
+.PFLL <- function(SList, PList, ns, TList, lambda, lambdaFmat){
   ##############################################################################
   # - Function that computes the value of the (negative) penalized combined
   #   log-likelihood
@@ -56,8 +56,8 @@ createS <- function(n, p, covariance = TRUE) {
   #             (possibly regularized inverse of covariance  matrices)
   # - ns      > A vector of sample sizes of the same length as Slist.
   # - TList   > List of target matrices
-  # - lambda1 > ridge penalty
-  # - LambdaP > fused penalty matrix
+  # - lambda  > ridge penalty
+  # - lambdaFmat > fused penalty matrix
   ##############################################################################
 
   penalty <- 0
@@ -65,10 +65,10 @@ createS <- function(n, p, covariance = TRUE) {
     for (k2 in seq_len(k1)) {
       if (k1 == k2) { # Ridge penalty
         penalty <- penalty +
-          lambda1*.FrobeniusLoss(SList[[k1]], TList[[k1]])
+          lambda*.FrobeniusLoss(SList[[k1]], TList[[k1]])
       } else {  # Fused contribution
         penalty <- penalty +
-          LambdaP[k1, k2]*.FrobeniusLoss(SList[[k1]] - TList[[k1]],
+          lambdaFmat[k1, k2]*.FrobeniusLoss(SList[[k1]] - TList[[k1]],
                                          SList[[k2]] - TList[[k2]])
       }
     }
@@ -81,7 +81,7 @@ createS <- function(n, p, covariance = TRUE) {
 
 
 
-.fusedUpdate <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
+.fusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
   #   ridge estimate.
@@ -93,25 +93,25 @@ createS <- function(n, p, covariance = TRUE) {
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList
   # - ns      > A vector of length K giving the sample sizes.
-  # - lambda1 > The ridge penalty (a postive number).
-  # - LambdaP > A K by K symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where LambdaP[k1, k2] determine
+  # - lambda > The ridge penalty (a postive number).
+  # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where lambdaFmat[k1, k2] determine
   #             the (rate of) shrinkage between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
-  diag(LambdaP) <- 0  # Make sure there's zeros in the diagonal
-  a <- (sum(LambdaP[k0, ]) + lambda1)/ns[k0]
+  diag(lambdaFmat) <- 0  # Make sure there's zeros in the diagonal
+  a <- (sum(lambdaFmat[k0, ]) + lambda)/ns[k0]
 
   OmT <- mapply(`-`, PList[-k0], TList[-k0], SIMPLIFY = FALSE) # Omega - Target
-  OmT <- mapply(`*`, LambdaP[k0, -k0]/ns[k0], OmT, SIMPLIFY = FALSE)
+  OmT <- mapply(`*`, lambdaFmat[k0, -k0]/ns[k0], OmT, SIMPLIFY = FALSE)
   S0 <- SList[[k0]] - Reduce(`+`, OmT)
   return(armaRidgeS(S0, target = TList[[k0]], lambda = a))
 }
 
 
 
-.fusedUpdate2 <- function(k0, PList, SList, TList, ns, lambda1, LambdaP) {
+.fusedUpdate2 <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
   #   ridge estimate.
@@ -123,19 +123,19 @@ createS <- function(n, p, covariance = TRUE) {
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList
   # - ns      > A vector of length K giving the sample sizes.
-  # - lambda1 > The ridge penalty (a postive number).
-  # - LambdaP > A K by K symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where LambdaP[k1, k2] determine
+  # - lambda > The ridge penalty (a postive number).
+  # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where lambdaFmat[k1, k2] determine
   #             the (rate of) shrinkage between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
-  lambdaa <- (lambda1 + sum(LambdaP[k0, -k0]))/ns[k0]
+  lambdaa <- (lambda + sum(lambdaFmat[k0, -k0]))/ns[k0]
 
   p <- nrow(PList[[1]])
   M <- matrix(0, p, p)
   for (k in setdiff(seq_along(PList), k0)) {
-    M <- M + (LambdaP[k, k0]/ns[k0])*(PList[[k]] - TList[[k]])
+    M <- M + (lambdaFmat[k, k0]/ns[k0])*(PList[[k]] - TList[[k]])
   }
   stopifnot(isSymmetric(M))
   return(armaRidgeS(SList[[k0]] - M, target = TList[[k0]], lambda = lambdaa))
@@ -144,21 +144,21 @@ createS <- function(n, p, covariance = TRUE) {
 
 
 ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
-                        lambda1, LambdaP, lambda2, PList,
+                        lambda, lambdaFmat, lambdaF, PList,
                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
-  # - The fused ridge estimate for a given lambda1 and LambdaP
+  # - The fused ridge estimate for a given lambda and lambdaFmat
   # - SList   > A list of length K of sample correlation matrices the same size
   #             as those of PList.
   # - TList   > A list of length K of target matrices the same size
   #             as those of PList. Default is given by default.target.
   # - ns      > A vector of length K giving the sample sizes.
-  # - lambda1 > The ridge penalty (a postive number)
-  # - LambdaP > The K by K symmetric adjacency matrix fused penalty graph
-  #             with non-negative entries where LambdaP[k1, k2] determine the
+  # - lambda > The ridge penalty (a postive number)
+  # - lambdaFmat > The K by K symmetric adjacency matrix fused penalty graph
+  #             with non-negative entries where lambdaFmat[k1, k2] determine the
   #             retainment of similarities between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
-  # - lambda2 > The non-negative fused penalty. Alternative to LambdaP if
+  # - lambdaF > The non-negative fused penalty. Alternative to lambdaFmat if
   #             all pairwise penalties equal.
   # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
@@ -173,23 +173,24 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
     Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
     PList <- list()
     for (i in seq_len(K)) {
-      PList[[i]] <- armaRidgeS(Spool, target = TList[[i]], lambda = lambda1)
+      PList[[i]] <- armaRidgeS(Spool, target = TList[[i]], lambda = lambda)
     }
   }
   stopifnot(length(SList) == length(PList))
 
-  if (!missing(LambdaP) && !missing(lambda2)) {
-    stop("Supply only either LambdaP or lambda2.")
-  } else if (missing(LambdaP) && missing(lambda2)) {
-    stop("Either LambdaP or lambda2 must be given.")
-  } else if (missing(LambdaP) && !missing(lambda2)) {
-    LambdaP <- matrix(lambda2, K, K)
+  if (!missing(lambdaFmat) && !missing(lambdaF)) {
+    stop("Supply only either lambdaFmat or lambdaF.")
+  } else if (missing(lambdaFmat) && missing(lambdaF)) {
+    stop("Either lambdaFmat or lambdaF must be given.")
+  } else if (missing(lambdaFmat) && !missing(lambdaF)) {
+    lambdaFmat <- matrix(lambdaF, K, K)
   }
 
   if (verbose) {
     cat("Iter:   | difference in Frobenius norm        | -penalized log-lik\n")
     cat("init    | diffs = (", sprintf("%11e", rep(NA, K)), ")")
-    cat(sprintf(" | -pll = %g\n", .PFLL(SList,PList,ns,TList,lambda1,LambdaP)))
+    cat(sprintf(" | -pll = %g\n",
+                .PFLL(SList, PList, ns, TList, lambda, lambdaFmat)))
   }
 
 
@@ -199,15 +200,15 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
   while (i <= maxit) {
     for (k in seq_len(K)) {
       tmpPList[[k]] <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
-                                    TList = TList, ns = ns, lambda1 = lambda1,
-                                    LambdaP = LambdaP)
+                                    TList = TList, ns = ns, lambda = lambda,
+                                    lambdaFmat = lambdaFmat)
       diffs[k] <- .FrobeniusLoss(tmpPList[[k]], PList[[k]])
       PList[[k]] <- tmpPList[[k]]
     }
 
     if (verbose) {
       cat(sprintf("i = %-3d", i), "| diffs = (", sprintf("%6.5e", diffs), ")")
-      cat(sprintf(" | -pll = %g\n",.PFLL(SList,PList,ns,TList,lambda1,LambdaP)))
+      cat(sprintf(" | -pll = %g\n",.PFLL(SList,PList,ns,TList,lambda,lambdaFmat)))
     }
 
     if (max(diffs) < eps) {
@@ -235,11 +236,11 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-.fcvl <- function(lambda1, LambdaP, YList, TList, ...) {
+.fcvl <- function(lambda, lambdaFmat, YList, TList, ...) {
   ##############################################################################
   # - A function to perform fused LOOCV
-  # - lambda1 > numeric of length 1 giving ridge penalty.
-  # - LambdaP > numeric matrix giving the fused penalty matrix.
+  # - lambda > numeric of length 1 giving ridge penalty.
+  # - lambdaFmat > numeric matrix giving the fused penalty matrix.
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns. A least 2
   #             samples (rows) are needed in each entry.
@@ -262,7 +263,7 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
       SList[[k]] <- covML(YList[[k]][-i, , drop = FALSE])
       Sik    <- crossprod(YList[[k]][i,  , drop = FALSE])
       PList  <- ridgeS.fused(SList = SList, ns = ns, TList = TList,
-                             lambda1 = lambda1, LambdaP = LambdaP,
+                             lambda = lambda, lambdaFmat = lambdaFmat,
                              verbose = FALSE, ...)
       slh <- c(slh, .LL(Sik, PList[[k]]))
     }
@@ -272,12 +273,12 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-.afcvl <- function(lambda1, LambdaP, YList, TList, ...) {
+.afcvl <- function(lambda, lambdaFmat, YList, TList, ...) {
   ##############################################################################
-  # - (Internal) For at given lambda1 and lambda2, compute the approximate
+  # - (Internal) For at given lambda and lambdaF, compute the approximate
   # - LOOCV loss
-  # - lambda1 > numeric of length 1 giving ridge penalty.
-  # - LambdaP > numeric matrix giving the fused penalty matrix.
+  # - lambda > numeric of length 1 giving ridge penalty.
+  # - lambdaFmat > numeric matrix giving the fused penalty matrix.
   # - YList   > A list of length K of matrices of observations with samples
   #             in the rows and variables in the columns.
   # - TList   > A list of length K of target matrices the same size
@@ -289,7 +290,7 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
   K <- length(ns)
   SList <- lapply(YList, covML)
   PList <- ridgeS.fused(SList = SList, TList = TList, ns = ns,
-                       lambda1 = lambda1, LambdaP = LambdaP,
+                       lambda = lambda, lambdaFmat = lambdaFmat,
                        verbose = FALSE, ...)
   n.tot <- sum(ns)
   nll <- .FLL(SList = SList, PList = PList, ns)/n.tot
@@ -308,29 +309,29 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
 
 
 
-.parseLambda <- function(Lambda) {
+.parseLambda <- function(lambdaFmat) {
   ##############################################################################
   # - A function to parse a character matrix that defines the class of penalty
   #   graphs and unique parameters for cross validation. Returns a list of
   #   indices for each level to be penalized equally.
   #   This list is to be used to construct numeric matrices of penalties.
-  # - Lambda > A square K by K character matrix defining the class penalty
+  # - lambdaFmat > A square K by K character matrix defining the class penalty
   #            matrices to use. Entries with NA, "NA", "" (the empty string),
   #            or "0" are used specify that the pair should be omitted.
   ##############################################################################
 
-  stopifnot(is.character(Lambda))
-  stopifnot(is.matrix(Lambda))
-  stopifnot(nrow(Lambda) == ncol(Lambda))
+  stopifnot(is.character(lambdaFmat))
+  stopifnot(is.matrix(lambdaFmat))
+  stopifnot(nrow(lambdaFmat) == ncol(lambdaFmat))
 
-  Lambda[is.na(Lambda)] <- ""
-  Lambda[Lambda %in% c("0", "NA")] <- ""
+  lambdaFmat[is.na(lambdaFmat)] <- ""
+  lambdaFmat[lambdaFmat %in% c("0", "NA")] <- ""
 
-  lvls <- unique(c(Lambda))
+  lvls <- unique(c(lambdaFmat))
   lvls <- lvls[lvls != ""]
 
   # For each non-empty level get boolean matrices
-  ans <- lapply(lvls, function(lvl) which(lvl == Lambda, arr.ind = TRUE))
+  ans <- lapply(lvls, function(lvl) which(lvl == lambdaFmat, arr.ind = TRUE))
   names(ans) <- lvls
   return(ans)
 }
@@ -339,8 +340,8 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
 
 .reconstructLambda <- function(lambdas, parsedLambda, K) {
   ##############################################################################
-  # - Reconstruct the numeric penalty matrix Lambda from vector (lambdas) using
-  #   output from .parseLambda output.
+  # - Reconstruct the numeric penalty matrix lambdaFmat from vector (lambdas)
+  #   using output from .parseLambda output.
   # - lambdas      > A numeric vector of length K+1 where the first entry is the
   #                  ridge penalty and the remaining are the fused penalties.
   # - parsedLambda > A list of length K of matrix indicies.
@@ -348,38 +349,38 @@ ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
   ##############################################################################
 
   stopifnot(length(lambdas) == length(parsedLambda) + 1)
-  LambdaP <- matrix(0, K, K)
+  lambdaFmat <- matrix(0, K, K)
   for (i in seq_along(parsedLambda)) {
-    LambdaP[parsedLambda[[i]]] <- lambdas[i + 1]
+    lambdaFmat[parsedLambda[[i]]] <- lambdas[i + 1]
   }
-  return(LambdaP)
+  return(lambdaFmat)
 }
 
 
 
 optPenalty.fused.LOOCV <- function(YList,
                                    TList,
-                                   lambda1Min, lambda1Max,
+                                   lambdaMin, lambdaMax,
                                    step1 = 20,
-                                   lambda2Min = lambda1Min,
-                                   lambda2Max = lambda1Max,
+                                   lambdaFMin = lambdaMin,
+                                   lambdaFMax = lambdaMax,
                                    step2 = step1,
                                    approximate = FALSE,
                                    verbose = TRUE,
                                    ...) {
   ##############################################################################
   #   Simple (approximate) leave one-out cross validation for the fused ridge
-  #   estimator on a grid to determine optimal lambda1 and lambda2.
+  #   estimator on a grid to determine optimal lambda and lambdaF.
   #   The complete penalty graph is assumed.
   # - YList       > A list of length K of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - TList       > A list of length K of target matrices the same size
   #                 as those of PList. Default is given by default.target.
-  # - lambda1Min  > Start of lambda1 value, the ridge penalty
-  # - lambda1Max  > End of lambda1 value
+  # - lambdaMin  > Start of lambda value, the ridge penalty
+  # - lambdaMax  > End of lambda value
   # - step1       > Number of evaluations
-  # - lambda2Min  > As lambda1Min for the fused penalty. Default is lambda1Min.
-  # - lambda2Max  > As lambda1Max for the fused penalty. Default is lambda1Max.
+  # - lambdaFMin  > As lambdaMin for the fused penalty. Default is lambdaMin.
+  # - lambdaFMax  > As lambdaMax for the fused penalty. Default is lambdaMax.
   # - step2       > As step1 for the fused penalty. Default is step1.
   # - approximate > Should approximate LOOCV be used? Defaults is FALSE.
   #                 Approximate LOOCV is much faster.
@@ -397,10 +398,10 @@ optPenalty.fused.LOOCV <- function(YList,
   ns <- sapply(YList, nrow)
 
   # Choose lambdas log-equidistantly
-  lambda1s <- exp(seq(log(lambda1Min), log(lambda1Max), length.out = step1))
-  lambda2s <- exp(seq(log(lambda2Min), log(lambda2Max), length.out = step2))
-  stopifnot(all(is.finite(lambda1s)))
-  stopifnot(all(is.finite(lambda2s)))
+  lambdas <- exp(seq(log(lambdaMin), log(lambdaMax), length.out = step1))
+  lambdaFs <- exp(seq(log(lambdaFMin), log(lambdaFMax), length.out = step2))
+  stopifnot(all(is.finite(lambdas)))
+  stopifnot(all(is.finite(lambdaFs)))
 
   if (approximate) {
     cvl <- .afcvl
@@ -415,25 +416,25 @@ optPenalty.fused.LOOCV <- function(YList,
 
   slh <- matrix(NA, step1, step2)
   total.n <- sum(sapply(YList, nrow))
-  for (l1 in seq_along(lambda1s)) {
-    for (l2 in seq_along(lambda2s)) {
+  for (l1 in seq_along(lambdas)) {
+    for (l2 in seq_along(lambdaFs)) {
       slh[l1, l2] <-
-        cvl(lambda1 = lambda1s[l1], LambdaP = matrix(lambda2s[l2], K, K),
+        cvl(lambda = lambdas[l1], lambdaFmat = matrix(lambdaFs[l2], K, K),
             YList = YList, TList = TList, ...)
       if (verbose){
-        cat(sprintf("lambda1 = %.3f (%d), lambda2 = %.3f (%d), -ll = %.3f\n",
-                   lambda1s[l1],  l1, lambda2s[l2], l2, slh[l1, l2]))
+        cat(sprintf("lambda = %.3f (%d), lambdaF = %.3f (%d), -ll = %.3f\n",
+                   lambdas[l1],  l1, lambdaFs[l2], l2, slh[l1, l2]))
       }
     }
   }
-  return(list(lambda1 = lambda1s, lambda2 = lambda2s, fcvl = slh))
+  return(list(lambda = lambdas, lambdaF = lambdaFs, fcvl = slh))
 }
 
 
 
 optPenalty.fused.LOOCVauto <- function(YList,
                                        TList,
-                                       Lambda,
+                                       lambdaFmat,
                                        approximate = FALSE,
                                        verbose = TRUE,
                                        maxit.ridgeS.fused = 1000,
@@ -445,38 +446,38 @@ optPenalty.fused.LOOCVauto <- function(YList,
   #   leave-one-out cross-validation using multi-dimensional BFGS optimization
   #   routines.
   #
-  # - YList   > A list of length K of matrices of observations with samples
-  #             in the rows and variables in the columns.
-  # - TList   > A list of length K of target matrices the same size
-  #             as those of PList. Default is given by default.target.
-  # - Lambda  > A K by K character matrix defining the class of penalty graph
-  #             to use. The unique elements of Lambda specify the penalties to
-  #             determine. Pairs can be left out using either of "", NA,
-  #             "NA" or "0".
+  # - YList       > A list of length K of matrices of observations with samples
+  #                 in the rows and variables in the columns.
+  # - TList       > A list of length K of target matrices the same size
+  #                 as those of PList. Default is given by default.target.
+  # - lambdaFmat  > A K by K character matrix defining the class of penalty
+  #                 graph to use. The unique elements of lambdaFmat specify the
+  #                 penalties to determine. Pairs can be left out using either
+  #                 of "", NA, "NA" or "0".
   # - approximate > logical. Should approximate LOOCV be used?
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
-  # - maxit.ridgeS.fused > integer. Maximum number of iterations for ridgeS.fused
-  # - maxit.optim       > integer. Maximum number of iterations for optim.
-  # - optim.debug       > logical. If TRUE the raw output from optim is added
-  #                       as an attribute to the output.
-  # - ...               > arguments passed to optim.
+  # - maxit.ridgeS.fused > integer. Max. number of iterations for ridgeS.fused
+  # - maxit.optim        > integer. Max. number of iterations for optim.
+  # - optim.debug        > logical. If TRUE the raw output from optim is added
+  #                        as an attribute to the output.
+  # - ...                > arguments passed to optim.
   #
-  # The function returns a list of length 4 with entries (1) lambda1,
-  # (2) lambda2, (3) the optimal penalty matrix LambdaP, and (4) the value of
-  # the loss in the optimum. If LambdaP is the complete graph, then lambda2 is
-  # given. Otherwise lambda2 is NA.
+  # The function returns a list of length 4 with entries (1) lambda,
+  # (2) lambdaF, (3) the optimal penalty matrix lambdaFmat, and (4) the value of
+  # the loss in the optimum. If lambdaFmat is the complete graph, then lambdaF
+  # is given. Otherwise lambdaF is NA.
   ##############################################################################
 
   K <- length(YList)
 
-  # Handle Lambda
-  if (missing(Lambda)) {
-    Lambda <- matrix("A", K, K)
-    diag(Lambda) <- ""
+  # Handle lambdaFmat
+  if (missing(lambdaFmat)) {
+    lambdaFmat <- matrix("A", K, K)
+    diag(lambdaFmat) <- ""
   }
 
-  parsedLambda <- .parseLambda(Lambda)
+  parsedLambda <- .parseLambda(lambdaFmat)
   n.lambdas <- length(parsedLambda) + 1
 
   # Determine what loss function to use
@@ -486,24 +487,24 @@ optPenalty.fused.LOOCVauto <- function(YList,
   if (approximate) {
     cvl <- function(lambdas, ...) {
       elambdas <- exp(lambdas)
-      .afcvl(lambda1 = elambdas[1],
-             LambdaP = .reconstructLambda(elambdas, parsedLambda, K),
+      .afcvl(lambda = elambdas[1],
+             lambdaFmat = .reconstructLambda(elambdas, parsedLambda, K),
              YList = YList, TList = TList, maxit = maxit.ridgeS.fused, ...)
     }
   } else {
     cvl <- function(lambdas, ...) {
       elambdas <- exp(lambdas)
-      .fcvl(lambda1 = elambdas[1],
-            LambdaP = .reconstructLambda(elambdas, parsedLambda, K),
+      .fcvl(lambda = elambdas[1],
+            lambdaFmat = .reconstructLambda(elambdas, parsedLambda, K),
             YList = YList, TList = TList, maxit = maxit.ridgeS.fused, ...)
     }
   }
 
-  # Get sensible starting value for lambda1 (choosing LambdaP to be zero)
+  # Get sensible starting value for lambda (choosing lambdaFmat to be zero)
   st <- optimize(function(x) cvl(c(x, rep(0, n.lambdas - 1))),
                  lower = -30, upper = 30)
 
-  # Start LambdaP at 0
+  # Start lambdaFmat at 0
   lambdas.init <- c(st$minimum, rep(0, n.lambdas - 1))
   ans <- optim(lambdas.init, fn = cvl, ...,
                method = "BFGS",
@@ -511,13 +512,13 @@ optPenalty.fused.LOOCVauto <- function(YList,
 
   # Format optimal values
   opt.lambdas <- exp(ans$par)
-  res <- list(lambda1 = opt.lambdas[1],
-              lambda2 = NA,
-              LambdaP = .reconstructLambda(opt.lambdas, parsedLambda, K),
+  res <- list(lambda = opt.lambdas[1],
+              lambdaF = NA,
+              lambdaFmat = .reconstructLambda(opt.lambdas, parsedLambda, K),
               value = ans$value)
-  lambda2 <- unique(opt.lambdas[-1])
-  if (length(lambda2) == 1) {
-    res$lambda2 <- lambda2
+  lambdaF <- unique(opt.lambdas[-1])
+  if (length(lambdaF) == 1) {
+    res$lambdaF <- lambdaF
   }
 
   if (optim.debug) {

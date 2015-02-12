@@ -12,17 +12,16 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optPenalty.fused.LOOCVauto(YList, TList, Lambda,
+optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat,
                            approximate = FALSE, verbose = TRUE,
-                           maxit.fusedRidgeS = 1000, maxit.optim = 1000,
+                           maxit.ridgeS.fused = 1000, maxit.optim = 1000,
                            optim.debug = FALSE, ...)
 optPenalty.fused.LOOCV(YList, TList,
-                       lambda1Min, lambda1Max, step1 = 20,
-                       lambda2Min = lambda1Min, lambda2Max = lambda1Max,
+                       lambdaMin, lambdaMax, step1 = 20,
+                       lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
                        step2 = step1,
                        approximate = FALSE, verbose = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{YList}{
    A \code{list} of matrices of data with \eqn{n_k} samples in the rows and
@@ -32,7 +31,7 @@ optPenalty.fused.LOOCV(YList, TList,
    A \code{list} of the same length as \code{YList} of target matrices of size
    \eqn{p} times \eqn{p}.
 }
-  \item{Lambda}{
+  \item{lambdaFmat}{
    A \code{character} \code{matrix} encoding the class of penalty matrices
    to cross-validate over.
    See \code{\link{default.penalty}} for help on the construction.
@@ -44,7 +43,7 @@ optPenalty.fused.LOOCV(YList, TList,
   \item{verbose}{
   \code{logical}. If \code{TRUE} additional messages are written to the terminal.
 }
-  \item{maxit.fusedRidgeS}{
+  \item{maxit.ridgeS.fused}{
   A \code{integer} giving the maximum number of iterations allowed for each
   fused ridge fit.
 }
@@ -56,21 +55,21 @@ optPenalty.fused.LOOCV(YList, TList,
   \code{logical}. If \code{TRUE} additional output from optim is appended to the
   output as an attribute.
 }
-  \item{lambda1Min}{
+  \item{lambdaMin}{
   A single positive \code{numeric}. Minimum ridge penalty \eqn{lambda}.
 
 }
-  \item{lambda1Max}{
+  \item{lambdaMax}{
   A single positive \code{numeric}. Maximum ridge penalty \eqn{lambda}.
 }
   \item{step1}{
-  A single non-negative \code{integer}. Number grid-points used between \code{lambda1Min} and \code{lambda1Max}.
+  A single non-negative \code{integer}. Number grid-points used between \code{lambdaMin} and \code{lambdaMax}.
 }
-  \item{lambda2Min}{
-  A single non-negative \code{numeric}. As for \code{lambda1Min}, but for the fused penalty assuming the complete penalty graph.
+  \item{lambdaFMin}{
+  A single non-negative \code{numeric}. As for \code{lambdaMin}, but for the fused penalty assuming the complete penalty graph.
 }
-  \item{lambda2Max}{
-  A single non-negative \code{numeric}. As for \code{lambda1Max}, but for the fused penalty assuming the complete penalty graph.
+  \item{lambdaFMax}{
+  A single non-negative \code{numeric}. As for \code{lambdaMax}, but for the fused penalty assuming the complete penalty graph.
 }
   \item{step2}{
   A single non-negative \code{integer}. As for \code{step1}, but for the fused penalty.
@@ -88,16 +87,16 @@ the optimal fused parameters and works for general classes of penalty graphs.
 \value{
   \code{optPenalty.fused.LOOCVauto} returns a \code{list}:
   \itemize{
-    \item \code{lambda1} {The estimated optimal ridge penalty.}
-    \item \code{lambda2} {The estimated optimal fused penalty matrix if the complete penalty graph is used. If not, \code{NA} is given.}
-    \item \code{LambdaP} {The estimated optimal fused penalty matrix.}
+    \item \code{lambda} {The estimated optimal ridge penalty.}
+    \item \code{lambdaF} {The estimated optimal fused penalty matrix if the complete penalty graph is used. If not, \code{NA} is given.}
+    \item \code{lambdaFmat} {The estimated optimal fused penalty matrix.}
     \item \code{value} {The value of the loss function in the estimated optimum.}
   }
 
   \code{optPenalty.fused.LOOCV} returns a \code{list}:
   \itemize{
-    \item \code{lambda1} {A \code{numeric} vector of grid values for the ridge penalty lambda1}
-    \item \code{lambda2} {The \code{numeric} vector of grid values for the fused ridge penalty lambda2}
+    \item \code{lambda} {A \code{numeric} vector of grid values for the ridge penalty \code{lambda}}
+    \item \code{lambdaF} {The \code{numeric} vector of grid values for the fused ridge penalty \code{lambdaF}}
     \item \code{fcvl} {The \code{numeric} \code{matrix} of evaluations of the loss function}
   }
 }
@@ -124,11 +123,11 @@ TList <- lapply(SList, default.target, type = "DIAES")
 
 # Grid-based
 a <- optPenalty.fused.LOOCV(YList, TList,
-                            lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 10,
-                            lambda2Min = 1e-5, lambda2Max = 1e3, step2 = 10,
+                            lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
+                            lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
                             approximate = FALSE, maxit = 1000)
 b <- optPenalty.fused.LOOCV(YList, TList,
-                            lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 15,
+                            lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
                             approximate = TRUE, maxit = 1000)
 
 
@@ -145,26 +144,26 @@ print(bb)
 
 # LOOCV
 # Get minimums and plot
-amin <- log(expand.grid(a$lambda1, a$lambda2))[which.min(a$fcvl), ]
-aamin <- c(log(aa$lambda1), log(aa$lambda2))
+amin <- log(expand.grid(a$lambda, a$lambdaF))[which.min(a$fcvl), ]
+aamin <- c(log(aa$lambda), log(aa$lambdaF))
 
 # Plot
-filled.contour(log(a$lambda1), log(a$lambda2), log(a$fcvl), color = heat.colors,
+filled.contour(log(a$lambda), log(a$lambdaF), log(a$fcvl), color = heat.colors,
                plot.axes = {points(amin[1], amin[2], pch = 16);
                             points(aamin[1], aamin[2], pch = 16, col = "purple");
                             axis(1); axis(2)},
-               xlab = "lambda1", ylab = "lambda2", main = "LOOCV")
+               xlab = "lambda", ylab = "lambdaF", main = "LOOCV")
 
 # Approximate LOOCV
 # Get minimums and plot
-bmin <- log(expand.grid(b$lambda1, b$lambda2))[which.min(b$fcvl), ]
-bbmin <- c(log(bb$lambda1), log(b$lambda2))
+bmin <- log(expand.grid(b$lambda, b$lambdaF))[which.min(b$fcvl), ]
+bbmin <- c(log(bb$lambda), log(b$lambdaF))
 
-filled.contour(log(b$lambda1), log(b$lambda2), log(b$fcvl), color = heat.colors,
+filled.contour(log(b$lambda), log(b$lambdaF), log(b$fcvl), color = heat.colors,
                plot.axes = {points(bmin[1], bmin[2], pch = 16);
                             points(bbmin[1], bbmin[2], pch = 16, col = "purple");
                             axis(1); axis(2)},
-               xlab = "lambda1", ylab = "lambda2", main = "Approximate LOOCV")
+               xlab = "lambda", ylab = "lambdaF", main = "Approximate LOOCV")
 
 
 
@@ -179,11 +178,11 @@ YList <- createS(n = ns, p = 4, covariance = FALSE)
 TList <- lapply(lapply(YList, covML), default.target, type = "Null")
 
 # Construct penalty matrix
-Lambda <- default.penalty(df, type = "CartesianUnequal")
+lambdaFmat <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters
 ans <- optPenalty.fused.LOOCVauto(YList, TList,
-                                  Lambda = Lambda, approximate = TRUE)
+                                  lambdaFmat = lambdaFmat, approximate = TRUE)
 ans
 }
 

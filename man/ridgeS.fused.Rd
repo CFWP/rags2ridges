@@ -9,7 +9,7 @@
 }
 \usage{
 ridgeS.fused(SList, ns, TList = lapply(SList, default.target),
-             lambda1, LambdaP, lambda2,
+             lambda, LambdaFmat, lambdaF,
              PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
@@ -27,22 +27,22 @@ ridgeS.fused(SList, ns, TList = lapply(SList, default.target),
     as in \code{SList}.
     If not supplied, the default is given by \code{\link{default.target}}.
 }
-  \item{lambda1}{
+  \item{lambda}{
     A single \code{numeric} giving the regular ridge penalty used.
 }
-  \item{LambdaP}{
+  \item{lambdaFmat}{
     The fused penalty matrix.
     A symmetric \code{numeric} \code{matrix} of size \eqn{K} times \eqn{K}
     giving the pair-specific penalties.
-    I.e. \code{LambdaP[i, j]} is the fused penalty given applied on the pairing
+    I.e. \code{mylambdaFmat[i, j]} is the fused penalty given applied on the pairing
     between classes \eqn{i} and \eqn{j}.
 }
-  \item{lambda2}{
+  \item{lambdaF}{
     A single \code{numeric} giving the fused penalty assuming the complete
-    penalty graph, i.e. \code{LambdaP[i,j]} equals \code{lambda2} for all
+    penalty graph, i.e. \code{lambdaFmat[i,j]} equals \code{lambdaF} for all
     \eqn{i} and \eqn{j}.
-    Provides an alternative interface to \code{LambdaP}. Either \code{LambdaP}
-    or \code{lambda2} must be given.
+    Provides an alternative interface to \code{lambdaFmat}. Either
+    \code{lambdaFmat} or \code{lambdaF} must be given.
 }
   \item{PList}{
     An optional \code{list} of initial starting values for the algorithm,
@@ -94,14 +94,14 @@ str(SList, max.level = 2)  # The structure of SList
 #
 # Estimate the precisions (using the complete penalty graph)
 #
-res1 <- ridgeS.fused(SList, ns, lambda1 = 0.3, lambda2 = 2)
+res1 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaF = 2)
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
-myLambdaP <- matrix(c(0,2,2,
-                      2,0,2,
-                      2,2,0), 3, 3, byrow = TRUE)
-res2 <- fusedRidgeS(SList, ns, lambda1 = 0.3, LambdaP = myLambdaP)
+mylambdaFmat <- matrix(c(0,2,2,
+                         2,0,2,
+                         2,2,0), 3, 3, byrow = TRUE)
+res2 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 stopifnot(all.equal(res1, res2))
 
 
@@ -111,9 +111,9 @@ stopifnot(all.equal(res1, res2))
 #
 
 # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
-myLambdaP[1,3] <- myLambdaP[3,1] <- 0
-print(myLambdaP)
-res3 <- fusedRidgeS(SList, ns, lambda1 = 0.3, LambdaP = myLambdaP)
+mylambdaFmat[1,3] <- mylambdaFmat[3,1] <- 0
+print(mylambdaFmat)
+res3 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 # which is not the same as res2 and res1 now!
 
 
@@ -123,12 +123,12 @@ res3 <- fusedRidgeS(SList, ns, lambda1 = 0.3, LambdaP = myLambdaP)
 
 # Construct a custom target list
 myTList <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
-res4 <- fusedRidgeS(SList, ns, TList = myTList, lambda1 = 0.3, lambda2 = 0.2)
+res4 <- ridgeS.fused(SList, ns, TList = myTList, lambda = 0.3, lambdaF = 0.2)
 print(res4)
 
 # Alternative, see ?default.target
 myTList2 <- lapply(SList, default.target, type = "Null")  # For the null target
-res5 <- fusedRidgeS(SList, ns, TList = myTList2, lambda1 = 0.3, lambda2 = 0.2)
+res5 <- ridgeS.fused(SList, ns, TList = myTList2, lambda = 0.3, lambdaF = 0.2)
 print(res5)
 
 }
