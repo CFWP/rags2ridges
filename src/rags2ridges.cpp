@@ -1,10 +1,35 @@
 // We only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include <RcppArmadillo.h>
 
-// These are not needed:
+// To avoid "::" usage uncomment below:
 //using namespace Rcpp;
 //using namespace RcppArmadillo;
-//// [[Rcpp::depends(RcppArmadillo)]]
+//using namespace arma;
+
+
+// [[Rcpp::export]]
+arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
+                      const Rcpp::NumericVector ns,
+                      const int mle = 0) {
+  // Function to compute the pooled covariance estimate
+  // - SList > A list of covariance matrices.
+  // - nu    > A numeric vector giving the number of samples corresponding
+  //           to each scatter matrix.
+  // - mle   > A integer of length one equalling 0 or 1. If 0, the bias
+  //           corrected ML is used. If 1 the ML estimate is used.
+  // Returns a numeric matrix giving the pooled variance.
+
+  const int K = SList.size();
+  const int imle = 1 - mle;
+  const double fac = 1.0f/(sum(ns) - K*imle);
+  arma::mat S0 = SList[0];
+  S0 = (ns[0] - imle)*S0;
+  for (int i = 1; i < K; ++i) {
+    arma::mat Si = SList[i];
+    S0 += (ns[i] - imle)*Si;
+  }
+  return fac*S0;
+}
 
 
 

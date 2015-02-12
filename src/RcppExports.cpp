@@ -6,6 +6,23 @@
 
 using namespace Rcpp;
 
+// armaPooledS
+arma::mat armaPooledS(const Rcpp::List& SList, const Rcpp::NumericVector ns, const int mle = 0);
+RcppExport SEXP rags2ridges_armaPooledS(SEXP SListSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const Rcpp::List& >::type SList(SListSEXP );
+        Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type ns(nsSEXP );
+        Rcpp::traits::input_parameter< const int >::type mle(mleSEXP );
+        arma::mat __result = armaPooledS(SList, ns, mle);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
 // armaRidgeS
 arma::mat armaRidgeS(const arma::mat& S, const arma::mat& target, const double lambda);
 RcppExport SEXP rags2ridges_armaRidgeS(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {

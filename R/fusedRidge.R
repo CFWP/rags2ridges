@@ -34,6 +34,21 @@ createS <- function(n, p, covariance = TRUE) {
 
 
 
+pooledS <- function(SList, ns, mle = TRUE) {
+  ##############################################################################
+  # - Computes the pooled covariance estimate
+  # - Slist > A list sample covariance matrices for each class
+  # - ns    > A vector of sample sizes of the same length as Slist.
+  # - mle   > logical. If TRUE the biased MLE is used. If FALSE, the biased
+  #           corrected estimate is used.
+  ##############################################################################
+  ans <- armaPooledS(SList = SList, ns = ns, mle = as.numeric(mle))
+  dimnames(ans) <- dimnames(SList[[1]])
+  return(ans)
+}
+
+
+
 .FLL <- function(SList, PList, ns){
   ##############################################################################
   # - Function that computes the value of the (negative) combined log-likelihood
