@@ -8,7 +8,7 @@
   cases where multiple classes of data is present for given penalties.
 }
 \usage{
-ridgeS.fused(SList, ns, TList = lapply(SList, default.target),
+ridgeS.fused(SList, ns, TList = default.target.fused(SList, ns),
              lambda, lambdaFmat, lambdaF,
              PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }

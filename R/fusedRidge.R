@@ -158,9 +158,9 @@ pooledS <- function(SList, ns, mle = TRUE) {
 
 
 
-ridgeS.fused <- function(SList, ns, TList = lapply(SList, default.target),
-                        lambda, lambdaFmat, lambdaF, PList,
-                        maxit = 100L, verbose = TRUE, eps = 1e-4) {
+ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
+                         lambda, lambdaFmat, lambdaF, PList,
+                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
   # - The fused ridge estimate for a given lambda and lambdaFmat
   # - SList   > A list of length K of sample correlation matrices the same size
@@ -543,6 +543,39 @@ optPenalty.fused.LOOCVauto <- function(YList,
 }
 
 
+##
+##
+## Help in choosing targets
+##
+##
+
+default.target.fused <- function(SList, ns, type = "DAIE", equal = TRUE, ...) {
+  ##############################################################################
+  # Generate a list of (data-driven) targets to use in fused ridge estimation
+  # A nice wrapper for default.target
+  # - SList > A list of covariance matrices
+  # - ns    > A numeric vector of sample sizes corresponding to SList
+  # - type  > A character giving the choice of target. See default.target.
+  # - equal > logical. If TRUE, all entries in the list are identical and
+  #           computed from the pooled estimate. If FALSE, the target is
+  #           calculated from each entry in SList.
+  # - ...   > Arguments passed to default.target.
+  # See also default.target
+  ##############################################################################
+
+  stopifnot(is.list(SList))
+  stopifnot(is.numeric(ns))
+  stopifnot(length(SList) == length(ns))
+
+  if (equal) {
+    pooled <- pooledS(SList, ns)
+    Tpool <- default.target(pooled, type = type, ...)
+    TList <- replicate(length(SList), Tpool, simplify = FALSE)
+  } else {
+    TList <- lapply(SList, default.target, type = type, ...)
+  }
+  return(TList)
+}
 
 
 
