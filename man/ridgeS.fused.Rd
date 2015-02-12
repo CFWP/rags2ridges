@@ -1,5 +1,5 @@
-\name{fusedRidgeS}
-\alias{fusedRidgeS}
+\name{ridgeS.fused}
+\alias{ridgeS.fused}
 \title{
   Fused ridge precision estimation
 }
