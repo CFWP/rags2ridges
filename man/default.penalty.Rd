@@ -7,7 +7,7 @@
   Function that constructs default or commonly use penalty matrices
   according to a study design.
   The constructed penalty matrix can be used directly in
-  \code{\link{optFusedPenalty.LOOCVauto}} or serve as basis for modification.
+  \code{\link{optPenalty.fused.LOOCVauto}} or serve as basis for modification.
 }
 \usage{
   default.penalty(K, df,
@@ -52,7 +52,7 @@
   Returns a \code{K} by \code{K} character matrix which specify the class
   of penalty graphs to be used.
   The output is suitable as input for the penalty matrix
-  used in \code{\link{optFusedPenalty.LOOCVauto}}.
+  used in \code{\link{optPenalty.fused.LOOCVauto}}.
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
@@ -65,8 +65,8 @@ Matrices from High-Dimensional Data Classes"
   Wessel N. van Wieringen
 }
 \seealso{
-  \code{\link{fusedRidgeS}},
-  \code{\link{optFusedPenalty.LOOCVauto}},
+  \code{\link{ridgeS.fused}},
+  \code{\link{optPenalty.fused.LOOCVauto}},
   \code{\link{default.target}}
 }
 \examples{
