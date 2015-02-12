@@ -1,7 +1,7 @@
-\name{optFusedPenalty}
-\alias{optFusedPenalty}
-\alias{optFusedPenalty.LOOCVauto}
-\alias{optFusedPenalty.LOOCV}
+\name{optPenalty.fused}
+\alias{optPenalty.fused}
+\alias{optPenalty.fused.LOOCVauto}
+\alias{optPenalty.fused.LOOCV}
 
 \title{
   Identify optimal ridge and fused ridge penalties
@@ -12,15 +12,15 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optFusedPenalty.LOOCVauto(YList, TList, Lambda,
-                          approximate = FALSE, verbose = TRUE,
-                          maxit.fusedRidgeS = 1000, maxit.optim = 1000,
-                          optim.debug = FALSE, ...)
-optFusedPenalty.LOOCV(YList, TList,
-                      lambda1Min, lambda1Max, step1 = 20,
-                      lambda2Min = lambda1Min, lambda2Max = lambda1Max,
-                      step2 = step1,
-                      approximate = FALSE, verbose = TRUE, ...)
+optPenalty.fused.LOOCVauto(YList, TList, Lambda,
+                           approximate = FALSE, verbose = TRUE,
+                           maxit.fusedRidgeS = 1000, maxit.optim = 1000,
+                           optim.debug = FALSE, ...)
+optPenalty.fused.LOOCV(YList, TList,
+                       lambda1Min, lambda1Max, step1 = 20,
+                       lambda2Min = lambda1Min, lambda2Max = lambda1Max,
+                       step2 = step1,
+                       approximate = FALSE, verbose = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -76,17 +76,17 @@ optFusedPenalty.LOOCV(YList, TList,
   A single non-negative \code{integer}. As for \code{step1}, but for the fused penalty.
 }
   \item{\dots}{
-  Arguments passed to \code{optim} for \code{optFusedPenalty.LOOCVauto} and \code{fusedRidgeS} for \code{optFusedPenalty.LOOCV}.
+  Arguments passed to \code{optim} for \code{optPenalty.fused.LOOCVauto} and \code{fusedRidgeS} for \code{optPenalty.fused.LOOCV}.
 }
 }
 \details{
-\code{optFusedPenalty.LOOCVauto} serves a utilizes \code{\link{optim}} for identifying
+\code{optPenalty.fused.LOOCVauto} serves a utilizes \code{\link{optim}} for identifying
 the optimal fused parameters and works for general classes of penalty graphs.
 
-\code{optFusedPenalty.LOOCV} gives a grid-based evaluation of the (approximate) LOOCV loss.
+\code{optPenalty.fused.LOOCV} gives a grid-based evaluation of the (approximate) LOOCV loss.
 }
 \value{
-  \code{optFusedPenalty.LOOCVauto} returns a \code{list}:
+  \code{optPenalty.fused.LOOCVauto} returns a \code{list}:
   \itemize{
     \item \code{lambda1} {The estimated optimal ridge penalty.}
     \item \code{lambda2} {The estimated optimal fused penalty matrix if the complete penalty graph is used. If not, \code{NA} is given.}
@@ -94,7 +94,7 @@ the optimal fused parameters and works for general classes of penalty graphs.
     \item \code{value} {The value of the loss function in the estimated optimum.}
   }
 
-  \code{optFusedPenalty.LOOCV} returns a \code{list}:
+  \code{optPenalty.fused.LOOCV} returns a \code{list}:
   \itemize{
     \item \code{lambda1} {A \code{numeric} vector of grid values for the ridge penalty lambda1}
     \item \code{lambda2} {The \code{numeric} vector of grid values for the fused ridge penalty lambda2}
@@ -123,20 +123,20 @@ TList <- lapply(SList, default.target, type = "DIAES")
 
 
 # Grid-based
-a <- optFusedPenalty.LOOCV(YList, TList,
-                           lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 10,
-                           lambda2Min = 1e-5, lambda2Max = 1e3, step2 = 10,
-                           approximate = FALSE, maxit = 1000)
-b <- optFusedPenalty.LOOCV(YList, TList,
-                           lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 15,
-                           approximate = TRUE, maxit = 1000)
+a <- optPenalty.fused.LOOCV(YList, TList,
+                            lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 10,
+                            lambda2Min = 1e-5, lambda2Max = 1e3, step2 = 10,
+                            approximate = FALSE, maxit = 1000)
+b <- optPenalty.fused.LOOCV(YList, TList,
+                            lambda1Min = 1e-5, lambda1Max = 1e3, step1 = 15,
+                            approximate = TRUE, maxit = 1000)
 
 
 
 # Numerical optimization
-aa <- optFusedPenalty.LOOCVauto(YList, TList, approximate = FALSE)
+aa <- optPenalty.fused.LOOCVauto(YList, TList, approximate = FALSE)
 print(aa)
-bb <- optFusedPenalty.LOOCVauto(YList, TList, approximate = TRUE)
+bb <- optPenalty.fused.LOOCVauto(YList, TList, approximate = TRUE)
 print(bb)
 
 #
@@ -182,8 +182,8 @@ TList <- lapply(lapply(YList, covML), default.target, type = "Null")
 Lambda <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters
-ans <- optFusedPenalty.LOOCVauto(YList, TList,
-                                 Lambda = Lambda, approximate = TRUE)
+ans <- optPenalty.fused.LOOCVauto(YList, TList,
+                                  Lambda = Lambda, approximate = TRUE)
 ans
 }
 

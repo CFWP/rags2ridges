@@ -8,9 +8,9 @@
   cases where multiple classes of data is present for given penalties.
 }
 \usage{
-fusedRidgeS(SList, ns, TList = lapply(SList, default.target),
-            lambda1, LambdaP, lambda2,
-            PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
+ridgeS.fused(SList, ns, TList = lapply(SList, default.target),
+             lambda1, LambdaP, lambda2,
+             PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
   \item{SList}{
@@ -94,7 +94,7 @@ str(SList, max.level = 2)  # The structure of SList
 #
 # Estimate the precisions (using the complete penalty graph)
 #
-res1 <- fusedRidgeS(SList, ns, lambda1 = 0.3, lambda2 = 2)
+res1 <- ridgeS.fused(SList, ns, lambda1 = 0.3, lambda2 = 2)
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
