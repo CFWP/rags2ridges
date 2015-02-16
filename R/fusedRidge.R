@@ -848,6 +848,32 @@ GGMnetworkStats.fused <- function(PList) {
 
 
 
+GGMpathStats.fused <- function(sparsePList, ...) {
+  ##############################################################################
+  # A wrapper for GGMpathStats in the fused case. See GMMpathStats.
+  # - sparsePList > A list of sparsified precision matrices
+  # - ...         > Arguments passed to GGMpathStats
+  ##############################################################################
+  
+  # See if verbose is in ... and set to GGMpathStats default if not
+  args <- list(...)
+  if (is.null(args[["verbose"]])) {
+    verbose <- formals(GGMpathStats)$verbose 
+  }
+  
+  # Run through each class
+  res <- vector("list", length(sparsePList))
+  names(res) <- names(sparsePList)
+  for (k in seq_along(res)) {
+    if (verbose) {
+      cat("\n\n========================================\n",
+          "Class: ", names(res)[k], "\n", sep = "")
+    }
+    res[[k]] <- GGMpathStats(sparsePList[[k]], ...)
+  }
+  return(res)
+}
+
 
 
 
