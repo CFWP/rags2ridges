@@ -833,5 +833,21 @@ sparsify.fused <- function(PList, ...) {
 
 
 
+GGMnetworkStats.fused <- function(PList) {
+  ##############################################################################
+  # Simple wrapper for GGMnetworkStats. See help(GGMnetworkStats).
+  # - PList > A list of sparse precision matrices.
+  ##############################################################################
+
+  res <- lapply(PList, GGMnetworkStats, as.table = TRUE)
+  if (is.null(names(res))) {
+    names(res) <- seq_along(PList)
+  }
+  return(as.data.frame(res))
+}
+
+
+
+
 
 
