@@ -21,12 +21,13 @@ createS <- function(n, p,
   K <- length(n)
 
   # Construct names
-  c <- which.max(p <= 25^(1:5))
-  x <- expand.grid(rep(list(LETTERS), c))
+  n.letters <- which.max(p <= 26^(1:5))
+  x <- expand.grid(rep(list(LETTERS), n.letters))
   nms <- do.call(paste0, x)
 
   # Construct list
-  ans <- list()
+  ans <- vector("list", K)
+  names(ans) <- paste0("class", seq_len(K))
   for (i in seq_len(K)) {
     ans[[i]] <- matrix(rnorm(n[i]*p), nrow = n[i], ncol = p)
     if (p <= 17576) {  # Only give names for "small" dimensions
