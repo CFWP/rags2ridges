@@ -854,13 +854,13 @@ GGMpathStats.fused <- function(sparsePList, ...) {
   # - sparsePList > A list of sparsified precision matrices
   # - ...         > Arguments passed to GGMpathStats
   ##############################################################################
-  
+
   # See if verbose is in ... and set to GGMpathStats default if not
   args <- list(...)
   if (is.null(args[["verbose"]])) {
-    verbose <- formals(GGMpathStats)$verbose 
+    verbose <- formals(GGMpathStats)$verbose
   }
-  
+
   # Run through each class
   res <- vector("list", length(sparsePList))
   names(res) <- names(sparsePList)
