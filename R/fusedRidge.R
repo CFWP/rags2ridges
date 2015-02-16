@@ -331,8 +331,9 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
   #   indices for each level to be penalized equally.
   #   This list is to be used to construct numeric matrices of penalties.
   # - lambdaFmat > A square K by K character matrix defining the class penalty
-  #            matrices to use. Entries with NA, "NA", "" (the empty string),
-  #            or "0" are used specify that the pair should be omitted.
+  #                matrices to use. Entries with NA, "NA", "" (the empty
+  #                string), or "0" are used specify that the pair should be
+  #                omitted.
   ##############################################################################
 
   stopifnot(is.character(lambdaFmat))
@@ -346,9 +347,11 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
   lvls <- lvls[lvls != ""]
 
   # For each non-empty level get boolean matrices
-  ans <- lapply(lvls, function(lvl) which(lvl == lambdaFmat, arr.ind = TRUE))
-  names(ans) <- lvls
-  return(ans)
+  parsedLambda <-
+    lapply(lvls, function(lvl) which(lvl == lambdaFmat, arr.ind = TRUE))
+  names(parsedLambda) <- lvls
+
+  return(parsedLambda)
 }
 
 
@@ -357,16 +360,29 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
   ##############################################################################
   # - Reconstruct the numeric penalty matrix lambdaFmat from vector (lambdas)
   #   using output from .parseLambda output.
-  # - lambdas      > A numeric vector of length K+1 where the first entry is the
-  #                  ridge penalty and the remaining are the fused penalties.
+  # - lambdas      > A numeric vector where the first entry is the
+  #                  ridge penalty and the remaining are the
+  #                  variable fused penalties.
   # - parsedLambda > A list of length K of matrix indicies.
   #                  Should be the output from .parseLambda.
   ##############################################################################
 
-  stopifnot(length(lambdas) == length(parsedLambda) + 1)
+  get.num <- suppressWarnings(as.numeric(names(parsedLambda)))
+
+  if (length(lambdas) != length(parsedLambda[is.na(get.num)]) + 1) {
+    stop("The number of lambdas does not correspond with the number of",
+         " non-fixed penalties given i parsedLambda")
+  }
+
   lambdaFmat <- matrix(0, K, K)
+  j <- 1
   for (i in seq_along(parsedLambda)) {
-    lambdaFmat[parsedLambda[[i]]] <- lambdas[i + 1]
+    if (is.na(get.num[i])) {
+      lambdaFmat[parsedLambda[[i]]] <- lambdas[-1][j]
+      j <- j + 1
+    } else {
+      lambdaFmat[parsedLambda[[i]]] <- get.num[i]
+    }
   }
   return(lambdaFmat)
 }
@@ -413,7 +429,7 @@ optPenalty.fused.LOOCV <- function(YList,
   ns <- sapply(YList, nrow)
 
   # Choose lambdas log-equidistantly
-  lambdas <- exp(seq(log(lambdaMin), log(lambdaMax), length.out = step1))
+  lambdas  <- exp(seq(log(lambdaMin),  log(lambdaMax),  length.out = step1))
   lambdaFs <- exp(seq(log(lambdaFMin), log(lambdaFMax), length.out = step2))
   stopifnot(all(is.finite(lambdas)))
   stopifnot(all(is.finite(lambdaFs)))
@@ -496,7 +512,7 @@ optPenalty.fused.LOOCVauto <- function(YList,
   }
 
   parsedLambda <- .parseLambda(lambdaFmat)
-  n.lambdas <- length(parsedLambda) + 1
+  n.lambdas <- sum(is.na(suppressWarnings(as.numeric(names(parsedLambda))))) + 1
 
   # Determine what loss function to use
   # lambdas[1] is the regular ridge penalty, while the remaning lambdas[-1]
@@ -546,7 +562,7 @@ optPenalty.fused.LOOCVauto <- function(YList,
               lambdaF = NA,
               lambdaFmat = .reconstructLambda(opt.lambdas, parsedLambda, K),
               value = val)
-  lambdaF <- unique(opt.lambdas[-1])
+  lambdaF <- unique(lambdaFmat[lower.tri(lambdaFmat)])
   if (length(lambdaF) == 1) {
     res$lambdaF <- lambdaF
   }

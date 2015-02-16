@@ -34,7 +34,8 @@ optPenalty.fused.LOOCV(YList, TList,
   \item{lambdaFmat}{
    A \code{character} \code{matrix} encoding the class of penalty matrices
    to cross-validate over.
-   See \code{\link{default.penalty}} for help on the construction.
+   See \code{\link{default.penalty}} for help on the construction and more
+   details.
 }
   \item{approximate}{
   \code{logical}. If \code{TRUE} approximate leave-one-out cross validation is
@@ -202,7 +203,30 @@ ans3 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
                                    approximate = TRUE, verbose = FALSE,
                                    optimizer = "nlm")
 print(ans3)
+}
 # Quite different results!
+
+
+\dontrun{
+
+#
+# Arbitrary penalty graphs with fixed penalties!
+#
+
+# Generate some new high-dimensional data and a 2 by 2 factorial design
+ns <- c(6, 5, 5, 5)
+df <- expand.grid(DS = LETTERS[1:2], ER = letters[3:4])
+YList <- createS(n = ns, p = 4, covariance = FALSE)
+TList <- lapply(lapply(YList, covML), default.target, type = "Null")
+
+lambdaFmat <- default.penalty(df, type = "Tensor")
+print(lambdaFmat)  # Say we want to penalize the pair (1,2) with strength 2;
+lambdaFmat[2,1] <- lambdaFmat[1,2] <- 2
+print(lambdaFmat)
+
+res <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+                                   approximate = TRUE, optimizer = "nlm")
+print(res)
 }
 }
 
