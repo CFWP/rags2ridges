@@ -1,15 +1,23 @@
 
-createS <- function(n, p, covariance = TRUE) {
+createS <- function(n, p,
+                    topology = c("identity", "star", "clique",
+                                 "chain", "banded"),
+                    covariance = TRUE) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
   #   or datasets
   # - n          > A vector of sample sizes
   # - p          > An integer giving the dimension
+  # - topology   > character. Specify the topology to simulate data from.
   # - covariance > logical. Should covariances be returned?
   # - Returns a list of matrices if n > 1
   # - Returns the matrices if n = 1.
   ##############################################################################
 
+  topology <- match.arg(topology)
+  if (topology != "identity") {
+    stop('Only topology "identity" is supported now.')
+  }
   K <- length(n)
 
   # Construct names
