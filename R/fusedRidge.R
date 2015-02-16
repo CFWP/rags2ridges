@@ -232,7 +232,8 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
 
     if (verbose) {
       cat(sprintf("i = %-3d", i), "| diffs = (", sprintf("%6.5e", diffs), ")")
-      cat(sprintf(" | -pll = %g\n",.PFLL(SList,PList,ns,TList,lambda,lambdaFmat)))
+      cat(sprintf(" | -pll = %g\n",
+                  .PFLL(SList,PList,ns,TList,lambda,lambdaFmat)))
     }
 
     if (max(diffs) < eps) {
@@ -245,6 +246,14 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
   if (i == maxit + 1) {
     warning("Maximum iterations (", maxit, ") hit")
   }
+
+  # Keep dimnames and names
+  for (k in seq_along(SList)) {
+    dimnames(PList[[k]]) <- dimnames(SList[[k]])
+  }
+  names(PList) <- names(SList)
+
+
   return(PList)
 }
 
