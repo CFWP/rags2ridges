@@ -558,13 +558,15 @@ optPenalty.fused.LOOCVauto <- function(YList,
 
   # Format optimal values
   opt.lambdas <- exp(par)
+  opt.lambdaFmat <- .reconstructLambda(opt.lambdas, parsedLambda, K)
   res <- list(lambda = opt.lambdas[1],
               lambdaF = NA,
-              lambdaFmat = .reconstructLambda(opt.lambdas, parsedLambda, K),
+              lambdaFmat = opt.lambdaFmat,
               value = val)
-  lambdaF <- unique(lambdaFmat[lower.tri(lambdaFmat)])
-  if (length(lambdaF) == 1) {
-    res$lambdaF <- lambdaF
+
+  tmp <- unique(opt.lambdaFmat[lower.tri(opt.lambdaFmat)])
+  if (length(tmp) == 1) {
+    res$lambdaF <- tmp
   }
 
   if (debug) {
