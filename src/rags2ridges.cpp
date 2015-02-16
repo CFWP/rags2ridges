@@ -11,13 +11,15 @@
 arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
                       const Rcpp::NumericVector ns,
                       const int mle = 0) {
-  // Function to compute the pooled covariance estimate
-  // - SList > A list of covariance matrices.
-  // - nu    > A numeric vector giving the number of samples corresponding
-  //           to each scatter matrix.
-  // - mle   > A integer of length one equalling 0 or 1. If 0, the bias
-  //           corrected ML is used. If 1 the ML estimate is used.
-  // Returns a numeric matrix giving the pooled variance.
+  /* ---------------------------------------------------------------------------
+   Function to compute the pooled covariance estimate. Returns a numeric matrix
+   giving the pooled covariance matrix.
+   - SList > A list of covariance matrices.
+   - nu    > A numeric vector giving the number of samples corresponding
+             to each scatter matrix.
+   - mle   > A integer of length one equalling 0 or 1. If 0, the bias
+             corrected ML is used. If 1 the ML estimate is used.
+  --------------------------------------------------------------------------- */
 
   const int K = SList.size();
   const int imle = 1 - mle;
@@ -36,24 +38,31 @@ arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
 arma::mat armaEigShrink(const arma::vec eigvals,
                         const double lambda,
                         const double alpha) {
-  // Function that shrinks the eigenvalues
-  // Shrinkage is that of the rotation equivariant alternative ridge estimator
-  // - eigvals is vector on eigenvalues
-  // - lambda is a double giving the penalty
-  // - alpha is the unique diagonal value in the rotaional equivariant target
+  /* ---------------------------------------------------------------------------
+   Function that shrinks the eigenvalues
+   Shrinkage is that of the rotation equivariant alternative ridge estimator
+   - eigvals is vector on eigenvalues
+   - lambda is a double giving the penalty
+   - alpha is the unique diagonal value in the rotaional equivariant target
+  --------------------------------------------------------------------------- */
+
+
   arma::vec seigvals = eigvals - lambda*alpha;
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
 }
 
 
 
-arma::mat armaRidgeSAnyTargetOld(const arma::mat & S,
+arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
                                  const arma::mat & target,
                                  const double lambda) {
-  // Compute the ridge estimate for general targets.
-  // - S is the sample covariance matrix
-  // - target is the target matrix with the same size as S
-  // - lambda is the ridge penalty
+  /* ---------------------------------------------------------------------------
+   Compute the ridge estimate for general targets.
+   - S is the sample covariance matrix
+   - target is the target matrix with the same size as S
+   - lambda is the ridge penalty
+  --------------------------------------------------------------------------- */
+
   const int n = S.n_cols;
   const arma::mat E = symmatl(S) - lambda * symmatl(target);
 
@@ -69,10 +78,13 @@ arma::mat armaRidgeSAnyTargetOld(const arma::mat & S,
 arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
-  // Compute the ridge estimate for general targets.
-  // - S is the sample covariance matrix
-  // - target is the target matrix with the same size as S
-  // - lambda is the ridge penalty
+  /* ---------------------------------------------------------------------------
+   Compute the ridge estimate for general targets.
+   - S is the sample covariance matrix
+   - target is the target matrix with the same size as S
+   - lambda is the ridge penalty
+  --------------------------------------------------------------------------- */
+
   const int n = S.n_cols;
   const double inv_lambda = 1.0f/lambda;
   const arma::mat E = symmatl(S) - lambda * symmatl(target);
@@ -87,13 +99,16 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
 
 
 
-arma::mat armaRidgeSRotationInvariantTargetOld(const arma::mat & S,
-                                               const double alpha,
-                                               const double lambda) {
-  // Compute the ridge estimate for rotational equivariate target.
-  // - S is the sample covariance matrix
-  // - alpha is a scaling of the identity matrix
-  // - lambda is the ridge penalty
+arma::mat armaRidgeSRotationInvariantTarget_OLD(const arma::mat & S,
+                                                const double alpha,
+                                                const double lambda) {
+  /* ---------------------------------------------------------------------------
+   Compute the ridge estimate for rotational equivariate target.
+   - S is the sample covariance matrix
+   - alpha is a scaling of the identity matrix
+   - lambda is the ridge penalty
+  --------------------------------------------------------------------------- */
+
   arma::vec eigvals;
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, symmatl(S), "dc");  // Eigen decomposition
@@ -108,10 +123,13 @@ arma::mat armaRidgeSRotationInvariantTargetOld(const arma::mat & S,
 arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
-  // Compute the ridge estimate for rotational equivariate target.
-  // - S is the sample covariance matrix
-  // - alpha is a scaling of the identity matrix
-  // - lambda is the ridge penalty
+  /* ---------------------------------------------------------------------------
+   The ridge estimator in the rotational equivariate case
+   - S is the sample covariance matrix
+   - alpha is a scaling of the identity matrix
+   - lambda is the ridge penalty
+  --------------------------------------------------------------------------- */
+
   const double inv_lambda = 1.0f/lambda;
   arma::mat E = symmatl(S);
   E.diag() -= alpha*lambda;
@@ -131,10 +149,13 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
 arma::mat armaRidgeS(const arma::mat & S,
                      const arma::mat & target,
                      const double lambda) {
-  // The ridge estimator
-  // - S      > the sample covariance matrix (a numeric matrix on the R side)
-  // - target > target matrix (a numeric matrix on the R side, same size as S)
-  // - lambda > the penalty (a numeric of length one on the R side)
+  /* ---------------------------------------------------------------------------
+   The ridge estimator in C++.
+   - S      > the sample covariance matrix (a numeric matrix on the R side)
+   - target > target matrix (a numeric matrix on the R side, same size as S)
+   - lambda > the penalty (a numeric of length one on the R side)
+  --------------------------------------------------------------------------- */
+
   const int n = S.n_rows;
   const double alpha = target(0, 0);
   const arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
@@ -155,22 +176,23 @@ arma::mat fusedUpdate(int k0,
                       const arma::vec ns,
                       const double lambda,
                       arma::mat lambdaFmat) {
-  // - (Internal) "Update" the covariance matrices and use the regular
-  //   ridge estimate.
-  // - k0          > An integer giving the class estimate to be updated.
-  // - PList       > A list of length K of matrices giving the current precision
-  //                 estimates.
-  // - SList       > A list of length K of sample correlation matrices the same
-  //                 size as those of PList.
-  // - TList       > A list of length K of target matrices the same size
-  //                 as those of PList
-  // - ns          > A vector of length K giving the sample sizes.
-  // - lambda      > The ridge penalty (a postive number).
-  // - lambdaFmat  > A K by K symmetric adjacency matrix giving the fused
-  //                 penalty graph with non-negative entries where
-  //                 lambdaFmat[k1, k2] determine the (rate of) shrinkage
-  //                 between estimates in classes corresponding to SList[k1]
-  //                 and SList[k1].
+  /* ---------------------------------------------------------------------------
+   "Update" the covariance matrices and use the regular ridge estimate.
+   - k0          > An integer giving the class estimate to be updated.
+   - PList       > A list of length K of matrices giving the current precision
+                   estimates.
+   - SList       > A list of length K of sample correlation matrices the same
+                   size as those of PList.
+   - TList       > A list of length K of target matrices the same size
+                   as those of PList
+   - ns          > A vector of length K giving the sample sizes.
+   - lambda      > The ridge penalty (a postive number).
+   - lambdaFmat  > A K by K symmetric adjacency matrix giving the fused
+                   penalty graph with non-negative entries where
+                   lambdaFmat[k1, k2] determine the (rate of) shrinkage
+                   between estimates in classes corresponding to SList[k1]
+                   and SList[k1].
+  --------------------------------------------------------------------------- */
 
   k0 = k0 - 1;  // Shift index to C++ conventio
   const int n = ns.n_elem;
@@ -192,6 +214,9 @@ arma::mat fusedUpdate(int k0,
   }
   return armaRidgeS(S0, T0, a);
 }
+
+
+
 
 
 
