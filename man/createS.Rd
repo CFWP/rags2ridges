@@ -4,7 +4,7 @@
   Simulate sample covariances or datasets
 }
 \description{
-Simulate data from a p-dimensional (zero-mean) gaussian graphical model (GGM) and return the sample covariance matrix or matrices.
+Simulate data from a p-dimensional (zero-mean) gaussian graphical model (GGM) with a specified (or random) topology and return the sample covariance matrix or matrices.
 Can also return the original simulated data.
 }
 \usage{
@@ -62,6 +62,12 @@ If \code{m} is 2 or greater block diagonal precision matrix are constructed and 
   \item \code{"Erdos-Renyi"}: alias for \code{"random-graph"}
 }
 When \code{n} has length greater than 1, the datasets are generated i.i.d. given the topology and number of blocks.
+
+Arguments \code{invwishart} and \code{nu} allows for introducing class homogeneity.
+Large values of \code{nu} imply high class homogeneity.
+\code{nu} must be greater than \code{p + 1}.
+More precisely, if \code{invwishart == TRUE} then the constructed precision matrix is used as the scale parameter in an inverse Wishart distribution with \code{nu} degrees of freedom.
+Each class covariance is distributed according to this inverse Wishart and independent.
 }
 \value{
 The returned type is dependent on \code{n} and \code{covariance}.
@@ -106,5 +112,14 @@ round(createS(1, 12, "banded", m = 2, banded.n = 4, precision = TRUE), 2)
 round(createS(1, 10, "small-world", precision = TRUE), 2)
 round(createS(1, 5, "scale-free", precision = TRUE), 2)
 round(createS(1, 5, "random-graph", precision = TRUE), 2)
+
+## Simulation using inverse Wishart distributed class covariance
+## Low class homogeneity
+createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 10)
+## Extremely high class homogeneity
+createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 1e10)
+
+# The precision argument can again be used to see the actual realised class
+# precision matrices used when invwishart = TRUE.
 }
 
