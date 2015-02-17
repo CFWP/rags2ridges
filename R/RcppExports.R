@@ -17,3 +17,11 @@ rmvnormal <- function(n, mu, sigma) {
     .Call('rags2ridges_rmvnormal', PACKAGE = 'rags2ridges', n, mu, sigma)
 }
 
+armaRWishart <- function(n, sigma, nu) {
+    .Call('rags2ridges_armaRWishart', PACKAGE = 'rags2ridges', n, sigma, nu)
+}
+
+armaRInvWishart <- function(n, psi, nu) {
+    .Call('rags2ridges_armaRInvWishart', PACKAGE = 'rags2ridges', n, psi, nu)
+}
+

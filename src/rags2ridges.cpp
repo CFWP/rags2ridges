@@ -7,6 +7,14 @@
 //using namespace arma;
 
 
+/* -----------------------------------------------------------------------------
+
+   AUXILIARY TOOLS
+
+----------------------------------------------------------------------------- */
+
+
+
 // [[Rcpp::export]]
 arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
                       const Rcpp::NumericVector ns,
@@ -32,6 +40,14 @@ arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
   }
   return fac*S0;
 }
+
+
+
+/* -----------------------------------------------------------------------------
+
+   GENERAL RIDGE AND FUSED RIDGE ESTIMATION TOOLS
+
+----------------------------------------------------------------------------- */
 
 
 
@@ -217,6 +233,14 @@ arma::mat fusedUpdate(int k0,
 
 
 
+/* -----------------------------------------------------------------------------
+
+   GENERAL SIMULATION TOOLS
+
+----------------------------------------------------------------------------- */
+
+
+
 // [[Rcpp::export]]
 arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
   /* ---------------------------------------------------------------------------
@@ -247,6 +271,49 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
   return ans;
 }
 
+
+
+// Wishart simulation capabilities: (taken from correlateR)
+arma::mat armaRWishartSingle(const arma::mat L, const double nu, const int p) {
+  // Simualte a single wishart distributed matrix
+  arma::mat A(p, p, arma::fill::randn);
+  A = trimatl(A);
+  arma::vec chisq(p);
+  for (int i = 0; i < p; ++i) {
+    chisq[i] = sqrt(Rcpp::as<double>(Rcpp::rchisq(1, nu - i)));
+  }
+  A.diag() = chisq;
+  arma::mat LA = L*A;
+  return LA.t()*LA;
+}
+
+// [[Rcpp::export]]
+arma::cube armaRWishart(const int n,
+                        const arma::mat & sigma,
+                        const double nu) {
+  // Simulate n wishart distributed matrices
+  const int p = sigma.n_cols;
+  const arma::mat L = arma::chol(sigma);
+  arma::cube ans(p, p, n);
+  for (int k = 0; k < n; ++k) {
+    ans.slice(k) = armaRWishartSingle(L, nu, p);
+  }
+  return ans;
+}
+
+// [[Rcpp::export]]
+arma::cube armaRInvWishart(const int n,
+                           const arma::mat & psi,
+                           const double nu) {
+  // Simulate n inverse wishart distributed matrices
+  const int p = psi.n_cols ;
+  const arma::mat L = arma::chol(inv(psi));
+  arma::cube ans(p, p, n);
+  for (int k = 0; k < n; ++k) {
+    ans.slice(k) = inv(armaRWishartSingle(L, nu, p));
+  }
+  return ans;
+}
 
 
 

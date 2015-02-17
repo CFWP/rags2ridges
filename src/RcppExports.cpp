@@ -78,3 +78,37 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// armaRWishart
+arma::cube armaRWishart(const int n, const arma::mat& sigma, const double nu);
+RcppExport SEXP rags2ridges_armaRWishart(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const int >::type n(nSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type sigma(sigmaSEXP );
+        Rcpp::traits::input_parameter< const double >::type nu(nuSEXP );
+        arma::cube __result = armaRWishart(n, sigma, nu);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// armaRInvWishart
+arma::cube armaRInvWishart(const int n, const arma::mat& psi, const double nu);
+RcppExport SEXP rags2ridges_armaRInvWishart(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const int >::type n(nSEXP );
+        Rcpp::traits::input_parameter< const arma::mat& >::type psi(psiSEXP );
+        Rcpp::traits::input_parameter< const double >::type nu(nuSEXP );
+        arma::cube __result = armaRInvWishart(n, psi, nu);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
