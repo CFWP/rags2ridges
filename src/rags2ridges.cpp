@@ -217,6 +217,35 @@ arma::mat fusedUpdate(int k0,
 
 
 
+// [[Rcpp::export]]
+arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
+  /* ---------------------------------------------------------------------------
+   Simulate from multivariate normal distribution with mean mu and covariance
+   sigma. Returns a matrix of size n by length(mu) of observations.
+   (Code taken from package GMCM)
+   - n     > An integer giving the number of samples to simulate.
+   - mu    > A vector giving the population mean.
+   - sigma > A matrix giving the population covariance matrix.
+  --------------------------------------------------------------------------- */
+
+  Rcpp::RNGScope();  // Allows for using set.seed(...) on the R side
+  const int d = mu.size();
+
+  // Create matrix of standard normal random values
+  arma::mat ans(n, d, arma::fill::none);
+  for (int j = 0; j < d; ++j) {  // Fill ans with random values
+    ans.col(j) = Rcpp::as<arma::colvec>(Rcpp::rnorm(n));
+  }
+
+  // Do the Cholesky decomposition
+  const arma::mat csigma = arma::chol(sigma);
+
+  // Do the transformation
+  ans = ans * csigma;
+  ans.each_row() += mu; // Add mu to each row in transformed ans
+
+  return ans;
+}
 
 
 

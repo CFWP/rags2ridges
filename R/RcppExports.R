@@ -13,3 +13,7 @@ fusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
     .Call('rags2ridges_fusedUpdate', PACKAGE = 'rags2ridges', k0, PList, SList, TList, ns, lambda, lambdaFmat)
 }
 
+rmvnormal <- function(n, mu, sigma) {
+    .Call('rags2ridges_rmvnormal', PACKAGE = 'rags2ridges', n, mu, sigma)
+}
+

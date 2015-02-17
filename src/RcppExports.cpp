@@ -61,3 +61,20 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// rmvnormal
+arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma);
+RcppExport SEXP rags2ridges_rmvnormal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const int >::type n(nSEXP );
+        Rcpp::traits::input_parameter< arma::rowvec >::type mu(muSEXP );
+        Rcpp::traits::input_parameter< arma::mat >::type sigma(sigmaSEXP );
+        arma::mat __result = rmvnormal(n, mu, sigma);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
