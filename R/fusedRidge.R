@@ -1,43 +1,115 @@
 
 createS <- function(n, p,
-                    topology = c("identity", "star", "clique",
-                                 "chain", "banded"),
-                    covariance = TRUE) {
+                    topology = c("identity", "complete", "star", "clique",
+                                 "chain", "banded", "barabassi", "small-world"),
+                    dataset = FALSE,
+                    nonzero = 0.25,
+                    m = 1) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
   #   or datasets
   # - n          > A vector of sample sizes
-  # - p          > An integer giving the dimension
+  # - p          > An integer giving the dimension. p should be greater than 2.
   # - topology   > character. Specify the topology to simulate data from.
-  # - covariance > logical. Should covariances be returned?
-  # - Returns a list of matrices if n > 1
-  # - Returns the matrices if n = 1.
+  #                See below.
+  # - dataset    > logical. Should dataset instead of its sample covariance be
+  #                returned?
+  # - nonzero    > numeric of length 1 giving the value of the non-zero entries
+  #                for some topologies
+  # - m          > integer. The number of conditionally independent subgraphs.
+  #                I.e. the number of blocks.
+  # - Returns a list of matrices if length(n) > 1.  The output is simplified if
+  #   n has length 1, and only the matrix is returned
   ##############################################################################
 
+  stopifnot(p > 1)
+  stopifnot(m >= 1)
+
   topology <- match.arg(topology)
-  if (topology != "identity") {
-    stop('Only topology "identity" is supported now.')
-  }
   K <- length(n)
+
+  # Construct the block split
+  blocks <- split(seq_len(p), ceiling(m*seq_len(p)/p))
+
+  # Construct the covariance matrix
+  if (topology == "identity") {
+
+    submat <- function(p) diag(p)
+
+  } else if (topology == "star") {
+
+    submat <- function(p) {
+      subP <- diag(p)
+      subP[1, seq(2, p)] <- subP[seq(2, p), 1] <- 1/seq(2, p)
+      return(subP)
+    }
+
+  } else if (topology == "chain") {
+
+    submat <- function(p) {
+      s <- seq_len(p - 1)
+      subP <- diag(p)
+      subP[cbind(s, s + 1)] <- subP[cbind(s + 1, s)] <- nonzero
+      return(subP)
+    }
+
+  } else if (topology == "clique") {
+
+    submat <- function(p) {
+      subP <- diag(p)
+      subP[lower.tri(subP)] <- subP[upper.tri(subP)]  <- nonzero
+      return(subP)
+    }
+
+  } else if (topology == "banded") {
+
+    submat <- function(p) {
+      subP <- diag(p)
+      for (j in seq_len (p)) {
+        s <- seq_len(p - j)
+        subP[cbind(s, s + j)] <- subP[cbind(s + j, s)] <- 1/(j + 1)
+      }
+      return(subP)
+    }
+
+  } else {
+
+    stop("requested topology not implemented yet.")
+
+  }
+
+  P <- diag(p)
+  for (b in blocks) {
+    P[b, b] <- submat(length(b))
+  }
+  S <- solve(P)
 
   # Construct names
   n.letters <- which.max(p <= 26^(1:5))
   x <- expand.grid(rep(list(LETTERS), n.letters))
   nms <- do.call(paste0, x)
 
-  # Construct list
+  # Construct list to fill and iterate over all classes
   ans <- vector("list", K)
   names(ans) <- paste0("class", seq_len(K))
   for (i in seq_len(K)) {
-    ans[[i]] <- matrix(rnorm(n[i]*p), nrow = n[i], ncol = p)
+
+    ans[[i]] <- rmvnormal(n = n[i], mu = rep(0, p), sigma = S)
+
     if (p <= 17576) {  # Only give names for "small" dimensions
       colnames(ans[[i]]) <- nms[1:p]
     }
-    if (covariance) {
+
+    if (!dataset) {
       ans[[i]] <- covML(ans[[i]])
     }
+
   }
-  if (K == 1) {ans <- ans[[1]]}  # Simplify output is ns is length 1
+
+  if (K == 1) {  # Simplify output if ns is length 1
+    ans <- ans[[1]]
+  }
+
   return(ans)
 }
 

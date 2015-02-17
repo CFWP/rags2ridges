@@ -121,7 +121,7 @@ See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 \examples{
 # Generate some (not so) high-dimensional data witn (not so) many samples
 ns <- c(4, 5, 6)
-YList <- createS(n = ns, p = 6, covariance = FALSE)
+YList <- createS(n = ns, p = 6, dataset = TRUE)
 SList <- lapply(YList, covML)
 TList <- default.target.fused(SList, ns, type = "DIAES", equal = FALSE)
 
@@ -181,7 +181,7 @@ filled.contour(log(b$lambda), log(b$lambdaF), log(b$fcvl), color = heat.colors,
 # Generate some new high-dimensional data and a 2 by 2 factorial design
 ns <- c(6, 5, 3, 2)
 df <- expand.grid(Factor1 = LETTERS[1:2], Factor2 = letters[3:4])
-YList <- createS(n = ns, p = 4, covariance = FALSE)
+YList <- createS(n = ns, p = 4, dataset = TRUE)
 TList <- lapply(lapply(YList, covML), default.target, type = "Null")
 
 # Construct penalty matrix
@@ -216,7 +216,7 @@ print(ans3)
 # Generate some new high-dimensional data and a 2 by 2 factorial design
 ns <- c(6, 5, 5, 5)
 df <- expand.grid(DS = LETTERS[1:2], ER = letters[3:4])
-YList <- createS(n = ns, p = 4, covariance = FALSE)
+YList <- createS(n = ns, p = 4, dataset = TRUE)
 TList <- lapply(lapply(YList, covML), default.target, type = "Null")
 
 lambdaFmat <- default.penalty(df, type = "Tensor")

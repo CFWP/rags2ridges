@@ -32,7 +32,7 @@ Anders Ellern Bilgrau
 }
 \examples{
 ns <- c(10, 11)
-YList <- createS(ns, p = 16, covariance = FALSE)
+YList <- createS(ns, p = 16, dataset = TRUE)
 SList <- lapply(YList, covML)
 TList <- default.target.fused(SList, ns)
 
