@@ -5,7 +5,9 @@ createS <- function(n, p,
                     precision = FALSE,
                     nonzero = 0.25,
                     m = 1L,
-                    banded.n = 2L) {
+                    banded.n = 2L,
+                    invwishart = FALSE,
+                    nu = p + 1) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
   #   or datasets
@@ -23,8 +25,15 @@ createS <- function(n, p,
   # - banded.n   > interger. The number of off-diagonal bands used if
   #                topology is "banded". Use as paremeter if topology is
   #                "Watt-Strogatz".
-  # - Returns a list of matrices if length(n) > 1.  The output is simplified if
-  #   n has length 1, and only the matrix is returned
+  # - invwishart > logical. If TRUE the constructed precision matrix is
+  #                used as the scale matrix of an inverse Wishart distribution
+  #                and class covariance matrices are drawn from this
+  #                distribution.
+  # - nu         > The degrees of freedom in the inverse wishart distribution.
+  #                A large nu implies high class homogeneity.
+  #                Must be greater than p + 1.
+  # - Returns a list of matrices if length(n) > 1. The output is simplified if
+  #   n has length 1 where only the matrix is returned
   ##############################################################################
 
   stopifnot(p > 1)
@@ -32,6 +41,11 @@ createS <- function(n, p,
 
   if (dataset && precision) {
     stop("dataset and precision cannot be TRUE at the same time.")
+  }
+
+  if (invwishart && missing(nu)) {
+    stop("argument 'nu' is missing. Supply the degrees of freedom 'nu' for ",
+         "the inverse Wishart distribution.")
   }
 
   topology <- match.arg(topology,
@@ -137,20 +151,37 @@ createS <- function(n, p,
   # Construct list to fill and iterate over all classes
   ans <- vector("list", K)
   names(ans) <- paste0("class", seq_len(K))
-  for (i in seq_len(K)) {
+  for (k in seq_len(K)) {
+
+    if (invwishart) {
+      stopifnot(nu - p - 1 > 0)
+      Sk <- drop(armaRInvWishart(n = 1, psi = (nu - p - 1)*S, nu = nu))
+    } else {
+      Sk <- S
+    }
 
     if (precision) {
-      ans[[i]] <- P
-    } else {
-      ans[[i]] <- rmvnormal(n = n[i], mu = rep(0, p), sigma = S)
-      if (!dataset) {
-        ans[[i]] <- covML(ans[[i]])
+
+      if (invwishart) {
+        ans[[k]] <- solve(Sk)
+      } else {
+        ans[[k]] <- P
       }
-    }
-    if (p <= 17576) {  # Only give names for "small" dimensions
-      colnames(ans[[i]]) <- nms[1:p]
+
+    } else {
+
+      ans[[k]] <- rmvnormal(n = n[k], mu = rep(0, p), sigma = Sk)
+
       if (!dataset) {
-        rownames(ans[[i]]) <- nms[1:p]
+        ans[[k]] <- covML(ans[[k]])
+      }
+
+    }
+
+    if (p <= 17576) {  # Only give names for "small" dimensions
+      colnames(ans[[k]]) <- nms[1:p]
+      if (!dataset) {
+        rownames(ans[[k]]) <- nms[1:p]
       }
     }
   }

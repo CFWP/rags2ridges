@@ -4,14 +4,15 @@
   Simulate sample covariances or datasets
 }
 \description{
-Simulate data from a p-dimensional (zero-mean) gaussian graphical model (GGM) and return the sample covariance matrix or matrices.
+Simulate data from a p-dimensional (zero-mean) gaussian graphical model (GGM) with a specified (or random) topology and return the sample covariance matrix or matrices.
 Can also return the original simulated data.
 }
 \usage{
 createS(n, p,
         topology = "identity",  # See details for other choices
         dataset = FALSE, precision = FALSE,
-        nonzero = 0.25, m = 1L, banded.n = 2L)
+        nonzero = 0.25, m = 1L, banded.n = 2L,
+        invwishart = FALSE, nu = p + 1)
 }
 \arguments{
   \item{n}{A \code{numeric} vector giving number of samples. If the length is larger than 1, the covariance matrices are returned as a list.}
@@ -23,6 +24,10 @@ createS(n, p,
   \item{nonzero}{A \code{numeric} of length 1 giving the value of the nonzero entries used in some typologies.}
   \item{m}{A \code{integer} giving the number of blocks (i.e. conditionally independent components) to create. If \code{m} is greater than 1, then the given \code{topology} is used on \code{m} blocks of approximately equal size.}
   \item{banded.n}{A \code{integer} of length one giving the number of bands. Only used if \code{topology} is \code{"banded"}.}
+  \item{invwishart}{\code{logical}. If \code{TRUE} the constructed precision matrix is used as the scale matrix of an inverse Wishart distribution and class covariance matrices are drawn from this distribution.}
+  \item{nu}{\code{numeric} greater than \code{p + 1} giving the degrees of freedom in the inverse wishart distribution.
+  A large \code{nu} implies high class homogeneity.
+  A small \code{nu} near \code{p + 1} implies high class heterogeneity.}
 }
 
 \details{
@@ -62,6 +67,12 @@ If \code{m} is 2 or greater block diagonal precision matrix are constructed and 
   \item \code{"Erdos-Renyi"}: alias for \code{"random-graph"}
 }
 When \code{n} has length greater than 1, the datasets are generated i.i.d. given the topology and number of blocks.
+
+Arguments \code{invwishart} and \code{nu} allows for introducing class homogeneity.
+Large values of \code{nu} imply high class homogeneity.
+\code{nu} must be greater than \code{p + 1}.
+More precisely, if \code{invwishart == TRUE} then the constructed precision matrix is used as the scale parameter in an inverse Wishart distribution with \code{nu} degrees of freedom.
+Each class covariance is distributed according to this inverse Wishart and independent.
 }
 \value{
 The returned type is dependent on \code{n} and \code{covariance}.
@@ -106,5 +117,14 @@ round(createS(1, 12, "banded", m = 2, banded.n = 4, precision = TRUE), 2)
 round(createS(1, 10, "small-world", precision = TRUE), 2)
 round(createS(1, 5, "scale-free", precision = TRUE), 2)
 round(createS(1, 5, "random-graph", precision = TRUE), 2)
+
+## Simulation using inverse Wishart distributed class covariance
+## Low class homogeneity
+createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 10)
+## Extremely high class homogeneity
+createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 1e10)
+
+# The precision argument can again be used to see the actual realised class
+# precision matrices used when invwishart = TRUE.
 }
 
