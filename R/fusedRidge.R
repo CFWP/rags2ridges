@@ -1,23 +1,28 @@
 
 createS <- function(n, p,
-                    topology = c("identity", "complete", "star", "clique",
-                                 "chain", "banded", "barabassi", "small-world"),
+                    topology = "identity",
                     dataset = FALSE,
+                    precision = FALSE,
                     nonzero = 0.25,
-                    m = 1) {
+                    m = 1L,
+                    banded.n = 2L) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
   #   or datasets
   # - n          > A vector of sample sizes
   # - p          > An integer giving the dimension. p should be greater than 2.
   # - topology   > character. Specify the topology to simulate data from.
-  #                See below.
+  #                See details.
   # - dataset    > logical. Should dataset instead of its sample covariance be
-  #                returned?
+  #                returned? Default is FALSE.
+  # - precision  > logical. Should the constructed precision matrix be returned?
   # - nonzero    > numeric of length 1 giving the value of the non-zero entries
   #                for some topologies
   # - m          > integer. The number of conditionally independent subgraphs.
   #                I.e. the number of blocks.
+  # - banded.n   > interger. The number of off-diagonal bands used if
+  #                topology is "banded". Use as paremeter if topology is
+  #                "Watt-Strogatz".
   # - Returns a list of matrices if length(n) > 1.  The output is simplified if
   #   n has length 1, and only the matrix is returned
   ##############################################################################
@@ -25,13 +30,18 @@ createS <- function(n, p,
   stopifnot(p > 1)
   stopifnot(m >= 1)
 
-  topology <- match.arg(topology)
+  if (dataset && precision) {
+    stop("dataset and precision cannot be TRUE at the same time.")
+  }
+
+  topology <- match.arg(topology,
+                        c("identity", "star", "clique", "complete",
+                          "chain", "banded", "Barabassi", "small-world",
+                          "scale-free", "Watts-Strogatz", "random-graph",
+                          "Erdos-Renyi"))
   K <- length(n)
 
-  # Construct the block split
-  blocks <- split(seq_len(p), ceiling(m*seq_len(p)/p))
-
-  # Construct the covariance matrix
+  # Construct the precision matrix "constructor"
   if (topology == "identity") {
 
     submat <- function(p) diag(p)
@@ -53,7 +63,7 @@ createS <- function(n, p,
       return(subP)
     }
 
-  } else if (topology == "clique") {
+  } else if (topology == "clique" || topology == "complete") {
 
     submat <- function(p) {
       subP <- diag(p)
@@ -64,12 +74,39 @@ createS <- function(n, p,
   } else if (topology == "banded") {
 
     submat <- function(p) {
+      if (banded.n > p) {
+        stop("The number of bands cannot exceed the dimension of each block")
+      }
       subP <- diag(p)
-      for (j in seq_len (p)) {
+      for (j in seq(1, banded.n)) {
         s <- seq_len(p - j)
         subP[cbind(s, s + j)] <- subP[cbind(s + j, s)] <- 1/(j + 1)
       }
       return(subP)
+    }
+
+  } else if (topology == "Barabassi" || topology == "scale-free") {
+
+    submat <- function(p) {
+      G <- barabasi.game(p, power = 1, directed = FALSE)
+      adj <- get.adjacency(G, sparse = FALSE)
+      return(diag(p) + nonzero*adj)
+    }
+
+  } else if (topology == "Watts-Strogatz" || topology == "small-world") {
+
+    submat <- function(p) {
+      G <- watts.strogatz.game(1, p, banded.n, 0.05)
+      adj <- get.adjacency(G, sparse = FALSE)
+      return(diag(p) + nonzero*adj)
+    }
+
+  } else if (topology == "Erdos-Renyi" || topology == "random-graph") {
+
+    submat <- function(p) {
+      G <- erdos.renyi.game(p, 1/p)
+      adj <- get.adjacency(G, sparse = FALSE)
+      return(diag(p) + nonzero*adj)
     }
 
   } else {
@@ -78,14 +115,22 @@ createS <- function(n, p,
 
   }
 
+  # Construct the block split
+  blocks <- split(seq_len(p), ceiling(m*seq_len(p)/p))
+
+  # Fill in blocks to construct full precisions
   P <- diag(p)
   for (b in blocks) {
     P[b, b] <- submat(length(b))
   }
+  if (rcond(P) < sqrt(.Machine$double.eps)) {  # Check condition number
+    warning("The generated precision matrix has a very high condition number ",
+            "and the generated data might be unreliable.")
+  }
   S <- solve(P)
 
   # Construct names
-  n.letters <- which.max(p <= 26^(1:5))
+  n.letters <- which.max(p <= 26^(1:3))
   x <- expand.grid(rep(list(LETTERS), n.letters))
   nms <- do.call(paste0, x)
 
@@ -94,16 +139,20 @@ createS <- function(n, p,
   names(ans) <- paste0("class", seq_len(K))
   for (i in seq_len(K)) {
 
-    ans[[i]] <- rmvnormal(n = n[i], mu = rep(0, p), sigma = S)
-
+    if (precision) {
+      ans[[i]] <- P
+    } else {
+      ans[[i]] <- rmvnormal(n = n[i], mu = rep(0, p), sigma = S)
+      if (!dataset) {
+        ans[[i]] <- covML(ans[[i]])
+      }
+    }
     if (p <= 17576) {  # Only give names for "small" dimensions
       colnames(ans[[i]]) <- nms[1:p]
+      if (!dataset) {
+        rownames(ans[[i]]) <- nms[1:p]
+      }
     }
-
-    if (!dataset) {
-      ans[[i]] <- covML(ans[[i]])
-    }
-
   }
 
   if (K == 1) {  # Simplify output if ns is length 1
