@@ -2,19 +2,26 @@
 \title{News for Package \pkg{rags2ridges}}
 \newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
 
-\section{Changes in version 1.5}{
+\section{Changes in version 2.0}{
   \itemize{
     \item Added this \code{NEWS} file!
-    \item Arguments \code{verticle} in various functions have been renamed to
+    \item Added the fused ridge module. This provides estimation functionality
+      for estimation of multiple precision matrices for multiple classes.
+      Functions from this module are generally suffixed with \code{.fused}.
+    \item Argument \code{verticle} in various functions have been renamed to
       \code{vertical}. Sorry for any inconvinience.
-    \item Added fused ridge estimation functionality for estimation of multiple
-      precision matrices for multiple classes.
     \item Added LOOCV and approximations hereof to determine optimal ridge and
       fused penalties. The fused pairs to cross-validate over are specified by
       a character matrix.
     \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadilo} with
-      core functions written in \code{C++} and the package
-      should be notably faster in many cases.
+      core functions written in \code{C++}. The package should now be at least
+      two orders of magnitude faster in most cases.
+  }
+}
+
+\section{Changes in version 1.4.1}{
+  \itemize{
+    \item Fixed issues with the citation file.
   }
 }
 
