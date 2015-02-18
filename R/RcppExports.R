@@ -9,8 +9,8 @@ armaRidgeS <- function(S, target, lambda) {
     .Call('rags2ridges_armaRidgeS', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
-fusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
-    .Call('rags2ridges_fusedUpdate', PACKAGE = 'rags2ridges', k0, PList, SList, TList, ns, lambda, lambdaFmat)
+armaFusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
+    .Call('rags2ridges_armaFusedUpdate', PACKAGE = 'rags2ridges', k0, PList, SList, TList, ns, lambda, lambdaFmat)
 }
 
 rmvnormal <- function(n, mu, sigma) {

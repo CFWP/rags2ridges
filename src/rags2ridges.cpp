@@ -185,13 +185,13 @@ arma::mat armaRidgeS(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat fusedUpdate(int k0,
-                      const Rcpp::List & PList,
-                      const Rcpp::List & SList,
-                      const Rcpp::List & TList,
-                      const arma::vec ns,
-                      const double lambda,
-                      arma::mat lambdaFmat) {
+arma::mat armaFusedUpdate(int k0,
+                          const Rcpp::List & PList,
+                          const Rcpp::List & SList,
+                          const Rcpp::List & TList,
+                          const arma::vec ns,
+                          const double lambda,
+                          arma::mat lambdaFmat) {
   /* ---------------------------------------------------------------------------
    "Update" the covariance matrices and use the regular ridge estimate.
    - k0          > An integer giving the class estimate to be updated.
@@ -210,7 +210,7 @@ arma::mat fusedUpdate(int k0,
                    and SList[k1].
   --------------------------------------------------------------------------- */
 
-  k0 = k0 - 1;  // Shift index to C++ conventio
+  k0 = k0 - 1;  // Shift index to C++ convention
   const int n = ns.n_elem;
   const int K = SList.size();
   lambdaFmat(k0, k0) = 0;
@@ -273,8 +273,8 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
 
 
 
-// Wishart simulation capabilities: (taken from correlateR)
 arma::mat armaRWishartSingle(const arma::mat L, const double nu, const int p) {
+  // Wishart simulation capabilities: (taken from package correlateR)
   // Simualte a single wishart distributed matrix
   arma::mat A(p, p, arma::fill::randn);
   A = trimatl(A);
@@ -326,6 +326,7 @@ target <- default.target(S, type = "DEPV")
 lambda <- 2
 
 
+
 # General target
 ridgeS1 <- function(S, target, lambda) {
   E <- (S - lambda * target)
@@ -334,7 +335,9 @@ ridgeS1 <- function(S, target, lambda) {
 
 microbenchmark(A1 <- ridgeS1(S, target, lambda),
                B1 <- armaRidgeSAnyTarget(S, target, lambda),
-               C1 <- armaRidgeS(S, target, lambda))
+               C1 <- armaRidgeS(S, target, lambda),
+               D1 <- ridgeS(S, lambda, target = target),
+               times = 1)
 stopifnot(all.equal(unname(A1), B1))
 stopifnot(all.equal(unname(A1), C1))
 
@@ -382,7 +385,28 @@ stopifnot(all.equal(A, B))
 S  <- createS(n = 10, p = 5000)
 target <- default.target(S, type = "DEPV")
 lambda <- 2
-system.time(B <- ridgeSArma(S, target = target, lambda = lambda)
-            # Takes about 2 mins -- about 10-20 hours for the ridgeS
+system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
+# Takes about 2 mins -- about 10-20 hours for the ridgeS
+
+
+#
+# Test armaFusedUpdate
+#
+ns <- c(100, 100)
+PList <- createS(n = c(100, 100), p = 10)
+SList <- createS(n = c(100, 100), p = 10)
+TList <- default.target.fused(SList, ns)
+k0 <- 1
+
+res <- microbenchmark(
+  A = armaFusedUpdate2(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  B = armaFusedUpdate(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  C = rags2ridges:::.fusedUpdate(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  times = 10000)
+boxplot(res)
+
+all.equal(A, C)
+all.equal(A2, A)
+all.equal(A, B)
 */
 

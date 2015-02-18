@@ -40,9 +40,9 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// fusedUpdate
-arma::mat fusedUpdate(int k0, const Rcpp::List& PList, const Rcpp::List& SList, const Rcpp::List& TList, const arma::vec ns, const double lambda, arma::mat lambdaFmat);
-RcppExport SEXP rags2ridges_fusedUpdate(SEXP k0SEXP, SEXP PListSEXP, SEXP SListSEXP, SEXP TListSEXP, SEXP nsSEXP, SEXP lambdaSEXP, SEXP lambdaFmatSEXP) {
+// armaFusedUpdate
+arma::mat armaFusedUpdate(int k0, const Rcpp::List& PList, const Rcpp::List& SList, const Rcpp::List& TList, const arma::vec ns, const double lambda, arma::mat lambdaFmat);
+RcppExport SEXP rags2ridges_armaFusedUpdate(SEXP k0SEXP, SEXP PListSEXP, SEXP SListSEXP, SEXP TListSEXP, SEXP nsSEXP, SEXP lambdaSEXP, SEXP lambdaFmatSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -54,7 +54,7 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::vec >::type ns(nsSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
         Rcpp::traits::input_parameter< arma::mat >::type lambdaFmat(lambdaFmatSEXP );
-        arma::mat __result = fusedUpdate(k0, PList, SList, TList, ns, lambda, lambdaFmat);
+        arma::mat __result = armaFusedUpdate(k0, PList, SList, TList, ns, lambda, lambdaFmat);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

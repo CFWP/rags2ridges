@@ -384,9 +384,9 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
   i <- 1
   while (i <= maxit) {
     for (k in seq_len(K)) {
-      tmpPList[[k]] <- .fusedUpdate(k0 = k, PList = PList, SList = SList,
-                                    TList = TList, ns = ns, lambda = lambda,
-                                    lambdaFmat = lambdaFmat)
+      tmpPList[[k]] <- armaFusedUpdate(k0 = k, PList = PList, SList = SList,
+                                       TList = TList, ns = ns, lambda = lambda,
+                                       lambdaFmat = lambdaFmat)
       diffs[k] <- .FrobeniusLoss(tmpPList[[k]], PList[[k]])
       PList[[k]] <- tmpPList[[k]]
     }
