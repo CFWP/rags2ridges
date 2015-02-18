@@ -12,7 +12,7 @@ createS(n, p,
         topology = "identity",  # See details for other choices
         dataset = FALSE, precision = FALSE,
         nonzero = 0.25, m = 1L, banded.n = 2L,
-        invwishart = FALSE, nu = p + 1)
+        invwishart = FALSE, nu = p + 1, PList)
 }
 \arguments{
   \item{n}{A \code{numeric} vector giving number of samples. If the length is larger than 1, the covariance matrices are returned as a list.}
@@ -126,5 +126,10 @@ createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 1e10)
 
 # The precision argument can again be used to see the actual realised class
 # precision matrices used when invwishart = TRUE.
+
+# The PList argumet is used to reuse old precision matrices or
+# user-generated ones
+P <- createS(n = 1, p = 5, "banded", precision = TRUE)
+lapply(createS(n = c(1e5, 1e5), p = 5, PList = list(P, P+1)), solve)
 }
 

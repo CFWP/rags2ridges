@@ -7,7 +7,8 @@ createS <- function(n, p,
                     m = 1L,
                     banded.n = 2L,
                     invwishart = FALSE,
-                    nu = p + 1) {
+                    nu = p + 1,
+                    PList) {
   ##############################################################################
   # - Simulate some random symmetric square matrices from uncorrelated noise
   #   or datasets
@@ -32,12 +33,15 @@ createS <- function(n, p,
   # - nu         > The degrees of freedom in the inverse wishart distribution.
   #                A large nu implies high class homogeneity.
   #                Must be greater than p + 1.
+  # - PList      > A list of user-supplied precision matrices. Should be the
+  #                same length as n.
   # - Returns a list of matrices if length(n) > 1. The output is simplified if
   #   n has length 1 where only the matrix is returned
   ##############################################################################
 
   stopifnot(p > 1)
   stopifnot(m >= 1)
+  K <- length(n)
 
   if (dataset && precision) {
     stop("dataset and precision cannot be TRUE at the same time.")
@@ -53,7 +57,6 @@ createS <- function(n, p,
                           "chain", "banded", "Barabassi", "small-world",
                           "scale-free", "Watts-Strogatz", "random-graph",
                           "Erdos-Renyi"))
-  K <- length(n)
 
   # Construct the precision matrix "constructor"
   if (topology == "identity") {
@@ -153,7 +156,13 @@ createS <- function(n, p,
   names(ans) <- paste0("class", seq_len(K))
   for (k in seq_len(K)) {
 
-    if (invwishart) {
+    if (!missing(PList)) {
+      stopifnot(length(PList) == length(n))
+      stopifnot(nrow(PList[[k]]) == ncol(PList[[k]]))
+      stopifnot(nrow(PList[[k]]) == p)
+
+      Sk <- solve(PList[[k]])
+    } else if (invwishart) {
       stopifnot(nu - p - 1 > 0)
       Sk <- drop(armaRInvWishart(n = 1, psi = (nu - p - 1)*S, nu = nu))
     } else {
