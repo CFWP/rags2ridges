@@ -46,4 +46,3 @@ Relevant publications to **rags2ridges** include:
 
 Please cite the relevant publication if you use **rags2ridges**.
 
----
