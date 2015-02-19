@@ -11,7 +11,7 @@
 ## Email:	cf.peeters@vumc.nl
 ##
 ## Version: 1.4
-## Last Update:	25/11/2014
+## Last Update:	19/02/2015
 ## Description:	Ridge estimation, with supporting functions, for
 ##   high-dimensional precision matrices
 ##
