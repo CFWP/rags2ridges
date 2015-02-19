@@ -3,7 +3,7 @@
 ################################################################################
 ##
 ## Name: rags2ridges
-## Authors: Carel F.W. Peeters & Wessel N. van Wieringen
+## Authors: Carel F.W. Peeters & Wessel N. van Wieringen, Anders E. Bilgrau 
 ##			Molecular Biostatistics Unit
 ##			Dept. of Epidemiology & Biostatistics
 ##			VU University medical center
