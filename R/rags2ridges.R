@@ -87,7 +87,8 @@
 
 .Frobenius <- function(X) {
   ##############################################################################
-  # - Function computing Frobenius norm - the sum of the squarred entries.
+  # - Function computing squared Frobenius norm - the sum of the squarred
+  #   entries.
   # - X > A numeric
   ##############################################################################
 
