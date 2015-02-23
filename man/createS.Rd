@@ -23,7 +23,7 @@ createS(n, p,
   is returned.}
   \item{nonzero}{A \code{numeric} of length 1 giving the value of the nonzero entries used in some typologies.}
   \item{m}{A \code{integer} giving the number of blocks (i.e. conditionally independent components) to create. If \code{m} is greater than 1, then the given \code{topology} is used on \code{m} blocks of approximately equal size.}
-  \item{banded.n}{A \code{integer} of length one giving the number of bands. Only used if \code{topology} is \code{"banded"}.}
+  \item{banded.n}{A \code{integer} of length one giving the number of bands. Only used if \code{topology} is one of \code{"banded"}, \code{"small-world"}, or \code{"Watts-Strogatz"}.}
   \item{invwishart}{\code{logical}. If \code{TRUE} the constructed precision matrix is used as the scale matrix of an inverse Wishart distribution and class covariance matrices are drawn from this distribution.}
   \item{nu}{\code{numeric} greater than \code{p + 1} giving the degrees of freedom in the inverse wishart distribution.
   A large \code{nu} implies high class homogeneity.
