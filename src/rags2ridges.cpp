@@ -103,6 +103,7 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
    - S      > A sample covariance matrix
    - target > The target matrix with the same size as S
    - lambda > The ridge penalty
+   NOTE -- S should not contain any NAs, Infs, or NaNs!
   --------------------------------------------------------------------------- */
 
   if (lambda == arma::datum::inf) {
@@ -124,6 +125,9 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
 
   // The following line overwrite eigvec
   arma::eig_sym(eigval, eigvec, 0.25f*eigvec + lambda*arma::eye(n, n), "dc");
+  if (any(eigval < 0)) { // Throw error if matrix square root is not defined.
+    Rcpp::stop("Eigenvalues are not all positive. lambda is too small");
+  }
 
   eigval = inv_lambda*sqrt(eigval);  // Take the matrix square root and scale
 
