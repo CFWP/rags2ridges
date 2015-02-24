@@ -178,8 +178,8 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, S, "dc");
 
-  // Eigenvalue shrinkage + addition to avoid inverison
-  eigvals = inv_lambda*armaEigShrink(eigvals, lambda, alpha) + alpha;
+  // Eigenvalue shrinkage + addition to avoid inversion
+  eigvals = inv_lambda*(armaEigShrink(eigvals,lambda,alpha) - eigvals) + alpha;
 
   // Return target if shrunken evals are infinite
   // Usually happens for lambda >= 1e154
