@@ -41,20 +41,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // armaFusedUpdate
-arma::mat armaFusedUpdate(int k0, const Rcpp::List& PList, const Rcpp::List& SList, const Rcpp::List& TList, const arma::vec ns, const double lambda, arma::mat lambdaFmat);
-RcppExport SEXP rags2ridges_armaFusedUpdate(SEXP k0SEXP, SEXP PListSEXP, SEXP SListSEXP, SEXP TListSEXP, SEXP nsSEXP, SEXP lambdaSEXP, SEXP lambdaFmatSEXP) {
+arma::mat armaFusedUpdate(int g0, const Rcpp::List& PList, const Rcpp::List& SList, const Rcpp::List& TList, const arma::vec ns, const double lambda, arma::mat lambdaFmat);
+RcppExport SEXP rags2ridges_armaFusedUpdate(SEXP g0SEXP, SEXP PListSEXP, SEXP SListSEXP, SEXP TListSEXP, SEXP nsSEXP, SEXP lambdaSEXP, SEXP lambdaFmatSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< int >::type k0(k0SEXP );
+        Rcpp::traits::input_parameter< int >::type g0(g0SEXP );
         Rcpp::traits::input_parameter< const Rcpp::List& >::type PList(PListSEXP );
         Rcpp::traits::input_parameter< const Rcpp::List& >::type SList(SListSEXP );
         Rcpp::traits::input_parameter< const Rcpp::List& >::type TList(TListSEXP );
         Rcpp::traits::input_parameter< const arma::vec >::type ns(nsSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
         Rcpp::traits::input_parameter< arma::mat >::type lambdaFmat(lambdaFmatSEXP );
-        arma::mat __result = armaFusedUpdate(k0, PList, SList, TList, ns, lambda, lambdaFmat);
+        arma::mat __result = armaFusedUpdate(g0, PList, SList, TList, ns, lambda, lambdaFmat);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

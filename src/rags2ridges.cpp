@@ -25,20 +25,21 @@ arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
    - SList > A list of covariance matrices.
    - nu    > A numeric vector giving the number of samples corresponding
              to each scatter matrix.
-   - mle   > A integer of length one equalling 0 or 1. If 0, the bias
-             corrected ML is used. If 1 the ML estimate is used.
+   - mle   > A logical (or integer) of length one equalling FALSE (0) or
+             TRUE (1). If FALSE, the bias corrected ML estimate is used.
+             If TRUE the ML estimate is used.
   --------------------------------------------------------------------------- */
 
-  const int K = SList.size();
+  const int G = SList.size();
   const int imle = 1 - mle;
-  const double fac = 1.0f/(sum(ns) - K*imle);
-  arma::mat S0 = SList[0];
-  S0 = (ns[0] - imle)*S0;
-  for (int i = 1; i < K; ++i) {
+  const double rdenum = 1.0f/(sum(ns) - G * imle);
+  arma::mat S0 = SList[0];       // First element of SList
+  S0 = (ns[0] - imle)*S0;        // Multiply by the class sample size (- 1)
+  for (int i = 1; i < G; ++i) {  // Loop through remaning elements. Note i = 1.
     arma::mat Si = SList[i];
     S0 += (ns[i] - imle)*Si;
   }
-  return fac*S0;
+  return rdenum*S0;
 }
 
 
@@ -55,13 +56,13 @@ arma::mat armaEigShrink(const arma::vec eigvals,
                         const double lambda,
                         const double alpha) {
   /* ---------------------------------------------------------------------------
-   Function that shrinks the eigenvalues
-   Shrinkage is that of the rotation equivariant alternative ridge estimator
-   - eigvals is vector on eigenvalues
-   - lambda is a double giving the penalty
-   - alpha is the unique diagonal value in the rotaional equivariant target
+   Helper function that shrinks the eigenvalues.
+   Shrinkage is that of the rotation equivariant alternative ridge estimator.
+   - eigvals > A vector of containing the eigenvalues
+   - lambda  > A double giving the ridge penalty
+   - alpha   > A double giving the diagonal value in the rotaional equivariant
+               target.
   --------------------------------------------------------------------------- */
-
 
   arma::vec seigvals = eigvals - lambda*alpha;
   return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
@@ -69,14 +70,16 @@ arma::mat armaEigShrink(const arma::vec eigvals,
 
 
 
+
 arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
-                                 const arma::mat & target,
-                                 const double lambda) {
+                                  const arma::mat & target,
+                                  const double lambda) {
   /* ---------------------------------------------------------------------------
    Compute the ridge estimate for general targets.
-   - S is the sample covariance matrix
-   - target is the target matrix with the same size as S
-   - lambda is the ridge penalty
+   Old ridge estimator using matrix inversion.
+   - S      > A sample covariance matrix
+   - target > The target matrix with the same size as S
+   - lambda > The the ridge penalty
   --------------------------------------------------------------------------- */
 
   const int n = S.n_cols;
@@ -96,9 +99,10 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const double lambda) {
   /* ---------------------------------------------------------------------------
    Compute the ridge estimate for general targets.
-   - S is the sample covariance matrix
-   - target is the target matrix with the same size as S
-   - lambda is the ridge penalty
+   Not using matrix inversion.
+   - S      > A sample covariance matrix
+   - target > The target matrix with the same size as S
+   - lambda > The ridge penalty
   --------------------------------------------------------------------------- */
 
   const int n = S.n_cols;
@@ -119,10 +123,11 @@ arma::mat armaRidgeSRotationInvariantTarget_OLD(const arma::mat & S,
                                                 const double alpha,
                                                 const double lambda) {
   /* ---------------------------------------------------------------------------
-   Compute the ridge estimate for rotational equivariate target.
-   - S is the sample covariance matrix
-   - alpha is a scaling of the identity matrix
-   - lambda is the ridge penalty
+   Compute the ridge estimate for rotational equivariant targets.
+   Old ridge estimator using matrix inversion.
+   - S      > the sample covariance matrix
+   - alpha  > The scaling of the identity matrix
+   - lambda > The ridge penalty
   --------------------------------------------------------------------------- */
 
   arma::vec eigvals;
@@ -140,10 +145,11 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
   /* ---------------------------------------------------------------------------
-   The ridge estimator in the rotational equivariate case
-   - S is the sample covariance matrix
-   - alpha is a scaling of the identity matrix
-   - lambda is the ridge penalty
+   The ridge estimator in the rotational equivariant case.
+   Not using matrix inversion.
+   - S i    > A sample covariance matrix
+   - alpha  > The scaling of the identity matrix
+   - lambda > The ridge penalty
   --------------------------------------------------------------------------- */
 
   const double inv_lambda = 1.0f/lambda;
@@ -167,9 +173,9 @@ arma::mat armaRidgeS(const arma::mat & S,
                      const double lambda) {
   /* ---------------------------------------------------------------------------
    The ridge estimator in C++.
-   - S      > the sample covariance matrix (a numeric matrix on the R side)
-   - target > target matrix (a numeric matrix on the R side, same size as S)
-   - lambda > the penalty (a numeric of length one on the R side)
+   - S      > The sample covariance matrix (a numeric matrix on the R side)
+   - target > Target matrix (a numeric matrix on the R side, same size as S)
+   - lambda > The penalty (a numeric of length one on the R side)
   --------------------------------------------------------------------------- */
 
   const int n = S.n_rows;
@@ -185,7 +191,7 @@ arma::mat armaRidgeS(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat armaFusedUpdate(int k0,
+arma::mat armaFusedUpdate(int g0,
                           const Rcpp::List & PList,
                           const Rcpp::List & SList,
                           const Rcpp::List & TList,
@@ -193,40 +199,41 @@ arma::mat armaFusedUpdate(int k0,
                           const double lambda,
                           arma::mat lambdaFmat) {
   /* ---------------------------------------------------------------------------
-   "Update" the covariance matrices and use the regular ridge estimate.
-   - k0          > An integer giving the class estimate to be updated.
-   - PList       > A list of length K of matrices giving the current precision
+   "Update" the g0'th covariance matrix according to the
+   and use the regular ridge estimate hereof.
+   - g0          > An integer giving the class estimate to be updated.
+   - PList       > A list of length G of matrices giving the current precision
                    estimates.
-   - SList       > A list of length K of sample correlation matrices the same
+   - SList       > A list of length G of sample correlation matrices the same
                    size as those of PList.
-   - TList       > A list of length K of target matrices the same size
+   - TList       > A list of length G of target matrices the same size
                    as those of PList
-   - ns          > A vector of length K giving the sample sizes.
+   - ns          > A vector of length G giving the sample sizes.
    - lambda      > The ridge penalty (a postive number).
-   - lambdaFmat  > A K by K symmetric adjacency matrix giving the fused
+   - lambdaFmat  > A G by G symmetric adjacency matrix giving the fused
                    penalty graph with non-negative entries where
-                   lambdaFmat[k1, k2] determine the (rate of) shrinkage
-                   between estimates in classes corresponding to SList[k1]
-                   and SList[k1].
+                   lambdaFmat[g1, g2] determine the (rate of) shrinkage
+                   between estimates in classes corresponding to SList[g1]
+                   and SList[g1].
   --------------------------------------------------------------------------- */
 
-  k0 = k0 - 1;  // Shift index to C++ convention
+  g0 = g0 - 1;  // Shift index to C++ convention
   const int n = ns.n_elem;
-  const int K = SList.size();
-  lambdaFmat(k0, k0) = 0;
-  const double a = (sum(lambdaFmat.row(k0)) + lambda)/(ns[k0]);
+  const int G = SList.size();
+  lambdaFmat(g0, g0) = 0;
+  const double a = (sum(lambdaFmat.row(g0)) + lambda)/(ns[g0]);
 
-  arma::mat S0 = Rcpp::as<arma::mat>(Rcpp::wrap(SList[k0]));
-  arma::mat T0 = Rcpp::as<arma::mat>(Rcpp::wrap(TList[k0]));
+  arma::mat S0 = Rcpp::as<arma::mat>(Rcpp::wrap(SList[g0]));
+  arma::mat T0 = Rcpp::as<arma::mat>(Rcpp::wrap(TList[g0]));
   arma::mat O(n, n);
   arma::mat T(n, n);
-  for (int k = 0; k < K; ++k) {
-     if (k == k0) {
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
        continue;
      }
-     O = Rcpp::as<arma::mat>(Rcpp::wrap(PList[k]));
-     T = Rcpp::as<arma::mat>(Rcpp::wrap(TList[k]));
-     S0 -= (lambdaFmat(k, k0)/ns(k0))*(O - T);
+     O = Rcpp::as<arma::mat>(Rcpp::wrap(PList[g]));
+     T = Rcpp::as<arma::mat>(Rcpp::wrap(TList[g]));
+     S0 -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
   return armaRidgeS(S0, T0, a);
 }
@@ -273,9 +280,17 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
 
 
 
-arma::mat armaRWishartSingle(const arma::mat L, const double nu, const int p) {
-  // Wishart simulation capabilities: (taken from package correlateR)
-  // Simualte a single wishart distributed matrix
+arma::mat armaRWishartSingle(const arma::mat L,
+                             const double nu,
+                             const int p) {
+  /* ---------------------------------------------------------------------------
+    Wishart simulation. Simulate a single Wishart distributed matrix
+    (Taken from package AEBilgrau/correlateR)
+    L  > A cholesky decomposition matrix
+    nu > The degrees of freedom
+    p  > The dimension of the distribution
+  --------------------------------------------------------------------------- */
+
   arma::mat A(p, p, arma::fill::randn);
   A = trimatl(A);
   arma::vec chisq(p);
@@ -287,30 +302,48 @@ arma::mat armaRWishartSingle(const arma::mat L, const double nu, const int p) {
   return LA.t()*LA;
 }
 
+
+
 // [[Rcpp::export]]
 arma::cube armaRWishart(const int n,
                         const arma::mat & sigma,
                         const double nu) {
-  // Simulate n wishart distributed matrices
+  /* ---------------------------------------------------------------------------
+    Simulate n wishart distributed matrices.
+    n     > A integer giving the number of matrices to generate
+    sigma > The scale matrix in the Wishart distribution
+    nu    > The degrees of freedom in the Wishart distribution
+    (Copied from package AEBilgrau/correlateR)
+  --------------------------------------------------------------------------- */
+
   const int p = sigma.n_cols;
   const arma::mat L = arma::chol(sigma);
   arma::cube ans(p, p, n);
-  for (int k = 0; k < n; ++k) {
-    ans.slice(k) = armaRWishartSingle(L, nu, p);
+  for (int g = 0; g < n; ++g) {
+    ans.slice(g) = armaRWishartSingle(L, nu, p);
   }
   return ans;
 }
+
+
 
 // [[Rcpp::export]]
 arma::cube armaRInvWishart(const int n,
                            const arma::mat & psi,
                            const double nu) {
-  // Simulate n inverse wishart distributed matrices
+  /* ---------------------------------------------------------------------------
+    Simulate n inverse Wishart distributed matrices
+    n     > A integer giving the number of matrices to generate
+    psi   > The scale matrix in the inverse Wishart distribution
+    nu    > The degrees of freedom in the inverse Wishart distribution
+    (Copied package AEBilgrau/correlateR)
+  --------------------------------------------------------------------------- */
+
   const int p = psi.n_cols ;
   const arma::mat L = arma::chol(inv(psi));
   arma::cube ans(p, p, n);
-  for (int k = 0; k < n; ++k) {
-    ans.slice(k) = inv(armaRWishartSingle(L, nu, p));
+  for (int g = 0; g < n; ++g) {
+    ans.slice(g) = inv(armaRWishartSingle(L, nu, p));
   }
   return ans;
 }
@@ -396,12 +429,12 @@ ns <- c(100, 100)
 PList <- createS(n = c(100, 100), p = 10)
 SList <- createS(n = c(100, 100), p = 10)
 TList <- default.target.fused(SList, ns)
-k0 <- 1
+g0 <- 1
 
 res <- microbenchmark(
-  A = armaFusedUpdate2(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
-  B = armaFusedUpdate(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
-  C = rags2ridges:::.fusedUpdate(k0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  A = armaFusedUpdate2(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  B = armaFusedUpdate(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  C = rags2ridges:::.fusedUpdate(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
   times = 10000)
 boxplot(res)
 
