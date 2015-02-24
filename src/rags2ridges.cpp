@@ -106,16 +106,27 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
    - lambda > The ridge penalty
   --------------------------------------------------------------------------- */
 
+  if (lambda == arma::datum::inf) {
+    return target;
+  }
+
   const int n = S.n_cols;
   const double inv_lambda = 1.0f/lambda;
-  const arma::mat E = symmatl(S) - lambda * symmatl(target);
+  const arma::mat E = S - lambda * target;
 
   arma::vec eigval;
   arma::mat eigvec;
   arma::eig_sym(eigval, eigvec, 0.25f*E*E + lambda*arma::eye(n, n), "dc");
 
   eigval = inv_lambda*sqrt(eigval);
-  return (-0.5f*inv_lambda)*E + eigvec*diagmat(eigval)*eigvec.t();
+
+  // Return target if shrunken evals are infinite
+  // Usually happens for lambda greater than approximately 1e154
+  if (!eigval.is_finite()) {
+    return target;
+  }
+
+  return symmatl((-0.5f*inv_lambda)*E + eigvec*diagmat(eigval)*eigvec.t());
 }
 
 
