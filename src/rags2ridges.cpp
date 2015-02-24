@@ -70,7 +70,6 @@ inline arma::mat armaEigShrink(const arma::vec eigvals,
 
 
 
-
 arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
                                   const arma::mat & target,
                                   const double lambda) {
@@ -115,16 +114,18 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   const arma::mat E = S - lambda * target;
 
   arma::vec eigval;
-  arma::mat eigvec;
-  arma::eig_sym(eigval, eigvec, 0.25f*E*E + lambda*arma::eye(n, n), "dc");
+  arma::mat eigvec = E*E;  // Temporarily equals filled with square of E
 
-  eigval = inv_lambda*sqrt(eigval);
-
-  // Return target if shrunken evals are infinite
-  // Usually happens for lambda greater than approximately 1e154
-  if (!eigval.is_finite()) {
+  // Return target if E*E contain infinite values due to large lambda
+  // Usually happens for lambda greater than or on the order of 1e154
+  if (!eigvec.is_finite()) {
     return target;
   }
+
+  // The following line overwrite eigvec
+  arma::eig_sym(eigval, eigvec, 0.25f*eigvec + lambda*arma::eye(n, n), "dc");
+
+  eigval = inv_lambda*sqrt(eigval);  // Take the matrix square root and scale
 
   return symmatl((-0.5f*inv_lambda)*E + eigvec*diagmat(eigval)*eigvec.t());
 }
