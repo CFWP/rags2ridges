@@ -52,9 +52,9 @@ arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
 
 
 
-arma::mat armaEigShrink(const arma::vec eigvals,
-                        const double lambda,
-                        const double alpha) {
+inline arma::mat armaEigShrink(const arma::vec eigvals,
+                               const double lambda,
+                               const double alpha) {
   /* ---------------------------------------------------------------------------
    Helper function that shrinks the eigenvalues.
    Shrinkage is that of the rotation equivariant alternative ridge estimator.
@@ -94,6 +94,7 @@ arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
 
 
 
+// [[Rcpp::export]]
 arma::mat armaRidgeSAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
@@ -141,29 +142,44 @@ arma::mat armaRidgeSRotationInvariantTarget_OLD(const arma::mat & S,
 
 
 
+// [[Rcpp::export]]
 arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
   /* ---------------------------------------------------------------------------
    The ridge estimator in the rotational equivariant case.
-   Not using matrix inversion.
-   - S i    > A sample covariance matrix
-   - alpha  > The scaling of the identity matrix
-   - lambda > The ridge penalty
+   Not using matrix inversion. When the shrunken eigen-values become infinite
+   due to floating point errors, the function returns the target matrix.
+   Usually happens for lambda >= 1e154
+   - S      > A sample covariance matrix
+   - alpha  > The scaling of the identity matrix.
+   - lambda > The ridge penalty. Can be set to Inf (on the R side)
   --------------------------------------------------------------------------- */
 
-  const double inv_lambda = 1.0f/lambda;
-  arma::mat E = symmatl(S);
-  E.diag() -= alpha*lambda;
+  if (lambda == arma::datum::inf) {
+    const int p = S.n_rows;
+    return alpha*arma::eye<arma::mat>(p, p);
+  }
 
+  const double inv_lambda = 1.0f/lambda;
   arma::vec eigvals;
   arma::mat eigvecs;
-  arma::eig_sym(eigvals, eigvecs, symmatl(S), "dc");  // Eigen decomposition
+  arma::eig_sym(eigvals, eigvecs, S, "dc");
 
-  eigvals = armaEigShrink(eigvals, lambda, alpha);
+  // Eigenvalue shrinkage + addition to avoid inverison
+  eigvals = inv_lambda*armaEigShrink(eigvals, lambda, alpha) + alpha;
 
-  return inv_lambda*(symmatl(eigvecs*diagmat(eigvals)*eigvecs.t())-symmatl(E));
+  // Return target if shrunken evals are infinite
+  // Usually happens for lambda >= 1e154
+  if (!eigvals.is_finite()) {
+    const int p = S.n_rows;
+    return alpha*arma::eye<arma::mat>(p, p);
+  }
+
+  // Transform back and return results
+  return symmatl(eigvecs*diagmat(eigvals)*eigvecs.t());
 }
+
 
 
 
