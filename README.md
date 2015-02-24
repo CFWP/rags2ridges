@@ -16,7 +16,7 @@ If you wish to install the latest version of **rags2ridges** directly from the m
 
 ```R
 #install.packages("devtools")  # Uncomment if devtools is not installed
-devtools::install_github("AEBilgrau/rags2ridges")
+devtools::install_github("CFWP/rags2ridges")
 ```
 
 Note, that this version is in development and is different from the version at CRAN. As such, it may be unstable. Be sure that you have the
