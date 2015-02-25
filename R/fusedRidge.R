@@ -266,6 +266,36 @@ pooledS <- function(SList, ns, mle = TRUE) {
 
 
 
+KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
+                        symmetric = FALSE) {
+  ##############################################################################
+  # - Function that calculates the "weigthed" Kullback-Leibler divergence
+  #   between multiple paired normal distributions
+  # - MtestList > A list of mean vectors approximating. Assumed to be zero
+  #               vectors if not supplied.
+  # - MrefList  > A list of mean vectors 'true'/reference. Assumed to be zero
+  #               vectors if not supplied.
+  # - StestList > A list of covariance matrix approximating
+  # - SrefList  > A list of covariance matrix 'true'/reference
+  # - symmetric > logical indicating if original symmetric version of KL div.
+  #               should be calculated.
+  ##############################################################################
+
+  if (missing(MtestList)) {
+    MtestList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
+                           simplify = FALSE)
+  }
+  if (missing(MrefList)) {
+    MrefList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
+                          simplify = FALSE)
+  }
+  KLdivs <- mapply(KLdiv, MtestList, MrefList, StestList, SrefList,
+                   MoreArgs = list(symmetric = symmetric))
+
+  return(sum(ns*KLdivs)/sum(ns))
+}
+
+
 .fusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
