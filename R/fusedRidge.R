@@ -388,7 +388,8 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
     Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
     PList <- list()
     for (i in seq_len(K)) {
-      PList[[i]] <- armaRidgeS(Spool, target = TList[[i]], lambda = lambda)
+      PList[[i]] <- armaRidgeS(Spool, target = TList[[i]],
+                               lambda = K*lambda/sum(ns))
     }
   }
   stopifnot(length(SList) == length(PList))
