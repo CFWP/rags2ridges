@@ -1,3 +1,58 @@
+################################################################################
+################################################################################
+################################################################################
+##
+## Fused Ridge estimation with supporting functions for high-dimensional
+## precision matrices
+##
+## Authors: Anders E. Bilgrau, Carel F.W. Peeters, Wessel N. van Wieringen
+## Email:	  cf.peeters@vumc.nl
+##
+################################################################################
+################################################################################
+################################################################################
+
+
+################################################################################
+################################################################################
+##------------------------------------------------------------------------------
+##
+## Section: Support Functions
+##
+##------------------------------------------------------------------------------
+################################################################################
+################################################################################
+
+
+default.target.fused <- function(SList, ns, type = "DAIE", equal = TRUE, ...) {
+  ##############################################################################
+  # Generate a list of (data-driven) targets to use in fused ridge estimation
+  # A nice wrapper for default.target
+  # - SList > A list of covariance matrices
+  # - ns    > A numeric vector of sample sizes corresponding to SList
+  # - type  > A character giving the choice of target. See default.target.
+  # - equal > logical. If TRUE, all entries in the list are identical and
+  #           computed from the pooled estimate. If FALSE, the target is
+  #           calculated from each entry in SList.
+  # - ...   > Arguments passed to default.target.
+  # See also default.target
+  ##############################################################################
+
+  stopifnot(is.list(SList))
+  stopifnot(is.numeric(ns))
+  stopifnot(length(SList) == length(ns))
+
+  if (equal) {
+    pooled <- pooledS(SList, ns)
+    Tpool <- default.target(pooled, type = type, ...)
+    TList <- replicate(length(SList), Tpool, simplify = FALSE)
+  } else {
+    TList <- lapply(SList, default.target, type = type, ...)
+  }
+  return(TList)
+}
+
+
 
 createS <- function(n, p,
                     topology = "identity",
@@ -10,10 +65,11 @@ createS <- function(n, p,
                     nu = p + 1,
                     PList) {
   ##############################################################################
-  # - Simulate some random symmetric square matrices from uncorrelated noise
-  #   or datasets
+  # - Simulate one or more random symmetric square (or datasets) matrices from
+  #   various models.
   # - n          > A vector of sample sizes
-  # - p          > An integer giving the dimension. p should be greater than 2.
+  # - p          > An integer giving the dimension. p should be greater than
+  #                or equal to 2.
   # - topology   > character. Specify the topology to simulate data from.
   #                See details.
   # - dataset    > logical. Should dataset instead of its sample covariance be
@@ -219,6 +275,37 @@ pooledS <- function(SList, ns, mle = TRUE) {
 
 
 
+KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
+                        symmetric = FALSE) {
+  ##############################################################################
+  # - Function that calculates the "weigthed" Kullback-Leibler divergence
+  #   between multiple paired normal distributions
+  # - MtestList > A list of mean vectors approximating. Assumed to be zero
+  #               vectors if not supplied.
+  # - MrefList  > A list of mean vectors 'true'/reference. Assumed to be zero
+  #               vectors if not supplied.
+  # - StestList > A list of covariance matrix approximating
+  # - SrefList  > A list of covariance matrix 'true'/reference
+  # - symmetric > logical indicating if original symmetric version of KL div.
+  #               should be calculated.
+  ##############################################################################
+
+  if (missing(MtestList)) {
+    MtestList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
+                           simplify = FALSE)
+  }
+  if (missing(MrefList)) {
+    MrefList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
+                          simplify = FALSE)
+  }
+  KLdivs <- mapply(KLdiv, MtestList, MrefList, StestList, SrefList,
+                   MoreArgs = list(symmetric = symmetric))
+
+  return(sum(ns*KLdivs)/sum(ns))
+}
+
+
+
 .FLL <- function(SList, PList, ns){
   ##############################################################################
   # - Function that computes the value of the (negative) combined log-likelihood
@@ -231,6 +318,8 @@ pooledS <- function(SList, ns, mle = TRUE) {
   LLs <- mapply(.LL, SList, PList)
   return(sum(ns*LLs))
 }
+
+
 
 .PFLL <- function(SList, PList, ns, TList, lambda, lambdaFmat){
   ##############################################################################
@@ -266,36 +355,6 @@ pooledS <- function(SList, ns, mle = TRUE) {
 
 
 
-KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
-                        symmetric = FALSE) {
-  ##############################################################################
-  # - Function that calculates the "weigthed" Kullback-Leibler divergence
-  #   between multiple paired normal distributions
-  # - MtestList > A list of mean vectors approximating. Assumed to be zero
-  #               vectors if not supplied.
-  # - MrefList  > A list of mean vectors 'true'/reference. Assumed to be zero
-  #               vectors if not supplied.
-  # - StestList > A list of covariance matrix approximating
-  # - SrefList  > A list of covariance matrix 'true'/reference
-  # - symmetric > logical indicating if original symmetric version of KL div.
-  #               should be calculated.
-  ##############################################################################
-
-  if (missing(MtestList)) {
-    MtestList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
-                           simplify = FALSE)
-  }
-  if (missing(MrefList)) {
-    MrefList <- replicate(length(StestList), rep(0, nrow(StestList[[1]])),
-                          simplify = FALSE)
-  }
-  KLdivs <- mapply(KLdiv, MtestList, MrefList, StestList, SrefList,
-                   MoreArgs = list(symmetric = symmetric))
-
-  return(sum(ns*KLdivs)/sum(ns))
-}
-
-
 .fusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
@@ -327,39 +386,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.fusedUpdate2 <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
-  ##############################################################################
-  # - (Internal) "Update" the covariance matrices and use the regular
-  #   ridge estimate.
-  # - k0      > An integer giving the class estimate to be updated.
-  # - PList   > A list of length K of matrices giving the current precision
-  #             estimates.
-  # - SList   > A list of length K of sample correlation matrices the same size
-  #             as those of PList.
-  # - TList   > A list of length K of target matrices the same size
-  #             as those of PList
-  # - ns      > A vector of length K giving the sample sizes.
-  # - lambda > The ridge penalty (a postive number).
-  # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where lambdaFmat[k1, k2]
-  #             determine the (rate of) shrinkage between estimates in classes
-  #             corresponding to SList[k1] and SList[k1].
-  ##############################################################################
-
-  lambdaa <- (lambda + sum(lambdaFmat[k0, -k0]))/ns[k0]
-
-  p <- nrow(PList[[1]])
-  M <- matrix(0, p, p)
-  for (k in setdiff(seq_along(PList), k0)) {
-    M <- M + (lambdaFmat[k, k0]/ns[k0])*(PList[[k]] - TList[[k]])
-  }
-  stopifnot(isSymmetric(M))
-  return(armaRidgeS(SList[[k0]] - M, target = TList[[k0]], lambda = lambdaa))
-}
-
-
-
-.altFusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
+.fusedUpdateAlt <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
   #   ridge estimate -- using the alternative update scheme.
@@ -488,13 +515,14 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
 
 
 ################################################################################
-## -------------------------------------------------------------------------- ##
-##
-## Leave-one-out cross-validation (and approximation) in the fused setting
-##
-## -------------------------------------------------------------------------- ##
 ################################################################################
-
+## ----------------------------------------------------------------------------
+##
+## Section: LOOCV (and approximation) in the fused setting
+##
+## -----------------------------------------------------------------------------
+################################################################################
+################################################################################
 
 
 .fcvl <- function(lambda, lambdaFmat, YList, TList, ...) {
@@ -823,50 +851,16 @@ optPenalty.fused.LOOCVauto <- function(YList,
 }
 
 
-##
-##
-## Help in choosing targets
-##
-##
-
-default.target.fused <- function(SList, ns, type = "DAIE", equal = TRUE, ...) {
-  ##############################################################################
-  # Generate a list of (data-driven) targets to use in fused ridge estimation
-  # A nice wrapper for default.target
-  # - SList > A list of covariance matrices
-  # - ns    > A numeric vector of sample sizes corresponding to SList
-  # - type  > A character giving the choice of target. See default.target.
-  # - equal > logical. If TRUE, all entries in the list are identical and
-  #           computed from the pooled estimate. If FALSE, the target is
-  #           calculated from each entry in SList.
-  # - ...   > Arguments passed to default.target.
-  # See also default.target
-  ##############################################################################
-
-  stopifnot(is.list(SList))
-  stopifnot(is.numeric(ns))
-  stopifnot(length(SList) == length(ns))
-
-  if (equal) {
-    pooled <- pooledS(SList, ns)
-    Tpool <- default.target(pooled, type = type, ...)
-    TList <- replicate(length(SList), Tpool, simplify = FALSE)
-  } else {
-    TList <- lapply(SList, default.target, type = type, ...)
-  }
-  return(TList)
-}
-
-
 
 ################################################################################
-## -------------------------------------------------------------------------- ##
-##
-## Automatic penalty matrix constructor
-##
-## -------------------------------------------------------------------------- ##
 ################################################################################
-
+## -----------------------------------------------------------------------------
+##
+## Section: Automatic penalty matrix constructor
+##
+## -----------------------------------------------------------------------------
+################################################################################
+################################################################################
 
 
 .charAdjMat <- function(fac, name = "X") {
@@ -1038,15 +1032,14 @@ default.penalty <- function(K, df,
 
 
 
-
-
-
 ################################################################################
-## -------------------------------------------------------------------------- ##
+################################################################################
+## -----------------------------------------------------------------------------
 ##
-## Sparsification and network stats
+## Section: Sparsification and network stats
 ##
-## -------------------------------------------------------------------------- ##
+## -----------------------------------------------------------------------------
+################################################################################
 ################################################################################
 
 
@@ -1101,6 +1094,34 @@ GGMpathStats.fused <- function(sparsePList, ...) {
     res[[k]] <- GGMpathStats(sparsePList[[k]], ...)
   }
   return(res)
+}
+
+
+
+################################################################################
+################################################################################
+##------------------------------------------------------------------------------
+##
+## Section: Miscellaneous
+##
+##------------------------------------------------------------------------------
+################################################################################
+################################################################################
+
+
+.JayZScore <- function() {
+  ##############################################################################
+  # - The truth
+  ##############################################################################
+
+  cat("
+      ###################################################
+      ###################################################
+      I'm from rags to ridges statistician I ain't dumb
+      I got 99 problems but the ridge ain't one.
+      - Jay Z-score
+      ###################################################
+      ################################################### \n")
 }
 
 
