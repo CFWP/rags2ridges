@@ -341,8 +341,8 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   # - ns      > A vector of length K giving the sample sizes.
   # - lambda > The ridge penalty (a postive number).
   # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where lambdaFmat[k1, k2] determine
-  #             the (rate of) shrinkage between estimates in classes
+  #             graph with non-negative entries where lambdaFmat[k1, k2]
+  #             determine the (rate of) shrinkage between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
