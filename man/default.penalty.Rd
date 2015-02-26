@@ -10,20 +10,20 @@
   \code{\link{optPenalty.fused.LOOCVauto}} or serve as basis for modification.
 }
 \usage{
-  default.penalty(K, df,
+  default.penalty(G, df,
                   type = c("Complete", "CartesianEqual",
                            "CartesianUnequal", "TensorProd"))
 }
 \arguments{
-  \item{K}{
+  \item{G}{
     A \code{numeric} giving the number of classes. Can also be a \code{list} of length
-    \code{K} such as the usual argument \code{SList} from other \pkg{rags2ridges}
+    \code{G} such as the usual argument \code{SList} from other \pkg{rags2ridges}
     functions.
     Can be omitted if \code{df} is given.
   }
   \item{df}{
-    A \code{data.frame} with \code{K} rows and factors in the columns.
-    Can be omitted when \code{K} is given and \code{type == "Complete"}.
+    A \code{data.frame} with \code{G} rows and factors in the columns.
+    Can be omitted when \code{G} is given and \code{type == "Complete"}.
   }
   \item{type}{
     A character giving the type of fused penalty graph to construct.
@@ -49,7 +49,7 @@
   }
 }
 \value{
-  Returns a \code{K} by \code{K} character matrix which specify the class
+  Returns a \code{G} by \code{G} character matrix which specify the class
   of penalty graphs to be used.
   The output is suitable as input for the penalty matrix
   used in \code{\link{optPenalty.fused.LOOCVauto}}.
