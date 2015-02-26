@@ -871,23 +871,24 @@ default.target.fused <- function(SList, ns, type = "DAIE", equal = TRUE, ...) {
 
 .charAdjMat <- function(fac, name = "X") {
   ##############################################################################
-  # Create a character adjacency matrix from a factor
+  # Create a complete character adjacency matrix from a factor. This function
+  # is used in the constructing the character penalty matrix in default.penalty.
   # - fac  > A factor of some length.
   # - name > A character giving the text which should appear in the adjacent
-  #          entries. If not a character, the object name is used.
+  #          entries. If not a character, the object name of fac is used.
   # Examples:
   # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
   # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "Y")
   # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = NULL)
   ##############################################################################
 
-  p <- nlevels(fac)
+  G <- nlevels(fac)
   if (is.character(name)) {
     lab <- name
   } else {
     lab <- deparse(substitute(fac))
   }
-  M <- matrix(lab, p, p)
+  M <- matrix(lab, G, G)
   diag(M) <- ""
   dimnames(M) <- replicate(2, levels(fac), simplify = FALSE)
   return(M)
