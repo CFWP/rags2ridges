@@ -358,6 +358,41 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
+.altFusedUpdate <- function(k0, PList, SList, TList, ns, lambda, lambdaFmat) {
+  ##############################################################################
+  # - (Internal) "Update" the covariance matrices and use the regular
+  #   ridge estimate -- using the alternative update scheme.
+  # - k0      > An integer giving the class estimate to be updated.
+  # - PList   > A list of length K of matrices giving the current precision
+  #             estimates.
+  # - SList   > A list of length K of sample correlation matrices the same size
+  #             as those of PList.
+  # - TList   > A list of length K of target matrices the same size
+  #             as those of PList
+  # - ns      > A vector of length K giving the sample sizes.
+  # - lambda > The ridge penalty (a postive number).
+  # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where lambdaFmat[k1, k2]
+  #             determine the (rate of) shrinkage between estimates in classes
+  #             corresponding to SList[k1] and SList[k1].
+  ##############################################################################
+
+  p <- nrow(PList[[1]])
+  lambdaa <- (lambda + sum(lambdaFmat[k0, -k0]))/ns[k0]
+  ll <- lambdaa - 1/ns[k0] # = (lambda + sum(lambdaFmat[k0, -k0]) - 1)/ns[k0]
+
+  Psum <- Tsum <- matrix(0, p, p)
+  for (k in setdiff(seq_along(PList), k0)) {
+    Psum <- Psum + lambdaFmat[k0, k]*PList[[k]]
+    Tsum <- Tsum + (lambdaFmat[k0, k]/ns[k])*TList[[k]]
+  }
+  SS <- SList[[k0]] + ll*Psum + Tsum
+  TT <- TList[[k0]] + Psum
+  return(armaRidgeS(SS, target = TT, lambda = lambdaa))
+}
+
+
+
 ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
                          lambda, lambdaFmat, lambdaF, PList,
                          maxit = 100L, verbose = TRUE, eps = 1e-4) {
