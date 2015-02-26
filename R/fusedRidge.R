@@ -310,16 +310,17 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   # - ns      > A vector of length K giving the sample sizes.
   # - lambda > The ridge penalty (a postive number).
   # - lambdaFmat > A K by K symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where lambdaFmat[k1, k2] determine
-  #             the (rate of) shrinkage between estimates in classes
+  #             graph with non-negative entries where lambdaFmat[k1, k2]
+  #             determine the (rate of) shrinkage between estimates in classes
   #             corresponding to SList[k1] and SList[k1].
   ##############################################################################
 
   diag(lambdaFmat) <- 0  # Make sure there's zeros in the diagonal
   a <- (sum(lambdaFmat[k0, ]) + lambda)/ns[k0]
+  b <- lambdaFmat[k0, -k0]/ns[k0]
 
   OmT <- mapply(`-`, PList[-k0], TList[-k0], SIMPLIFY = FALSE) # Omega - Target
-  OmT <- mapply(`*`, lambdaFmat[k0, -k0]/ns[k0], OmT, SIMPLIFY = FALSE)
+  OmT <- mapply(`*`, b, OmT, SIMPLIFY = FALSE)
   S0 <- SList[[k0]] - Reduce(`+`, OmT)
   return(armaRidgeS(S0, target = TList[[k0]], lambda = a))
 }
