@@ -421,7 +421,7 @@ ridgeS.fused <- function(SList, ns, TList = default.target.fused(SList, ns),
 
   # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(PList)) {
-    Spool <- Reduce(`+`, mapply("*", ns, SList, SIMPLIFY = FALSE))/sum(ns)
+    Spool <- pooledS(SList, ns, mle = FALSE)
     PList <- list()
     for (i in seq_len(K)) {
       PList[[i]] <- armaRidgeS(Spool, target = TList[[i]],
