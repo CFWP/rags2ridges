@@ -31,7 +31,9 @@ default.target.fused(SList, ns, type = "DAIE", equal = TRUE, ...)
   A \code{list} of \eqn{K} covariance target matrices of the same size.
 }
 \author{
-  Anders Ellern Bilgrau
+  Anders E. Bilgrau, \cr
+  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Wessel N. van Wieringen
 }
 \seealso{
 \code{\link{default.target}}
