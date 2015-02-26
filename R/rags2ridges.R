@@ -1406,7 +1406,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
         Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
         for (k in 1:length(lambdas)){
           Eigshrink <- .eigShrink(Spectral, lambdas[k])
-          condNR[k] <- as.numeric(max(Eigshrink)/mins(Eigshrink))
+          condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
         }
       } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
                    (length(unique(diag(target))) == 1)){
