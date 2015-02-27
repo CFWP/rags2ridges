@@ -95,6 +95,9 @@ createS <- function(n, p,
   #   n has length 1 where only the matrix is returned
   ##############################################################################
 
+  if (missing(p) && !missing(PList)) {
+    p <- nrow(PList[[1]])
+  }
   stopifnot(p > 1)
   stopifnot(m >= 1)
   G <- length(n)
@@ -355,10 +358,10 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.fusedUpdate <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+.fusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
-  #   ridge estimate.
+  #   ridge estimate. The scheme I approach.
   # - g0      > An integer giving the class estimate to be updated.
   # - Plist   > A list of length G of matrices giving the current precision
   #             estimates.
@@ -372,6 +375,11 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #             graph with non-negative entries where lambdaFmat[g1, g2]
   #             determine the (rate of) shrinkage between estimates in classes
   #             corresponding to Slist[g1] and Slist[g1].
+  #
+  #   NOTE: The update function seems to work ok for large lambdaFmat.
+  #   However, for very large lambdaFmat (> 1e154) the exception that the
+  #   armaRidgeS returns the target because of an exception. Which is wrong
+  #   in the fused case.
   ##############################################################################
 
   diag(lambdaFmat) <- 0  # Make sure there's zeros in the diagonal
@@ -386,42 +394,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.fusedUpdateAltI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
-  ##############################################################################
-  # - (Internal) "Update" the covariance matrices and use the regular
-  #   ridge estimate -- using the alternative I update scheme.
-  # - g0      > An integer giving the class estimate to be updated.
-  # - Plist   > A list of length G of matrices giving the current precision
-  #             estimates.
-  # - Slist   > A list of length G of sample correlation matrices the same size
-  #             as those of Plist.
-  # - Tlist   > A list of length G of target matrices the same size
-  #             as those of Plist
-  # - ns      > A vector of length G giving the sample sizes.
-  # - lambda > The ridge penalty (a postive number).
-  # - lambdaFmat > A G by G symmetric adjacency matrix giving the fused penalty
-  #             graph with non-negative entries where lambdaFmat[g1, g2]
-  #             determine the (rate of) shrinkage between estimates in classes
-  #             corresponding to Slist[g1] and Slist[g1].
-  ##############################################################################
-
-  p <- nrow(Plist[[1]])
-  lambdaa <- (lambda + sum(lambdaFmat[g0, -g0]))/ns[g0]
-  ll <- lambdaa - 1/ns[g0] # = (lambda + sum(lambdaFmat[g0, -g0]) - 1)/ns[g0]
-
-  Psum <- Tsum <- matrix(0, p, p)
-  for (g in setdiff(seq_along(Plist), g0)) {
-    Psum <- Psum + lambdaFmat[g0, g]*Plist[[g]]
-    Tsum <- Tsum + (lambdaFmat[g0, g]/ns[g])*Tlist[[g]]
-  }
-  SS <- Slist[[g0]] + ll*Psum + Tsum
-  TT <- Tlist[[g0]] + Psum
-  return(armaRidgeS(SS, target = TT, lambda = lambdaa))
-}
-
-
-
-.fusedUpdateAltII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+.fusedUpdateII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
   #   ridge estimate -- using the alternative II update scheme.
@@ -438,6 +411,48 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #             graph with non-negative entries where lambdaFmat[g1, g2]
   #             determine the (rate of) shrinkage between estimates in classes
   #             corresponding to Slist[g1] and Slist[g1].
+  #
+  #   NOTE: This update seems to work very poorly for large lambdaFmat
+  ##############################################################################
+
+  p <- nrow(Plist[[1]])
+  lambdaa <- (lambda + sum(lambdaFmat[g0, -g0]))/ns[g0]
+  ll <- lambdaa - 1/ns[g0] # = (lambda + sum(lambdaFmat[g0, -g0]) - 1)/ns[g0]
+
+  Psum <- Tsum <- matrix(0, p, p)
+  for (g in setdiff(seq_along(Plist), g0)) {
+    Psum <- Psum + lambdaFmat[g0, g]*Plist[[g]]
+    Tsum <- Tsum + (lambdaFmat[g0, g]/ns[g])*Tlist[[g]]
+  }
+  Sbar <- Slist[[g0]] + ll*Psum + Tsum
+  Tbar <- Tlist[[g0]] + Psum
+  return(armaRidgeS(Sbar, target = Tbar, lambda = lambdaa))
+}
+
+
+
+.fusedUpdateIII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+  ##############################################################################
+  # - (Internal) "Update" the covariance matrices and use the regular
+  #   ridge estimate -- using the alternative III update scheme.
+  # - g0      > An integer giving the class estimate to be updated.
+  # - Plist   > A list of length G of matrices giving the current precision
+  #             estimates.
+  # - Slist   > A list of length G of sample correlation matrices the same size
+  #             as those of Plist.
+  # - Tlist   > A list of length G of target matrices the same size
+  #             as those of Plist
+  # - ns      > A vector of length G giving the sample sizes.
+  # - lambda > The ridge penalty (a postive number).
+  # - lambdaFmat > A G by G symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where lambdaFmat[g1, g2]
+  #             determine the (rate of) shrinkage between estimates in classes
+  #             corresponding to Slist[g1] and Slist[g1].
+  #
+  #   NOTE: Theis update function seems to work very well for large lambdaFmat.
+  #   For very large lambdaFmat (> 1e154) the exception triggered in the
+  #   armaRidgeS returns the target because of an exception. However, in this
+  #   updating scheme, that is also correct.
   ##############################################################################
 
   p <- nrow(Plist[[1]])
@@ -511,9 +526,9 @@ ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   i <- 1
   while (i <= maxit) {
     for (g in seq_len(G)) {
-      tmpPlist[[g]] <- armaFusedUpdate(g0 = g, Plist = Plist, Slist = Slist,
-                                       Tlist = Tlist, ns = ns, lambda = lambda,
-                                       lambdaFmat = lambdaFmat)
+      tmpPlist[[g]] <- armaFusedUpdateI(g0 = g, Plist = Plist, Slist = Slist,
+                                        Tlist = Tlist, ns = ns, lambda = lambda,
+                                        lambdaFmat = lambdaFmat)
       diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
       Plist[[g]] <- tmpPlist[[g]]
     }
@@ -524,7 +539,12 @@ ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
                   .PFLL(Slist,Plist,ns,Tlist,lambda,lambdaFmat)))
     }
 
-    if (max(diffs) < eps) {
+    mx <- max(diffs)
+    if (is.nan(mx)) {
+      warning("NaNs where introduced likely due to very largs penalties.")
+      break
+    }
+    if (mx < eps) {
       break
     }
 
