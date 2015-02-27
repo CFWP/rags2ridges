@@ -7,10 +7,10 @@ Fused gaussian graphical model node pair path statistics
 A simple wrapper for \code{\link{GGMpathStats}}.
 }
 \usage{
-GGMpathStats.fused(sparsePList, ...) 
+GGMpathStats.fused(sparsePlist, ...)
 }
 \arguments{
-  \item{sparsePList}{
+  \item{sparsePlist}{
     A \code{list} of sparsified precision matrices.
 }
   \item{\dots}{
@@ -33,14 +33,14 @@ Anders Ellern Bilgrau
 ## Obtain some (high-dimensional) data
 set.seed(10)
 ns <- c(10, 11)
-SList <- createS(ns, 7)
-TList <- default.target.fused(SList, ns)
+Slist <- createS(ns, 7)
+Tlist <- default.target.fused(Slist, ns)
 
 ## Obtain regularized precision and sparsify
-PList <- ridgeS.fused(SList, ns, TList, lambda = 0.3, lambdaF = 1.5)
-sparsePList <- sparsify.fused(PList, threshold = "absValue", absValueCut = 0.20)
-sparsePList <- lapply(sparsePList, "[[", "sparsePrecision")
+Plist <- ridgeS.fused(Slist, ns, Tlist, lambda = 0.3, lambdaF = 1.5)
+sparsePlist <- sparsify.fused(Plist, threshold = "absValue", absValueCut = 0.20)
+sparsePlist <- lapply(sparsePlist, "[[", "sparsePrecision")
 
 ## Obtain information on mediating and moderating paths between nodes 14 and 23
-res <- GGMpathStats.fused(sparsePList, node1 = 1, node2 = 2, graph = FALSE)
+res <- GGMpathStats.fused(sparsePlist, node1 = 1, node2 = 2, graph = FALSE)
 }

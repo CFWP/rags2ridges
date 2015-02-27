@@ -12,23 +12,23 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat, approximate = FALSE,
+optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat, approximate = FALSE,
                            verbose = TRUE, maxit.ridgeS.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
-optPenalty.fused.LOOCV(YList, TList,
+optPenalty.fused.LOOCV(Ylist, Tlist,
                        lambdaMin, lambdaMax, step1 = 20,
                        lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
                        step2 = step1,
                        approximate = FALSE, verbose = TRUE, ...)
 }
 \arguments{
-  \item{YList}{
+  \item{Ylist}{
    A \code{list} of matrices of data with \eqn{n_k} samples in the rows and
    \eqn{p} variables in the columns.
 }
-  \item{TList}{
-   A \code{list} of the same length as \code{YList} of target matrices of size
+  \item{Tlist}{
+   A \code{list} of the same length as \code{Ylist} of target matrices of size
    \eqn{p} times \eqn{p}.
 }
   \item{lambdaFmat}{
@@ -121,27 +121,27 @@ See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 \examples{
 # Generate some (not so) high-dimensional data witn (not so) many samples
 ns <- c(4, 5, 6)
-YList <- createS(n = ns, p = 6, dataset = TRUE)
-SList <- lapply(YList, covML)
-TList <- default.target.fused(SList, ns, type = "DIAES", equal = FALSE)
+Ylist <- createS(n = ns, p = 6, dataset = TRUE)
+Slist <- lapply(Ylist, covML)
+Tlist <- default.target.fused(Slist, ns, type = "DIAES", equal = FALSE)
 
 
 # Grid-based
-a <- optPenalty.fused.LOOCV(YList, TList,
+a <- optPenalty.fused.LOOCV(Ylist, Tlist,
                             lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
                             lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
                             approximate = FALSE, maxit = 1000)
-b <- optPenalty.fused.LOOCV(YList, TList,
+b <- optPenalty.fused.LOOCV(Ylist, Tlist,
                             lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
                             approximate = TRUE, maxit = 1000)
 
 
 
 # Numerical optimization
-aa <- optPenalty.fused.LOOCVauto(YList, TList, approximate = FALSE,
+aa <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = FALSE,
                                  method = "BFGS")
 print(aa)
-bb <- optPenalty.fused.LOOCVauto(YList, TList, approximate = TRUE,
+bb <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = TRUE,
                                  method = "BFGS")
 print(bb)
 
@@ -181,25 +181,25 @@ filled.contour(log(b$lambda), log(b$lambdaF), log(b$fcvl), color = heat.colors,
 # Generate some new high-dimensional data and a 2 by 2 factorial design
 ns <- c(6, 5, 3, 2)
 df <- expand.grid(Factor1 = LETTERS[1:2], Factor2 = letters[3:4])
-YList <- createS(n = ns, p = 4, dataset = TRUE)
-TList <- lapply(lapply(YList, covML), default.target, type = "Null")
+Ylist <- createS(n = ns, p = 4, dataset = TRUE)
+Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
 
 # Construct penalty matrix
 lambdaFmat <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters,
 # Using optim with method "Nelder-Mead"
-ans1 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+ans1 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
                                    approximate = TRUE, verbose = FALSE)
 print(ans1)
 \dontrun{
 # Using optim with method "BFGS"
-ans2 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+ans2 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
                                    approximate = TRUE, verbose = FALSE,
                                    method = "BFGS")
 # Using nlm
 print(ans2)
-ans3 <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+ans3 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
                                    approximate = TRUE, verbose = FALSE,
                                    optimizer = "nlm")
 print(ans3)
@@ -216,15 +216,15 @@ print(ans3)
 # Generate some new high-dimensional data and a 2 by 2 factorial design
 ns <- c(6, 5, 5, 5)
 df <- expand.grid(DS = LETTERS[1:2], ER = letters[3:4])
-YList <- createS(n = ns, p = 4, dataset = TRUE)
-TList <- lapply(lapply(YList, covML), default.target, type = "Null")
+Ylist <- createS(n = ns, p = 4, dataset = TRUE)
+Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
 
 lambdaFmat <- default.penalty(df, type = "Tensor")
 print(lambdaFmat)  # Say we want to penalize the pair (1,2) with strength 2;
 lambdaFmat[2,1] <- lambdaFmat[1,2] <- 2
 print(lambdaFmat)
 
-res <- optPenalty.fused.LOOCVauto(YList, TList, lambdaFmat = lambdaFmat,
+res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
                                    approximate = TRUE, optimizer = "nlm")
 print(res)
 }

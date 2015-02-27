@@ -17,7 +17,7 @@
 \arguments{
   \item{G}{
     A \code{numeric} giving the number of classes. Can also be a \code{list} of length
-    \code{G} such as the usual argument \code{SList} from other \pkg{rags2ridges}
+    \code{G} such as the usual argument \code{Slist} from other \pkg{rags2ridges}
     functions.
     Can be omitted if \code{df} is given.
   }
@@ -73,8 +73,8 @@ Matrices from High-Dimensional Data Classes"
   # Handling one-way designs
   default.penalty(2)
   default.penalty(4)
-  SList <- vector("list", 6)
-  default.penalty(SList)   # The function uses only the length of the list
+  Slist <- vector("list", 6)
+  default.penalty(Slist)   # The function uses only the length of the list
   df0 <- expand.grid(Factor = c("lvl1", "lvl2"))
   default.penalty(df0)
 
@@ -85,7 +85,7 @@ Matrices from High-Dimensional Data Classes"
   default.penalty(6, df1, type = "Complete")
   default.penalty(6, type = "CartesianEqual")  # GIVES WARNING
   default.penalty(6, df1, type = "CartesianEqual")
-  default.penalty(SList, df1, type = "CartesianEqual")
+  default.penalty(Slist, df1, type = "CartesianEqual")
   default.penalty(6, df1, type = "CartesianUnequal")
   default.penalty(df1)
 

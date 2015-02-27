@@ -8,23 +8,23 @@
   cases where multiple classes of data is present for given penalties.
 }
 \usage{
-ridgeS.fused(SList, ns, TList = default.target.fused(SList, ns),
+ridgeS.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
              lambda, lambdaFmat, lambdaF,
-             PList, maxit = 100L, verbose = TRUE, eps = 1e-04)
+             Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
-  \item{SList}{
+  \item{Slist}{
     A \code{list} of length \eqn{K} of covariance matrices, i.e. square,
     symmetric \code{numeric} matrices of the same size.
     The \eqn{i}th matrix correspond to the \eqn{i}th class.
 }
   \item{ns}{
-    A \code{numeric} vector of sample sizes on which the matrices in \code{SList}
+    A \code{numeric} vector of sample sizes on which the matrices in \code{Slist}
     are based.
 }
-  \item{TList}{
+  \item{Tlist}{
     A \code{list} of length \eqn{K} of \code{numeric} target matrices the same sizes
-    as in \code{SList}.
+    as in \code{Slist}.
     If not supplied, the default is given by \code{\link{default.target}}.
 }
   \item{lambda}{
@@ -44,9 +44,9 @@ ridgeS.fused(SList, ns, TList = default.target.fused(SList, ns),
     Provides an alternative interface to \code{lambdaFmat}. Either
     \code{lambdaFmat} or \code{lambdaF} must be given.
 }
-  \item{PList}{
+  \item{Plist}{
     An optional \code{list} of initial starting values for the algorithm,
-    i.e. a list of precision matrices of the same size as \code{SList}.
+    i.e. a list of precision matrices of the same size as \code{Slist}.
     Can be omitted. Default is the (regular) ridge precision estimate using
     the pooled covariance matrix.
 }
@@ -68,7 +68,7 @@ likelihood problem for a given ridge penalty \eqn{lambda} and fused penalty matr
 \eqn{Lambda_f}.
 }
 \value{
-Returns a \code{list} as \code{SList} with precision estimates of the corresponding classes.
+Returns a \code{list} as \code{Slist} with precision estimates of the corresponding classes.
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
@@ -88,20 +88,20 @@ Wessel N. van Wieringen
 # Create some (not at all high-dimensional) data on three classes
 p <- 5  # Dimension
 ns <- c(4, 6, 8)  # Sample sizes (K = 3 classes)
-SList <- createS(ns, p = p)
-str(SList, max.level = 2)  # The structure of SList
+Slist <- createS(ns, p = p)
+str(Slist, max.level = 2)  # The structure of Slist
 
 #
 # Estimate the precisions (using the complete penalty graph)
 #
-res1 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaF = 2)
+res1 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaF = 2)
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
 mylambdaFmat <- matrix(c(0,2,2,
                          2,0,2,
                          2,2,0), 3, 3, byrow = TRUE)
-res2 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+res2 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 stopifnot(all.equal(res1, res2))
 
 
@@ -113,7 +113,7 @@ stopifnot(all.equal(res1, res2))
 # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
 mylambdaFmat[1,3] <- mylambdaFmat[3,1] <- 0
 print(mylambdaFmat)
-res3 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+res3 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 # which is not the same as res2 and res1 now!
 
 
@@ -122,13 +122,13 @@ res3 <- ridgeS.fused(SList, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 #
 
 # Construct a custom target list
-myTList <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
-res4 <- ridgeS.fused(SList, ns, TList = myTList, lambda = 0.3, lambdaF = 0.2)
+myTlist <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
+res4 <- ridgeS.fused(Slist, ns, Tlist = myTlist, lambda = 0.3, lambdaF = 0.2)
 print(res4)
 
 # Alternative, see ?default.target
-myTList2 <- lapply(SList, default.target, type = "Null")  # For the null target
-res5 <- ridgeS.fused(SList, ns, TList = myTList2, lambda = 0.3, lambdaF = 0.2)
+myTlist2 <- lapply(Slist, default.target, type = "Null")  # For the null target
+res5 <- ridgeS.fused(Slist, ns, Tlist = myTlist2, lambda = 0.3, lambdaF = 0.2)
 print(res5)
 
 }

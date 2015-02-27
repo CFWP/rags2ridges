@@ -8,10 +8,10 @@
   A simple wrapper for \code{\link{sparsify}} which determines the support of a \code{list} of partial correlation/precision matrix by various methods and returns the sparsified matrices.
 }
 \usage{
-sparsify.fused(PList, ...)
+sparsify.fused(Plist, ...)
 }
 \arguments{
-  \item{PList}{
+  \item{Plist}{
   A \code{list} of \code{numeric} precision matrices.
 }
   \item{\dots}{
@@ -22,7 +22,7 @@ sparsify.fused(PList, ...)
 See \code{\link{sparsify}} for details.
 }
 \value{
-A \code{list} of the same length as \code{PList} with the output from \code{\link{sparsify}}.
+A \code{list} of the same length as \code{Plist} with the output from \code{\link{sparsify}}.
 }
 \author{
 Anders Ellern Bilgrau
@@ -32,19 +32,19 @@ Anders Ellern Bilgrau
 }
 \examples{
 ns <- c(10, 11)
-YList <- createS(ns, p = 16, dataset = TRUE)
-SList <- lapply(YList, covML)
-TList <- default.target.fused(SList, ns)
+Ylist <- createS(ns, p = 16, dataset = TRUE)
+Slist <- lapply(Ylist, covML)
+Tlist <- default.target.fused(Slist, ns)
 
 # Obtain regularized precision under optimal penalty
-opt <- optPenalty.fused.LOOCVauto(YList, TList, approximate = TRUE,
+opt <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = TRUE,
                                   maxit.ridgeS.fused = 1500)
 # Use the optimal penalties
-PList <- ridgeS.fused(SList, ns, lambda = opt$lambda,
+Plist <- ridgeS.fused(Slist, ns, lambda = opt$lambda,
                       lambdaFmat = opt$lambdaFmat, maxit = 1000)
 
 # Determine support regularized (standardized) precision under optimal penalty
-res <- sparsify.fused(PList, threshold = "top", verbose = FALSE)
+res <- sparsify.fused(Plist, threshold = "top", verbose = FALSE)
 round(res[[1]]$sparsePrecision, 1)
 round(res[[2]]$sparsePrecision, 1)
 }

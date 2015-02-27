@@ -7,13 +7,13 @@ Compute pooled covariance
 Compute the pooled covariance estimate from a \code{list} of covariance matrices.
 }
 \usage{
-pooledS(SList, ns, mle = TRUE)
+pooledS(Slist, ns, mle = TRUE)
 }
 \arguments{
-  \item{SList}{A \code{list} of length \eqn{K} of \code{numeric} covariance
+  \item{Slist}{A \code{list} of length \eqn{K} of \code{numeric} covariance
     matrices of the same size.}
   \item{ns}{A \code{numeric} vector for length \eqn{K} giving the sample sizes
-    in the corresponding entries of \code{SList}}
+    in the corresponding entries of \code{Slist}}
   \item{mle}{\code{logical}. If \code{TRUE}, the (biased) MLE is given. If
     \code{FALSE}, the biased corrected estimate is given. Default is
     \code{TRUE}.}
@@ -23,16 +23,16 @@ When \code{mle} is \code{FALSE} the given covariance matrices is assumed to have
 Conversely, when \code{mle} is \code{TRUE} the total sum of the sample sizes \code{ns} is used as the denominator in the pooled estimate.
 }
 \value{
-Returns a \code{numeric} matrix with the same size as the elements of \code{SList}.
+Returns a \code{numeric} matrix with the same size as the elements of \code{Slist}.
 }
 \author{
 Anders Ellern Bilgrau
 }
 \examples{
 ns <- c(4, 6, 8)
-SList <- createS(ns, p = 6)
+Slist <- createS(ns, p = 6)
 
-pooledS(SList, ns)
-pooledS(SList, ns, mle = FALSE)
+pooledS(Slist, ns)
+pooledS(Slist, ns, mle = FALSE)
 }
 

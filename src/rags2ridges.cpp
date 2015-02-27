@@ -16,13 +16,13 @@
 
 
 // [[Rcpp::export]]
-arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
+arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
                       const Rcpp::NumericVector ns,
                       const int mle = 0) {
   /* ---------------------------------------------------------------------------
    Function to compute the pooled covariance estimate. Returns a numeric matrix
    giving the pooled covariance matrix.
-   - SList > A list of covariance matrices.
+   - Slist > A list of covariance matrices.
    - nu    > A numeric vector giving the number of samples corresponding
              to each scatter matrix.
    - mle   > A logical (or integer) of length one equalling FALSE (0) or
@@ -30,13 +30,13 @@ arma::mat armaPooledS(const Rcpp::List & SList,  // List of covariance matrices
              If TRUE the ML estimate is used.
   --------------------------------------------------------------------------- */
 
-  const int G = SList.size();
+  const int G = Slist.size();
   const int imle = 1 - mle;
   const double rdenum = 1.0f/(sum(ns) - G * imle);
-  arma::mat S0 = SList[0];       // First element of SList
+  arma::mat S0 = Slist[0];       // First element of Slist
   S0 = (ns[0] - imle)*S0;        // Multiply by the class sample size (- 1)
   for (int i = 1; i < G; ++i) {  // Loop through remaning elements. Note i = 1.
-    arma::mat Si = SList[i];
+    arma::mat Si = Slist[i];
     S0 += (ns[i] - imle)*Si;
   }
   return rdenum*S0;
@@ -224,9 +224,9 @@ arma::mat armaRidgeS(const arma::mat & S,
 
 // [[Rcpp::export]]
 arma::mat armaFusedUpdate(int g0,
-                          const Rcpp::List & PList,
-                          const Rcpp::List & SList,
-                          const Rcpp::List & TList,
+                          const Rcpp::List & Plist,
+                          const Rcpp::List & Slist,
+                          const Rcpp::List & Tlist,
                           const arma::vec ns,
                           const double lambda,
                           arma::mat lambdaFmat) {
@@ -234,37 +234,37 @@ arma::mat armaFusedUpdate(int g0,
    "Update" the g0'th covariance matrix according to the
    and use the regular ridge estimate hereof.
    - g0          > An integer giving the class estimate to be updated.
-   - PList       > A list of length G of matrices giving the current precision
+   - Plist       > A list of length G of matrices giving the current precision
                    estimates.
-   - SList       > A list of length G of sample correlation matrices the same
-                   size as those of PList.
-   - TList       > A list of length G of target matrices the same size
-                   as those of PList
+   - Slist       > A list of length G of sample correlation matrices the same
+                   size as those of Plist.
+   - Tlist       > A list of length G of target matrices the same size
+                   as those of Plist
    - ns          > A vector of length G giving the sample sizes.
    - lambda      > The ridge penalty (a postive number).
    - lambdaFmat  > A G by G symmetric adjacency matrix giving the fused
                    penalty graph with non-negative entries where
                    lambdaFmat[g1, g2] determine the (rate of) shrinkage
-                   between estimates in classes corresponding to SList[g1]
-                   and SList[g1].
+                   between estimates in classes corresponding to Slist[g1]
+                   and Slist[g1].
   --------------------------------------------------------------------------- */
 
   g0 = g0 - 1;  // Shift index to C++ convention
   const int n = ns.n_elem;
-  const int G = SList.size();
+  const int G = Slist.size();
   lambdaFmat(g0, g0) = 0;
   const double a = (sum(lambdaFmat.row(g0)) + lambda)/(ns[g0]);
 
-  arma::mat S0 = Rcpp::as<arma::mat>(Rcpp::wrap(SList[g0]));
-  arma::mat T0 = Rcpp::as<arma::mat>(Rcpp::wrap(TList[g0]));
+  arma::mat S0 = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
+  arma::mat T0 = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
   arma::mat O(n, n);
   arma::mat T(n, n);
   for (int g = 0; g < G; ++g) {
      if (g == g0) {
        continue;
      }
-     O = Rcpp::as<arma::mat>(Rcpp::wrap(PList[g]));
-     T = Rcpp::as<arma::mat>(Rcpp::wrap(TList[g]));
+     O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
+     T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
      S0 -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
   return armaRidgeS(S0, T0, a);
@@ -458,15 +458,15 @@ system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
 # Test armaFusedUpdate
 #
 ns <- c(100, 100)
-PList <- createS(n = c(100, 100), p = 10)
-SList <- createS(n = c(100, 100), p = 10)
-TList <- default.target.fused(SList, ns)
+Plist <- createS(n = c(100, 100), p = 10)
+Slist <- createS(n = c(100, 100), p = 10)
+Tlist <- default.target.fused(Slist, ns)
 g0 <- 1
 
 res <- microbenchmark(
-  A = armaFusedUpdate2(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
-  B = armaFusedUpdate(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
-  C = rags2ridges:::.fusedUpdate(g0, PList, SList, TList, ns, 1, matrix(1, 2, 2)),
+  A = armaFusedUpdate2(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
+  B = armaFusedUpdate(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
+  C = rags2ridges:::.fusedUpdate(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
   times = 10000)
 boxplot(res)
 
