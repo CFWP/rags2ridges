@@ -417,14 +417,14 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
   p <- nrow(Plist[[1]])
   lambdaa <- (lambda + sum(lambdaFmat[g0, -g0]))/ns[g0]
-  ll <- lambdaa - 1/ns[g0] # = (lambda + sum(lambdaFmat[g0, -g0]) - 1)/ns[g0]
+  b <- (lambda + sum(lambdaFmat[g0, -g0]) - 1)/ns[g0]
 
   Psum <- Tsum <- matrix(0, p, p)
   for (g in setdiff(seq_along(Plist), g0)) {
     Psum <- Psum + lambdaFmat[g0, g]*Plist[[g]]
-    Tsum <- Tsum + (lambdaFmat[g0, g]/ns[g])*Tlist[[g]]
+    Tsum <- Tsum + (lambdaFmat[g0, g]/ns[g0])*Tlist[[g]]
   }
-  Sbar <- Slist[[g0]] + ll*Psum + Tsum
+  Sbar <- Slist[[g0]] + b*Psum + Tsum
   Tbar <- Tlist[[g0]] + Psum
   return(armaRidgeS(Sbar, target = Tbar, lambda = lambdaa))
 }
