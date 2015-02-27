@@ -106,7 +106,7 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
    NOTE -- S should not contain any NAs, Infs, or NaNs!
   --------------------------------------------------------------------------- */
 
-  if (lambda == arma::datum::inf) {
+  if (lambda == arma::datum::inf) {  //
     return target;
   }
 
@@ -115,7 +115,7 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
   const arma::mat E = S - lambda * target;
 
   arma::vec eigval;
-  arma::mat eigvec = E*E;  // Temporarily equals filled with square of E
+  arma::mat eigvec = E*E;  // Temporarily set to E*E
 
   // Return target if E*E contain infinite values due to large lambda
   // Usually happens for lambda greater than or on the order of 1e154
@@ -198,7 +198,6 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
 
 
 
-
 // [[Rcpp::export]]
 arma::mat armaRidgeS(const arma::mat & S,
                      const arma::mat & target,
@@ -223,16 +222,16 @@ arma::mat armaRidgeS(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat armaFusedUpdate(int g0,
-                          const Rcpp::List & Plist,
-                          const Rcpp::List & Slist,
-                          const Rcpp::List & Tlist,
-                          const arma::vec ns,
-                          const double lambda,
-                          arma::mat lambdaFmat) {
+arma::mat armaFusedUpdateI(int g0,
+                           const Rcpp::List & Plist,
+                           const Rcpp::List & Slist,
+                           const Rcpp::List & Tlist,
+                           const arma::vec ns,
+                           const double lambda,
+                           arma::mat lambdaFmat) {
   /* ---------------------------------------------------------------------------
-   "Update" the g0'th covariance matrix according to the
-   and use the regular ridge estimate hereof.
+   "Update" the g0'th covariance matrix according to the first fusion
+   update scheme and get the fused ridge estimate hereof.
    - g0          > An integer giving the class estimate to be updated.
    - Plist       > A list of length G of matrices giving the current precision
                    estimates.
@@ -250,25 +249,82 @@ arma::mat armaFusedUpdate(int g0,
   --------------------------------------------------------------------------- */
 
   g0 = g0 - 1;  // Shift index to C++ convention
-  const int n = ns.n_elem;
   const int G = Slist.size();
-  lambdaFmat(g0, g0) = 0;
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
   const double a = (sum(lambdaFmat.row(g0)) + lambda)/(ns[g0]);
 
-  arma::mat S0 = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
-  arma::mat T0 = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
-  arma::mat O(n, n);
-  arma::mat T(n, n);
+  arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
+  arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
   for (int g = 0; g < G; ++g) {
      if (g == g0) {
        continue;
      }
-     O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
-     T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
-     S0 -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
+    arma::mat O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
+     arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
+     Sbar -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
-  return armaRidgeS(S0, T0, a);
+  return armaRidgeS(Sbar, Tbar, a);
 }
+
+
+
+// [[Rcpp::export]]
+arma::mat armaFusedUpdateII(int g0,
+                            const Rcpp::List & Plist,
+                            const Rcpp::List & Slist,
+                            const Rcpp::List & Tlist,
+                            const arma::vec ns,
+                            const double lambda,
+                            arma::mat lambdaFmat) {
+  /* ---------------------------------------------------------------------------
+   "Update" the g0'th covariance matrix according to the second fusion update
+   scheme use the regular ridge estimate hereof.
+   - g0          > An integer giving the class estimate to be updated.
+   - Plist       > A list of length G of matrices giving the current precision
+                   estimates.
+   - Slist       > A list of length G of sample correlation matrices the same
+                   size as those of Plist.
+   - Tlist       > A list of length G of target matrices the same size
+                   as those of Plist
+   - ns          > A vector of length G giving the sample sizes.
+   - lambda      > The ridge penalty (a postive number).
+   - lambdaFmat  > A G by G symmetric adjacency matrix giving the fused
+                   penalty graph with non-negative entries where
+                   lambdaFmat[g1, g2] determine the (rate of) shrinkage
+                   between estimates in classes corresponding to Slist[g1]
+                   and Slist[g1].
+    NOTE: The C++ implementaiton of .fusedUpdateII.
+  --------------------------------------------------------------------------- */
+
+  g0 = g0 - 1;  // Shift index to C++ convention
+  const int G = Slist.size();
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
+  const double rowsum = sum(lambdaFmat.row(g0));
+  const double a = (rowsum + lambda)/ns[g0];
+  const double b = (rowsum + lambda - 1)/ns(g0);
+
+  arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
+  arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
+  const int p = Sbar.n_rows;
+
+  arma::mat Psum = arma::zeros(p, p);
+  arma::mat Tsum = Psum;
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
+       continue;
+     }
+     arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
+     arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
+     Psum += lambdaFmat(g0, g)*P;
+     Tsum += (lambdaFmat(g0, g)/ns(g0))*T;
+  }
+
+  Sbar += b*Psum + Tsum;
+  Tbar += Psum;
+  return armaRidgeS(Sbar, Tbar, a);
+
+}
+
 
 
 

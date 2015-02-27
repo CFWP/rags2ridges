@@ -17,8 +17,12 @@ armaRidgeS <- function(S, target, lambda) {
     .Call('rags2ridges_armaRidgeS', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
-armaFusedUpdate <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
-    .Call('rags2ridges_armaFusedUpdate', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat)
+armaFusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+    .Call('rags2ridges_armaFusedUpdateI', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat)
+}
+
+armaFusedUpdateII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+    .Call('rags2ridges_armaFusedUpdateII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat)
 }
 
 rmvnormal <- function(n, mu, sigma) {
