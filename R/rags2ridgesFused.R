@@ -386,10 +386,10 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.fusedUpdateAlt <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+.fusedUpdateAltI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
-  #   ridge estimate -- using the alternative update scheme.
+  #   ridge estimate -- using the alternative I update scheme.
   # - g0      > An integer giving the class estimate to be updated.
   # - Plist   > A list of length G of matrices giving the current precision
   #             estimates.
@@ -417,6 +417,39 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   SS <- Slist[[g0]] + ll*Psum + Tsum
   TT <- Tlist[[g0]] + Psum
   return(armaRidgeS(SS, target = TT, lambda = lambdaa))
+}
+
+
+
+.fusedUpdateAltII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
+  ##############################################################################
+  # - (Internal) "Update" the covariance matrices and use the regular
+  #   ridge estimate -- using the alternative II update scheme.
+  # - g0      > An integer giving the class estimate to be updated.
+  # - Plist   > A list of length G of matrices giving the current precision
+  #             estimates.
+  # - Slist   > A list of length G of sample correlation matrices the same size
+  #             as those of Plist.
+  # - Tlist   > A list of length G of target matrices the same size
+  #             as those of Plist
+  # - ns      > A vector of length G giving the sample sizes.
+  # - lambda > The ridge penalty (a postive number).
+  # - lambdaFmat > A G by G symmetric adjacency matrix giving the fused penalty
+  #             graph with non-negative entries where lambdaFmat[g1, g2]
+  #             determine the (rate of) shrinkage between estimates in classes
+  #             corresponding to Slist[g1] and Slist[g1].
+  ##############################################################################
+
+  p <- nrow(Plist[[1]])
+  lambdasum <- (lambda + sum(lambdaFmat[g0, -g0]))
+  lambdaa <- lambdasum/ns[g0]
+
+  Tbar <- Tlist[[g0]]
+  for (g in setdiff(seq_along(Plist), g0)) {
+    Tbar <- Tbar + (lambdaFmat[g0, g]/lambdasum)*(Plist[[g]] - Tlist[[g]])
+  }
+
+  return(armaRidgeS(Slist[[g0]], target = Tbar, lambda = lambdaa))
 }
 
 
