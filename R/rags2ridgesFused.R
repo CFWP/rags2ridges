@@ -455,7 +455,6 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #   updating scheme, that is also correct.
   ##############################################################################
 
-  p <- nrow(Plist[[1]])
   lambdasum <- (lambda + sum(lambdaFmat[g0, -g0]))
   lambdaa <- lambdasum/ns[g0]
 
