@@ -327,6 +327,55 @@ arma::mat armaFusedUpdateII(int g0,
 
 
 
+// [[Rcpp::export]]
+arma::mat armaFusedUpdateIII(int g0,
+                             const Rcpp::List & Plist,
+                             const Rcpp::List & Slist,
+                             const Rcpp::List & Tlist,
+                             const arma::vec ns,
+                             const double lambda,
+                             arma::mat lambdaFmat) {
+  /* ---------------------------------------------------------------------------
+   "Update" the g0'th covariance matrix according to the third fusion update
+   scheme use the regular ridge estimate hereof.
+   - g0          > An integer giving the class estimate to be updated.
+   - Plist       > A list of length G of matrices giving the current precision
+                   estimates.
+   - Slist       > A list of length G of sample correlation matrices the same
+                   size as those of Plist.
+   - Tlist       > A list of length G of target matrices the same size
+                   as those of Plist
+   - ns          > A vector of length G giving the sample sizes.
+   - lambda      > The ridge penalty (a postive number).
+   - lambdaFmat  > A G by G symmetric adjacency matrix giving the fused
+                   penalty graph with non-negative entries where
+                   lambdaFmat[g1, g2] determine the (rate of) shrinkage
+                   between estimates in classes corresponding to Slist[g1]
+                   and Slist[g1].
+    NOTE: The C++ implementaiton of .fusedUpdateIII.
+  --------------------------------------------------------------------------- */
+
+  g0 = g0 - 1;  // Shift index to C++ convention
+  const int G = Slist.size();
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
+  const double lambdasum = sum(lambdaFmat.row(g0)) + lambda;
+  const double a = lambdasum/ns[g0];
+
+  arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
+  arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
+       continue;
+     }
+     arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
+     arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
+     Tbar += (lambdaFmat(g0, g)/lambdasum)*(P - T);
+  }
+
+  return armaRidgeS(Sbar, Tbar, a);
+}
+
+
 
 /* -----------------------------------------------------------------------------
 
