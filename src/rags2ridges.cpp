@@ -259,7 +259,7 @@ arma::mat armaFusedUpdateI(int g0,
      if (g == g0) {
        continue;
      }
-    arma::mat O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
+     arma::mat O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
      Sbar -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
@@ -377,6 +377,145 @@ arma::mat armaFusedUpdateIII(int g0,
 
 
 
+arma::mat armaFusedUpdateIIICube(int g0,
+                                 const arma::cube & Pcube,
+                                 const arma::cube & Scube,
+                                 const arma::cube & Tcube,
+                                 const arma::vec ns,
+                                 const double lambda,
+                                 arma::mat lambdaFmat) {
+  /* ---------------------------------------------------------------------------
+   (Experimental.)
+   As armaFusedUpdateIII with arma::cube instead of Rcpp::List
+  --------------------------------------------------------------------------- */
+
+  const int G = Scube.n_slices;
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
+  const double lambdasum = sum(lambdaFmat.row(g0)) + lambda;
+  const double a = lambdasum/ns[g0];
+  arma::mat Tbar = Tcube.slice(g0);
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
+       continue;
+     }
+     Tbar += (lambdaFmat(g0, g)/lambdasum)*(Pcube.slice(g) - Tcube.slice(g));
+  }
+
+  return armaRidgeS(Scube.slice(g0), Tbar, a);
+}
+
+
+
+arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
+                            const arma::vec & ns,
+                            const Rcpp::NumericVector & Tcube,
+                            const double lambda,
+                            const arma::mat lambdaFmat,
+                            const Rcpp::NumericVector & Pcube,
+                            const int maxit = 100,
+                            const double eps = 1e-5,
+                            const bool verbose = false) {
+  /*
+     (Experimental. Currently not used)
+     As ridgeP.fused
+  */
+
+  // Convert to arma cubes:
+  Rcpp::NumericVector vecArrayS(Scube);
+  Rcpp::NumericVector vecArrayT(Tcube);
+  Rcpp::NumericVector vecArrayP(Pcube);
+  Rcpp::IntegerVector dims = vecArrayS.attr("dim");
+  int G = dims[2];
+  arma::cube aScube(vecArrayS.begin(), dims[0], dims[1], G, false);// Don't copy
+  arma::cube aTcube(vecArrayT.begin(), dims[0], dims[1], G, false);
+  arma::cube aPcube(vecArrayP.begin(), dims[0], dims[1], G, true); // Copy
+  arma::cube aPcube_old = aPcube;
+
+  // Initialize
+  double delta;
+  arma::vec diffs = arma::ones(G);
+
+  for (int i = 0; i < maxit; ++i) {
+    for (int g = 0; g < G; ++g) {
+      aPcube.slice(g) = armaFusedUpdateIIICube(g, aPcube, aScube, aTcube, ns,
+                                               lambda, lambdaFmat);
+      diffs(g) = sum(sum(pow(aPcube.slice(g) - aPcube_old.slice(g), 2)));
+    }
+    delta = max(diffs);
+
+    if (delta > eps) {
+      if (verbose) {
+        std::cout << "max diffs = " << max(diffs) << std::endl;
+      }
+      aPcube_old = aPcube;
+    } else {
+      if (verbose) {
+        std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
+      }
+      break;
+    }
+  }
+  return aPcube;
+}
+
+
+
+arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
+                             const arma::vec & ns,
+                             const Rcpp::List & Tlist,
+                             const double lambda,
+                             const arma::mat lambdaFmat,
+                             const Rcpp::List & Plist,
+                             const int maxit = 100,
+                             const double eps = 1e-5,
+                             const bool verbose = false) {
+  /*
+     (Experimental. Currently not used)
+     As ridgeP.fused
+  */
+
+  const int G = Slist.size();
+  const int p = Rcpp::as<arma::mat>(Slist(0)).n_rows;
+
+  // Convert to arma cubes:
+  arma::cube Scube(p, p, G), Tcube(p, p, G), Pcube(p, p, G);
+  for (int g = 0; g < G; ++g) {
+    Scube.slice(g) = Rcpp::as<arma::mat>(Slist(g));
+    Tcube.slice(g) = Rcpp::as<arma::mat>(Tlist(g));
+    Pcube.slice(g) = Rcpp::as<arma::mat>(Plist(g));
+  }
+
+
+  // Initialize
+  double delta;
+  arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
+  arma::cube Pcube_old = Pcube;     // Container for the previous iteration
+
+  for (int i = 0; i < maxit; ++i) {
+    for (int g = 0; g < G; ++g) {
+      Pcube.slice(g) = armaFusedUpdateIIICube(g, Pcube, Scube, Tcube, ns,
+                                               lambda, lambdaFmat);
+      diffs(g) = sum(sum(pow(Pcube.slice(g) - Pcube_old.slice(g), 2)));
+    }
+    delta = max(diffs);
+
+    if (delta > eps) {
+      if (verbose) {
+        std::cout << "max diffs = " << max(diffs) << std::endl;
+      }
+      Pcube_old = Pcube;
+    } else {
+      if (verbose) {
+        std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
+      }
+      break;
+    }
+  }
+  return Pcube;
+}
+
+
+
 /* -----------------------------------------------------------------------------
 
    GENERAL SIMULATION TOOLS
@@ -390,10 +529,10 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
   /* ---------------------------------------------------------------------------
    Simulate from multivariate normal distribution with mean mu and covariance
    sigma. Returns a matrix of size n by length(mu) of observations.
-   (Code taken from package GMCM)
    - n     > An integer giving the number of samples to simulate.
    - mu    > A vector giving the population mean.
    - sigma > A matrix giving the population covariance matrix.
+   (Copied taken from package GMCM)
   --------------------------------------------------------------------------- */
 
   Rcpp::RNGScope();  // Allows for using set.seed(...) on the R side
@@ -426,6 +565,7 @@ arma::mat armaRWishartSingle(const arma::mat L,
     L  > A cholesky decomposition matrix
     nu > The degrees of freedom
     p  > The dimension of the distribution
+    (Copied from package AEBilgrau/correlateR)
   --------------------------------------------------------------------------- */
 
   arma::mat A(p, p, arma::fill::randn);
@@ -473,7 +613,7 @@ arma::cube armaRInvWishart(const int n,
     n     > A integer giving the number of matrices to generate
     psi   > The scale matrix in the inverse Wishart distribution
     nu    > The degrees of freedom in the inverse Wishart distribution
-    (Copied package AEBilgrau/correlateR)
+    (Copied from package AEBilgrau/correlateR)
   --------------------------------------------------------------------------- */
 
   const int p = psi.n_cols ;
