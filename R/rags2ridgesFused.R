@@ -95,8 +95,8 @@ createS <- function(n, p,
   #   n has length 1 where only the matrix is returned
   ##############################################################################
 
-  if (missing(p) && !missing(PList)) {
-    p <- nrow(PList[[1]])
+  if (missing(p) && !missing(Plist)) {
+    p <- nrow(Plist[[1]])
   }
   stopifnot(p > 1)
   stopifnot(m >= 1)
