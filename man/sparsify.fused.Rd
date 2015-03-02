@@ -38,9 +38,9 @@ Tlist <- default.target.fused(Slist, ns)
 
 # Obtain regularized precision under optimal penalty
 opt <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = TRUE,
-                                  maxit.ridgeS.fused = 1500)
+                                  maxit.ridgeP.fused = 1500)
 # Use the optimal penalties
-Plist <- ridgeS.fused(Slist, ns, lambda = opt$lambda,
+Plist <- ridgeP.fused(Slist, ns, lambda = opt$lambda,
                       lambdaFmat = opt$lambdaFmat, maxit = 1000)
 
 # Determine support regularized (standardized) precision under optimal penalty

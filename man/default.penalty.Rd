@@ -65,7 +65,7 @@ Matrices from High-Dimensional Data Classes"
   Wessel N. van Wieringen
 }
 \seealso{
-  \code{\link{ridgeS.fused}},
+  \code{\link{ridgeP.fused}},
   \code{\link{optPenalty.fused.LOOCVauto}},
   \code{\link{default.target}}
 }

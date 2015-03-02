@@ -13,7 +13,7 @@ Depending on the used function, general numerical optimization or a grid-based s
 }
 \usage{
 optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat, approximate = FALSE,
-                           verbose = TRUE, maxit.ridgeS.fused = 1000,
+                           verbose = TRUE, maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
 optPenalty.fused.LOOCV(Ylist, Tlist,
@@ -44,7 +44,7 @@ optPenalty.fused.LOOCV(Ylist, Tlist,
   \item{verbose}{
   \code{logical}. If \code{TRUE} additional messages are written to the terminal.
 }
-  \item{maxit.ridgeS.fused}{
+  \item{maxit.ridgeP.fused}{
   A \code{integer} giving the maximum number of iterations allowed for each
   fused ridge fit.
 }

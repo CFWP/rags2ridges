@@ -1,5 +1,5 @@
-\name{ridgeS.fused}
-\alias{ridgeS.fused}
+\name{ridgeP.fused}
+\alias{ridgeP.fused}
 \title{
   Fused ridge precision estimation
 }
@@ -8,7 +8,7 @@
   cases where multiple classes of data is present for given penalties.
 }
 \usage{
-ridgeS.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
+ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
              lambda, lambdaFmat, lambdaF,
              Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
@@ -82,7 +82,7 @@ Wessel N. van Wieringen
 }
 \seealso{
 \code{\link{default.penalty}} \cr
-\code{\link{ridgeS}} for the regular ridge estimate
+\code{\link{ridgeP}} for the regular ridge estimate
 }
 \examples{
 # Create some (not at all high-dimensional) data on three classes
@@ -94,14 +94,14 @@ str(Slist, max.level = 2)  # The structure of Slist
 #
 # Estimate the precisions (using the complete penalty graph)
 #
-res1 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaF = 2)
+res1 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = 2)
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
 mylambdaFmat <- matrix(c(0,2,2,
                          2,0,2,
                          2,2,0), 3, 3, byrow = TRUE)
-res2 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+res2 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 stopifnot(all.equal(res1, res2))
 
 
@@ -113,7 +113,7 @@ stopifnot(all.equal(res1, res2))
 # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
 mylambdaFmat[1,3] <- mylambdaFmat[3,1] <- 0
 print(mylambdaFmat)
-res3 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+res3 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 # which is not the same as res2 and res1 now!
 
 
@@ -123,12 +123,12 @@ res3 <- ridgeS.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
 
 # Construct a custom target list
 myTlist <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
-res4 <- ridgeS.fused(Slist, ns, Tlist = myTlist, lambda = 0.3, lambdaF = 0.2)
+res4 <- ridgeP.fused(Slist, ns, Tlist = myTlist, lambda = 0.3, lambdaF = 0.2)
 print(res4)
 
 # Alternative, see ?default.target
 myTlist2 <- lapply(Slist, default.target, type = "Null")  # For the null target
-res5 <- ridgeS.fused(Slist, ns, Tlist = myTlist2, lambda = 0.3, lambdaF = 0.2)
+res5 <- ridgeP.fused(Slist, ns, Tlist = myTlist2, lambda = 0.3, lambdaF = 0.2)
 print(res5)
 
 }

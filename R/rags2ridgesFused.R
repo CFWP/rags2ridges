@@ -358,6 +358,18 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
+################################################################################
+################################################################################
+##------------------------------------------------------------------------------
+##
+## Section: The fused ridge estimator
+##
+##------------------------------------------------------------------------------
+################################################################################
+################################################################################
+
+
+
 .fusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {
   ##############################################################################
   # - (Internal) "Update" the covariance matrices and use the regular
@@ -468,7 +480,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
+ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
                          lambda, lambdaFmat, lambdaF, Plist,
                          maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
@@ -587,7 +599,7 @@ ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   #             samples (rows) are needed in each entry.
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
-  # - ...     > Arguments passed to ridgeS.fused
+  # - ...     > Arguments passed to ridgeP.fused
   ##############################################################################
 
   G <- length(Ylist)
@@ -603,7 +615,7 @@ ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       Slist <- Slist.org
       Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
       Sig    <- crossprod(Ylist[[g]][i,  , drop = FALSE])
-      Plist  <- ridgeS.fused(Slist = Slist, ns = ns, Tlist = Tlist,
+      Plist  <- ridgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
                              lambda = lambda, lambdaFmat = lambdaFmat,
                              verbose = FALSE, ...)
       slh <- c(slh, .LL(Sig, Plist[[g]]))
@@ -624,13 +636,13 @@ ridgeS.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   #             in the rows and variables in the columns.
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
-  # - ...     > Arguments passed to ridgeS.fused
+  # - ...     > Arguments passed to ridgeP.fused
   ##############################################################################
 
   ns <- sapply(Ylist, nrow)
   G <- length(ns)
   Slist <- lapply(Ylist, covML)
-  Plist <- ridgeS.fused(Slist = Slist, Tlist = Tlist, ns = ns,
+  Plist <- ridgeP.fused(Slist = Slist, Tlist = Tlist, ns = ns,
                        lambda = lambda, lambdaFmat = lambdaFmat,
                        verbose = FALSE, ...)
   n.tot <- sum(ns)
@@ -741,7 +753,7 @@ optPenalty.fused.LOOCV <- function(Ylist,
   # - step2       > As step1 for the fused penalty. Default is step1.
   # - approximate > Should approximate LOOCV be used? Defaults is FALSE.
   #                 Approximate LOOCV is much faster.
-  # - ...         > Arguments passed to ridgeS.fused
+  # - ...         > Arguments passed to ridgeP.fused
   # - verbose     > logical. Print extra information. Defaults is TRUE.
   #
   # The function evaluates the loss on a log-equidistant grid.
@@ -794,7 +806,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
                                        lambdaFmat,
                                        approximate = FALSE,
                                        verbose = TRUE,
-                                       maxit.ridgeS.fused = 1000,
+                                       maxit.ridgeP.fused = 1000,
                                        optimizer = "optim",
                                        maxit.optimizer = 1000,
                                        debug = FALSE,
@@ -815,7 +827,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   # - approximate > logical. Should approximate LOOCV be used?
   # - verbose     > logical. Should the function print extra info. Defaults to
   #                 TRUE.
-  # - maxit.ridgeS.fused > integer. Max. number of iterations for ridgeS.fused
+  # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
   # - optimizer          > character giving the stadard optimizer.
   #                        Either "optim" or "nlm".
   # - maxit.optimizer    > integer. Max. number of iterations for the optimizer.
@@ -849,14 +861,14 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
       elambdas <- exp(lambdas)
       .afcvl(lambda = elambdas[1],
              lambdaFmat = .reconstructLambda(elambdas, parsedLambda, G),
-             Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeS.fused, ...)
+             Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeP.fused, ...)
     }
   } else {
     cvl <- function(lambdas, ...) {
       elambdas <- exp(lambdas)
       .fcvl(lambda = elambdas[1],
             lambdaFmat = .reconstructLambda(elambdas, parsedLambda, G),
-            Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeS.fused, ...)
+            Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeP.fused, ...)
     }
   }
 
