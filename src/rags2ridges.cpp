@@ -445,12 +445,12 @@ arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
 
     if (delta > eps) {
       if (verbose) {
-        std::cout << "max diffs = " << max(diffs) << std::endl;
+        Rprintf("max diffs = %0.10f\n", max(diffs));
       }
       aPcube_old = aPcube;
     } else {
       if (verbose) {
-        std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
+        Rprintf("Converged in %d iterations.\n", i + 1);
       }
       break;
     }
@@ -501,12 +501,12 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
 
     if (delta > eps) {
       if (verbose) {
-        std::cout << "max diffs = " << max(diffs) << std::endl;
+        Rprintf("max diffs = %0.10f\n", max(diffs));
       }
       Pcube_old = Pcube;
     } else {
       if (verbose) {
-        std::cout << "Converged in " << i + 1 << " iterations." << std::endl;
+        Rprintf("Converged in %d iterations.\n", i + 1);
       }
       break;
     }
