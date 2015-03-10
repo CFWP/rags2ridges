@@ -5,16 +5,16 @@ armaPooledS <- function(Slist, ns, mle = 0L) {
     .Call('rags2ridges_armaPooledS', PACKAGE = 'rags2ridges', Slist, ns, mle)
 }
 
-armaRidgeSAnyTarget <- function(S, target, lambda) {
-    .Call('rags2ridges_armaRidgeSAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
+armaRidgePAnyTarget <- function(S, target, lambda) {
+    .Call('rags2ridges_armaRidgePAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
-armaRidgeSRotationInvariantTarget <- function(S, alpha, lambda) {
-    .Call('rags2ridges_armaRidgeSRotationInvariantTarget', PACKAGE = 'rags2ridges', S, alpha, lambda)
+armaRidgePRotationInvariantTarget <- function(S, alpha, lambda) {
+    .Call('rags2ridges_armaRidgePRotationInvariantTarget', PACKAGE = 'rags2ridges', S, alpha, lambda)
 }
 
-armaRidgeS <- function(S, target, lambda) {
-    .Call('rags2ridges_armaRidgeS', PACKAGE = 'rags2ridges', S, target, lambda)
+armaRidgeP <- function(S, target, lambda) {
+    .Call('rags2ridges_armaRidgeP', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
 armaFusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) {

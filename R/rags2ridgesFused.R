@@ -390,7 +390,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #
   #   NOTE: The update function seems to work ok for large lambdaFmat.
   #   However, for very large lambdaFmat (> 1e154) the exception that the
-  #   armaRidgeS returns the target because of an exception. Which is wrong
+  #   armaRidgeP returns the target because of an exception. Which is wrong
   #   in the fused case.
   ##############################################################################
 
@@ -401,7 +401,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   OmT <- mapply(`-`, Plist[-g0], Tlist[-g0], SIMPLIFY = FALSE) # Omega - Target
   OmT <- mapply(`*`, b, OmT, SIMPLIFY = FALSE)
   S0 <- Slist[[g0]] - Reduce(`+`, OmT)
-  return(armaRidgeS(S0, target = Tlist[[g0]], lambda = a))
+  return(armaRidgeP(S0, target = Tlist[[g0]], lambda = a))
 }
 
 
@@ -438,7 +438,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   }
   Sbar <- Slist[[g0]] + b*Psum + Tsum
   Tbar <- Tlist[[g0]] + Psum
-  return(armaRidgeS(Sbar, target = Tbar, lambda = lambdaa))
+  return(armaRidgeP(Sbar, target = Tbar, lambda = lambdaa))
 }
 
 
@@ -463,7 +463,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #
   #   NOTE: Theis update function seems to work very well for large lambdaFmat.
   #   For very large lambdaFmat (> 1e154) the exception triggered in the
-  #   armaRidgeS returns the target because of an exception. However, in this
+  #   armaRidgeP returns the target because of an exception. However, in this
   #   updating scheme, that is also correct.
   ##############################################################################
 
@@ -475,7 +475,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
     Tbar <- Tbar + (lambdaFmat[g0, g]/lambdasum)*(Plist[[g]] - Tlist[[g]])
   }
 
-  return(armaRidgeS(Slist[[g0]], target = Tbar, lambda = lambdaa))
+  return(armaRidgeP(Slist[[g0]], target = Tbar, lambda = lambdaa))
 }
 
 
@@ -510,7 +510,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     Spool <- pooledS(Slist, ns, mle = FALSE)
     Plist <- list()
     for (i in seq_len(G)) {
-      Plist[[i]] <- armaRidgeS(Spool, target = Tlist[[i]],
+      Plist[[i]] <- armaRidgeP(Spool, target = Tlist[[i]],
                                lambda = G*lambda/sum(ns))
     }
   }
@@ -1181,7 +1181,7 @@ GGMpathStats.fused <- function(sparsePlist, ...) {
   cat("
       ###################################################
       ###################################################
-      I'm from rags to ridges statistician I ain't dumb
+      I'm from rags to ridges baby I ain't dumb
       I got 99 problems but the ridge ain't one.
       - Jay Z-score
       ###################################################

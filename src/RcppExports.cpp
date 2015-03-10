@@ -23,9 +23,9 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
-// armaRidgeSAnyTarget
-arma::mat armaRidgeSAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeSAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+// armaRidgePAnyTarget
+arma::mat armaRidgePAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -33,16 +33,16 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
-        arma::mat __result = armaRidgeSAnyTarget(S, target, lambda);
+        arma::mat __result = armaRidgePAnyTarget(S, target, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// armaRidgeSRotationInvariantTarget
-arma::mat armaRidgeSRotationInvariantTarget(const arma::mat& S, const double alpha, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeSRotationInvariantTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
+// armaRidgePRotationInvariantTarget
+arma::mat armaRidgePRotationInvariantTarget(const arma::mat& S, const double alpha, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePRotationInvariantTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -50,16 +50,16 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
         Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
-        arma::mat __result = armaRidgeSRotationInvariantTarget(S, alpha, lambda);
+        arma::mat __result = armaRidgePRotationInvariantTarget(S, alpha, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
     return __sexp_result;
 END_RCPP
 }
-// armaRidgeS
-arma::mat armaRidgeS(const arma::mat& S, const arma::mat& target, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeS(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+// armaRidgeP
+arma::mat armaRidgeP(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -67,7 +67,7 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP );
         Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP );
         Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP );
-        arma::mat __result = armaRidgeS(S, target, lambda);
+        arma::mat __result = armaRidgeP(S, target, lambda);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

@@ -861,7 +861,7 @@ ridgeSArma <- function(S, lambda, type = "Alt", target = default.target(S)){
       } else if (dim(target)[1] != dim(S)[1]) {
         stop("S and target should be of the same dimension")
       } else {
-        P_Alt <- armaRidgeS(S, target, lambda)
+        P_Alt <- armaRidgeP(S, target, lambda)
       }
       dimnames(P_Alt) <- dimnames(S)
       return(P_Alt)

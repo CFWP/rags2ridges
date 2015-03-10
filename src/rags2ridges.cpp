@@ -70,7 +70,7 @@ inline arma::mat armaEigShrink(const arma::vec eigvals,
 
 
 
-arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
+arma::mat armaRidgePAnyTarget_OLD(const arma::mat & S,
                                   const arma::mat & target,
                                   const double lambda) {
   /* ---------------------------------------------------------------------------
@@ -94,7 +94,7 @@ arma::mat armaRidgeSAnyTarget_OLD(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat armaRidgeSAnyTarget(const arma::mat & S,
+arma::mat armaRidgePAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
   /* ---------------------------------------------------------------------------
@@ -136,7 +136,7 @@ arma::mat armaRidgeSAnyTarget(const arma::mat & S,
 
 
 
-arma::mat armaRidgeSRotationInvariantTarget_OLD(const arma::mat & S,
+arma::mat armaRidgePRotationInvariantTarget_OLD(const arma::mat & S,
                                                 const double alpha,
                                                 const double lambda) {
   /* ---------------------------------------------------------------------------
@@ -159,7 +159,7 @@ arma::mat armaRidgeSRotationInvariantTarget_OLD(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
+arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
   /* ---------------------------------------------------------------------------
@@ -199,7 +199,7 @@ arma::mat armaRidgeSRotationInvariantTarget(const arma::mat & S,
 
 
 // [[Rcpp::export]]
-arma::mat armaRidgeS(const arma::mat & S,
+arma::mat armaRidgeP(const arma::mat & S,
                      const arma::mat & target,
                      const double lambda) {
   /* ---------------------------------------------------------------------------
@@ -213,9 +213,9 @@ arma::mat armaRidgeS(const arma::mat & S,
   const double alpha = target(0, 0);
   const arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
   if (arma::all(arma::all(target == alphaI))) {
-    return armaRidgeSRotationInvariantTarget(S, alpha, lambda);
+    return armaRidgePRotationInvariantTarget(S, alpha, lambda);
   } else {
-    return armaRidgeSAnyTarget(S, target, lambda);
+    return armaRidgePAnyTarget(S, target, lambda);
   }
 }
 
@@ -263,7 +263,7 @@ arma::mat armaFusedUpdateI(int g0,
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
      Sbar -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
-  return armaRidgeS(Sbar, Tbar, a);
+  return armaRidgeP(Sbar, Tbar, a);
 }
 
 
@@ -321,7 +321,7 @@ arma::mat armaFusedUpdateII(int g0,
 
   Sbar += b*Psum + Tsum;
   Tbar += Psum;
-  return armaRidgeS(Sbar, Tbar, a);
+  return armaRidgeP(Sbar, Tbar, a);
 
 }
 
@@ -372,7 +372,7 @@ arma::mat armaFusedUpdateIII(int g0,
      Tbar += (lambdaFmat(g0, g)/lambdasum)*(P - T);
   }
 
-  return armaRidgeS(Sbar, Tbar, a);
+  return armaRidgeP(Sbar, Tbar, a);
 }
 
 
@@ -401,7 +401,7 @@ arma::mat armaFusedUpdateIIICube(int g0,
      Tbar += (lambdaFmat(g0, g)/lambdasum)*(Pcube.slice(g) - Tcube.slice(g));
   }
 
-  return armaRidgeS(Scube.slice(g0), Tbar, a);
+  return armaRidgeP(Scube.slice(g0), Tbar, a);
 }
 
 
@@ -644,8 +644,8 @@ ridgeS1 <- function(S, target, lambda) {
 }
 
 microbenchmark(A1 <- ridgeS1(S, target, lambda),
-               B1 <- armaRidgeSAnyTarget(S, target, lambda),
-               C1 <- armaRidgeS(S, target, lambda),
+               B1 <- armaRidgePAnyTarget(S, target, lambda),
+               C1 <- armaRidgeP(S, target, lambda),
                D1 <- ridgeS(S, lambda, target = target),
                times = 1)
 stopifnot(all.equal(unname(A1), B1))
@@ -659,8 +659,8 @@ ridgeS2 <- function(S, lambda) {
 }
 target <- default.target(S, "Null")
 microbenchmark(A2 <- ridgeS2(S, lambda),
-               B2 <- armaRidgeSRotationInvariantTarget(S, 0.0, lambda),
-               C2 <- armaRidgeS(S, target, lambda))
+               B2 <- armaRidgePRotationInvariantTarget(S, 0.0, lambda),
+               C2 <- armaRidgeP(S, target, lambda))
 stopifnot(all.equal(unname(A2), unname(B2)))
 stopifnot(all.equal(unname(A2), unname(C2)))
 
@@ -674,8 +674,8 @@ ridgeS3 <- function(S, target, lambda) {
 
 target <- default.target(S) # Equal diagnoal
 microbenchmark(A3 <- ridgeS3(S, target, lambda),
-               B3 <- armaRidgeSRotationInvariantTarget(S, target[1,1], lambda),
-               C3 <- armaRidgeS(S, target, lambda))
+               B3 <- armaRidgePRotationInvariantTarget(S, target[1,1], lambda),
+               C3 <- armaRidgeP(S, target, lambda))
 stopifnot(all.equal(unname(A3), unname(B3)))
 stopifnot(all.equal(unname(A3), unname(C3)))
 
@@ -688,7 +688,7 @@ target <- default.target(S, type = "DEPV")#default.target(S)#
 lambda <- 2
 system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
 microbenchmark(A <- ridgeS(S, target = target, lambda = lambda),
-               B <- armaRidgeS(S, target = target, lambda = lambda),
+               B <- armaRidgeP(S, target = target, lambda = lambda),
                times = 1)
 stopifnot(all.equal(A, B))
 
