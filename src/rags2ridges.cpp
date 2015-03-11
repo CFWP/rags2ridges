@@ -503,8 +503,8 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
       Pcube.slice(g) = armaFusedUpdateIIICube(g, Pcube, Scube, Tcube, ns,
-                                               lambda, lambdaFmat);
-      diffs(g) = sum(sum(pow(Pcube.slice(g) - Pcube_old.slice(g), 2)));
+                                              lambda, lambdaFmat);
+      diffs(g) = pow(norm(Pcube.slice(g) - Pcube_old.slice(g), "fro"), 2.0);
     }
     delta = max(diffs);
 
