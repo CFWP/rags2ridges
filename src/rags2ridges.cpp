@@ -177,6 +177,10 @@ arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
     return alpha*arma::eye<arma::mat>(p, p);
   }
 
+  if (lambda <= 0) {
+    Rcpp::stop("The penalty (lambda) must be strictly postive");
+  }
+
   const double inv_lambda = 1.0f/lambda;
   arma::vec eigvals;
   arma::mat eigvecs;
@@ -185,9 +189,14 @@ arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
   // Eigenvalue shrinkage + addition to avoid inversion
   eigvals = inv_lambda*(armaEigShrink(eigvals,lambda,alpha) - eigvals) + alpha;
 
-  // Return target if shrunken evals are infinite
+  // Throw error any eigenvalues are negative.
+  if (any(eigvals < 0)) {
+    Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
+  }
+
+  // Return target if shrunken evals are infinite and lambda is "large"
   // Usually happens for lambda >= 1e154
-  if (!eigvals.is_finite()) {
+  if (!eigvals.is_finite() && lambda > 1) {
     const int p = S.n_rows;
     return alpha*arma::eye<arma::mat>(p, p);
   }
