@@ -525,6 +525,51 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
 
 
 
+Rcpp::List armaRidgeP_fused3(const Rcpp::List & Slist,
+                             const arma::vec & ns,
+                             const Rcpp::List & Tlist,
+                             const double lambda,
+                             const arma::mat lambdaFmat,
+                             const Rcpp::List & Plist,
+                             const int maxit = 100,
+                             const double eps = 1e-5,
+                             const bool verbose = false) {
+  /*
+     (Experimental. Currently not used)
+     As ridgeP.fused
+  */
+
+  const int G = Slist.size();
+
+  // Initialize
+  double delta;
+  arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
+  arma::mat tmp;
+  Rcpp::List Plist_out = Rcpp::clone(Plist);
+
+  for (int i = 0; i < maxit; ++i) {
+    for (int g = 0; g < G; ++g) {
+      tmp = Rcpp::as<arma::mat>(Plist_out(g));
+      Plist_out(g) = armaFusedUpdateIII(g+1, Plist_out, Slist, Tlist, ns, lambda, lambdaFmat);
+      diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
+    }
+    delta = max(diffs);
+    if (delta > eps) {
+      if (verbose) {
+        Rprintf("max diffs = %0.10f\n", max(diffs));
+      }
+    } else {
+      if (verbose) {
+        Rprintf("Converged in %d iterations.\n", i + 1);
+      }
+      break;
+    }
+  }
+  return Plist_out;
+}
+
+
+
 /* -----------------------------------------------------------------------------
 
    GENERAL SIMULATION TOOLS
