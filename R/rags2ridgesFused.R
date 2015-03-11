@@ -461,7 +461,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #             determine the (rate of) shrinkage between estimates in classes
   #             corresponding to Slist[g1] and Slist[g1].
   #
-  #   NOTE: Theis update function seems to work very well for large lambdaFmat.
+  #   NOTE: This update function seems to work very well for large lambdaFmat.
   #   For very large lambdaFmat (> 1e154) the exception triggered in the
   #   armaRidgeP returns the target because of an exception. However, in this
   #   updating scheme, that is also correct.
