@@ -544,13 +544,14 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       Plist[[g]] <- tmpPlist[[g]]
     }
 
+    mx <- max(diffs)
+
     if (verbose) {
-      cat(sprintf("i = %-3d", i), "| diffs = (", sprintf("%6.5e", diffs), ")")
+      cat(sprintf("i = %-3d", i), "| max diffs = ", mx)
       cat(sprintf(" | -pll = %g\n",
                   .PFLL(Slist,Plist,ns,Tlist,lambda,lambdaFmat)))
     }
 
-    mx <- max(diffs)
     if (is.nan(mx)) {
       warning("NaNs where introduced likely due to very largs penalties.")
       break
