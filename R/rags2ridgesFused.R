@@ -528,15 +528,23 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     cat("iteration | difference in Frobenius norm\n")
   }
 
-
+  lambdasize <- lambda + sum(lambdaFmat)
   tmpPlist <- list()
   diffs <- rep(NA, G)
   i <- 1
   while (i <= maxit) {
     for (g in seq_len(G)) {
-      tmpPlist[[g]] <- armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
-                                        Tlist = Tlist, ns = ns, lambda = lambda,
-                                        lambdaFmat = lambdaFmat)
+      if (lambdasize < 1e50) {
+        tmpPlist[[g]] <-
+          armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
+                           Tlist = Tlist, ns = ns, lambda = lambda,
+                           lambdaFmat = lambdaFmat)
+      } else {
+        tmpPlist[[g]] <-
+          armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
+                             Tlist = Tlist, ns = ns, lambda = lambda,
+                             lambdaFmat = lambdaFmat)
+      }
       diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
       Plist[[g]] <- tmpPlist[[g]]
     }
