@@ -7,12 +7,13 @@
 //using namespace arma;
 
 
+////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
    AUXILIARY TOOLS
 
 ----------------------------------------------------------------------------- */
-
+////////////////////////////////////////////////////////////////////////////////
 
 
 // [[Rcpp::export]]
@@ -44,12 +45,13 @@ arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
-   GENERAL RIDGE AND FUSED RIDGE ESTIMATION TOOLS
+  REGULAR (NON-FUSED) RIDGE ESTIMATOR
 
 ----------------------------------------------------------------------------- */
-
+////////////////////////////////////////////////////////////////////////////////
 
 
 inline arma::mat armaEigShrink(const arma::vec eigvals,
@@ -230,6 +232,15 @@ arma::mat armaRidgeP(const arma::mat & S,
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+/* -----------------------------------------------------------------------------
+
+  FUSED RIDGE ESTIMATOR
+
+----------------------------------------------------------------------------- */
+////////////////////////////////////////////////////////////////////////////////
+
+
 // [[Rcpp::export]]
 arma::mat armaFusedUpdateI(int g0,
                            const Rcpp::List & Plist,
@@ -255,9 +266,11 @@ arma::mat armaFusedUpdateI(int g0,
                    lambdaFmat[g1, g2] determine the (rate of) shrinkage
                    between estimates in classes corresponding to Slist[g1]
                    and Slist[g1].
+
+   NOTE1: The C++ implmentation of .fusedUpdateI.
+   NOTE2: The index starts from zero in C++. This is exported to the R side!
   --------------------------------------------------------------------------- */
 
-  g0 = g0 - 1;  // Shift index to C++ convention
   const int G = Slist.size();
   lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
   const double a = (sum(lambdaFmat.row(g0)) + lambda)/(ns[g0]);
@@ -273,6 +286,34 @@ arma::mat armaFusedUpdateI(int g0,
      Sbar -= (lambdaFmat(g, g0)/ns(g0))*(O - T);
   }
   return armaRidgeP(Sbar, Tbar, a);
+}
+
+
+
+arma::mat armaFusedUpdateIC(int g0,
+                            const arma::cube & Pcube,
+                            const arma::cube & Scube,
+                            const arma::cube & Tcube,
+                            const arma::vec ns,
+                            const double lambda,
+                            arma::mat lambdaFmat) {
+  /* ---------------------------------------------------------------------------
+   As armaFusedUpdateI above with arma::cube instead of Rcpp::List in the
+   arguments.
+  --------------------------------------------------------------------------- */
+
+  const int G = Scube.n_slices;
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
+  const double a = (sum(lambdaFmat.row(g0)) + lambda)/ns[g0];
+
+  arma::mat Sbar = Scube.slice(g0);
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
+       continue;
+     }
+     Sbar -= (lambdaFmat(g, g0)/ns(g0))*(Pcube.slice(g) - Tcube.slice(g));
+  }
+  return armaRidgeP(Sbar, Tcube.slice(g0), a);
 }
 
 
@@ -302,10 +343,10 @@ arma::mat armaFusedUpdateII(int g0,
                    lambdaFmat[g1, g2] determine the (rate of) shrinkage
                    between estimates in classes corresponding to Slist[g1]
                    and Slist[g1].
-    NOTE: The C++ implementaiton of .fusedUpdateII.
+    NOTE1: The C++ implmentation of .fusedUpdateII.
+    NOTE2: The indexing starts in zero.
   --------------------------------------------------------------------------- */
 
-  g0 = g0 - 1;  // Shift index to C++ convention
   const int G = Slist.size();
   lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
   const double rowsum = sum(lambdaFmat.row(g0));
@@ -331,7 +372,45 @@ arma::mat armaFusedUpdateII(int g0,
   Sbar += b*Psum + Tsum;
   Tbar += Psum;
   return armaRidgeP(Sbar, Tbar, a);
+}
 
+
+
+arma::mat armaFusedUpdateIIC(int g0,
+                             const arma::cube & Pcube,
+                             const arma::cube & Scube,
+                             const arma::cube & Tcube,
+                             const arma::vec ns,
+                             const double lambda,
+                             arma::mat lambdaFmat) {
+  /* ---------------------------------------------------------------------------
+   As armaFusedUpdateII above with arma::cube instead of Rcpp::List in the
+   arguments.
+  --------------------------------------------------------------------------- */
+
+  const int G = Scube.n_slices;
+  const int p = Scube.n_rows;
+
+  lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
+  const double rowsum = sum(lambdaFmat.row(g0));
+  const double a = (rowsum + lambda)/ns[g0];
+  const double b = (rowsum + lambda - 1)/ns(g0);
+
+  arma::mat Sbar = Scube.slice(g0);
+  arma::mat Tbar = Tcube.slice(g0);
+  arma::mat Psum = arma::zeros(p, p);
+  arma::mat Tsum = Psum;
+  for (int g = 0; g < G; ++g) {
+     if (g == g0) {
+       continue;
+     }
+     Psum += lambdaFmat(g0, g)*Pcube.slice(g);
+     Tsum += (lambdaFmat(g0, g)/ns(g0))*Tcube.slice(g);
+  }
+
+  Sbar += b*Psum + Tsum;
+  Tbar += Psum;
+  return armaRidgeP(Sbar, Tbar, a);
 }
 
 
@@ -364,7 +443,6 @@ arma::mat armaFusedUpdateIII(int g0,
     NOTE: The C++ implementaiton of .fusedUpdateIII.
   --------------------------------------------------------------------------- */
 
-  g0 = g0 - 1;  // Shift index to C++ convention
   const int G = Slist.size();
   lambdaFmat(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
   const double lambdasum = sum(lambdaFmat.row(g0)) + lambda;
@@ -386,15 +464,14 @@ arma::mat armaFusedUpdateIII(int g0,
 
 
 
-arma::mat armaFusedUpdateIIICube(int g0,
-                                 const arma::cube & Pcube,
-                                 const arma::cube & Scube,
-                                 const arma::cube & Tcube,
-                                 const arma::vec ns,
-                                 const double lambda,
-                                 arma::mat lambdaFmat) {
+arma::mat armaFusedUpdateIIIC(int g0,
+                              const arma::cube & Pcube,
+                              const arma::cube & Scube,
+                              const arma::cube & Tcube,
+                              const arma::vec ns,
+                              const double lambda,
+                              arma::mat lambdaFmat) {
   /* ---------------------------------------------------------------------------
-   (Experimental.)
    As armaFusedUpdateIII with arma::cube instead of Rcpp::List
   --------------------------------------------------------------------------- */
 
@@ -414,12 +491,12 @@ arma::mat armaFusedUpdateIIICube(int g0,
 }
 
 
-
+// [[Rcpp::export]]
 arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
                             const arma::vec & ns,
                             const Rcpp::NumericVector & Tcube,
-                            const double lambda,
-                            const arma::mat lambdaFmat,
+                            const double & lambda,
+                            const arma::mat & lambdaFmat,
                             const Rcpp::NumericVector & Pcube,
                             const int maxit = 100,
                             const double eps = 1e-5,
@@ -434,10 +511,13 @@ arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
   Rcpp::NumericVector vecArrayT(Tcube);
   Rcpp::NumericVector vecArrayP(Pcube);
   Rcpp::IntegerVector dims = vecArrayS.attr("dim");
-  int G = dims[2];
-  arma::cube aScube(vecArrayS.begin(), dims[0], dims[1], G, false);// Don't copy
+  const int G = dims[2];
+
+  // false = don't copy | true = copy
+  // If aPcube does not copy, the function modify Pcube in place!
+  arma::cube aScube(vecArrayS.begin(), dims[0], dims[1], G, false);
   arma::cube aTcube(vecArrayT.begin(), dims[0], dims[1], G, false);
-  arma::cube aPcube(vecArrayP.begin(), dims[0], dims[1], G, true); // Copy
+  arma::cube aPcube(vecArrayP.begin(), dims[0], dims[1], G, true);
   arma::cube aPcube_old = aPcube;
 
   // Initialize
@@ -446,15 +526,15 @@ arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
 
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
-      aPcube.slice(g) = armaFusedUpdateIIICube(g, aPcube, aScube, aTcube, ns,
-                                               lambda, lambdaFmat);
+      aPcube.slice(g) = armaFusedUpdateIC(g, aPcube, aScube, aTcube, ns,
+                                          lambda, lambdaFmat);
       diffs(g) = sum(sum(pow(aPcube.slice(g) - aPcube_old.slice(g), 2)));
     }
     delta = max(diffs);
 
     if (delta > eps) {
       if (verbose) {
-        Rprintf("max diffs = %0.10f\n", max(diffs));
+        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
       }
       aPcube_old = aPcube;
     } else {
@@ -468,7 +548,7 @@ arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
 }
 
 
-
+// [[Rcpp::export]]
 arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
                              const arma::vec & ns,
                              const Rcpp::List & Tlist,
@@ -486,14 +566,13 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
   const int G = Slist.size();
   const int p = Rcpp::as<arma::mat>(Slist(0)).n_rows;
 
-  // Convert to arma cubes:
+  // Convert lists to arma cubes:
   arma::cube Scube(p, p, G), Tcube(p, p, G), Pcube(p, p, G);
   for (int g = 0; g < G; ++g) {
     Scube.slice(g) = Rcpp::as<arma::mat>(Slist(g));
     Tcube.slice(g) = Rcpp::as<arma::mat>(Tlist(g));
     Pcube.slice(g) = Rcpp::as<arma::mat>(Plist(g));
   }
-
 
   // Initialize
   double delta;
@@ -502,15 +581,15 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
 
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
-      Pcube.slice(g) = armaFusedUpdateIIICube(g, Pcube, Scube, Tcube, ns,
-                                              lambda, lambdaFmat);
+      Pcube.slice(g) = armaFusedUpdateIC(g, Pcube, Scube, Tcube, ns,
+                                         lambda, lambdaFmat);
       diffs(g) = pow(norm(Pcube.slice(g) - Pcube_old.slice(g), "fro"), 2.0);
     }
     delta = max(diffs);
 
     if (delta > eps) {
       if (verbose) {
-        Rprintf("max diffs = %0.10f\n", max(diffs));
+        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
       }
       Pcube_old = Pcube;
     } else {
@@ -525,6 +604,7 @@ arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
 
 
 
+// [[Rcpp::export]]
 Rcpp::List armaRidgeP_fused3(const Rcpp::List & Slist,
                              const arma::vec & ns,
                              const Rcpp::List & Tlist,
@@ -545,18 +625,20 @@ Rcpp::List armaRidgeP_fused3(const Rcpp::List & Slist,
   double delta;
   arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
   arma::mat tmp;
-  Rcpp::List Plist_out = Rcpp::clone(Plist);
+//  Rcpp::List Plist_out = Rcpp::clone(Plist);
+  Rcpp::List Plist_out = Plist;
 
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
-      Plist_out(g) = armaFusedUpdateIII(g+1, Plist_out, Slist, Tlist, ns, lambda, lambdaFmat);
+      Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns,
+                                      lambda, lambdaFmat);
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
     }
     delta = max(diffs);
     if (delta > eps) {
       if (verbose) {
-        Rprintf("max diffs = %0.10f\n", max(diffs));
+        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
       }
     } else {
       if (verbose) {
@@ -570,12 +652,13 @@ Rcpp::List armaRidgeP_fused3(const Rcpp::List & Slist,
 
 
 
+////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
    GENERAL SIMULATION TOOLS
 
 ----------------------------------------------------------------------------- */
-
+////////////////////////////////////////////////////////////////////////////////
 
 
 // [[Rcpp::export]]

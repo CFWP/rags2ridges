@@ -525,10 +525,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   }
 
   if (verbose) {
-    cat("Iter:   | difference in Frobenius norm        | -penalized log-lik\n")
-    cat("init    | diffs = (", sprintf("%11e", rep(NA, G)), ")")
-    cat(sprintf(" | -pll = %g\n",
-                .PFLL(Slist, Plist, ns, Tlist, lambda, lambdaFmat)))
+    cat("iteration | difference in Frobenius norm\n")
   }
 
 
@@ -537,7 +534,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   i <- 1
   while (i <= maxit) {
     for (g in seq_len(G)) {
-      tmpPlist[[g]] <- armaFusedUpdateI(g0 = g, Plist = Plist, Slist = Slist,
+      tmpPlist[[g]] <- armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
                                         Tlist = Tlist, ns = ns, lambda = lambda,
                                         lambdaFmat = lambdaFmat)
       diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
@@ -547,15 +544,14 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     mx <- max(diffs)
 
     if (verbose) {
-      cat(sprintf("i = %-3d", i), "| max diffs = ", mx)
-      cat(sprintf(" | -pll = %g\n",
-                  .PFLL(Slist,Plist,ns,Tlist,lambda,lambdaFmat)))
+      cat(sprintf("i = %-3d | max diffs = %0.10f\n", i, mx))
     }
 
     if (is.nan(mx)) {
       warning("NaNs where introduced likely due to very largs penalties.")
       break
     }
+
     if (mx < eps) {
       break
     }
