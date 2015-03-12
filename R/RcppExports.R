@@ -29,16 +29,8 @@ armaFusedUpdateIII <- function(g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat) 
     .Call('rags2ridges_armaFusedUpdateIII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda, lambdaFmat)
 }
 
-armaRidgeP_fused <- function(Scube, ns, Tcube, lambda, lambdaFmat, Pcube, maxit = 100L, eps = 1e-5, verbose = FALSE) {
-    .Call('rags2ridges_armaRidgeP_fused', PACKAGE = 'rags2ridges', Scube, ns, Tcube, lambda, lambdaFmat, Pcube, maxit, eps, verbose)
-}
-
-armaRidgeP_fused2 <- function(Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
-    .Call('rags2ridges_armaRidgeP_fused2', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit, eps, verbose)
-}
-
-armaRidgeP_fused3 <- function(Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
-    .Call('rags2ridges_armaRidgeP_fused3', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit, eps, verbose)
+armaRidgeP_fused <- function(Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
+    .Call('rags2ridges_armaRidgeP_fused', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, lambdaFmat, Plist, maxit, eps, verbose)
 }
 
 rmvnormal <- function(n, mu, sigma) {

@@ -246,9 +246,9 @@ arma::mat armaFusedUpdateI(int g0,
                            const Rcpp::List & Plist,
                            const Rcpp::List & Slist,
                            const Rcpp::List & Tlist,
-                           const arma::vec ns,
-                           const double lambda,
-                           arma::mat lambdaFmat) {
+                           const arma::vec & ns,
+                           const double & lambda,
+                           arma::mat & lambdaFmat) {
   /* ---------------------------------------------------------------------------
    "Update" the g0'th covariance matrix according to the first fusion
    update scheme and get the fused ridge estimate hereof.
@@ -420,9 +420,9 @@ arma::mat armaFusedUpdateIII(int g0,
                              const Rcpp::List & Plist,
                              const Rcpp::List & Slist,
                              const Rcpp::List & Tlist,
-                             const arma::vec ns,
-                             const double lambda,
-                             arma::mat lambdaFmat) {
+                             const arma::vec & ns,
+                             const double & lambda,
+                             arma::mat & lambdaFmat) {
   /* ---------------------------------------------------------------------------
    "Update" the g0'th covariance matrix according to the third fusion update
    scheme use the regular ridge estimate hereof.
@@ -491,148 +491,43 @@ arma::mat armaFusedUpdateIIIC(int g0,
 }
 
 
+
 // [[Rcpp::export]]
-arma::cube armaRidgeP_fused(const Rcpp::NumericVector & Scube,
+Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::vec & ns,
-                            const Rcpp::NumericVector & Tcube,
+                            const Rcpp::List & Tlist,
                             const double & lambda,
-                            const arma::mat & lambdaFmat,
-                            const Rcpp::NumericVector & Pcube,
+                            arma::mat & lambdaFmat,
+                            const Rcpp::List & Plist,
                             const int maxit = 100,
                             const double eps = 1e-5,
                             const bool verbose = false) {
   /*
      (Experimental. Currently not used)
-     As ridgeP.fused
-  */
-
-  // Convert to arma cubes:
-  Rcpp::NumericVector vecArrayS(Scube);
-  Rcpp::NumericVector vecArrayT(Tcube);
-  Rcpp::NumericVector vecArrayP(Pcube);
-  Rcpp::IntegerVector dims = vecArrayS.attr("dim");
-  const int G = dims[2];
-
-  // false = don't copy | true = copy
-  // If aPcube does not copy, the function modify Pcube in place!
-  arma::cube aScube(vecArrayS.begin(), dims[0], dims[1], G, false);
-  arma::cube aTcube(vecArrayT.begin(), dims[0], dims[1], G, false);
-  arma::cube aPcube(vecArrayP.begin(), dims[0], dims[1], G, true);
-  arma::cube aPcube_old = aPcube;
-
-  // Initialize
-  double delta;
-  arma::vec diffs = arma::ones(G);
-
-  for (int i = 0; i < maxit; ++i) {
-    for (int g = 0; g < G; ++g) {
-      aPcube.slice(g) = armaFusedUpdateIC(g, aPcube, aScube, aTcube, ns,
-                                          lambda, lambdaFmat);
-      diffs(g) = sum(sum(pow(aPcube.slice(g) - aPcube_old.slice(g), 2)));
-    }
-    delta = max(diffs);
-
-    if (delta > eps) {
-      if (verbose) {
-        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
-      }
-      aPcube_old = aPcube;
-    } else {
-      if (verbose) {
-        Rprintf("Converged in %d iterations.\n", i + 1);
-      }
-      break;
-    }
-  }
-  return aPcube;
-}
-
-
-// [[Rcpp::export]]
-arma::cube armaRidgeP_fused2(const Rcpp::List & Slist,
-                             const arma::vec & ns,
-                             const Rcpp::List & Tlist,
-                             const double lambda,
-                             const arma::mat lambdaFmat,
-                             const Rcpp::List & Plist,
-                             const int maxit = 100,
-                             const double eps = 1e-5,
-                             const bool verbose = false) {
-  /*
-     (Experimental. Currently not used)
-     As ridgeP.fused
-  */
-
-  const int G = Slist.size();
-  const int p = Rcpp::as<arma::mat>(Slist(0)).n_rows;
-
-  // Convert lists to arma cubes:
-  arma::cube Scube(p, p, G), Tcube(p, p, G), Pcube(p, p, G);
-  for (int g = 0; g < G; ++g) {
-    Scube.slice(g) = Rcpp::as<arma::mat>(Slist(g));
-    Tcube.slice(g) = Rcpp::as<arma::mat>(Tlist(g));
-    Pcube.slice(g) = Rcpp::as<arma::mat>(Plist(g));
-  }
-
-  // Initialize
-  double delta;
-  arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
-  arma::cube Pcube_old = Pcube;     // Container for the previous iteration
-
-  for (int i = 0; i < maxit; ++i) {
-    for (int g = 0; g < G; ++g) {
-      Pcube.slice(g) = armaFusedUpdateIC(g, Pcube, Scube, Tcube, ns,
-                                         lambda, lambdaFmat);
-      diffs(g) = pow(norm(Pcube.slice(g) - Pcube_old.slice(g), "fro"), 2.0);
-    }
-    delta = max(diffs);
-
-    if (delta > eps) {
-      if (verbose) {
-        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
-      }
-      Pcube_old = Pcube;
-    } else {
-      if (verbose) {
-        Rprintf("Converged in %d iterations.\n", i + 1);
-      }
-      break;
-    }
-  }
-  return Pcube;
-}
-
-
-
-// [[Rcpp::export]]
-Rcpp::List armaRidgeP_fused3(const Rcpp::List & Slist,
-                             const arma::vec & ns,
-                             const Rcpp::List & Tlist,
-                             const double lambda,
-                             const arma::mat lambdaFmat,
-                             const Rcpp::List & Plist,
-                             const int maxit = 100,
-                             const double eps = 1e-5,
-                             const bool verbose = false) {
-  /*
-     (Experimental. Currently not used)
-     As ridgeP.fused
+     C++ version of ridgeP.fused
   */
 
   const int G = Slist.size();
 
   // Initialize
+  const double lambdasize = lambda + accu(lambdaFmat);
   double delta;
   arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
   arma::mat tmp;
-//  Rcpp::List Plist_out = Rcpp::clone(Plist);
-  Rcpp::List Plist_out = Plist;
+  Rcpp::List Plist_out = Rcpp::clone(Plist);
 
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
-      Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns,
-                                      lambda, lambdaFmat);
+      if (lambdasize < 1e50) {
+        // Update I is faster
+        Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns,
+                                        lambda, lambdaFmat);
+      } else {
+        // Update III more stable for very large lambda
+        Plist_out(g) = armaFusedUpdateIII(g, Plist_out, Slist, Tlist, ns,
+                                          lambda, lambdaFmat);
+      }
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
     }
     delta = max(diffs);
