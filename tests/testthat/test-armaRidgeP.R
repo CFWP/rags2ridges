@@ -14,7 +14,7 @@ test_that("armaRidgeP returns proper format", {
 
     expect_that(is.double(res), is_true())  # Returns numeric (dobule)
     expect_that(res, is_a("matrix"))        # Returns a matrix
-    expect_that(dim(res), equals(dim(s)))   # .. of the correct size
+    expect_that(dim(res), equals(dim(S)))   # .. of the correct size
   }
 
 })
