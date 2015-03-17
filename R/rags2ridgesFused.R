@@ -1039,6 +1039,10 @@ default.penalty <- function(G, df,
   ##############################################################################
   type <- match.arg(type)
 
+  if (missing(G) && !missing(df)) {
+    G <- nrow(df)
+  }
+
   if (is.data.frame(G)) {
     df <- G
     G <- nrow(df)
