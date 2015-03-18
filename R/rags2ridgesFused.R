@@ -47,6 +47,44 @@ isSymmetricPD <- function(M) {
   }
 
 }
+
+is.Xlist <- function(Xlist, Ylist = FALSE) {
+  ##############################################################################
+  # Test if generic fused list arguments (such as Slist, Tlist, Plist)
+  # are properly formatted
+  # - Xlist > A list of covariance matrices or matrices.
+  # Returns TRUE if all tests are passed, throws error if not.
+  ##############################################################################
+
+  xlist <- deparse(substitute(Xlist))
+  if (!is.list(Xlist)) {
+    stop(xlist, "should be a list")
+  }
+  if (!all(sapply(Xlist, is.matrix))) {
+    stop("All elements of ", xlist, " should be matrices")
+  }
+  if (!all(sapply(Xlist, is.numeric))) {
+    stop("All elements of ", xlist, " should be numeric matrices")
+  }
+  if (length(unique(c(sapply(Xlist, dim)))) != 1L) {
+    stop("All matrices in ", xlist,
+         " should be square and have the same size.")
+  }
+  if (!all(sapply(Xlist, isSymmetricPD))) {
+    stop("All matrices in ", xlist, " should be symmetric and positive ",
+         "definite.")
+  }
+  if (!all(sapply(seq_along(Xlist),
+                  function(i) identical(dimnames(Xlist[[1]]),
+                                        dimnames(Xlist[[i]]))))) {
+    stop("dimnames of the elements of ", xlist, " are not identical")
+  }
+
+  return(TRUE)
+}
+
+
+
 default.target.fused <- function(Slist, ns, type = "DAIE", equal = TRUE, ...) {
   ##############################################################################
   # Generate a list of (data-driven) targets to use in fused ridge estimation
