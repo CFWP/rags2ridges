@@ -916,7 +916,9 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   }
 
   parsedLambda <- .parseLambda(lambdaFmat)
-  n.lambdas <- sum(is.na(suppressWarnings(as.numeric(names(parsedLambda))))) + 1
+  suppressWarnings({
+    n.lambdas <- sum(is.na(as.numeric(names(parsedLambda)))) + 1
+  })
 
   # Determine what loss function to use
   # lambdas[1] is the regular ridge penalty, while the remaning lambdas[-1]
@@ -963,6 +965,8 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   # Format optimal values
   opt.lambdas <- exp(par)
   opt.lambdaFmat <- .reconstructLambda(opt.lambdas, parsedLambda, G)
+  dimnames(opt.lambdaFmat) <- dimnames(lambdaFmat)
+
   res <- list(lambda = opt.lambdas[1],
               lambdaF = NA,
               lambdaFmat = opt.lambdaFmat,
