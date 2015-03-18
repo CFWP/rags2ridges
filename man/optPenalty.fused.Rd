@@ -1,7 +1,8 @@
 \name{optPenalty.fused}
 \alias{optPenalty.fused}
-\alias{optPenalty.fused.LOOCVauto}
 \alias{optPenalty.fused.LOOCV}
+\alias{optPenalty.fused.LOOCVauto}
+\alias{optPenalty.fused.LOOCVgrid}
 
 \title{
   Identify optimal ridge and fused ridge penalties
@@ -16,11 +17,11 @@ optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat, approximate = FALSE,
                            verbose = TRUE, maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
-optPenalty.fused.LOOCV(Ylist, Tlist,
-                       lambdaMin, lambdaMax, step1 = 20,
-                       lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
-                       step2 = step1,
-                       approximate = FALSE, verbose = TRUE, ...)
+optPenalty.fused.LOOCVgrid(Ylist, Tlist,
+                           lambdaMin, lambdaMax, step1 = 20,
+                           lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
+                           step2 = step1,
+                           approximate = FALSE, verbose = TRUE, ...)
 }
 \arguments{
   \item{Ylist}{
@@ -127,13 +128,13 @@ Tlist <- default.target.fused(Slist, ns, type = "DIAES", equal = FALSE)
 
 
 # Grid-based
-a <- optPenalty.fused.LOOCV(Ylist, Tlist,
-                            lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
-                            lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
-                            approximate = FALSE, maxit = 1000)
-b <- optPenalty.fused.LOOCV(Ylist, Tlist,
-                            lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
-                            approximate = TRUE, maxit = 1000)
+a <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
+                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
+                                lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
+                                approximate = FALSE, maxit = 1000)
+b <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
+                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                                approximate = TRUE, maxit = 1000)
 
 
 
@@ -225,7 +226,7 @@ lambdaFmat[2,1] <- lambdaFmat[1,2] <- 2
 print(lambdaFmat)
 
 res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
-                                   approximate = TRUE, optimizer = "nlm")
+                                  approximate = TRUE, optimizer = "nlm")
 print(res)
 }
 }

@@ -793,16 +793,16 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
 
 
-optPenalty.fused.LOOCV <- function(Ylist,
-                                   Tlist,
-                                   lambdaMin, lambdaMax,
-                                   step1 = 20,
-                                   lambdaFMin = lambdaMin,
-                                   lambdaFMax = lambdaMax,
-                                   step2 = step1,
-                                   approximate = FALSE,
-                                   verbose = TRUE,
-                                   ...) {
+optPenalty.fused.LOOCVgrid <- function(Ylist,
+                                       Tlist,
+                                       lambdaMin, lambdaMax,
+                                       step1 = 20,
+                                       lambdaFMin = lambdaMin,
+                                       lambdaFMax = lambdaMax,
+                                       step2 = step1,
+                                       approximate = FALSE,
+                                       verbose = TRUE,
+                                       ...) {
   ##############################################################################
   #   Simple (approximate) leave one-out cross validation for the fused ridge
   #   estimator on a grid to determine optimal lambda and lambdaF.
