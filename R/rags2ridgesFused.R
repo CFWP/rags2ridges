@@ -24,6 +24,29 @@
 ################################################################################
 
 
+isSymmetricPD <- function(M) {
+  ##############################################################################
+  # Test if matrix is symmetric postive definite
+  # - M > A numeric matrix
+  # Returns TRUE if the matrix is symmetric positive definite and FALSE if not.
+  ##############################################################################
+
+  nm <- deparse(substitute(M))
+  if (!is.matrix(M) || !is.numeric(M)) {
+    stop(nm, " is not a numeric matrix")
+  }
+  if (!isSymmetric(M)) {
+    stop(nm, " is not a symmetric matrix")
+  }
+
+  chM <- try(chol(M), silent = TRUE)  # M is P.D. iff it has a Cholesky decomp.
+  if (inherits(chM, "try-error")) {
+    return(FALSE)
+  } else {
+    return(TRUE)
+  }
+
+}
 default.target.fused <- function(Slist, ns, type = "DAIE", equal = TRUE, ...) {
   ##############################################################################
   # Generate a list of (data-driven) targets to use in fused ridge estimation
