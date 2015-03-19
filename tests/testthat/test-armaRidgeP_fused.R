@@ -30,7 +30,7 @@ test_that("armaRidgeP_fused returns proper format", {
 
 })
 
-test_that("armaRidgeP_fused ignores diagonal in lambdaFmat", {
+test_that("armaRidgeP_fused ignores the diagonal in lambdaFmat", {
 
   lF <- matrix(1, G, G)
   res.diag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaFmat = lF, tgt)
@@ -40,3 +40,111 @@ test_that("armaRidgeP_fused ignores diagonal in lambdaFmat", {
   expect_that(res.nodiag, equals(res.diag))  # Returns numeric (dobule)
 
 })
+
+
+################################################################################
+# Test against the old funciton:
+################################################################################
+
+ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
+                             lambda, lambdaFmat, lambdaF, Plist,
+                             maxit = 100L, verbose = TRUE, eps = 1e-4) {
+
+  stopifnot(length(Slist) == length(Tlist))
+  G <- length(Slist)  # Number of groups
+
+  # Initialize estimates with the regular ridges from the pooled covariance
+  if (missing(Plist)) {
+    Spool <- pooledS(Slist, ns, mle = FALSE)
+    Plist <- list()
+    for (i in seq_len(G)) {
+      Plist[[i]] <- armaRidgeP(Spool, target = Tlist[[i]],
+                               lambda = G*lambda/sum(ns))
+    }
+  }
+  stopifnot(length(Slist) == length(Plist))
+
+  if (!missing(lambdaFmat) && !missing(lambdaF)) {
+    stop("Supply only either lambdaFmat or lambdaF.")
+  } else if (missing(lambdaFmat) && missing(lambdaF)) {
+    stop("Either lambdaFmat or lambdaF must be given.")
+  } else if (missing(lambdaFmat) && !missing(lambdaF)) {
+    lambdaFmat <- matrix(lambdaF, G, G)
+  }
+
+  if (verbose) {
+    cat("iteration | difference in Frobenius norm\n")
+  }
+
+  lambdasize <- lambda + sum(lambdaFmat)
+  tmpPlist <- list()
+  diffs <- rep(NA, G)
+  i <- 1
+  while (i <= maxit) {
+    for (g in seq_len(G)) {
+      if (lambdasize < 1e50) {
+        tmpPlist[[g]] <-
+          armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
+                           Tlist = Tlist, ns = ns, lambda = lambda,
+                           lambdaFmat = lambdaFmat)
+      } else {
+        tmpPlist[[g]] <-
+          armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
+                             Tlist = Tlist, ns = ns, lambda = lambda,
+                             lambdaFmat = lambdaFmat)
+      }
+      diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
+      Plist[[g]] <- tmpPlist[[g]]
+    }
+    mx <- max(diffs)
+    if (verbose) {
+      cat(sprintf("i = %-3d | max diffs = %0.10f\n", i, mx))
+    }
+    if (is.nan(mx)) {
+      warning("NaNs where introduced likely due to very largs penalties.")
+      break
+    }
+    if (mx < eps) {
+      break
+    }
+    i <- i + 1
+  }
+  if (i == maxit + 1) {
+    warning("Maximum iterations (", maxit, ") hit")
+  }
+  # Keep dimnames and names
+  for (g in seq_along(Slist)) {
+    dimnames(Plist[[g]]) <- dimnames(Slist[[g]])
+  }
+  names(Plist) <- names(Slist)
+  return(Plist)
+}
+environment(ridgeP.fused.old) <- asNamespace('rags2ridges')
+
+
+
+
+test_that("armaRidgeP_fused agrees with the R implmentation", {
+
+  lambda <- abs(rcauchy(n = 1))
+  Spool <- pooledS(S, n, mle = FALSE)
+  P <- list()
+  for (i in seq_len(G)) {
+    P[[i]] <- armaRidgeP(Spool, target = tgt[[i]],
+                         lambda = G*lambda/sum(n))
+  }
+  lambdaFmat <- matrix(1, G, G)
+
+  res_old <- ridgeP.fused.old(S, n, tgt, lambda, lambdaFmat,
+                              maxit = 1000, eps = 1e-10, verbose = FALSE)
+  res_new <- armaRidgeP_fused(S, n, tgt, lambda, lambdaFmat, P,
+                              maxit = 1000, eps = 1e-10, verbose = FALSE)
+
+  expect_that(res_new, is_equivalent_to(res_old))
+
+})
+
+
+
+
+

@@ -545,7 +545,8 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
                          lambda, lambdaFmat, lambdaF, Plist,
                          maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
-  # - The fused ridge estimate for a given lambda and lambdaFmat
+  # - The user function for the fused ridge estimate for a given
+  #   lambda and lambdaFmat.
   # - Slist   > A list of length G of sample correlation matrices the same size
   #             as those of Plist.
   # - Tlist   > A list of length G of target matrices the same size
@@ -558,6 +559,8 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   #             corresponding to Slist[g1] and Slist[g1].
   # - lambdaF > The non-negative fused penalty. Alternative to lambdaFmat if
   #             all pairwise penalties equal.
+  # - Plist   > A list of length G giving the initial estimates. If not supplied
+  #             the ridge of the pooled estimate is used.
   # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
   # - eps     > numeric. A positive convergence criterion. Default is 1e-4.
@@ -585,48 +588,11 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     lambdaFmat <- matrix(lambdaF, G, G)
   }
 
-  if (verbose) {
-    cat("iteration | difference in Frobenius norm\n")
-  }
-
-  lambdasize <- lambda + sum(lambdaFmat)
-  tmpPlist <- list()
-  diffs <- rep(NA, G)
-  i <- 1
-  while (i <= maxit) {
-    for (g in seq_len(G)) {
-      if (lambdasize < 1e50) {
-        tmpPlist[[g]] <-
-          armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
-                           Tlist = Tlist, ns = ns, lambda = lambda,
-                           lambdaFmat = lambdaFmat)
-      } else {
-        tmpPlist[[g]] <-
-          armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
-                             Tlist = Tlist, ns = ns, lambda = lambda,
-                             lambdaFmat = lambdaFmat)
-      }
-      diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
-      Plist[[g]] <- tmpPlist[[g]]
-    }
-
-    mx <- max(diffs)
-
-    if (verbose) {
-      cat(sprintf("i = %-3d | max diffs = %0.10f\n", i, mx))
-    }
-
-    if (is.nan(mx)) {
-      warning("NaNs where introduced likely due to very largs penalties.")
-      break
-    }
-
-    if (mx < eps) {
-      break
-    }
-
-    i <- i + 1
-  }
+  # Overwrite the starting estimate with the fused estimate
+  Plist <-
+    armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
+                     lambdaFmat = lambdaFmat,Plist = Plist, maxit = maxit,
+                     eps = eps, verbose = verbose)
 
   if (i == maxit + 1) {
     warning("Maximum iterations (", maxit, ") hit")

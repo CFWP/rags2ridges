@@ -502,10 +502,25 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const int maxit = 100,
                             const double eps = 1e-5,
                             const bool verbose = false) {
-  /*
-     (Experimental. Currently not used)
-     C++ version of ridgeP.fused
-  */
+  /* ---------------------------------------------------------------------------
+   The fused ridge estimate workhorse function for a given lambda and
+   lambdaFmat.
+   - Slist   > A list of length G of sample correlation matrices the same size
+               as those of Plist.
+   - Tlist   > A list of length G of target matrices the same size
+               as those of Plist. Default is given by default.target.
+   - ns      > A vector of length G giving the sample sizes.
+   - lambda  > The ridge penalty (a stictly postive number)
+   - lambdaFmat > The G by G symmetric adjacency matrix fused penalty graph
+               with non-negative entries where lambdaFmat[g1, g2] determine the
+               retainment of similarities between estimates in classes
+               corresponding to Slist[g1] and Slist[g1].
+   - Plist   > A list of length G of symmetric p.d. matrices serves as initial
+               estimates of the algorithm.
+   - maxit   > integer. The maximum number of interations, default is 100.
+   - eps     > numeric. A positive convergence criterion. Default is 1e-5.
+   - verbose > logical. Should the function print extra info. Defaults to false.
+  --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
 
@@ -520,11 +535,11 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
     for (int g = 0; g < G; ++g) {
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
       if (lambdasize < 1e50) {
-        // Update I is faster
+        // Update I is faster but unstable for very large lambda
         Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns,
                                         lambda, lambdaFmat);
       } else {
-        // Update III more stable for very large lambda
+        // Update III is slower but more stable for very large lambda
         Plist_out(g) = armaFusedUpdateIII(g, Plist_out, Slist, Tlist, ns,
                                           lambda, lambdaFmat);
       }
