@@ -84,6 +84,13 @@ is.Xlist <- function(Xlist, Ylist = FALSE) {
 }
 
 
+# is.Xlist(dlbcl.S)
+# is.Xlist(dlbcl.T)
+# length(dlbcl.ns) == length(dlbcl.S)
+# length(dlbcl.ns) == length(dlbcl.T)
+# all(dim(optimal.penalties$lambdaFmat) == length(dlbcl.ns))
+
+
 
 default.target.fused <- function(Slist, ns, type = "DAIE", equal = TRUE, ...) {
   ##############################################################################
@@ -284,7 +291,7 @@ createS <- function(n, p,
       Sg <- solve(Plist[[g]])
     } else if (invwishart) {
       stopifnot(nu - p - 1 > 0)
-      Sg <- drop(armaRInvWishart(n = 1, psi = (nu - p - 1)*S, nu = nu))
+      Sg <- drop(.armaRInvWishart(n = 1, psi = (nu - p - 1)*S, nu = nu))
     } else {
       Sg <- S
     }
@@ -332,7 +339,7 @@ pooledS <- function(Slist, ns, mle = TRUE) {
   # - mle   > logical. If TRUE the biased MLE is used. If FALSE, the biased
   #           corrected estimate is used.
   ##############################################################################
-  ans <- armaPooledS(Slist = Slist, ns = ns, mle = as.numeric(mle))
+  ans <- .armaPooledS(Slist = Slist, ns = ns, mle = as.numeric(mle))
   dimnames(ans) <- dimnames(Slist[[1]])
   return(ans)
 }
@@ -451,7 +458,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #
   #   NOTE: The update function seems to work ok for large lambdaFmat.
   #   However, for very large lambdaFmat (> 1e154) the exception that the
-  #   armaRidgeP returns the target because of an exception. Which is wrong
+  #   .armaRidgeP returns the target because of an exception. Which is wrong
   #   in the fused case.
   ##############################################################################
 
@@ -462,7 +469,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   OmT <- mapply(`-`, Plist[-g0], Tlist[-g0], SIMPLIFY = FALSE) # Omega - Target
   OmT <- mapply(`*`, b, OmT, SIMPLIFY = FALSE)
   S0 <- Slist[[g0]] - Reduce(`+`, OmT)
-  return(armaRidgeP(S0, target = Tlist[[g0]], lambda = a))
+  return(.armaRidgeP(S0, target = Tlist[[g0]], lambda = a))
 }
 
 
@@ -499,7 +506,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   }
   Sbar <- Slist[[g0]] + b*Psum + Tsum
   Tbar <- Tlist[[g0]] + Psum
-  return(armaRidgeP(Sbar, target = Tbar, lambda = lambdaa))
+  return(.armaRidgeP(Sbar, target = Tbar, lambda = lambdaa))
 }
 
 
@@ -524,7 +531,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #
   #   NOTE: This update function seems to work very well for large lambdaFmat.
   #   For very large lambdaFmat (> 1e154) the exception triggered in the
-  #   armaRidgeP returns the target because of an exception. However, in this
+  #   .armaRidgeP returns the target because of an exception. However, in this
   #   updating scheme, that is also correct.
   ##############################################################################
 
@@ -536,7 +543,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
     Tbar <- Tbar + (lambdaFmat[g0, g]/lambdasum)*(Plist[[g]] - Tlist[[g]])
   }
 
-  return(armaRidgeP(Slist[[g0]], target = Tbar, lambda = lambdaa))
+  return(.armaRidgeP(Slist[[g0]], target = Tbar, lambda = lambdaa))
 }
 
 
@@ -574,7 +581,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     Spool <- pooledS(Slist, ns, mle = FALSE)
     Plist <- list()
     for (i in seq_len(G)) {
-      Plist[[i]] <- armaRidgeP(Spool, target = Tlist[[i]],
+      Plist[[i]] <- .armaRidgeP(Spool, target = Tlist[[i]],
                                lambda = G*lambda/sum(ns))
     }
   }
@@ -590,9 +597,9 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
   # Overwrite the starting estimate with the fused estimate
   Plist <-
-    armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
-                     lambdaFmat = lambdaFmat,Plist = Plist, maxit = maxit,
-                     eps = eps, verbose = verbose)
+    .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
+                      lambdaFmat = lambdaFmat,Plist = Plist, maxit = maxit,
+                      eps = eps, verbose = verbose)
 
   if (i == maxit + 1) {
     warning("Maximum iterations (", maxit, ") hit")
@@ -948,6 +955,46 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   }
 
   return(res)
+}
+
+
+
+optPenalty.fused <- function() {
+  ##############################################################################
+  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
+  #   leave-one-out cross-validation using multi-dimensional optimization
+  #   routines.
+  #
+  # - Ylist       > A list of length G of matrices of observations with samples
+  #                 in the rows and variables in the columns.
+  # - Tlist       > A list of length G of target matrices the same size
+  #                 as those of Plist. Default is given by default.target.
+  # - lambdaFmat  > A G by G character matrix defining the class of penalty
+  #                 graph to use. The unique elements of lambdaFmat specify the
+  #                 penalties to determine. Pairs can be left out using either
+  #                 of "", NA, "NA" or "0".
+  # - approximate > logical. Should approximate LOOCV be used?
+  # - verbose     > logical. Should the function print extra info. Defaults to
+  #                 TRUE.
+  # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
+  # - optimizer          > character giving the stadard optimizer.
+  #                        Either "optim" or "nlm".
+  # - maxit.optimizer    > integer. Max. number of iterations for the optimizer.
+  # - debug              > logical. If TRUE the raw output from the optimizer is
+  #                        appended as an attribute to the output.
+  # - ...                > arguments passed to the optimizer.
+  #
+  # The function returns a list of length 4 with entries (1) lambda,
+  # (2) lambdaF, (3) the optimal penalty matrix lambdaFmat, and (4) the value of
+  # the loss in the optimum. If lambdaFmat is the complete graph, then lambdaF
+  # is given. Otherwise lambdaF is NA.
+  ##############################################################################
+
+  # A wrapper for
+  #  optPenalty.fused.LOOCVauto
+  #  optPenalty.fused.LOOCV
+  message("to be implemented")
+  return(-1)
 }
 
 

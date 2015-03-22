@@ -1,5 +1,7 @@
 context("Unit test of the armaRidgeP function")
 
+armaRidgeP <- rags2ridges:::.armaRidgeP
+
 S   <- unname(createS(n = 5, p = 10))
 tgt <- default.target(S)
 

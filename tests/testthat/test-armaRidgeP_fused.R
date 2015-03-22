@@ -1,5 +1,8 @@
 context("Unit test of the armaRidgeP_fused function")
 
+armaRidgeP_fused <- rags2ridges:::.armaRidgeP_fused
+armaRidgeP       <- rags2ridges:::.armaRidgeP
+
 # Random number of sample, random number of classes
 p <- 10
 n <- replicate(sample(2:5, 1), sample(3:9, 1))
@@ -58,8 +61,8 @@ ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     Spool <- pooledS(Slist, ns, mle = FALSE)
     Plist <- list()
     for (i in seq_len(G)) {
-      Plist[[i]] <- armaRidgeP(Spool, target = Tlist[[i]],
-                               lambda = G*lambda/sum(ns))
+      Plist[[i]] <- .armaRidgeP(Spool, target = Tlist[[i]],
+                                lambda = G*lambda/sum(ns))
     }
   }
   stopifnot(length(Slist) == length(Plist))
@@ -84,14 +87,14 @@ ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     for (g in seq_len(G)) {
       if (lambdasize < 1e50) {
         tmpPlist[[g]] <-
-          armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
-                           Tlist = Tlist, ns = ns, lambda = lambda,
-                           lambdaFmat = lambdaFmat)
+          .armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
+                            Tlist = Tlist, ns = ns, lambda = lambda,
+                            lambdaFmat = lambdaFmat)
       } else {
         tmpPlist[[g]] <-
-          armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
-                             Tlist = Tlist, ns = ns, lambda = lambda,
-                             lambdaFmat = lambdaFmat)
+          .armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
+                              Tlist = Tlist, ns = ns, lambda = lambda,
+                              lambdaFmat = lambdaFmat)
       }
       diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
       Plist[[g]] <- tmpPlist[[g]]

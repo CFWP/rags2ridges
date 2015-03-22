@@ -16,7 +16,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaPooledS)]]
 arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
                       const Rcpp::NumericVector ns,
                       const int mle = 0) {
@@ -95,7 +95,7 @@ arma::mat armaRidgePAnyTarget_OLD(const arma::mat & S,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRidgePAnyTarget)]]
 arma::mat armaRidgePAnyTarget(const arma::mat & S,
                               const arma::mat & target,
                               const double lambda) {
@@ -160,7 +160,7 @@ arma::mat armaRidgePRotationInvariantTarget_OLD(const arma::mat & S,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRidgePRotationInvariantTarget)]]
 arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
                                             const double alpha,
                                             const double lambda) {
@@ -209,7 +209,7 @@ arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRidgeP)]]
 arma::mat armaRidgeP(const arma::mat & S,
                      const arma::mat & target,
                      const double lambda) {
@@ -241,7 +241,7 @@ arma::mat armaRidgeP(const arma::mat & S,
 ////////////////////////////////////////////////////////////////////////////////
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaFusedUpdateI)]]
 arma::mat armaFusedUpdateI(int g0,
                            const Rcpp::List & Plist,
                            const Rcpp::List & Slist,
@@ -318,7 +318,7 @@ arma::mat armaFusedUpdateIC(int g0,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaFusedUpdateII)]]
 arma::mat armaFusedUpdateII(int g0,
                             const Rcpp::List & Plist,
                             const Rcpp::List & Slist,
@@ -415,7 +415,7 @@ arma::mat armaFusedUpdateIIC(int g0,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaFusedUpdateIII)]]
 arma::mat armaFusedUpdateIII(int g0,
                              const Rcpp::List & Plist,
                              const Rcpp::List & Slist,
@@ -492,7 +492,7 @@ arma::mat armaFusedUpdateIIIC(int g0,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRidgeP_fused)]]
 Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::vec & ns,
                             const Rcpp::List & Tlist,
@@ -628,7 +628,7 @@ arma::mat armaRWishartSingle(const arma::mat L,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRWishart)]]
 arma::cube armaRWishart(const int n,
                         const arma::mat & sigma,
                         const double nu) {
@@ -651,7 +651,7 @@ arma::cube armaRWishart(const int n,
 
 
 
-// [[Rcpp::export]]
+// [[Rcpp::export(.armaRInvWishart)]]
 arma::cube armaRInvWishart(const int n,
                            const arma::mat & psi,
                            const double nu) {
