@@ -94,7 +94,7 @@ the optimal fused parameters and works for general classes of penalty graphs.
   \code{optPenalty.fused.LOOCVauto} returns a \code{list}:
   \itemize{
     \item \code{lambda} {The estimated optimal ridge penalty.}
-    \item \code{lambdaF} {The estimated optimal fused penalty matrix if the complete penalty graph is used. If not, \code{NA} is given.}
+    \item \code{lambdaF} {The unique estimated optimal fused penalty matrix. I.e. the unique entries of \code{lambdaFmat}.}
     \item \code{lambdaFmat} {The estimated optimal fused penalty matrix.}
     \item \code{value} {The value of the loss function in the estimated optimum.}
   }
