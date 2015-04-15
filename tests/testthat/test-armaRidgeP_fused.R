@@ -33,12 +33,12 @@ test_that("armaRidgeP_fused returns proper format", {
 
 })
 
-test_that("armaRidgeP_fused ignores the diagonal in lambdaFmat", {
+test_that("armaRidgeP_fused ignores the diagonal in lambdaF", {
 
   lF <- matrix(1, G, G)
-  res.diag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaFmat = lF, tgt)
+  res.diag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
   diag(lF) <- 0
-  res.nodiag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaFmat = lF, tgt)
+  res.nodiag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
 
   expect_that(res.nodiag, equals(res.diag))  # Returns numeric (dobule)
 
@@ -49,8 +49,9 @@ test_that("armaRidgeP_fused ignores the diagonal in lambdaFmat", {
 # Test against the old funciton:
 ################################################################################
 
+# Test against an old, slow implementation
 ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
-                             lambda, lambdaFmat, lambdaF, Plist,
+                             lambda, lambdaF, lambdaFmat, Plist,
                              maxit = 100L, verbose = TRUE, eps = 1e-4) {
 
   stopifnot(length(Slist) == length(Tlist))
@@ -67,19 +68,19 @@ ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   }
   stopifnot(length(Slist) == length(Plist))
 
-  if (!missing(lambdaFmat) && !missing(lambdaF)) {
-    stop("Supply only either lambdaFmat or lambdaF.")
-  } else if (missing(lambdaFmat) && missing(lambdaF)) {
-    stop("Either lambdaFmat or lambdaF must be given.")
-  } else if (missing(lambdaFmat) && !missing(lambdaF)) {
-    lambdaFmat <- matrix(lambdaF, G, G)
+  if (!missing(lambdaF) && !missing(lambdaFmat)) {
+    stop("Supply only either lambdaF or lambdaFmat.")
+  } else if (missing(lambdaF) && missing(lambdaFmat)) {
+    stop("Either lambdaF or lambdaFmat must be given.")
+  } else if (missing(lambdaF) && !missing(lambdaFmat)) {
+    lambdaF <- matrix(lambdaF, G, G)
   }
 
   if (verbose) {
     cat("iteration | difference in Frobenius norm\n")
   }
 
-  lambdasize <- lambda + sum(lambdaFmat)
+  lambdasize <- lambda + sum(lambdaF)
   tmpPlist <- list()
   diffs <- rep(NA, G)
   i <- 1
@@ -89,12 +90,12 @@ ridgeP.fused.old <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
         tmpPlist[[g]] <-
           .armaFusedUpdateI(g0 = g-1, Plist = Plist, Slist = Slist,
                             Tlist = Tlist, ns = ns, lambda = lambda,
-                            lambdaFmat = lambdaFmat)
+                            lambdaF = lambdaF)
       } else {
         tmpPlist[[g]] <-
           .armaFusedUpdateIII(g0 = g-1, Plist = Plist, Slist = Slist,
                               Tlist = Tlist, ns = ns, lambda = lambda,
-                              lambdaFmat = lambdaFmat)
+                              lambdaF = lambdaF)
       }
       diffs[g] <- .FrobeniusLoss(tmpPlist[[g]], Plist[[g]])
       Plist[[g]] <- tmpPlist[[g]]
@@ -126,7 +127,7 @@ environment(ridgeP.fused.old) <- asNamespace('rags2ridges')
 
 
 
-
+# TESTING
 test_that("armaRidgeP_fused agrees with the R implmentation", {
 
   lambda <- abs(rcauchy(n = 1))
@@ -136,11 +137,11 @@ test_that("armaRidgeP_fused agrees with the R implmentation", {
     P[[i]] <- armaRidgeP(Spool, target = tgt[[i]],
                          lambda = G*lambda/sum(n))
   }
-  lambdaFmat <- matrix(1, G, G)
+  lambdaF <- matrix(1, G, G)
 
-  res_old <- ridgeP.fused.old(S, n, tgt, lambda, lambdaFmat,
+  res_old <- ridgeP.fused.old(S, n, tgt, lambda, lambdaF,
                               maxit = 1000, eps = 1e-10, verbose = FALSE)
-  res_new <- armaRidgeP_fused(S, n, tgt, lambda, lambdaFmat, P,
+  res_new <- armaRidgeP_fused(S, n, tgt, lambda, lambdaF, P,
                               maxit = 1000, eps = 1e-10, verbose = FALSE)
 
   expect_that(res_new, is_equivalent_to(res_old))

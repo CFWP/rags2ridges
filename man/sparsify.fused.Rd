@@ -41,7 +41,7 @@ opt <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = TRUE,
                                   maxit.ridgeP.fused = 1500)
 # Use the optimal penalties
 Plist <- ridgeP.fused(Slist, ns, lambda = opt$lambda,
-                      lambdaFmat = opt$lambdaFmat, maxit = 1000)
+                      lambdaF = opt$lambdaF, maxit = 1000)
 
 # Determine support regularized (standardized) precision under optimal penalty
 res <- sparsify.fused(Plist, threshold = "top", verbose = FALSE)

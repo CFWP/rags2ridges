@@ -9,8 +9,7 @@
 }
 \usage{
 ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
-             lambda, lambdaFmat, lambdaF,
-             Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
+             lambda, lambdaF, Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
   \item{Slist}{
@@ -30,19 +29,16 @@ ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
   \item{lambda}{
     A single \code{numeric} giving the regular ridge penalty used.
 }
-  \item{lambdaFmat}{
-    The fused penalty matrix.
+  \item{lambdaF}{
+    The fused penalty matrix or the fused penalty.
     A symmetric \code{numeric} \code{matrix} of size \eqn{K} times \eqn{K}
     giving the pair-specific penalties.
-    I.e. \code{mylambdaFmat[i, j]} is the fused penalty given applied on the pairing
+    I.e. \code{lambdaF[i, j]} is the fused penalty given applied on the pairing
     between classes \eqn{i} and \eqn{j}.
-}
-  \item{lambdaF}{
-    A single \code{numeric} giving the fused penalty assuming the complete
-    penalty graph, i.e. \code{lambdaFmat[i,j]} equals \code{lambdaF} for all
-    \eqn{i} and \eqn{j}.
-    Provides an alternative interface to \code{lambdaFmat}. Either
-    \code{lambdaFmat} or \code{lambdaF} must be given.
+    Alternatively, can be a single \code{numeric} giving the fused penalty
+    assuming the complete penalty graph, i.e. \code{lambdaF[i,j]} equals
+    \code{lambdaF} for all \eqn{i} and \eqn{j}.
+    Provides an alternative interface.
 }
   \item{Plist}{
     An optional \code{list} of initial starting values for the algorithm,
@@ -98,10 +94,10 @@ res1 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = 2)
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
-mylambdaFmat <- matrix(c(0,2,2,
+mylambdaF <- matrix(c(0,2,2,
                          2,0,2,
                          2,2,0), 3, 3, byrow = TRUE)
-res2 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+res2 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = mylambdaF)
 stopifnot(all.equal(res1, res2))
 
 
@@ -111,9 +107,9 @@ stopifnot(all.equal(res1, res2))
 #
 
 # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
-mylambdaFmat[1,3] <- mylambdaFmat[3,1] <- 0
-print(mylambdaFmat)
-res3 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaFmat = mylambdaFmat)
+mylambdaF[1,3] <- mylambdaF[3,1] <- 0
+print(mylambdaF)
+res3 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = mylambdaF)
 # which is not the same as res2 and res1 now!
 
 

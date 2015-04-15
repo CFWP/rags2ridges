@@ -13,7 +13,7 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat, approximate = FALSE,
+optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF, approximate = FALSE,
                            verbose = TRUE, maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
@@ -32,7 +32,7 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
    A \code{list} of the same length as \code{Ylist} of target matrices of size
    \eqn{p} times \eqn{p}.
 }
-  \item{lambdaFmat}{
+  \item{lambdaF}{
    A \code{character} \code{matrix} encoding the class of penalty matrices
    to cross-validate over.
    See \code{\link{default.penalty}} for help on the construction and more
@@ -94,8 +94,8 @@ the optimal fused parameters and works for general classes of penalty graphs.
   \code{optPenalty.fused.LOOCVauto} returns a \code{list}:
   \itemize{
     \item \code{lambda} {The estimated optimal ridge penalty.}
-    \item \code{lambdaF} {The unique estimated optimal fused penalty matrix. I.e. the unique entries of \code{lambdaFmat}.}
-    \item \code{lambdaFmat} {The estimated optimal fused penalty matrix.}
+    \item \code{lambdaF} {The unique estimated optimal fused penalty matrix. I.e. the unique entries of \code{lambdaF}.}
+    \item \code{lambdaF} {The estimated optimal fused penalty matrix.}
     \item \code{value} {The value of the loss function in the estimated optimum.}
   }
 
@@ -186,21 +186,21 @@ Ylist <- createS(n = ns, p = 4, dataset = TRUE)
 Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
 
 # Construct penalty matrix
-lambdaFmat <- default.penalty(df, type = "CartesianUnequal")
+lambdaF <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters,
 # Using optim with method "Nelder-Mead"
-ans1 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
+ans1 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
                                    approximate = TRUE, verbose = FALSE)
 print(ans1)
 \dontrun{
 # Using optim with method "BFGS"
-ans2 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
+ans2 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
                                    approximate = TRUE, verbose = FALSE,
                                    method = "BFGS")
 # Using nlm
 print(ans2)
-ans3 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
+ans3 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
                                    approximate = TRUE, verbose = FALSE,
                                    optimizer = "nlm")
 print(ans3)
@@ -220,12 +220,12 @@ df <- expand.grid(DS = LETTERS[1:2], ER = letters[3:4])
 Ylist <- createS(n = ns, p = 4, dataset = TRUE)
 Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
 
-lambdaFmat <- default.penalty(df, type = "Tensor")
-print(lambdaFmat)  # Say we want to penalize the pair (1,2) with strength 2;
-lambdaFmat[2,1] <- lambdaFmat[1,2] <- 2
-print(lambdaFmat)
+lambdaF <- default.penalty(df, type = "Tensor")
+print(lambdaF)  # Say we want to penalize the pair (1,2) with strength 2;
+lambdaF[2,1] <- lambdaF[1,2] <- 2
+print(lambdaF)
 
-res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaFmat = lambdaFmat,
+res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
                                   approximate = TRUE, optimizer = "nlm")
 print(res)
 }
