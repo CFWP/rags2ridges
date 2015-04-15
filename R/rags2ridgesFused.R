@@ -945,7 +945,8 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
               lambdaFunique = NA)
 
   # Compute estimate at optimal values
-  res$Plist <- ridgeP.fused(Slist = lapply(Ylist, covML), ns = ns,
+  res$Plist <- ridgeP.fused(Slist = lapply(Ylist, covML),
+                            ns = sapply(Ylist, nrow),
                             Tlist = Tlist, lambda = res$lambda,
                             lambdaF = res$lambdaF,
                             maxit = maxit.ridgeP.fused, verbose = FALSE)
