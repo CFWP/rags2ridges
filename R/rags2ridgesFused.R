@@ -940,9 +940,17 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   opt.lambdaFmat <- .reconstructLambda(opt.lambdas, parsedLambda, G)
   dimnames(opt.lambdaFmat) <- dimnames(lambdaFmat)
 
+  # Compute estimate at optimal values
+  optPlist <- ridgeP.fused(Slist = lapply(Ylist, covML), ns = ns,
+                           Tlist = Tlist, lambda = opt.lambdas,
+                           lambdaFmat = opt.lambdaFmat,
+                           maxit = maxit.ridgeP.fused, verbose = FALSE)
+
+  # Construct results
   res <- list(lambda = opt.lambdas[1],
               lambdaF = NA,
               lambdaFmat = opt.lambdaFmat,
+              Plist = optPlist,
               value = val)
 
   res$lambdaF <- unique(c(opt.lambdaFmat))
