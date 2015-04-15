@@ -849,21 +849,20 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
                                        debug = FALSE,
                                        ...) {
   ##############################################################################
-  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
-  #   leave-one-out cross-validation using multi-dimensional optimization
-  #   routines.
+  # Selection of the optimal penalties w.r.t. to (possibly approximate)
+  # leave-one-out cross-validation using multi-dimensional optimization
+  # routines.
   #
   # - Ylist       > A list of length G of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - Tlist       > A list of length G of target matrices the same size
   #                 as those of Plist. Default is given by default.target.
-  # - lambdaF  > A G by G character matrix defining the class of penalty
+  # - lambdaF     > A G by G character matrix defining the class of penalty
   #                 graph to use. The unique elements of lambdaF specify the
   #                 penalties to determine. Pairs can be left out using either
   #                 of "", NA, "NA" or "0".
   # - approximate > logical. Should approximate LOOCV be used?
-  # - verbose     > logical. Should the function print extra info. Defaults to
-  #                 TRUE.
+  # - verbose     > logical. Should extra info be printed? Defaults to TRUE.
   # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
   # - optimizer          > character giving the stadard optimizer.
   #                        Either "optim" or "nlm".
@@ -938,7 +937,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   opt.lambdaF <- .reconstructLambda(opt.lambdas, parsedLambda, G)
   dimnames(opt.lambdaF) <- dimnames(lambdaF)
 
-  # Construct results
+  # Construct output
   res <- list(Plist = NA,
               lambda = opt.lambdas[1],
               lambdaF = opt.lambdaF,
@@ -964,42 +963,36 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
 
 
 
-optPenalty.fused <- function() {
+optPenalty.fused <- function(Ylist, Tlist, lambdaF,
+                             approximate = FALSE, grid = FALSE, ...) {
   ##############################################################################
-  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
-  #   leave-one-out cross-validation using multi-dimensional optimization
-  #   routines.
+  # Selection of the optimal penalties w.r.t. to (possibly approximate)
+  # LOOCV using multi-dimensional optimization routines. A simple wrapper for
+  # optPenalty.fused.LOOCVauto and optPenalty.fused.LOOCVgrid
   #
   # - Ylist       > A list of length G of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - Tlist       > A list of length G of target matrices the same size
   #                 as those of Plist. Default is given by default.target.
-  # - lambdaF  > A G by G character matrix defining the class of penalty
+  # - lambdaF     > A G by G character matrix defining the class of penalty
   #                 graph to use. The unique elements of lambdaF specify the
   #                 penalties to determine. Pairs can be left out using either
   #                 of "", NA, "NA" or "0".
-  # - approximate > logical. Should approximate LOOCV be used?
-  # - verbose     > logical. Should the function print extra info. Defaults to
-  #                 TRUE.
-  # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
-  # - optimizer          > character giving the stadard optimizer.
-  #                        Either "optim" or "nlm".
-  # - maxit.optimizer    > integer. Max. number of iterations for the optimizer.
-  # - debug              > logical. If TRUE the raw output from the optimizer is
-  #                        appended as an attribute to the output.
-  # - ...                > arguments passed to the optimizer.
-  #
-  # The function returns a list of length 4 with entries (1) lambda,
-  # (2) lambdaF, (3) the optimal penalty matrix lambdaF, and (4) the value of
-  # the loss in the optimum. If lambdaF is the complete graph, then lambdaF
-  # is given. Otherwise lambdaF is NA.
+  # - approximate > logical. Should approximate LOOCV be used? Defualt is FALSE.
+  # - grid        > logical Should grid based search be used? Default is FALSE.
+  # - ...         > arguments passed to optPenalty.fused.LOOCVauto and
+  #                 optPenalty.fused.LOOCVgrid
   ##############################################################################
 
-  # A wrapper for
-  #  optPenalty.fused.LOOCVauto
-  #  optPenalty.fused.LOOCV
-  message("to be implemented")
-  return(-1)
+  if (grid) {
+    res <- optPenalty.fused.LOOCVgrid(Ylist = Ylist, Tlist = Tlist,
+                                      approximate = approximate, ... )
+  } else {
+    res <- optPenalty.fused.LOOCVauto(Ylist = Ylist, Tlist = Tlist,
+                                      lambdaF = lambdaF,
+                                      approximate = approximate, ...)
+  }
+  return(res)
 }
 
 

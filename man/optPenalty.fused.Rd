@@ -5,7 +5,7 @@
 \alias{optPenalty.fused.LOOCVgrid}
 
 \title{
-  Identify optimal ridge and fused ridge penalties
+  Identify optimal ridge and fused ridge penalties via leave-one-out cross validation.
 }
 \description{
 Functions to find the optimal ridge and fused ridge penalty parameters.
@@ -13,6 +13,9 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
+optPenalty.fused(Ylist, Tlist, lambdaF, approximate = FALSE, grid = FALSE, ...)
+
+# A simple wrapper for:
 optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF, approximate = FALSE,
                            verbose = TRUE, maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
@@ -36,7 +39,7 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
    A \code{character} \code{matrix} encoding the class of penalty matrices
    to cross-validate over.
    See \code{\link{default.penalty}} for help on the construction and more
-   details.
+   details. Unused and can be omitted if \code{grid == TRUE}.
 }
   \item{approximate}{
   \code{logical}. If \code{TRUE} approximate leave-one-out cross validation is
@@ -79,9 +82,13 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
   \item{step2}{
   A single non-negative \code{integer}. As for \code{step1}, but for the fused penalty.
 }
+  \item{grid}{
+  \code{logical.} Should a grid based search be used? Default is \code{FALSE}.
+  }
   \item{\dots}{
-  Arguments passed to the optimizer in \code{optPenalty.fused.LOOCVauto} and
-  arguments passed to \code{fusedRidgeS} in \code{optPenalty.fused.LOOCV}.
+  In \code{optPenalty.fused.LOOCV}, arguments are passed to \code{optPenalty.fused.LOOCVgrid} or \code{optPenalty.fused.LOOCVauto} depending on the value of \code{grid}.
+  In \code{optPenalty.fused.LOOCVgrid}, arguments are passed to \code{fusedRidgeS}.
+  In \code{optPenalty.fused.LOOCVauto}, arguments are passed to the optimizer.
 }
 }
 \details{
