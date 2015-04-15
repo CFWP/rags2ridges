@@ -953,7 +953,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
               Plist = optPlist,
               value = val)
 
-  res$lambdaF <- unique(c(opt.lambdaFmat))
+  res$lambdaF <- unique(opt.lambdaFmat[lower.tri(opt.lambdaFmat)])
   names(res$lambdaF) <- lambdaFmat[match(res$lambdaF, opt.lambdaFmat)]
 
   if (debug) {
