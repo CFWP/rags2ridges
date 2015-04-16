@@ -331,19 +331,43 @@ createS <- function(n, p,
 
 
 
-pooledS <- function(Slist, ns, mle = TRUE) {
+pooledS <- function(Slist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
   ##############################################################################
   # - Computes the pooled covariance estimate
-  # - Slist > A list sample covariance matrices for each class
-  # - ns    > A vector of sample sizes of the same length as Slist.
-  # - mle   > logical. If TRUE the biased MLE is used. If FALSE, the biased
-  #           corrected estimate is used.
+  # - Slist  > A list sample covariance matrices for each class
+  # - ns     > A numeric vector of sample sizes of the same length as Slist.
+  # - mle    > logical. If TRUE the biased MLE is used. If FALSE, the biased
+  #            corrected estimate is used.
+  # - subset > logical vector the same length as Slist and ns giving the
+  #            groups to pool over. Default is all.
   ##############################################################################
+
+  # Check input
+  mle <- as.logical(mle)
+  subset <- as.logical(subset)
+  if (any(is.na(mle))) {
+    stop("mle could not be coerced to a logical")
+  }
+  if (any(is.na(subset))) {
+    stop("subset could not be coerced to a logical")
+  }
+  stopifnot(is.list(Slist) && length(Slist) == length(ns))
+  stopifnot(is.logical(mle) && length(mle) == 1)
+  stopifnot(is.logical(mle) && length(subset) == length(Slist))
+  if (!any(subset)) {
+    stop("argument subset must contain at least one TRUE entry.")
+  }
+
+  # Subsetting
+  Slist <- Slist[subset]
+  ns <- ns[subset]
+
+  # Compute estimate
   ans <- .armaPooledS(Slist = Slist, ns = ns, mle = as.numeric(mle))
   dimnames(ans) <- dimnames(Slist[[1]])
+
   return(ans)
 }
-
 
 
 KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
@@ -682,16 +706,69 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
                        verbose = FALSE, ...)
   n.tot <- sum(ns)
   nll <- .FLL(Slist = Slist, Plist = Plist, ns)/n.tot
-  denom <- n.tot*(n.tot - 1)
+  p <- nrow(Slist[[1]])
   bias <- 0
+
+  # Implementation 1
   for (g in seq_along(ns)) {
     for (i in seq_len(ns[g])) {
       Sig <- crossprod(Ylist[[g]][i, , drop = FALSE])
       fac1 <- diag(nrow(Sig)) - Sig %*% Plist[[g]]
       fac2 <- Plist[[g]] %*% (Slist[[g]] - Sig) %*% Plist[[g]]
-      bias <- bias  + sum(fac1 * fac2)/denom
+      bias <- bias  + sum(fac1 * fac2)/(2*n.tot)
     }
   }
+#
+#   # Implementation 2  (SVANTE)
+#   for (g in seq_along(ns)) {
+#     lambdabar <- (lambda + sum(lambdaF[g,-g]))/ns[g]
+#     P1 <- Plist[[g]]
+#     P2 <- P1 %*% P1
+#     P2mP1 <- P2 - Plist[[g]]
+#     P4mP3 <- P2mP1 %*% P2
+#     for (i in seq_len(ns[g])) {
+#       yig <- Ylist[[g]][i, , drop = TRUE]
+#       b1 <- (yig %*% P2mP1) %*% yig
+#       b2 <- lambdabar*((yig %*% P4mP3) %*% yig)
+#       bias <- bias + (b1 + b2)
+#     }
+#   }
+#   bias <- bias/(2*n.tot*(n.tot-1))
+#
+#
+#   # Implementation 3 (VUCACIC)
+#   for (g in seq_along(ns)) {
+#     for (i in seq_len(ns[g])) {
+#       Sig <- crossprod(Ylist[[g]][i, , drop = FALSE])
+#       bias <- bias +
+#         sum((solve(Plist[[g]]) - Sig)*Plist[[g]]*(Slist[[g]]-Sig)*Plist[[g]])
+#     }
+#   }
+#   bias <- bias/(2*n.tot*(n.tot-1))
+#
+#   # Implementation 4
+#   qf <- function(x, A) return(colSums(x * (A %*% x)))
+#   for (g in seq_along(ns)) {
+#     ng <- ns[g]
+#     t1 <- p*log((ng-1)/ng)
+#     for (i in seq_len(ng)) {
+#       yik <- Ylist[[g]][i, ]
+#       yOy <- qf(yik, Plist[[g]])
+#       oneMinusyOy <- 1 - yOy/ng
+#       t1 - log(oneMinusyOy) + (yOy^2/oneMinusyOy - yOy)/ng
+#     }
+#   }
+#   bias <- bias/(2*n.tot*(n.tot-1))
+#
+#
+#   # Implementation 5
+#   bias <- 0
+#   for (g in seq_along(ns)) {
+#     bias <- bias + ns[g]*sum(Plist[[g]]*(solve(Plist[[g]]) - Slist[[g]]))
+#     bias <- bias + (1/rcond(Plist[[g]]))
+#   }
+#   bias <- bias/(2*n.tot)
+
   return(nll + bias)
 }
 
