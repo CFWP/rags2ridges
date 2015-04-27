@@ -331,7 +331,7 @@ createS <- function(n, p,
 
 
 
-pooledS <- function(Slist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
+pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled covariance estimate
   # - Slist  > A list sample covariance matrices for each class
@@ -370,7 +370,7 @@ pooledS <- function(Slist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
 }
 
 
-pooledP <- function(Plist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
+pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled precision estimate
   # - Plist  > A list (perhaps estimated) precision matrices for each class

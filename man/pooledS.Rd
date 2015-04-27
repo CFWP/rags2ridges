@@ -8,8 +8,8 @@ Compute pooled covariance or precision
 Compute the pooled covariance or precision estimate from a \code{list} of covariance matrices or precision matrices.
 }
 \usage{
-pooledS(Slist, ns, mle = TRUE, subset = rep(TRUE, length(ns)))
-pooledP(Plist, ns, mle = TRUE, subset = rep(TRUE, length(ns)))
+pooledS(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
+pooledP(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
 }
 \arguments{
   \item{Slist}{A \code{list} of length \eqn{G} of \code{numeric} covariance
