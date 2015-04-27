@@ -5,6 +5,10 @@
     .Call('rags2ridges_armaPooledS', PACKAGE = 'rags2ridges', Slist, ns, mle)
 }
 
+.armaPooledP <- function(Plist, ns, mle = 0L) {
+    .Call('rags2ridges_armaPooledP', PACKAGE = 'rags2ridges', Plist, ns, mle)
+}
+
 .armaRidgePAnyTarget <- function(S, target, lambda) {
     .Call('rags2ridges_armaRidgePAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
 }

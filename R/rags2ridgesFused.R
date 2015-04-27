@@ -363,11 +363,51 @@ pooledS <- function(Slist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
   ns <- ns[subset]
 
   # Compute estimate
-  ans <- .armaPooledS(Slist = Slist, ns = ns, mle = as.numeric(mle))
+  ans <- .armaPooledS(Slist = Slist, ns = ns, mle = mle)
   dimnames(ans) <- dimnames(Slist[[1]])
 
   return(ans)
 }
+
+
+pooledP <- function(Plist, ns, mle = TRUE, subset = rep(TRUE, length(ns))) {
+  ##############################################################################
+  # - Computes the pooled precision estimate
+  # - Plist  > A list (perhaps estimated) precision matrices for each class
+  # - ns     > A numeric vector of sample sizes of the same length as Slist.
+  # - mle    > logical. If TRUE the biased MLE is used. If FALSE, the biased
+  #            corrected estimate is used.
+  # - subset > logical vector the same length as Slist and ns giving the
+  #            groups to pool over. Default is all.
+  ##############################################################################
+
+  # Check input
+  mle <- as.logical(mle)
+  subset <- as.logical(subset)
+  if (any(is.na(mle))) {
+    stop("mle could not be coerced to a logical")
+  }
+  if (any(is.na(subset))) {
+    stop("subset could not be coerced to a logical")
+  }
+  stopifnot(is.list(Plist) && length(Plist) == length(ns))
+  stopifnot(is.logical(mle) && length(mle) == 1)
+  stopifnot(is.logical(mle) && length(subset) == length(Plist))
+  if (!any(subset)) {
+    stop("argument subset must contain at least one TRUE entry.")
+  }
+
+  # Subsetting
+  Plist <- Plist[subset]
+  ns <- ns[subset]
+
+  # Compute estimate
+  ans <- .armaPooledP(Plist = Plist, ns = ns, mle = mle)
+  dimnames(ans) <- dimnames(Plist[[1]])
+
+  return(ans)
+}
+
 
 
 KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,

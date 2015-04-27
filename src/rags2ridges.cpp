@@ -44,6 +44,36 @@ arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
 }
 
 
+// [[Rcpp::export(.armaPooledP)]]
+arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
+                      const Rcpp::NumericVector ns,
+                      const int mle = 0) {
+  /* ---------------------------------------------------------------------------
+   Function to compute the pooled precision estimate. Returns a numeric matrix
+   giving the pooled precision matrix.
+   Simply a wrapper for armaPooledS and matrix inversion.
+   - Plist > A list of (perhaps estimated) precision matrices.
+   - nu    > A numeric vector giving the number of samples corresponding
+             to each scatter matrix.
+   - mle   > A logical (or integer) of length one equalling FALSE (0) or
+             TRUE (1). If FALSE, the bias corrected ML estimate is used.
+             If TRUE the ML estimate is used.
+  --------------------------------------------------------------------------- */
+
+  const int G = Plist.size();
+  const int imle = 1 - mle;
+  const double fac = (sum(ns) - G * imle);
+  arma::mat P0 = Plist[0]; // First element of Plist
+  P0 = P0/(ns[0] - imle);        // Multiply by the class sample size (- 1)
+  for (int i = 1; i < G; ++i) {  // Loop through remaning elements. Note i = 1.
+    arma::mat Pi = Plist[i];
+    P0 += Pi/(ns[i] - imle);
+  }
+  return fac*P0;
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------

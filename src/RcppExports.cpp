@@ -19,6 +19,19 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// armaPooledP
+arma::mat armaPooledP(const Rcpp::List& Plist, const Rcpp::NumericVector ns, const int mle);
+RcppExport SEXP rags2ridges_armaPooledP(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type Plist(PlistSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const int >::type mle(mleSEXP);
+    __result = Rcpp::wrap(armaPooledP(Plist, ns, mle));
+    return __result;
+END_RCPP
+}
 // armaRidgePAnyTarget
 arma::mat armaRidgePAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
 RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
