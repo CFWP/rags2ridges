@@ -84,24 +84,16 @@ is.Xlist <- function(Xlist, Ylist = FALSE) {
 }
 
 
-# is.Xlist(dlbcl.S)
-# is.Xlist(dlbcl.T)
-# length(dlbcl.ns) == length(dlbcl.S)
-# length(dlbcl.ns) == length(dlbcl.T)
-# all(dim(optimal.penalties$lambdaF) == length(dlbcl.ns))
-
-
-
-default.target.fused <- function(Slist, ns, type = "DAIE", equal = TRUE, ...) {
+default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   ##############################################################################
   # Generate a list of (data-driven) targets to use in fused ridge estimation
   # A nice wrapper for default.target
   # - Slist > A list of covariance matrices
   # - ns    > A numeric vector of sample sizes corresponding to Slist
   # - type  > A character giving the choice of target. See default.target.
-  # - equal > logical. If TRUE, all entries in the list are identical and
-  #           computed from the pooled estimate. If FALSE, the target is
-  #           calculated from each entry in Slist.
+  # - by    > A character or factor of the same length as Slist specifying
+  #           which groups should share target. If omitted, each class
+  #           has a unique target.
   # - ...   > Arguments passed to default.target.
   # See also default.target
   ##############################################################################
@@ -110,16 +102,24 @@ default.target.fused <- function(Slist, ns, type = "DAIE", equal = TRUE, ...) {
   stopifnot(is.numeric(ns))
   stopifnot(length(Slist) == length(ns))
 
-  if (equal) {
-    pooled <- pooledS(Slist, ns)
-    Tpool <- default.target(pooled, type = type, ...)
-    Tlist <- replicate(length(Slist), Tpool, simplify = FALSE)
-  } else {
-    Tlist <- lapply(Slist, default.target, type = type, ...)
+  if (missing(by)) {
+    by <- LETTERS[seq_along(Slist)]
   }
+  stopifnot(length(by) == length(Slist))
+  by <- as.character(by)
+  stopifnot(!anyNA(by) && is.character(by))
+
+  Tlist <- vector("list", length(Slist))
+  names(Tlist) <- names(Slist)
+  for (lvl in unique(by)) {
+    get <- lvl == by
+    pooled <- pooledS(Slist, ns, subset = get)
+    Tpool <- default.target(pooled, type = type, ...)
+    Tlist[get] <- replicate(sum(get), Tpool, simplify = FALSE)
+  }
+
   return(Tlist)
 }
-
 
 
 createS <- function(n, p,
