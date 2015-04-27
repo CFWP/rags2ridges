@@ -131,7 +131,7 @@ See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 ns <- c(4, 5, 6)
 Ylist <- createS(n = ns, p = 6, dataset = TRUE)
 Slist <- lapply(Ylist, covML)
-Tlist <- default.target.fused(Slist, ns, type = "DIAES", equal = FALSE)
+Tlist <- default.target.fused(Slist, ns, type = "DIAES")
 
 
 # Grid-based

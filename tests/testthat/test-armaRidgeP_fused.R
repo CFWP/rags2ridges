@@ -7,7 +7,7 @@ armaRidgeP       <- rags2ridges:::.armaRidgeP
 p <- 10
 n <- replicate(sample(2:5, 1), sample(3:9, 1))
 S <- createS(n = n, p = p)
-tgt <- default.target.fused(S, n, equal = FALSE)
+tgt <- default.target.fused(S, n)
 G <- length(n)
 
 
