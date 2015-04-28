@@ -62,14 +62,14 @@ arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
 
   const int G = Plist.size();
   const int imle = 1 - mle;
-  const double fac = (sum(ns) - G * imle);
-  arma::mat P0 = Plist[0]; // First element of Plist
-  P0 = P0/(ns[0] - imle);        // Multiply by the class sample size (- 1)
+  const double rdenum = 1.0f/(sum(ns) - G * imle);
+  arma::mat S0 = Plist[0];
+  S0 = (ns[0] - imle)*arma::inv_sympd(S0);
   for (int i = 1; i < G; ++i) {  // Loop through remaning elements. Note i = 1.
     arma::mat Pi = Plist[i];
-    P0 += Pi/(ns[i] - imle);
+    S0 += (ns[i] - imle)*arma::inv_sympd(Pi);
   }
-  return fac*P0;
+  return arma::inv_sympd(rdenum*S0);
 }
 
 

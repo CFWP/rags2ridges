@@ -336,10 +336,10 @@ pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   # - Computes the pooled covariance estimate
   # - Slist  > A list sample covariance matrices for each class
   # - ns     > A numeric vector of sample sizes of the same length as Slist.
-  # - mle    > logical. If TRUE the biased MLE is used. If FALSE, the biased
-  #            corrected estimate is used.
   # - subset > logical vector the same length as Slist and ns giving the
   #            groups to pool over. Default is all.
+  # - mle    > logical. If TRUE the biased MLE is used. If FALSE, the biased
+  #            corrected estimate is used.
   ##############################################################################
 
   # Check input
@@ -374,11 +374,11 @@ pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled precision estimate
   # - Plist  > A list (perhaps estimated) precision matrices for each class
-  # - ns     > A numeric vector of sample sizes of the same length as Slist.
+  # - ns     > A numeric vector of sample sizes of the same length as Plist.
+  # - subset > logical vector the same length as Plist and ns giving the
+  #            groups to pool over. Default is all.
   # - mle    > logical. If TRUE the biased MLE is used. If FALSE, the biased
   #            corrected estimate is used.
-  # - subset > logical vector the same length as Slist and ns giving the
-  #            groups to pool over. Default is all.
   ##############################################################################
 
   # Check input

@@ -36,8 +36,10 @@ for (i in 1:2) {
       man1 <- Reduce(`+`, mapply(`*`, sl, n, SIMPLIFY = FALSE))/sum(n)
       man2 <- Reduce(`+`, mapply(`*`, sl, n-1, SIMPLIFY = FALSE))/sum(n-1)
     } else {
-      man1 <- Reduce(`+`, mapply(`/`, sl, n, SIMPLIFY = FALSE))*sum(n)
-      man2 <- Reduce(`+`, mapply(`/`, sl, n-1, SIMPLIFY = FALSE))*sum(n-1)
+      tmp <- lapply(sl, solve)
+      man1 <- solve(Reduce(`+`, mapply(`*`, tmp, n, SIMPLIFY = FALSE))/sum(n))
+      man2 <-
+        solve(Reduce(`+`, mapply(`*`, tmp, n-1, SIMPLIFY = FALSE))/sum(n-1))
     }
 
     # Standard
