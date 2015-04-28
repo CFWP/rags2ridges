@@ -21,12 +21,16 @@ pooledP(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
     \code{TRUE}.}
   \item{subset}{\code{logical} vector of the same length as \code{Slist} giving
     the classes to pool. Default is all classes.}
-  \item{Plist}{A \code{list} of length \eqn{G} of \code{numeric} precision
-    matrices of the same size.}
+  \item{Plist}{A \code{list} of length \eqn{G} of invertible \code{numeric}
+    precision matrices of the same size.}
 }
 \details{
 When \code{mle} is \code{FALSE} the given covariance/precision matrices is assumed to have been computed using the denominator \code{ns[i] - 1}. Hence, the sum of all \code{ns} minus \eqn{G} is used a the denominator of the pooled estimate.
 Conversely, when \code{mle} is \code{TRUE} the total sum of the sample sizes \code{ns} is used as the denominator in the pooled estimate.
+
+The function \code{pooledP} is equivalent to a wrapper for \code{pooledS}.
+That is, it inverts all the precision matrices in \code{Plist}, applies
+\code{pooledS}, and inverts the resulting matrix.
 }
 \value{
 \code{pooledS} returns the pooled covariance matrix, that is a \code{numeric} matrix with the same size as the elements of \code{Slist}.
