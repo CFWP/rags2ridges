@@ -331,6 +331,39 @@ createS <- function(n, p,
 
 
 
+
+getKEGGPathway <- function(kegg.id) {
+  ##############################################################################
+  # Download information and graph object of a given kegg pathway.
+  # - kegg.id  > The kegg id, e.g. "map04210", "map04064", "map04115". Can
+  #              be prefixed with "path:".
+  # The igraph objects can be obtained with igraph::igraph.from.graphNEL().
+  # The moral graph can be obtained with gRbase::moralize(). To obtain the
+  # adjacency matrix, use gRbase::as.adjMAT() or igraph::get.adjacency()
+  ##############################################################################
+
+#   stopifnot(require(gRbase))
+  stopifnot(require(KEGGgraph))
+
+  # Download
+  tmp.file <- paste0(tempfile(), ".kgml")
+  kgml <- retrieveKGML(gsub("path:", "", kegg.id), organism = "hsa",
+                       destfile = tmp.file, method = "internal")
+
+  # Pathway data.frame information
+  df        <- parseKGML2DataFrame(tmp.file)
+  df$to.e   <- translateKEGGID2GeneID(pw.df$to)
+  df$from.e <- translateKEGGID2GeneID(pw.df$from)
+
+  # Pathway igraph and graphNEL + rename
+  graph <- KEGGpathway2Graph(parseKGML(tmp.file))
+  nodes(graph) <- translateKEGGID2GeneID(nodes(graph))
+
+  # Start to construct output
+  pw.info <- list(df = df, graph = pw.graphNEL)
+
+  return(pw.info)
+}
 pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled covariance estimate
