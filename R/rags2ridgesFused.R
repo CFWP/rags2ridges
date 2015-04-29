@@ -355,9 +355,9 @@ getKEGGPathway <- function(kegg.id) {
   df$to.e   <- translateKEGGID2GeneID(df$to)
   df$from.e <- translateKEGGID2GeneID(df$from)
 
-  # Pathway igraph and graphNEL + rename
+  # Pathway igraph and graphNEL
   graph <- KEGGpathway2Graph(parseKGML(tmp.file))
-  nodes(graph) <- translateKEGGID2GeneID(nodes(graph))
+  #nodes(graph) <- translateKEGGID2GeneID(nodes(graph))
 
   return(list(df = df, graph = graph))
 }
