@@ -364,6 +364,111 @@ getKEGGPathway <- function(kegg.id) {
 
   return(pw.info)
 }
+
+
+
+kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa") {
+  ##############################################################################
+  # Generate a target matrix from the KEGG database and pilot data.
+  # Requires a connection to the internet.
+  # - Y        > The complete observation matrix of observaitons with variables
+  #              in columns. The column names should be on the form e.g.
+  #              "hsa:3988" ("<organism>:<Entrez id>"). It can however also be
+  #              just the Entrez id with or without the post-fixed "_at" and
+  #              then the specified organism will be assumed.
+  # - kegg.id  > The kegg id, e.g. "map04210", "map04064", "map04115".
+  # - method   > The method for estimating the non-zero entries moralized graph.
+  #              Currently, only "linreg" is implemented.
+  # - organism > A character
+  # See also default.target, and default.target.fused
+  ##############################################################################
+
+  method <- match.arg(method)
+  stopifnot(require(KEGGgraph))
+  stopifnot(length(organism) == 1L)
+
+  # Check input
+  correct.format <- grepl("^([[:alpha:]]+:)?[0-9]+(_at)?$", colnames(Y))
+  s <- sum(!correct.format)
+  if (s > 0) {
+    wmsg <- paste("Found %d colnames of Y which incorrectly formatted.",
+                  "They should be on the form <organism>:<entrez id> or",
+                  "<entrez id> optionally be postfixed with '_at'")
+    warning(sprintf(wmsg, s))
+  }
+
+  splt <- sapply(strsplit(colnames(Y), ":"),
+                 function(x) if (length(x)==2) x[1] else organism)
+  if (any(splt != organism)) {
+    stop("The prefix does not always match the specified organism")
+  }
+
+  # Download pathway and graphNEL object
+  G <- getKEGGPathway(kegg.id)$graph
+
+  if (!is.DAG(G)) {
+    warning("The graph obtained from KEGG is acyclic. Results are only",
+            "approximate.")
+  }
+
+  org.colnames <- colnames(Y)
+  colnames(Y) <- gsub("_at$", "", colnames(Y))  # Remove any _at post-fix,
+  colnames(Y) <- gsub(paste0("^", organism, ":"), "", colnames(Y)) # rm prefix
+  colnames(Y) <- paste0(organism, ":", colnames(Y)) # Put prefix back on on all
+
+  # Determine present nodes
+  gid <- nodes(G)
+  present <- gid %in% colnames(Y)
+
+  # Subset
+  g <- removeNode(gid[!present], G)
+  Ysub <- Y[, nodes(g)]
+
+  stopifnot(names(g) %in% colnames(Ysub))
+  stopifnot(colnames(Ysub) %in% nodes(g))
+
+  if (method == "linreg") {
+
+    # Intitialize precision matrix
+    prec <- matrix(0, numNodes(g), numNodes(g))
+    dimnames(prec) <- replicate(2, colnames(Ysub), simplify = FALSE)
+    for (node in topoSort(g)) {
+
+      pa.node <- parents(node, g)
+      # fit <- lm(Ysub[, node] ~ Ysub[, pa.node])
+      # tausq <- summary(fit)$sigma^2
+      fit <- lm.fit(x = cbind(Intercept = 1, Ysub[, pa.node, drop = FALSE]),
+                    y = Ysub[, node])
+      tausq <- (sum(fit$residuals^2)/(nrow(Ysub) - fit$rank))
+      beta <- coef(fit)
+
+      # Update entries [node, node]
+      prec[node, node] <- prec[node, node] + 1/tausq
+
+      # Update entries [node, pa(node)]
+      prec[node, pa.node] <- prec[node, pa.node] - beta[pa.node]/tausq
+      prec[pa.node, node] <- prec[node, pa.node]
+
+      # Update entries [pa(node), pa(node)]
+      prec[pa.node, pa.node] <-
+        prec[pa.node, pa.node] + tcrossprod(beta[pa.node])/tausq
+
+      if (anyNA(prec)) {
+        stop("NAs were introduced")
+      }
+    }
+
+    colnames(prec) <- org.colnames
+    return(prec)
+
+  } else {
+    stop("No other methods are currently implmented")
+  }
+}
+
+
+
+
 pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled covariance estimate
