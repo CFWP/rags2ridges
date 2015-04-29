@@ -364,11 +364,12 @@ getKEGGPathway <- function(kegg.id) {
 
 
 
-kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa") {
+kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
+                        graph = getKEGGPathway(kegg.id)$graph) {
   ##############################################################################
   # Generate a target matrix from the KEGG database and pilot data.
   # Requires a connection to the internet.
-  # - Y        > The complete observation matrix of observaitons with variables
+  # - Y        > The complete observation matrix of observations with variables
   #              in columns. The column names should be on the form e.g.
   #              "hsa:3988" ("<organism>:<Entrez id>"). It can however also be
   #              just the Entrez id with or without the post-fixed "_at" and
@@ -376,15 +377,21 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa") {
   # - kegg.id  > The kegg id, e.g. "map04210", "map04064", "map04115".
   # - method   > The method for estimating the non-zero entries moralized graph.
   #              Currently, only "linreg" is implemented.
-  # - organism > A character
+  # - organism > A character giving the organism, default is
+  #              "hsa" (homo-sapiens).
+  # - graph    > A graphNEL object. Can be used to avoid repeatedly downloading
+  #              the information.
   # See also default.target, and default.target.fused
   ##############################################################################
 
   method <- match.arg(method)
+  stopifnot(require(gRbase))
   stopifnot(require(KEGGgraph))
   stopifnot(length(organism) == 1L)
 
+  #
   # Check input
+  #
   correct.format <- grepl("^([[:alpha:]]+:)?[0-9]+(_at)?$", colnames(Y))
   s <- sum(!correct.format)
   if (s > 0) {
@@ -400,36 +407,42 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa") {
     stop("The prefix does not always match the specified organism")
   }
 
+  #
   # Download pathway and graphNEL object
-  G <- getKEGGPathway(kegg.id)$graph
+  #
 
-  if (!is.DAG(G)) {
+  stopifnot(is(graph, "graphNEL"))
+  if (!is.DAG(graph)) {
     warning("The graph obtained from KEGG is acyclic. Results are only",
             "approximate.")
   }
 
-  org.colnames <- colnames(Y)
+  # Try to correct colnames (and save the old ones)
+  colnames.org <- colnames(Y)
   colnames(Y) <- gsub("_at$", "", colnames(Y))  # Remove any _at post-fix,
   colnames(Y) <- gsub(paste0("^", organism, ":"), "", colnames(Y)) # rm prefix
   colnames(Y) <- paste0(organism, ":", colnames(Y)) # Put prefix back on on all
 
-  # Determine present nodes
-  gid <- nodes(G)
-  present <- gid %in% colnames(Y)
+  # Determine nodes/variables both on array and in pathway and subset
+  common <- intersect(nodes(graph), colnames(Y))
+  ind <- match(common, colnames(Y))
 
-  # Subset
-  g <- removeNode(gid[!present], G)
-  Ysub <- Y[, nodes(g)]
+  if (length(common) == 0) {
+    stop("There were no gene IDs in pathway and supplied data. ",
+         "Check that the column names are correctly formatted.")
+  }
+  g <- subGraph(common, graph)  # = removeNode(setdiff(nodes(G), common), G)
+  Ysub <- Y[, common]
 
-  stopifnot(names(g) %in% colnames(Ysub))
-  stopifnot(colnames(Ysub) %in% nodes(g))
+  # Center the data
+  Ysub <- scale(Ysub, center = TRUE, scale = FALSE)
 
   if (method == "linreg") {
 
     # Intitialize precision matrix
     prec <- matrix(0, numNodes(g), numNodes(g))
-    dimnames(prec) <- replicate(2, colnames(Ysub), simplify = FALSE)
-    for (node in topoSort(g)) {
+    rownames(prec) <- colnames(prec) <- common
+    for (node in nodes(g)) {
 
       pa.node <- parents(node, g)
       # fit <- lm(Ysub[, node] ~ Ysub[, pa.node])
@@ -455,14 +468,13 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa") {
       }
     }
 
-    colnames(prec) <- org.colnames
+    rownames(prec) <- colnames(prec) <- colnames.org[ind]
     return(prec)
 
   } else {
     stop("No other methods are currently implmented")
   }
 }
-
 
 
 

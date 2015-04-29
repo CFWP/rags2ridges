@@ -13,4 +13,4 @@ Imports: igraph, stats, expm, reshape, ggplot2, Hmisc, fdrtool, snowfall
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
-Suggests: testthat
+Suggests: KEGGgraph, gRbase, testthat
