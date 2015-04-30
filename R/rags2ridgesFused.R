@@ -103,7 +103,7 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   stopifnot(length(Slist) == length(ns))
 
   if (missing(by)) {
-    by <- LETTERS[seq_along(Slist)]
+    by <- seq_along(Slist)
   }
   stopifnot(length(by) == length(Slist))
   by <- as.character(by)
