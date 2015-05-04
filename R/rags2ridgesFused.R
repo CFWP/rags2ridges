@@ -359,6 +359,10 @@ getKEGGPathway <- function(kegg.id) {
   graph <- KEGGpathway2Graph(parseKGML(tmp.file))
   #nodes(graph) <- translateKEGGID2GeneID(nodes(graph))
 
+  # Make sure that the graph is simple
+  # (A possible bug in KEGGgraph)
+  graph <- igraph.to.graphNEL(simplify(igraph.from.graphNEL(graph)))
+
   return(list(df = df, graph = graph))
 }
 
@@ -909,7 +913,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       bias <- bias  + sum(fac1 * fac2)/(2*n.tot)
     }
   }
-#
+
 #   # Implementation 2  (SVANTE)
 #   for (g in seq_along(ns)) {
 #     lambdabar <- (lambda + sum(lambdaF[g,-g]))/ns[g]
