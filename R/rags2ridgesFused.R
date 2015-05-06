@@ -1153,7 +1153,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
 
   # Handle lambdaF
   if (missing(lambdaF)) {
-    lambdaF <- matrix("A", G, G)
+    lambdaF <- matrix("complete", G, G)
     diag(lambdaF) <- ""
   }
 
