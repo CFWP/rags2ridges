@@ -801,7 +801,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     Plist <- list()
     for (i in seq_len(G)) {
       Plist[[i]] <- .armaRidgeP(Spool, target = Tlist[[i]],
-                               lambda = G*lambda/sum(ns))
+                                lambda = G*lambda/sum(ns))
     }
   }
   stopifnot(length(Slist) == length(Plist))
@@ -813,7 +813,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # Overwrite the starting estimate with the fused estimate
   Plist <-
     .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
-                      lambdaF = lambdaF,Plist = Plist, maxit = maxit,
+                      lambdaF = lambdaF, Plist = Plist, maxit = maxit,
                       eps = eps, verbose = verbose)
 
   if (i == maxit + 1) {
@@ -843,7 +843,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 ################################################################################
 
 
-.fcvl <- function(lambda, lambdaF, Ylist, Tlist, ...) {
+.fcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, ...) {
   ##############################################################################
   # - A function to perform fused LOOCV
   # - lambda > numeric of length 1 giving ridge penalty.
@@ -853,12 +853,23 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   #             samples (rows) are needed in each entry.
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
-  # - ...     > Arguments passed to ridgeP.fused
+  # - Plist   > Initial estimates
+  # - ...     > Arguments passed to .armaRidgeP_fused
   ##############################################################################
 
   G <- length(Ylist)
   ns.org <- sapply(Ylist, nrow)
   Slist.org <- lapply(Ylist, covML)
+
+  # If Plist is not supplied
+  if (missing(Plist)) {
+    S <- .armaPooledS(Slist, ns)
+    Plist <- list()
+    for (i in seq_len(G)) {
+      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
+                                lambda = G*lambda/sum(ns.org))
+    }
+  }
 
   for (g in seq_len(G)) {
     ng <- nrow(Ylist[[g]])
@@ -868,10 +879,12 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       ns[g] <- ns[g] - 1
       Slist <- Slist.org
       Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
-      Sig    <- crossprod(Ylist[[g]][i,  , drop = FALSE])
-      Plist  <- ridgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
-                             lambda = lambda, lambdaF = lambdaF,
-                             verbose = FALSE, ...)
+
+      Plist <- .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist,
+                                 lambda = lambda, lambdaF = lambdaF,
+                                 Plist = Plist, verbose = FALSE, ...)
+
+      Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
       slh <- c(slh, .LL(Sig, Plist[[g]]))
     }
   }
@@ -880,7 +893,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
 
 
-.afcvl <- function(lambda, lambdaF, Ylist, Tlist, ...) {
+.afcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, ...) {
   ##############################################################################
   # - (Internal) For at given lambda and lambdaF, compute the approximate
   # - LOOCV loss
@@ -890,6 +903,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   #             in the rows and variables in the columns.
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
+  # - Plist   > A list of inital values for the parameter estimates
   # - ...     > Arguments passed to ridgeP.fused
   ##############################################################################
 
