@@ -596,7 +596,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.FLL <- function(Slist, Plist, ns){
+.LL.fused <- function(Slist, Plist, ns){
   ##############################################################################
   # - Function that computes the value of the (negative) combined log-likelihood
   # - Slist > A list sample covariance matrices for each class
@@ -611,7 +611,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-.PFLL <- function(Slist, Plist, ns, Tlist, lambda, lambdaF){
+.PLL.fused <- function(Slist, Plist, ns, Tlist, lambda, lambdaF){
   ##############################################################################
   # - Function that computes the value of the (negative) penalized combined
   #   log-likelihood
@@ -639,7 +639,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   }
   penalty <- penalty/2
 
-  ans <- .FLL(Slist, Plist, ns) + penalty
+  ans <- .LL.fused(Slist, Plist, ns) + penalty
   return(ans)
 }
 
@@ -914,7 +914,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
                        lambda = lambda, lambdaF = lambdaF,
                        verbose = FALSE, ...)
   n.tot <- sum(ns)
-  nll <- .FLL(Slist = Slist, Plist = Plist, ns)/n.tot
+  nll <- .LL.fused(Slist = Slist, Plist = Plist, ns)/n.tot
   p <- nrow(Slist[[1]])
   bias <- 0
 
