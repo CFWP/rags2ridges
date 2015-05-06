@@ -342,8 +342,7 @@ getKEGGPathway <- function(kegg.id) {
   # adjacency matrix, use gRbase::as.adjMAT() or igraph::get.adjacency()
   ##############################################################################
 
-#   stopifnot(require(gRbase))
-  stopifnot(require(KEGGgraph))
+  stopifnot(requireNamespace(KEGGgraph))
 
   # Download
   tmp.file <- paste0(tempfile(), ".kgml")
@@ -389,13 +388,14 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
   ##############################################################################
 
   method <- match.arg(method)
-  stopifnot(require(gRbase))
-  stopifnot(require(KEGGgraph))
   stopifnot(length(organism) == 1L)
+  stopifnot(requireNamespace(gRbase))
+  stopifnot(requireNamespace(KEGGgraph))
 
   #
   # Check input
   #
+
   correct.format <- grepl("^([[:alpha:]]+:)?[0-9]+(_at)?$", colnames(Y))
   s <- sum(!correct.format)
   if (s > 0) {
