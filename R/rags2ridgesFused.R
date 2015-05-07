@@ -331,7 +331,6 @@ createS <- function(n, p,
 
 
 
-
 getKEGGPathway <- function(kegg.id) {
   ##############################################################################
   # Download information and graph object of a given kegg pathway.
@@ -342,27 +341,55 @@ getKEGGPathway <- function(kegg.id) {
   # adjacency matrix, use gRbase::as.adjMAT() or igraph::get.adjacency()
   ##############################################################################
 
-  stopifnot(requireNamespace("KEGGgraph"))
+  if (!requireNamespace("KEGGgraph")) {
+
+    stop("This function requires the bioconductor package 'KEGGgraph'.\n",
+         " To use it, install KEGGgraph to use it by running:\n",
+         'source("http://bioconductor.org/biocLite.R")\n',
+         'biocLite("KEGGgraph")\n')
+
+  }
 
   # Download
   tmp.file <- paste0(tempfile(), ".kgml")
-  kgml <- retrieveKGML(gsub("path:", "", kegg.id), organism = "hsa",
-                       destfile = tmp.file, method = "internal")
+  kgml <- KEGGgraph::retrieveKGML(gsub("path:", "", kegg.id), organism="hsa",
+                                  destfile = tmp.file, method = "internal")
 
   # Pathway data.frame information
-  df        <- parseKGML2DataFrame(tmp.file)
-  df$to.e   <- translateKEGGID2GeneID(df$to)
-  df$from.e <- translateKEGGID2GeneID(df$from)
+  df        <- KEGGgraph::parseKGML2DataFrame(tmp.file)
+  df$to.e   <- KEGGgraph::translateKEGGID2GeneID(df$to)
+  df$from.e <- KEGGgraph::translateKEGGID2GeneID(df$from)
 
   # Pathway igraph and graphNEL
-  graph <- KEGGpathway2Graph(parseKGML(tmp.file))
-  #nodes(graph) <- translateKEGGID2GeneID(nodes(graph))
+  graph <- KEGGgraph::KEGGpathway2Graph(KEGGgraph::parseKGML(tmp.file))
+  #graph::nodes(graph) <-
+  #  KEGGgraph::translateKEGGID2GeneID(KEGGgraph::nodes(graph))
 
   # Make sure that the graph is simple
-  # (A possible bug in KEGGgraph)
+  # A confirmed bug in KEGGgraph and now corrected in the development branch.
+  # The following lines is a temporary work-around
   graph <- igraph.to.graphNEL(simplify(igraph.from.graphNEL(graph)))
 
   return(list(df = df, graph = graph))
+
+}
+
+
+
+.parents <- function(node, graph) {
+  ##############################################################################
+  # Function for extracting the parents of a node
+  # - node  > A characther giving the node name in the graph
+  # - graph > The graph
+  # Alternative to gRbase::parents()
+  ##############################################################################
+
+  if (!requireNamespace("graph")) {
+    stop("package 'graph' needed for this function.")
+  }
+
+  is.child <- sapply(graph::edges(graph), function(n) node %in% n)
+  return(graph::nodes(graph)[is.child])
 }
 
 
@@ -389,12 +416,17 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
 
   method <- match.arg(method)
   stopifnot(length(organism) == 1L)
-  stopifnot(requireNamespace("gRbase"))
-  stopifnot(requireNamespace("KEGGgraph"))
 
-  #
+  if (!requireNamespace("KEGGgraph") && !requireNamespace("graph")) {
+
+    stop("This function requires the bioconductor package 'KEGGgraph' and its.",
+         "\ndependencies. To use it, install KEGGgraph to use it by running:\n",
+         'source("http://bioconductor.org/biocLite.R")\n',
+         'biocLite("KEGGgraph")\n')
+
+  }
+
   # Check input
-  #
 
   correct.format <- grepl("^([[:alpha:]]+:)?[0-9]+(_at)?$", colnames(Y))
   s <- sum(!correct.format)
@@ -416,26 +448,26 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
   #
 
   stopifnot(is(graph, "graphNEL"))
-  if (!is.DAG(graph)) {
-    warning("The graph obtained from KEGG is acyclic. Results are only",
-            "approximate.")
+  if (!is.dag(igraph.from.graphNEL(graph))) {
+    warning("The graph obtained from KEGG is not acyclic. Results are only",
+            " approximate.")
   }
 
   # Try to correct colnames (and save the old ones)
   colnames.org <- colnames(Y)
   colnames(Y) <- gsub("_at$", "", colnames(Y))  # Remove any _at post-fix,
   colnames(Y) <- gsub(paste0("^", organism, ":"), "", colnames(Y)) # rm prefix
-  colnames(Y) <- paste0(organism, ":", colnames(Y)) # Put prefix back on on all
+  colnames(Y) <- paste0(organism, ":", colnames(Y)) # Put prefix back on all
 
   # Determine nodes/variables both on array and in pathway and subset
-  common <- intersect(nodes(graph), colnames(Y))
+  common <- intersect(graph::nodes(graph), colnames(Y))
   ind <- match(common, colnames(Y))
 
   if (length(common) == 0) {
     stop("There were no gene IDs in pathway and supplied data. ",
          "Check that the column names are correctly formatted.")
   }
-  g <- subGraph(common, graph)  # = removeNode(setdiff(nodes(G), common), G)
+  g <- graph::subGraph(common, graph) #=removeNode(setdiff(nodes(G),common),G)
   Ysub <- Y[, common]
 
   # Center the data
@@ -444,12 +476,13 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
   if (method == "linreg") {
 
     # Intitialize precision matrix
-    prec <- matrix(0, numNodes(g), numNodes(g))
+    p <- graph::numNodes(g)
+    prec <- matrix(0, p, p)
     rownames(prec) <- colnames(prec) <- common
-    for (node in nodes(g)) {
+    for (node in graph::nodes(g)) {
 
-      pa.node <- parents(node, g)
-      # fit <- lm(Ysub[, node] ~ Ysub[, pa.node])
+      pa.node <- .parents(node, g)
+      # fit <- lm(Ysub[, node] ~ Ysub[, pa.node])  # Alternative computation
       # tausq <- summary(fit)$sigma^2
       fit <- lm.fit(x = cbind(Intercept = 1, Ysub[, pa.node, drop = FALSE]),
                     y = Ysub[, node])
@@ -480,8 +513,11 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
     return(prec)
 
   } else {
+
     stop("No other methods are currently implmented")
+
   }
+
 }
 
 
