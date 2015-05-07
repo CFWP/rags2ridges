@@ -1539,6 +1539,7 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   n.tot <- sum(ns)
 
   # Compute observed statistic
+  if (verbose) {message("Computing the observed score statistic... ")}
   Slist <- lapply(Ylist, covML)
   ns <- sapply(Ylist, nrow)
   if (missing(Tlist)) {
@@ -1548,11 +1549,11 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   Plist.obs <- ridgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
                             lambda = lambda, lambdaF = lambdaF,
                             verbose = verbose, ...)
-
   Uobs <- .scoreStatistic(Plist = Plist.obs, Slist = Slist, ns = ns)
 
 
   # Approximate null distribution by permutation
+  if (verbose) {message("Computing the score statistics under permutation... ")}
   lambda.null <- G*lambda/sum(ns)
   Unull <- numeric()
   for (j in seq_len(n.permutations)) {
@@ -1565,6 +1566,9 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
     }
     Slist.null <- replicate(G, Spool.tmp, simplify = FALSE)
     Unull[j] <- .scoreStatistic(Plist = Plist.null, Slist = Slist.null, ns = ns)
+    if (verbose && j %% 10 == 0) {
+      cat(sprintf("%d of %d done\n", j, n.permutations))
+    }
   }
 
   # Return results
