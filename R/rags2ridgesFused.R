@@ -1472,6 +1472,200 @@ default.penalty <- function(G, df,
 ################################################################################
 ## -----------------------------------------------------------------------------
 ##
+## Section: To fuse or not to fuse --- Test H0: Omega_1 = ... = Omega_G
+##
+## -----------------------------------------------------------------------------
+################################################################################
+################################################################################
+
+.scoreStatistic <- function(Plist, Slist, ns) {
+  ##############################################################################
+  # Function for computing the score statistic
+  # - Plist > A list of precision matrices
+  # - Slist > A list of sample covariance matrices
+  # - ns    > A vector with the same length as Plist and Slist of sample sizes
+  ##############################################################################
+
+  stopifnot(length(Plist) == length(Slist))
+  stopifnot(length(ns) == length(Plist))
+
+  U <- 0
+  for (g in seq_along(ns)) {
+    X <- ns[g]*(Plist[[g]] - Slist[[g]])
+    diag(X) <- 0.5*diag(X)
+    U <- U + sum(X * (Plist[[g]] %*% X %*% Plist[[g]]))
+  }
+  return(U)
+}
+
+.scambleYlist <- function(Ylist) {
+  ##############################################################################
+  # Function for permuting the class labels of Ylist, equivalent to
+  # scrambling/permuting all obervations.
+  # - Ylist > A list of observations matrices for each class
+  ##############################################################################
+
+  ns <- sapply(Ylist, nrow)
+  cl <- factor(rep(names(Ylist), ns))
+  Y  <- as.data.frame(do.call(rbind, Ylist))
+  out <- split(Y, sample(cl))
+  out <- lapply(out, as.matrix)
+  return(out)
+}
+
+
+
+fused.test <- function(Ylist, Tlist, lambda, lambdaF,
+                       n.permutations = 100, verbose = FALSE, ...) {
+  ##############################################################################
+  # Function for testing the null hypothesis that all population precision
+  # matrices are equal. Note, the test performed is conditional on the
+  # supplied penalties and targets.
+  # - Ylist > A list of observation matrices for each class.
+  # - Tlist > A list of target matrices.
+  # - lambda  > The ridge penalty
+  # - lambdaF > The fused penalty matrix
+  # - n.permutations > The number of permutation to perform
+  # - verbose        > Print out extra progress information
+  # - ...            > Arguments passed to ridgeP.fused
+  # Returns a "ptest" object
+  ##############################################################################
+
+  stopifnot(length(Ylist) == length(Tlist))
+  stopifnot(nrow(lambdaF) == length(Ylist))
+  stopifnot(ncol(lambdaF) == length(Ylist))
+
+  G <- length(Ylist)
+  n.tot <- sum(ns)
+
+  # Compute observed statistic
+  Slist <- lapply(Ylist, covML)
+  ns <- sapply(Ylist, nrow)
+  if (missing(Tlist)) {
+    Tlist <- default.target.fused(Slist, ns)
+  }
+
+  Plist.obs <- ridgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
+                            lambda = lambda, lambdaF = lambdaF,
+                            verbose = verbose, ...)
+
+  Uobs <- .scoreStatistic(Plist = Plist.obs, Slist = Slist, ns = ns)
+
+
+  # Approximate null distribution by permutation
+  lambda.null <- G*lambda/sum(ns)
+  Unull <- numeric()
+  for (j in seq_len(n.permutations)) {
+    Ylist.tmp <- .scambleYlist(Ylist)  # Permute class labels
+    Spool.tmp <- pooledS(lapply(Ylist.tmp, covML), ns)
+    Plist.null <- list()
+    for (i in seq_len(G)) {
+      Plist.null[[i]] <- .armaRidgeP(Spool.tmp, target = Tlist[[i]],
+                                     lambda = lambda.null)
+    }
+    Slist.null <- replicate(G, Spool.tmp, simplify = FALSE)
+    Unull[j] <- .scoreStatistic(Plist = Plist.null, Slist = Slist.null, ns = ns)
+  }
+
+  # Return results
+  ans <- list(observed = Uobs, null.dist = Unull)
+  class(ans) <- "ptest"
+  return(ans)
+}
+
+
+
+print.ptest <- function(x, digits = 4L, ...) {
+  ##############################################################################
+  # Print function for ptest objects
+  # - x > A ptest object. Usually created by test.fused()
+  ##############################################################################
+
+  x$n.extreme <- sum(x$null.dist > x$observed)
+  x$n.permutations <- length(x$null.dist)
+  x$p.val.unbiased <- x$n.extreme/x$n.permutations
+  x$p.val.biased <- (x$n.extreme + 1)/(x$n.permutations + 1)
+  pval <- format.pval(x$p.val.unbiased, digits = digits,
+                      eps = 1/x$n.permutations)
+
+  cat("\nScore-based permutation test\n\n")
+  cat("Null hypothesis: Population precision matrices are equal\n")
+  cat("Alternative:     Population precision matrices are not equal\n\n")
+  cat(sprintf("Observed statistic: U = %0.3f, ", x$observed))
+  cat(sprintf("p-value %s\n", ifelse(grepl("<", pval), pval, paste("=", pval))))
+  cat("Summary of null distribution obtained by permutation:\n")
+  print(summary(x$null.dist, digits = digits, ...))
+  return(invisible(x))
+}
+
+
+
+summary.ptest <- function(object, ...) {
+  ##############################################################################
+  # Summary function for ptest objects
+  # - x > A ptest object. Usually created by test.fused()
+  ##############################################################################
+
+  object <- print.ptest(object, ...)
+  cat("\nThe number of extreme observations under the null hypothesis")
+  cat(sprintf("\nwas %d out of %d permutations.",
+              object$n.extreme, object$n.permutations))
+
+  return(invisible(object))
+}
+
+
+
+hist.ptest <- function(x, add.extra = TRUE, ...) {
+  ##############################################################################
+  # Plot function for ptest objects as a histogram
+  # - x          > A ptest object. Usually created by test.fused()
+  # - add.extra  > Add the rug of values under the null distribution and
+  #                the observed values? Default is TRUE.
+  # - ...        > Arguments passed to hist. See ?hist
+  ##############################################################################
+
+  hist.args <- list(...)
+  if (!hasArg("xlim")) {
+    hist.args$xlim <- range(x$null.dist, x$observed)
+  }
+  if (!hasArg("col")) {
+    hist.args$col <- "gray"
+  }
+  if (!hasArg("main")) {
+    hist.args$main <- "Null distribution of U"
+  }
+  if (!hasArg("xlab")) {
+    hist.args$xlab <- "U"
+  }
+  out <- do.call(hist, c(list(x$null.dist), hist.args), quote = FALSE)
+  out$xname <- "x$null.dist"
+
+  if (add.extra) {
+    rug(x$null.dist)
+    abline(v = x$observed, col = "red", lwd = 2)
+    text(x$observed, y = par()$usr[4],
+         labels = "Observed U", pos = 3, xpd = TRUE)
+  }
+  return(invisible(out))
+}
+
+
+
+plot.ptest <- function(x, add.extra = TRUE, ...) {
+  ##############################################################################
+  # Alias for plot.ptest
+  ##############################################################################
+
+  hist.ptest(x, add.extra = add.extra, ...)
+}
+
+
+
+################################################################################
+################################################################################
+## -----------------------------------------------------------------------------
+##
 ## Section: Sparsification and network stats
 ##
 ## -----------------------------------------------------------------------------
