@@ -604,14 +604,16 @@ pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
 KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
                         symmetric = FALSE) {
   ##############################################################################
-  # - Function that calculates the "weigthed" Kullback-Leibler divergence
+  # - Function that calculates the "weighted" Kullback-Leibler divergence
   #   between multiple paired normal distributions
-  # - MtestList > A list of mean vectors approximating. Assumed to be zero
-  #               vectors if not supplied.
-  # - MrefList  > A list of mean vectors 'true'/reference. Assumed to be zero
-  #               vectors if not supplied.
-  # - StestList > A list of covariance matrix approximating
-  # - SrefList  > A list of covariance matrix 'true'/reference
+  # - MtestList > A list of mean vectors. Usually the empircal means.
+  #               Assumed to be zero vectors if not supplied.
+  # - MrefList  > A list of mean vectors. Usually the 'true'/reference/
+  #               population means. Assumed to be zero vectors if not supplied.
+  # - StestList > A list of (sample) covariance matrices.
+  # - SrefList  > A list of (population) covariance matrices.
+  # - ns        > A vector of sample sizes of the same length as Slist.
+  #               Used as weights in the weighted mean.
   # - symmetric > logical indicating if original symmetric version of KL div.
   #               should be calculated.
   ##############################################################################
