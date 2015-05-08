@@ -2,11 +2,11 @@
 \alias{fused.test}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Test necessity of fusing
+Test necessity of fusion
 }
 \description{
 Function for testing the null hypothesis that all population precision
-matrices are equal and thus the necessity for fusing.
+matrices are equal and thus the necessity for the fusion penalty.
 Note, the test performed is conditional on the supplied penalties and targets.
 }
 \usage{
