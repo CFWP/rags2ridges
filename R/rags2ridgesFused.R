@@ -883,8 +883,9 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
 .fcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, ...) {
   ##############################################################################
-  # - A function to perform fused LOOCV
-  # - lambda > numeric of length 1 giving ridge penalty.
+  # (Internal) Computes the fused leave-one-out cross-validation loss for
+  # given penalty parameters
+  # - lambda  > numeric of length 1 giving ridge penalty.
   # - lambdaF > numeric matrix giving the fused penalty matrix.
   # - Ylist   > A list of length G of matrices of observations with samples
   #             in the rows and variables in the columns. A least 2
@@ -931,11 +932,61 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
 
 
+.kfcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, k, ...) {
+  ##############################################################################
+  # (Internal) Computes the k-fold fused cross-validation loss for given penalty
+  # parameters. The data for each class is divided into k parts. The first part
+  # in each class is left out, the fused estimate is computed based on the
+  # remaning, and the loss is computed. Then this is repeated for the remaning
+  # parts.
+  # - lambda  > numeric of length 1 giving ridge penalty.
+  # - lambdaF > numeric matrix giving the fused penalty matrix.
+  # - Ylist   > A list of length G of matrices of observations with samples
+  #             in the rows and variables in the columns. A least 2
+  #             samples (rows) are needed in each entry.
+  # - Tlist   > A list of length G of target matrices the same size
+  #             as those of Plist. Default is given by default.target.
+  # - Plist   > Initial estimates
+  # - k       > The fold of the cross validation. I.e. k is the number of
+  #             roughly equally sized parts the samples for each class are
+  #             partitioned into. Hence G times k is the total number of parts.
+  # - ...     > Arguments passed to .armaRidgeP_fused
+  ##############################################################################
+
+  stop("Not implemented yet!")
+
+  return(-Inf)
+}
+
+
+
+.sfcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, ...) {
+  ##############################################################################
+  # (Internal) Computes the "special" LOOCV loss for given penalty parameters
+  # Only updates the class estimate in which the sample is left out.
+  # - lambda  > numeric of length 1 giving ridge penalty.
+  # - lambdaF > numeric matrix giving the fused penalty matrix.
+  # - Ylist   > A list of length G of matrices of observations with samples
+  #             in the rows and variables in the columns. A least 2
+  #             samples (rows) are needed in each entry.
+  # - Tlist   > A list of length G of target matrices the same size
+  #             as those of Plist. Default is given by default.target.
+  # - Plist   > Initial estimates
+  # - ...     > Arguments passed to .armaRidgeP_fused
+  ##############################################################################
+
+  stop("Not implemented yet!")
+
+  return(-Inf)
+}
+
+
+
 .afcvl <- function(lambda, lambdaF, Ylist, Tlist, Plist, ...) {
   ##############################################################################
-  # - (Internal) For at given lambda and lambdaF, compute the approximate
-  # - LOOCV loss
-  # - lambda > numeric of length 1 giving ridge penalty.
+  # (Internal) Computes the approximate LOOCV loss for at given penalty
+  # parameters.
+  # - lambda  > numeric of length 1 giving ridge penalty.
   # - lambdaF > numeric matrix giving the fused penalty matrix.
   # - Ylist   > A list of length G of matrices of observations with samples
   #             in the rows and variables in the columns.
