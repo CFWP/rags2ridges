@@ -902,7 +902,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    S <- .armaPooledS(Slist, ns)
+    S <- .armaPooledS(Slist.org, ns.org)
     Plist <- list()
     for (i in seq_len(G)) {
       Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
@@ -910,12 +910,11 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     }
   }
 
+  slh <- numeric()
   for (g in seq_len(G)) {
-    ng <- nrow(Ylist[[g]])
-    slh <- numeric()
-    for (i in seq_len(ng)) {
-      ns <- ns.org
-      ns[g] <- ns[g] - 1
+    ns <- ns.org        # "Reset" number of samples in each group
+    ns[g] <- ns[g] - 1  # Update sample size in g'th group
+    for (i in seq_len(ns.org[g])) {
       Slist <- Slist.org
       Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
 
@@ -953,9 +952,46 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # - ...     > Arguments passed to .armaRidgeP_fused
   ##############################################################################
 
-  stop("Not implemented yet!")
+  G <- length(Ylist)
+  ns.org <- sapply(Ylist, nrow)
+  if (min(ns.org) < k) {
+    stop(paste("The least class sample size is less than the specified k =", k))
+  }
+  Slist.org <- lapply(Ylist, covML)
 
-  return(-Inf)
+  # If Plist is not supplied
+  if (missing(Plist)) {
+    S <- .armaPooledS(Slist.org, ns.org)
+    Plist <- list()
+    for (i in seq_len(G)) {
+      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
+                                lambda = G*lambda/sum(ns.org))
+    }
+  }
+
+  # Split data
+  parts <- lapply(ns.org, function(n) sample(ceiling(k*seq_len(n)/n)))
+  Ylist.sp <- mapply(split.data.frame, Ylist, parts, SIMPLIFY = FALSE)
+
+  # Run through all k splits in each class
+  slh <- numeric()
+  for (g in seq_len(G)) {
+    ns    <- ns.org     # To be "updated"
+    Slist <- Slist.org  # To be "updated"
+    for (i in seq_len(k)) {
+      ns[g] <- ns[g] - nrow(Ylist.sp[[g]][[i]])
+      Slist[[g]] <- covML(do.call("rbind", Ylist.sp[[g]][-i]))
+
+      Plist <- .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist,
+                                 lambda = lambda, lambdaF = lambdaF,
+                                 Plist = Plist, verbose = FALSE, ...)
+
+      Sig <- crossprod(Ylist.sp[[g]][[i]])
+      slh <- c(slh, .LL(Sig, Plist[[g]]))
+    }
+  }
+
+  return(mean(slh))
 }
 
 
