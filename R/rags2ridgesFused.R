@@ -1566,7 +1566,8 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   # - n.permutations > The number of permutation to perform
   # - verbose        > Print out extra progress information
   # - ...            > Arguments passed to ridgeP.fused
-  # Returns a "ptest" object
+  # Returns a object of class "ptest", which has plot, print, and summary
+  # methods.
   ##############################################################################
 
   stopifnot(length(Ylist) == length(Tlist))
@@ -1574,36 +1575,38 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   stopifnot(ncol(lambdaF) == length(Ylist))
 
   G <- length(Ylist)
+  ns <- sapply(Ylist, nrow)
   n.tot <- sum(ns)
+  lambda.null <- G*lambda/sum(ns)
 
   # Compute observed statistic
   if (verbose) {message("Computing the observed score statistic... ")}
   Slist <- lapply(Ylist, covML)
-  ns <- sapply(Ylist, nrow)
-  if (missing(Tlist)) {
-    Tlist <- default.target.fused(Slist, ns)
+  Spool.obs <- pooledS(Slist, ns)
+  Plist.obs <- list()
+  for (i in seq_len(G)) {
+    Plist.obs[[i]] <- .armaRidgeP(Spool.obs, target = Tlist[[i]],
+                                  lambda = lambda.null)
   }
-
-  Plist.obs <- ridgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
-                            lambda = lambda, lambdaF = lambdaF,
-                            verbose = verbose, ...)
-  Uobs <- .scoreStatistic(Plist = Plist.obs, Slist = Slist, ns = ns)
-
+  Uobs <- .scoreStatistic(Plist = Plist.obs,
+                          Slist = Slist,
+                          ns = ns)
 
   # Approximate null distribution by permutation
   if (verbose) {message("Computing the score statistics under permutation... ")}
-  lambda.null <- G*lambda/sum(ns)
   Unull <- numeric()
   for (j in seq_len(n.permutations)) {
     Ylist.tmp <- .scambleYlist(Ylist)  # Permute class labels
     Spool.tmp <- pooledS(lapply(Ylist.tmp, covML), ns)
     Plist.null <- list()
     for (i in seq_len(G)) {
-      Plist.null[[i]] <- .armaRidgeP(Spool.tmp, target = Tlist[[i]],
+      Plist.null[[i]] <- .armaRidgeP(Spool.tmp,
+                                     target = Tlist[[i]],
                                      lambda = lambda.null)
     }
-    Slist.null <- replicate(G, Spool.tmp, simplify = FALSE)
-    Unull[j] <- .scoreStatistic(Plist = Plist.null, Slist = Slist.null, ns = ns)
+    Unull[j] <- .scoreStatistic(Plist = Plist.null,
+                                Slist = lapply(Ylist.tmp, covML),
+                                ns = ns)
     if (verbose && j %% 10 == 0) {
       cat(sprintf("%d of %d done\n", j, n.permutations))
     }
@@ -1620,10 +1623,10 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
 print.ptest <- function(x, digits = 4L, ...) {
   ##############################################################################
   # Print function for ptest objects
-  # - x > A ptest object. Usually created by test.fused()
+  # - x > A ptest object. Usually created by fused.test()
   ##############################################################################
 
-  x$n.extreme <- sum(x$null.dist > x$observed)
+  x$n.extreme <- sum(x$null.dist >= x$observed)
   x$n.permutations <- length(x$null.dist)
   x$p.val.unbiased <- x$n.extreme/x$n.permutations
   x$p.val.biased <- (x$n.extreme + 1)/(x$n.permutations + 1)
@@ -1645,7 +1648,7 @@ print.ptest <- function(x, digits = 4L, ...) {
 summary.ptest <- function(object, ...) {
   ##############################################################################
   # Summary function for ptest objects
-  # - x > A ptest object. Usually created by test.fused()
+  # - x > A ptest object. Usually created by fused.test()
   ##############################################################################
 
   object <- print.ptest(object, ...)
@@ -1661,7 +1664,7 @@ summary.ptest <- function(object, ...) {
 hist.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
   # Plot function for ptest objects as a histogram
-  # - x          > A ptest object. Usually created by test.fused()
+  # - x          > A ptest object. Usually created by fused.test()
   # - add.extra  > Add the rug of values under the null distribution and
   #                the observed values? Default is TRUE.
   # - ...        > Arguments passed to hist. See ?hist
