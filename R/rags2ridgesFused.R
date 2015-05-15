@@ -969,7 +969,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
     }
   }
 
-  # Split data
+  # Split each class into k equally sized parts
   parts <- lapply(ns.org, function(n) sample(ceiling(k*seq_len(n)/n)))
   Ylist.sp <- mapply(split.data.frame, Ylist, parts, SIMPLIFY = FALSE)
 
@@ -1011,9 +1011,47 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # - ...     > Arguments passed to .armaRidgeP_fused
   ##############################################################################
 
-  stop("Not implemented yet!")
+  G <- length(Ylist)
+  ns.org <- sapply(Ylist, nrow)
+  Slist.org <- lapply(Ylist, covML)
 
-  return(-Inf)
+  # If Plist is not supplied
+  if (missing(Plist)) {
+    S <- .armaPooledS(Slist.org, ns.org)
+    Plist <- list()
+    for (i in seq_len(G)) {
+      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
+                                lambda = G*lambda/sum(ns.org))
+    }
+  }
+
+  slh <- numeric()
+  for (g in seq_len(G)) {
+    ns <- ns.org        # "Reset" number of samples in each group
+    ns[g] <- ns[g] - 1  # Update sample size in g'th group
+    for (i in seq_len(ns.org[g])) {
+
+      Slist <- Slist.org
+      Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
+
+      # Update only the estimate in group "g".
+      # Note these exported C++ functions are index from g = 0
+      if (lambda < 1e50) {
+        Plist[[g]] <- .armaFusedUpdateI(g0 = g - 1,  Plist = Plist,
+                                        Slist = Slist, Tlist = Tlist, ns = ns,
+                                        lambda = lambda, lambdaF = lambdaF)
+      } else {
+        Plist[[g]] <- .armaFusedUpdateIII(g0 = g - 1,  Plist = Plist,
+                                          Slist = Slist, Tlist = Tlist, ns = ns,
+                                          lambda = lambda, lambdaF = lambdaF)
+      }
+
+      Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
+      slh <- c(slh, .LL(Sig, Plist[[g]]))
+    }
+  }
+
+  return(mean(slh))
 }
 
 
