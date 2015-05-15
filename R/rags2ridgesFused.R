@@ -1218,7 +1218,9 @@ optPenalty.fused.LOOCVgrid <- function(Ylist,
                                        lambdaFMin = lambdaMin,
                                        lambdaFMax = lambdaMax,
                                        step2 = step1,
-                                       approximate = FALSE,
+                                       cv.method = c("LOOCV", "aLOOCV",
+                                                     "sLOOCV", "kCV"),
+                                       k = 10,
                                        verbose = TRUE,
                                        ...) {
   ##############################################################################
@@ -1235,13 +1237,17 @@ optPenalty.fused.LOOCVgrid <- function(Ylist,
   # - lambdaFMin  > As lambdaMin for the fused penalty. Default is lambdaMin.
   # - lambdaFMax  > As lambdaMax for the fused penalty. Default is lambdaMax.
   # - step2       > As step1 for the fused penalty. Default is step1.
-  # - approximate > Should approximate LOOCV be used? Defaults is FALSE.
-  #                 Approximate LOOCV is much faster.
+  # - cv.method   > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
+  #                 sLOOCV, kCV for leave-one-out cross validation (LOOCV),
+  #                 appproximate LOOCV, special LOOCV, and k-fold CV, resp.
+  # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - ...         > Arguments passed to ridgeP.fused
   # - verbose     > logical. Print extra information. Defaults is TRUE.
   #
   # The function evaluates the loss on a log-equidistant grid.
   ##############################################################################
+
+  cv.method <- match.arg(cv.method)
 
   if (missing(Tlist)) {  # If Tlist is not provided
     Tlist <- lapply(Ylist, function(Y) default.target(covML(Y)))
@@ -1256,10 +1262,18 @@ optPenalty.fused.LOOCVgrid <- function(Ylist,
   stopifnot(all(is.finite(lambdas)))
   stopifnot(all(is.finite(lambdaFs)))
 
-  if (approximate) {
-    cvl <- .afcvl
+  if (cv.method == "LOOCV") {
+    cvfunc <- .fcvl
+  } else if (cv.method == "aLOOCV") {
+    cvfunc <- .afcvl
+  } else if (cv.method == "sLOOCV") {
+    cvfunc <- .sfcvl
+  } else if (cv.method == "kCV") {
+    cvfunc <-  function(lambda, lambdaF, Ylist = Ylist, Tlist = Tlist, ...) {
+      .kfcvl(lambda, lambdaF, Ylist = Ylist, Tlist = Tlist, k = k, ...)
+    }
   } else {
-    cvl <- .fcvl
+    stop("cv.method not implmented.")
   }
 
   # Calculate CV scores
@@ -1272,8 +1286,8 @@ optPenalty.fused.LOOCVgrid <- function(Ylist,
   for (l1 in seq_along(lambdas)) {
     for (l2 in seq_along(lambdaFs)) {
       slh[l1, l2] <-
-        cvl(lambda = lambdas[l1], lambdaF = matrix(lambdaFs[l2], G, G),
-            Ylist = Ylist, Tlist = Tlist, ...)
+        cvfunc(lambda = lambdas[l1], lambdaF = matrix(lambdaFs[l2], G, G),
+               Ylist = Ylist, Tlist = Tlist, ...)
       if (verbose){
         cat(sprintf("lambda = %.3f (%d), lambdaF = %.3f (%d), -ll = %.3f\n",
                    lambdas[l1],  l1, lambdaFs[l2], l2, slh[l1, l2]))
@@ -1290,7 +1304,9 @@ optPenalty.fused.LOOCVgrid <- function(Ylist,
 optPenalty.fused.LOOCVauto <- function(Ylist,
                                        Tlist,
                                        lambdaF,
-                                       approximate = FALSE,
+                                       cv.method = c("LOOCV", "aLOOCV",
+                                                     "sLOOCV", "kCV"),
+                                       k = 10,
                                        verbose = TRUE,
                                        maxit.ridgeP.fused = 1000,
                                        optimizer = "optim",
@@ -1310,7 +1326,10 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   #                 graph to use. The unique elements of lambdaF specify the
   #                 penalties to determine. Pairs can be left out using either
   #                 of "", NA, "NA" or "0".
-  # - approximate > logical. Should approximate LOOCV be used?
+  # - cv.method   > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
+  #                 sLOOCV, kCV for leave-one-out cross validation (LOOCV),
+  #                 appproximate LOOCV, special LOOCV, and k-fold CV, resp.
+  # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - verbose     > logical. Should extra info be printed? Defaults to TRUE.
   # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
   # - optimizer          > character giving the stadard optimizer.
@@ -1326,6 +1345,7 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   # is given. Otherwise lambdaF is NA.
   ##############################################################################
 
+  cv.method <- match.arg(cv.method)
   G <- length(Ylist)
 
   # Handle lambdaF
@@ -1343,20 +1363,25 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
   # lambdas[1] is the regular ridge penalty, while the remaning lambdas[-1]
   # correspond to the penalty matrix.
   # We also reparameterize to work on log-scale
-  if (approximate) {
-    cvl <- function(lambdas, ...) {
-      elambdas <- exp(lambdas)
-      .afcvl(lambda = elambdas[1],
-             lambdaF = .reconstructLambda(elambdas, parsedLambda, G),
-             Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeP.fused, ...)
+  if (cv.method == "LOOCV") {
+    cvfunc <- .fcvl
+  } else if (cv.method == "aLOOCV") {
+    cvfunc <- .afcvl
+  } else if (cv.method == "sLOOCV") {
+    cvfunc <- .sfcvl
+  } else if (cv.method == "kCV") {
+    cvfunc <-  function(lambda, lambdaF, Ylist = Ylist, Tlist = Tlist, ...) {
+      .kfcvl(lambda, lambdaF, Ylist = Ylist, Tlist = Tlist, k = k, ...)
     }
   } else {
-    cvl <- function(lambdas, ...) {
-      elambdas <- exp(lambdas)
-      .fcvl(lambda = elambdas[1],
-            lambdaF = .reconstructLambda(elambdas, parsedLambda, G),
-            Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeP.fused, ...)
-    }
+    stop("cv.method not implmented.")
+  }
+
+  cvl <- function(lambdas, ...) {
+    elambdas <- exp(lambdas)
+    lambdaF <- .reconstructLambda(elambdas, parsedLambda, G)
+    cvfunc(lambda = elambdas[1], lambdaF = lambdaF,
+           Ylist = Ylist, Tlist = Tlist, maxit = maxit.ridgeP.fused, ...)
   }
 
   # Get sensible starting value for lambda (choosing lambdaF to be zero)
@@ -1414,7 +1439,8 @@ optPenalty.fused.LOOCVauto <- function(Ylist,
 
 
 optPenalty.fused <- function(Ylist, Tlist, lambdaF,
-                             approximate = FALSE, grid = FALSE, ...) {
+                             cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                             k = 10, grid = FALSE, ...) {
   ##############################################################################
   # Selection of the optimal penalties w.r.t. to (possibly approximate)
   # LOOCV using multi-dimensional optimization routines. A simple wrapper for
@@ -1428,19 +1454,24 @@ optPenalty.fused <- function(Ylist, Tlist, lambdaF,
   #                 graph to use. The unique elements of lambdaF specify the
   #                 penalties to determine. Pairs can be left out using either
   #                 of "", NA, "NA" or "0".
-  # - approximate > logical. Should approximate LOOCV be used? Defualt is FALSE.
+  # - method      > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
+  #                 sLOOCV, kCV for leave-one-out cross validation (LOOCV),
+  #                 appproximate LOOCV, special LOOCV, and k-fold CV, resp.
+  # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - grid        > logical Should grid based search be used? Default is FALSE.
   # - ...         > arguments passed to optPenalty.fused.LOOCVauto and
   #                 optPenalty.fused.LOOCVgrid
   ##############################################################################
 
+  cv.method <- arg.match(cv.method)
+
   if (grid) {
     res <- optPenalty.fused.LOOCVgrid(Ylist = Ylist, Tlist = Tlist,
-                                      approximate = approximate, ... )
+                                      cv.method = cv.method, k = k, ... )
   } else {
     res <- optPenalty.fused.LOOCVauto(Ylist = Ylist, Tlist = Tlist,
                                       lambdaF = lambdaF,
-                                      approximate = approximate, ...)
+                                      cv.method = cv.method, k = k,...)
   }
   return(res)
 }

@@ -13,10 +13,14 @@ The function support leave-one-out cross-validation (LOOCV) and an approximation
 Depending on the used function, general numerical optimization or a grid-based search is used.
 }
 \usage{
-optPenalty.fused(Ylist, Tlist, lambdaF, approximate = FALSE, grid = FALSE, ...)
+optPenalty.fused(Ylist, Tlist, lambdaF,
+                 cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                 k = 10, grid = FALSE, ...)
 
 # A simple wrapper for:
-optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF, approximate = FALSE,
+optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF,
+                           cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                           k = 10,
                            verbose = TRUE, maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
@@ -24,64 +28,73 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
                            lambdaMin, lambdaMax, step1 = 20,
                            lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
                            step2 = step1,
-                           approximate = FALSE, verbose = TRUE, ...)
+                           cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                           k = 10,
+                           verbose = TRUE, ...)
 }
 \arguments{
   \item{Ylist}{
    A \code{list} of matrices of data with \eqn{n_k} samples in the rows and
    \eqn{p} variables in the columns.
-}
+  }
   \item{Tlist}{
    A \code{list} of the same length as \code{Ylist} of target matrices of size
    \eqn{p} times \eqn{p}.
-}
+  }
   \item{lambdaF}{
    A \code{character} \code{matrix} encoding the class of penalty matrices
    to cross-validate over.
    See \code{\link{default.penalty}} for help on the construction and more
    details. Unused and can be omitted if \code{grid == TRUE}.
-}
-  \item{approximate}{
-  \code{logical}. If \code{TRUE} approximate leave-one-out cross validation is
-  used instead.
-}
+  }
+  \item{cv.method}{
+  \code{character} giving the cross-validation (CV) to use. The allowed values
+  are \code{"LOOCV"}, \code{"aLOOCV"}, \code{"sLOOCV"}, \code{"kCV"} for
+  leave-one-out cross validation (LOOCV), appproximate LOOCV, special LOOCV,
+  and k-fold CV, respectively.
+  }
+  \item{k}{
+  \code{integer} giving the number of approximately equally sized parts each
+  class is partioned into for \eqn{k}-fold CV.
+  Only use if \code{cv.method} is \code{"kCV"}.
+  }
   \item{verbose}{
   \code{logical}. If \code{TRUE} additional messages are written to the terminal.
-}
+  }
   \item{maxit.ridgeP.fused}{
   A \code{integer} giving the maximum number of iterations allowed for each
   fused ridge fit.
-}
+  }
   \item{optimizer}{
   A \code{character} equally either \code{"optim"} or \code{"nlm"} determining
   which optimizer to use.
-}
+  }
   \item{maxit.optimizer}{
   A \code{integer} giving the maximum number of iterations allowed in the
   optimization procedure.
-}
+  }
   \item{debug}{
   \code{logical}. If \code{TRUE} additional output from the optimizer is appended to the
   output as an attribute.
-}
+  }
   \item{lambdaMin}{
   A single positive \code{numeric}. Minimum ridge penalty \eqn{lambda}.
-}
+  }
   \item{lambdaMax}{
   A single positive \code{numeric}. Maximum ridge penalty \eqn{lambda}.
-}
+  }
   \item{step1}{
   A single non-negative \code{integer}. Number grid-points used between \code{lambdaMin} and \code{lambdaMax}.
-}
+  }
   \item{lambdaFMin}{
   A single non-negative \code{numeric}. As for \code{lambdaMin}, but for the fused penalty assuming the complete penalty graph.
-}
+  }
   \item{lambdaFMax}{
   A single non-negative \code{numeric}. As for \code{lambdaMax}, but for the fused penalty assuming the complete penalty graph.
-}
+  }
   \item{step2}{
   A single non-negative \code{integer}. As for \code{step1}, but for the fused penalty.
-}
+  }
   \item{grid}{
   \code{logical.} Should a grid based search be used? Default is \code{FALSE}.
   }
@@ -138,20 +151,32 @@ Tlist <- default.target.fused(Slist, ns, type = "DIAES")
 a <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
                                 lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
                                 lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
-                                approximate = FALSE, maxit = 1000)
+                                cv.method = "LOOCV", maxit = 1000)
 b <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
                                 lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
-                                approximate = TRUE, maxit = 1000)
+                                cv.method = "aLOOCV", maxit = 1000)
+c <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
+                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                                cv.method = "sLOOCV", maxit = 1000)
+d <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
+                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                                cv.method = "kCV", k = 2, maxit = 1000)
 
-
-
-# Numerical optimization
-aa <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = FALSE,
+# Numerical optimization (uses the default "optim" optimizer with method "BFGS")
+aa <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "LOOCV",
                                  method = "BFGS")
 print(aa)
-bb <- optPenalty.fused.LOOCVauto(Ylist, Tlist, approximate = TRUE,
+bb <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "aLOOCV",
                                  method = "BFGS")
 print(bb)
+cc <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "sLOOCV",
+                                 method = "BFGS")
+print(cc)
+dd <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "kCV", k = 2,
+                                 method = "BFGS")
+print(dd)
+
+aa$lambdaFunique
 
 #
 # Plot the results
@@ -160,7 +185,7 @@ print(bb)
 # LOOCV
 # Get minimums and plot
 amin <- log(expand.grid(a$lambda, a$lambdaF))[which.min(a$fcvl), ]
-aamin <- c(log(aa$lambda), log(aa$lambdaF))
+aamin <- c(log(aa$lambda), log(aa$lambdaFunique))
 
 # Plot
 filled.contour(log(a$lambda), log(a$lambdaF), log(a$fcvl), color = heat.colors,
@@ -172,14 +197,13 @@ filled.contour(log(a$lambda), log(a$lambdaF), log(a$fcvl), color = heat.colors,
 # Approximate LOOCV
 # Get minimums and plot
 bmin <- log(expand.grid(b$lambda, b$lambdaF))[which.min(b$fcvl), ]
-bbmin <- c(log(bb$lambda), log(b$lambdaF))
+bbmin <- c(log(bb$lambda), log(unique(bb$lambdaFunique)))
 
 filled.contour(log(b$lambda), log(b$lambdaF), log(b$fcvl), color = heat.colors,
                plot.axes = {points(bmin[1], bmin[2], pch = 16);
                             points(bbmin[1], bbmin[2], pch = 16, col = "purple");
                             axis(1); axis(2)},
                xlab = "lambda", ylab = "lambdaF", main = "Approximate LOOCV")
-
 
 
 #
@@ -196,26 +220,23 @@ Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
 lambdaF <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters,
-# Using optim with method "Nelder-Mead"
+# Using optim with method "Nelder-Mead" with "special" LOOCV
 ans1 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
-                                   approximate = TRUE, verbose = FALSE)
-print(ans1)
-\dontrun{
-# Using optim with method "BFGS"
+                                   cv.method = "sLOOCV", verbose = FALSE)
+print(ans1[c("lambda", "lambdaFunique")])
+
+# By approximate LOOCV using optim with method "BFGS"
 ans2 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
-                                   approximate = TRUE, verbose = FALSE,
+                                   cv.method = "aLOOCV", verbose = FALSE,
                                    method = "BFGS")
-# Using nlm
-print(ans2)
+print(ans2[c("lambda", "lambdaFunique")])
+# By LOOCV using nlm
 ans3 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
-                                   approximate = TRUE, verbose = FALSE,
+                                   cv.method = "LOOCV", verbose = FALSE,
                                    optimizer = "nlm")
-print(ans3)
-}
+print(ans3[c("lambda", "lambdaFunique")])
 # Quite different results!
 
-
-\dontrun{
 
 #
 # Arbitrary penalty graphs with fixed penalties!
@@ -233,8 +254,7 @@ lambdaF[2,1] <- lambdaF[1,2] <- 2
 print(lambdaF)
 
 res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambdaF = lambdaF,
-                                  approximate = TRUE, optimizer = "nlm")
+                                  cv.method = "aLOOCV", optimizer = "nlm")
 print(res)
-}
 }
 
