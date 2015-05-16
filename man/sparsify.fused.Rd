@@ -25,7 +25,9 @@ See \code{\link{sparsify}} for details.
 A \code{list} of the same length as \code{Plist} with the output from \code{\link{sparsify}}.
 }
 \author{
-Anders Ellern Bilgrau
+Anders Ellern Bilgrau \cr
+Wessel N. van Wierigen \cr
+Carel Peeters
 }
 \seealso{
 \code{\link{sparsify}}
