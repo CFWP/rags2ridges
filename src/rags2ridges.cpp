@@ -277,31 +277,27 @@ arma::mat armaFusedUpdateI(int g0,
                            const Rcpp::List & Slist,
                            const Rcpp::List & Tlist,
                            const arma::vec & ns,
-                           const double & lambda,
-                           arma::mat & lambdaF) {
+                           const arma::mat & lambda) {
   /* ---------------------------------------------------------------------------
-   "Update" the g0'th covariance matrix according to the first fusion
-   update scheme and get the fused ridge estimate hereof.
-   - g0          > An integer giving the class estimate to be updated.
-   - Plist       > A list of length G of matrices giving the current precision
-                   estimates.
-   - Slist       > A list of length G of sample correlation matrices the same
-                   size as those of Plist.
-   - Tlist       > A list of length G of target matrices the same size
-                   as those of Plist
-   - ns          > A vector of length G giving the sample sizes.
-   - lambda      > The ridge penalty (a postive number).
-   - lambdaF     > A G by G symmetric adjacency matrix giving the fused
-                   penalty graph with non-negative entries where
-                   lambdaF[g1, g2] determine the (rate of) shrinkage
-                   between estimates in classes corresponding to Slist[g1]
-                   and Slist[g1].
+   Updated the g0'th precision estimate according to the first fused ridge
+   update scheme.
    NOTE: The index starts from zero in C++. This is exported to the R side!
+   NOTE: No check are made that the arguments are of correct type and format.
+   - g0     > An integer between 0 and G giving the class estimate to be
+              updated.
+   - Plist  > A list of G matrices giving the current precision estimates.
+   - Slist  > A list of G sample covariance matrices the same size as in Plist.
+   - Tlist  > A list of length G of target matrices the same size as in Plist
+   - ns     > A vector of length G giving the sample sizes.
+   - lambda > A G by G non-negative symmetric adjacency penalty matrix. The
+              diagonal entries are the ridge penalties and should be strictly
+              postive. The off-diagonal entries are the non-negative fusion
+              penalties. E.g. lambda[g1, g2] determine the (rate of) shrinkage
+              between estimates in classes corresponding to g1 and g2.
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double a = (sum(lambdaF.row(g0)) + lambda)/(ns[g0]);
+  const double lambda_a = sum(lambda.row(g0))/ns[g0];
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
   arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
@@ -311,9 +307,9 @@ arma::mat armaFusedUpdateI(int g0,
      }
      arma::mat O = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
-     Sbar -= (lambdaF(g, g0)/ns(g0))*(O - T);
+     Sbar -= (lambda(g, g0)/ns[g0])*(O - T);
   }
-  return armaRidgeP(Sbar, Tbar, a);
+  return armaRidgeP(Sbar, Tbar, lambda_a);
 }
 
 
@@ -323,25 +319,23 @@ arma::mat armaFusedUpdateIC(int g0,
                             const arma::cube & Scube,
                             const arma::cube & Tcube,
                             const arma::vec ns,
-                            const double lambda,
-                            arma::mat lambdaF) {
+                            const arma::mat lambda) {
   /* ---------------------------------------------------------------------------
    As armaFusedUpdateI above with arma::cube instead of Rcpp::List in the
    arguments.
   --------------------------------------------------------------------------- */
 
   const int G = Scube.n_slices;
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double a = (sum(lambdaF.row(g0)) + lambda)/ns[g0];
+  const double lambda_a = sum(lambda.row(g0))/ns[g0];
 
   arma::mat Sbar = Scube.slice(g0);
   for (int g = 0; g < G; ++g) {
      if (g == g0) {
        continue;
      }
-     Sbar -= (lambdaF(g, g0)/ns(g0))*(Pcube.slice(g) - Tcube.slice(g));
+     Sbar -= (lambda(g, g0)/ns[g0])*(Pcube.slice(g) - Tcube.slice(g));
   }
-  return armaRidgeP(Sbar, Tcube.slice(g0), a);
+  return armaRidgeP(Sbar, Tcube.slice(g0), lambda_a);
 }
 
 
@@ -352,33 +346,27 @@ arma::mat armaFusedUpdateII(int g0,
                             const Rcpp::List & Slist,
                             const Rcpp::List & Tlist,
                             const arma::vec ns,
-                            const double lambda,
-                            arma::mat lambdaF) {
+                            const arma::mat lambda) {
   /* ---------------------------------------------------------------------------
-   "Update" the g0'th covariance matrix according to the second fusion update
-   scheme use the regular ridge estimate hereof.
-   - g0          > An integer giving the class estimate to be updated.
-   - Plist       > A list of length G of matrices giving the current precision
-                   estimates.
-   - Slist       > A list of length G of sample correlation matrices the same
-                   size as those of Plist.
-   - Tlist       > A list of length G of target matrices the same size
-                   as those of Plist
-   - ns          > A vector of length G giving the sample sizes.
-   - lambda      > The ridge penalty (a postive number).
-   - lambdaF  > A G by G symmetric adjacency matrix giving the fused
-                   penalty graph with non-negative entries where
-                   lambdaF[g1, g2] determine the (rate of) shrinkage
-                   between estimates in classes corresponding to Slist[g1]
-                   and Slist[g1].
+   Updates the g0'th precision estimate according to the second fusion update
+   scheme.
    NOTE: The index starts from zero in C++. This is exported to the R side!
+   - g0     > An integer between 0 and G giving the class to be updated.
+   - Plist  > A list of G matrices giving the current precision estimates.
+   - Slist  > A list of G sample covariance matrices the same size as in Plist.
+   - Tlist  > A list of length G of target matrices the same size as in Plist
+   - ns     > A vector of length G giving the sample sizes.
+   - lambda > A G by G non-negative symmetric adjacency penalty matrix. The
+              diagonal entries are the ridge penalties and should be strictly
+              postive. The off-diagonal entries are the non-negative fusion
+              penalties. E.g. lambda[g1, g2] determine the (rate of) shrinkage
+              between estimates in classes corresponding to g1 and g2.
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double rowsum = sum(lambdaF.row(g0));
-  const double a = (rowsum + lambda)/ns[g0];
-  const double b = (rowsum + lambda - 1)/ns(g0);
+  const double lambdasum = sum(lambda.row(g0));
+  const double a = lambdasum/ns[g0];
+  const double b = (lambdasum - 1.0)/ns[g0];
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
   arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
@@ -392,8 +380,8 @@ arma::mat armaFusedUpdateII(int g0,
      }
      arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
-     Psum += lambdaF(g0, g)*P;
-     Tsum += (lambdaF(g0, g)/ns(g0))*T;
+     Psum += lambda(g0, g)*P;
+     Tsum += (lambda(g0, g)/ns[g0])*T;
   }
 
   Sbar += b*Psum + Tsum;
@@ -408,8 +396,7 @@ arma::mat armaFusedUpdateIIC(int g0,
                              const arma::cube & Scube,
                              const arma::cube & Tcube,
                              const arma::vec ns,
-                             const double lambda,
-                             arma::mat lambdaF) {
+                             const arma::mat lambda) {
   /* ---------------------------------------------------------------------------
    As armaFusedUpdateII above with arma::cube instead of Rcpp::List in the
    arguments.
@@ -418,10 +405,9 @@ arma::mat armaFusedUpdateIIC(int g0,
   const int G = Scube.n_slices;
   const int p = Scube.n_rows;
 
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double rowsum = sum(lambdaF.row(g0));
-  const double a = (rowsum + lambda)/ns[g0];
-  const double b = (rowsum + lambda - 1)/ns(g0);
+  const double lambdasum = sum(lambda.row(g0));
+  const double a = lambdasum/ns[g0];
+  const double b = (lambdasum - 1.0)/ns(g0);
 
   arma::mat Sbar = Scube.slice(g0);
   arma::mat Tbar = Tcube.slice(g0);
@@ -431,8 +417,8 @@ arma::mat armaFusedUpdateIIC(int g0,
      if (g == g0) {
        continue;
      }
-     Psum += lambdaF(g0, g)*Pcube.slice(g);
-     Tsum += (lambdaF(g0, g)/ns(g0))*Tcube.slice(g);
+     Psum += lambda(g0, g)*Pcube.slice(g);
+     Tsum += (lambda(g0, g)/ns[g0])*Tcube.slice(g);
   }
 
   Sbar += b*Psum + Tsum;
@@ -448,31 +434,25 @@ arma::mat armaFusedUpdateIII(int g0,
                              const Rcpp::List & Slist,
                              const Rcpp::List & Tlist,
                              const arma::vec & ns,
-                             const double & lambda,
-                             arma::mat & lambdaF) {
+                             const arma::mat & lambda) {
   /* ---------------------------------------------------------------------------
-   "Update" the g0'th covariance matrix according to the third fusion update
-   scheme use the regular ridge estimate hereof.
-   - g0          > An integer giving the class estimate to be updated.
-   - Plist       > A list of length G of matrices giving the current precision
-                   estimates.
-   - Slist       > A list of length G of sample correlation matrices the same
-                   size as those of Plist.
-   - Tlist       > A list of length G of target matrices the same size
-                   as those of Plist
-   - ns          > A vector of length G giving the sample sizes.
-   - lambda      > The ridge penalty (a postive number).
-   - lambdaF  > A G by G symmetric adjacency matrix giving the fused
-                   penalty graph with non-negative entries where
-                   lambdaF[g1, g2] determine the (rate of) shrinkage
-                   between estimates in classes corresponding to Slist[g1]
-                   and Slist[g1].
+   Updates the g0'th precision matrix according to the third fusion update
+   scheme.
    NOTE: The index starts from zero in C++. This is exported to the R side!
+   - g0     > An integer giving the class estimate to be updated.
+   - Plist  > A list of G matrices giving the current precision estimates.
+   - Slist  > A list of G sample covariance matrices the same size as in Plist.
+   - Tlist  > A list of length G of target matrices the same size as in Plist
+   - ns     > A vector of length G giving the sample sizes.
+   - lambda > A G by G non-negative symmetric adjacency penalty matrix. The
+              diagonal entries are the ridge penalties and should be strictly
+              postive. The off-diagonal entries are the non-negative fusion
+              penalties. E.g. lambda[g1, g2] determine the (rate of) shrinkage
+              between estimates in classes corresponding to g1 and g2.
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double lambdasum = sum(lambdaF.row(g0)) + lambda;
+  const double lambdasum = sum(lambda.row(g0));
   const double a = lambdasum/ns[g0];
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
@@ -483,7 +463,7 @@ arma::mat armaFusedUpdateIII(int g0,
      }
      arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
-     Tbar += (lambdaF(g0, g)/lambdasum)*(P - T);
+     Tbar += (lambda(g0, g)/lambdasum)*(P - T);
   }
 
   return armaRidgeP(Sbar, Tbar, a);
@@ -495,23 +475,21 @@ arma::mat armaFusedUpdateIIIC(int g0,
                               const arma::cube & Pcube,
                               const arma::cube & Scube,
                               const arma::cube & Tcube,
-                              const arma::vec ns,
-                              const double lambda,
-                              arma::mat lambdaF) {
+                              const arma::vec & ns,
+                              const arma::mat & lambda) {
   /* ---------------------------------------------------------------------------
    As armaFusedUpdateIII with arma::cube instead of Rcpp::List
   --------------------------------------------------------------------------- */
 
   const int G = Scube.n_slices;
-  lambdaF(g0, g0) = 0;  // Make sure entry (g0, g0) is zero
-  const double lambdasum = sum(lambdaF.row(g0)) + lambda;
+  const double lambdasum = sum(lambda.row(g0));
   const double a = lambdasum/ns[g0];
   arma::mat Tbar = Tcube.slice(g0);
   for (int g = 0; g < G; ++g) {
      if (g == g0) {
        continue;
      }
-     Tbar += (lambdaF(g0, g)/lambdasum)*(Pcube.slice(g) - Tcube.slice(g));
+     Tbar += (lambda(g0, g)/lambdasum)*(Pcube.slice(g) - Tcube.slice(g));
   }
 
   return armaRidgeP(Scube.slice(g0), Tbar, a);
@@ -523,27 +501,23 @@ arma::mat armaFusedUpdateIIIC(int g0,
 Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::vec & ns,
                             const Rcpp::List & Tlist,
-                            const double & lambda,
-                            arma::mat & lambdaF,
+                            const arma::mat & lambda,
                             const Rcpp::List & Plist,
                             const int maxit = 100,
                             const double eps = 1e-5,
                             const bool verbose = false) {
   /* ---------------------------------------------------------------------------
-   The fused ridge estimate workhorse function for a given lambda and
-   lambdaF.
-   - Slist   > A list of length G of sample correlation matrices the same size
-               as those of Plist.
-   - Tlist   > A list of length G of target matrices the same size
-               as those of Plist. Default is given by default.target.
+   The fused ridge estimate workhorse function for a given lambda.
+   - Slist   > A list of G of sample covariance matrices of the same size.
+   - Tlist   > A list of G of p.d. target matrices the same size as in Slist.
    - ns      > A vector of length G giving the sample sizes.
-   - lambda  > The ridge penalty (a stictly postive number)
-   - lambdaF > The G by G symmetric adjacency matrix fused penalty graph
-               with non-negative entries where lambdaF[g1, g2] determine the
-               retainment of similarities between estimates in classes
-               corresponding to Slist[g1] and Slist[g1].
-   - Plist   > A list of length G of symmetric p.d. matrices serves as initial
-               estimates of the algorithm.
+   - lambda  > A G by G non-negative symmetric adjacency penalty matrix. The
+               diagonal entries are the ridge penalties and should be strictly
+               postive. The off-diagonal entries are the non-negative fusion
+               penalties. E.g. lambda[g1, g2] determine the (rate of) shrinkage
+               between estimates in classes corresponding to g1 and g2.
+   - Plist   > A list of length G of symmetric p.d. matrices that serves as
+               initial estimates of the algorithm.
    - maxit   > integer. The maximum number of interations, default is 100.
    - eps     > numeric. A positive convergence criterion. Default is 1e-5.
    - verbose > logical. Should the function print extra info. Defaults to false.
@@ -552,7 +526,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
   const int G = Slist.size();
 
   // Initialize
-  const double lambdasize = lambda + accu(lambdaF);
+  const double lambdasize = accu(lambda);  // Sum of all entries
   double delta;
   arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
   arma::mat tmp;
@@ -563,12 +537,10 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
       if (lambdasize < 1e50) {
         // Update I is faster but unstable for very large lambda
-        Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns,
-                                        lambda, lambdaF);
+        Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns, lambda);
       } else {
         // Update III is slower but more stable for very large lambda
-        Plist_out(g) = armaFusedUpdateIII(g, Plist_out, Slist, Tlist, ns,
-                                          lambda, lambdaF);
+        Plist_out(g) = armaFusedUpdateIII(g, Plist_out, Slist, Tlist,ns,lambda);
       }
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
     }

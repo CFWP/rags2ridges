@@ -28,15 +28,17 @@ For details on the columns see \code{\link{GGMnetworkStats}}.
 \code{\link{GGMnetworkStats}}
 }
 \examples{
-## Create some (high-dimensional) data
-p <- 15
-ns <- c(10, 11)
+## Create some "high-dimensional" data
+set.seed(1)
+p <- 10
+ns <- c(5, 6)
 Slist <- createS(ns, p)
 
 ## Obtain sparsified partial correlation matrix
-Plist    <- ridgeP.fused(Slist, ns, lambda = 10, lambdaF = 10, verbose = FALSE)
+Plist    <- ridgeP.fused(Slist, ns, lambda = c(5.2, 1.3), verbose = FALSE)
 PCsparse <- sparsify.fused(Plist , threshold = "top")
 
 ## Calculate GGM network statistics in each class
 GGMnetworkStats.fused(Plist)
+
 }

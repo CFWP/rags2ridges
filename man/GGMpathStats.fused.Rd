@@ -33,11 +33,11 @@ Anders Ellern Bilgrau
 ## Obtain some (high-dimensional) data
 set.seed(10)
 ns <- c(10, 11)
-Slist <- createS(ns, 7)
+Slist <- createS(ns, p = 7)
 Tlist <- default.target.fused(Slist, ns)
 
 ## Obtain regularized precision and sparsify
-Plist <- ridgeP.fused(Slist, ns, Tlist, lambda = 0.3, lambdaF = 1.5)
+Plist <- ridgeP.fused(Slist, ns, Tlist, lambda = c(0.2, 1.6))
 sparsePlist <- sparsify.fused(Plist, threshold = "absValue", absValueCut = 0.20)
 sparsePlist <- lapply(sparsePlist, "[[", "sparsePrecision")
 

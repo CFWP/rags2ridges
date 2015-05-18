@@ -1,62 +1,64 @@
 \name{ridgeP.fused}
 \alias{ridgeP.fused}
 \title{
-  Fused ridge precision estimation
+  Fused ridge estimation
 }
 \description{
-  Performs the fused ridge estimation of multiple precision matrices in
-  cases where multiple classes of data is present for given penalties.
+  Performs fused ridge estimation of multiple precision matrices in
+  cases where multiple classes of data is present for given a penalty matrix.
 }
 \usage{
 ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
-             lambda, lambdaF, Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
+             lambda, Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
 }
 \arguments{
   \item{Slist}{
-    A \code{list} of length \eqn{K} of covariance matrices, i.e. square,
+    A \code{list} of length \eqn{G} of covariance matrices, i.e. square,
     symmetric \code{numeric} matrices of the same size.
-    The \eqn{i}th matrix correspond to the \eqn{i}th class.
-}
+    The \eqn{g}th matrix should correspond to the \eqn{g}th class.
+  }
   \item{ns}{
-    A \code{numeric} vector of sample sizes on which the matrices in \code{Slist}
-    are based.
-}
+    A \code{numeric} vector of sample sizes on which the matrices in
+    \code{Slist} are based.
+    I.e. \code{ns[g]} correspond to \code{Slist[[g]]}.
+  }
   \item{Tlist}{
-    A \code{list} of length \eqn{K} of \code{numeric} target matrices the same sizes
-    as in \code{Slist}.
+    A \code{list} of length \eqn{G} of \code{numeric} p.d. target matrices
+    corresponding to the matrices in \code{Slist}.
     If not supplied, the default is given by \code{\link{default.target}}.
-}
+  }
   \item{lambda}{
-    A single \code{numeric} giving the regular ridge penalty used.
-}
-  \item{lambdaF}{
-    The fused penalty matrix or the fused penalty.
-    A symmetric \code{numeric} \code{matrix} of size \eqn{K} times \eqn{K}
-    giving the pair-specific penalties.
-    I.e. \code{lambdaF[i, j]} is the fused penalty given applied on the pairing
-    between classes \eqn{i} and \eqn{j}.
-    Alternatively, can be a single \code{numeric} giving the fused penalty
-    assuming the complete penalty graph, i.e. \code{lambdaF[i,j]} equals
-    \code{lambdaF} for all \eqn{i} and \eqn{j}.
-    Provides an alternative interface.
-}
+    The \eqn{G} by \eqn{G} penalty matrix.
+    That is, a symmetric, non-negative \code{numeric} \code{matrix} of size
+    \eqn{G} times \eqn{G} giving the class- and pair-specific penalties.
+    The diagonal entries are the class specific ridge penalties.
+    I.e. \code{lambda[i, i]} is the ridge penalty for class \eqn{i}.
+    The off-diagonal entries are the pair-specific fusion penalties.
+    I.e. \code{lambda[i, j]} is the fusion penalty applied on the pair
+    of classes \eqn{i} and \eqn{j}.
+
+    Alternatively, can be supplied as a \code{numeric} of length 1 or 2.
+    If a single number, a diagonal penalty with lambda in the diagonal is used
+    If supplied as a \code{numeric} vector of two numbers, the first is used as
+    a common ridge penalty and the second as a common fusion penalty.
+  }
   \item{Plist}{
     An optional \code{list} of initial starting values for the algorithm,
     i.e. a list of precision matrices of the same size as \code{Slist}.
     Can be omitted. Default is the (regular) ridge precision estimate using
     the pooled covariance matrix.
-}
+  }
   \item{maxit}{
     A single \code{integer} giving the maximum number of allowed iterations.
     Can be set to \code{Inf}.
     If \code{maxit} is hit, a warning is given.
-}
+  }
   \item{verbose}{
     \code{logical}. Set to \code{TRUE} for extra output.
-}
+  }
   \item{eps}{
-    A single postive \code{numeric} giving the convergence threshold.
-}
+    A single positive \code{numeric} giving the convergence threshold.
+  }
 }
 \details{
 Performs a coordinate ascent to find the maximum likelihood of the fused
@@ -90,14 +92,15 @@ str(Slist, max.level = 2)  # The structure of Slist
 #
 # Estimate the precisions (using the complete penalty graph)
 #
-res1 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = 2)
+
+res1 <- ridgeP.fused(Slist, ns, lambda = c(1.3, 2.1))
 print(res1)
 
 # The same using the penalty matrix (the diagnal is ignored)
-mylambdaF <- matrix(c(0,2,2,
-                         2,0,2,
-                         2,2,0), 3, 3, byrow = TRUE)
-res2 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = mylambdaF)
+mylambda  <- matrix(c(1.3, 2.1, 2.1,
+                      2.1, 1.3, 2.1,
+                      2.1, 2.1, 1.3), 3, 3, byrow = TRUE)
+res2 <- ridgeP.fused(Slist, ns, lambda = mylambda)
 stopifnot(all.equal(res1, res2))
 
 
@@ -107,25 +110,24 @@ stopifnot(all.equal(res1, res2))
 #
 
 # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
-mylambdaF[1,3] <- mylambdaF[3,1] <- 0
-print(mylambdaF)
-res3 <- ridgeP.fused(Slist, ns, lambda = 0.3, lambdaF = mylambdaF)
-# which is not the same as res2 and res1 now!
+mylambda[1,3] <- mylambda[3,1] <- 0
+print(mylambda)
+res3 <- ridgeP.fused(Slist, ns, lambda = mylambda)
+# which similar to, but not the same as res1 and res2.
 
 
 #
-# Using other and custom target matrices
+# Using other custom target matrices
 #
 
 # Construct a custom target list
 myTlist <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
-res4 <- ridgeP.fused(Slist, ns, Tlist = myTlist, lambda = 0.3, lambdaF = 0.2)
+res4 <- ridgeP.fused(Slist, ns, Tlist = myTlist, lambda = c(1.3, 2.1))
 print(res4)
 
-# Alternative, see ?default.target
-myTlist2 <- lapply(Slist, default.target, type = "Null")  # For the null target
-res5 <- ridgeP.fused(Slist, ns, Tlist = myTlist2, lambda = 0.3, lambdaF = 0.2)
+# Alternative, see ?default.target.fused
+myTlist2 <- default.target.fused(Slist, ns, type = "Null")  # For the null target
+res5 <- ridgeP.fused(Slist, ns, Tlist = myTlist2, lambda = c(1.3, 2.1))
 print(res5)
-
 }
 

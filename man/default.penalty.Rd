@@ -16,9 +16,9 @@
 }
 \arguments{
   \item{G}{
-    A \code{numeric} giving the number of classes. Can also be a \code{list} of length
-    \code{G} such as the usual argument \code{Slist} from other \pkg{rags2ridges}
-    functions.
+    A \code{numeric} giving the number of classes. Can also be a \code{list} of
+    length \code{G} such as the usual argument \code{Slist} from other
+    \pkg{rags2ridges} functions.
     Can be omitted if \code{df} is given.
   }
   \item{df}{
@@ -56,7 +56,7 @@
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
-(in preparation) "Fused Ridge Estimation of Multiple Inverse Covariance
+(In preparation) "Targeted Fused Ridge Estimation of Multiple Inverse Covariance
 Matrices from High-Dimensional Data Classes"
 }
 \author{
@@ -66,7 +66,7 @@ Matrices from High-Dimensional Data Classes"
 }
 \seealso{
   \code{\link{ridgeP.fused}},
-  \code{\link{optPenalty.fused.LOOCVauto}},
+  \code{\link{optPenalty.fused}},
   \code{\link{default.target}}
 }
 \examples{
