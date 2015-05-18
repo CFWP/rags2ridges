@@ -10,7 +10,7 @@ matrices are equal and thus the necessity for the fusion penalty.
 Note, the test performed is conditional on the supplied penalties and targets.
 }
 \usage{
-fused.test(Ylist, Tlist, lambda, lambdaF, n.permutations = 100,
+fused.test(Ylist, Tlist, lambda, n.permutations = 100,
            verbose = FALSE, ...)
 }
 \arguments{
@@ -23,10 +23,8 @@ fused.test(Ylist, Tlist, lambda, lambdaF, n.permutations = 100,
     as \code{Ylist}-
   }
   \item{lambda}{
-    A \code{numeric} giving the ridge penalty parameter.
-  }
-  \item{lambdaF}{
-    A \eqn{G} by \eqn{G} \code{matrix} giving the fusion penalties.
+    A non-negative, symmetric \eqn{G} by \eqn{G} \code{matrix} giving the
+    ridge and fusion penalties.
   }
   \item{n.permutations}{
     The number of permutations to approximate the null distribution.
@@ -67,8 +65,9 @@ Ylist <- createS(ns, p = 15, topology = "banded", dataset = TRUE)
 Tlist <- replicate(length(ns), diag(15), simplify = FALSE)
 
 # Do the test
-ft <- fused.test(Ylist, Tlist, lambda = 1,
-                 lambdaF = matrix(10, 3, 3),
+lm <- matrix(10, 3, 3)
+diag(lm) <- 1
+ft <- fused.test(Ylist, Tlist, lambda = lm,
                  n.permutations = 500)
 print(ft)
 

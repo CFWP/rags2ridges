@@ -1665,16 +1665,15 @@ default.penalty <- function(G, df,
 
 
 
-fused.test <- function(Ylist, Tlist, lambda, lambdaF,
+fused.test <- function(Ylist, Tlist, lambda,
                        n.permutations = 100, verbose = FALSE, ...) {
   ##############################################################################
   # Function for testing the null hypothesis that all population precision
   # matrices are equal. Note, the test performed is conditional on the
   # supplied penalties and targets.
-  # - Ylist > A list of observation matrices for each class.
-  # - Tlist > A list of target matrices.
-  # - lambda  > The ridge penalty
-  # - lambdaF > The fused penalty matrix
+  # - Ylist  > A list of G observation matrices for each class.
+  # - Tlist  > A list of G p.d. target matrices.
+  # - lambda > The non-negative, symmetric G by G penalty matrix
   # - n.permutations > The number of permutation to perform
   # - verbose        > Print out extra progress information
   # - ...            > Arguments passed to ridgeP.fused
@@ -1683,8 +1682,8 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   ##############################################################################
 
   stopifnot(length(Ylist) == length(Tlist))
-  stopifnot(nrow(lambdaF) == length(Ylist))
-  stopifnot(ncol(lambdaF) == length(Ylist))
+  stopifnot(nrow(lambda) == length(Ylist))
+  stopifnot(ncol(lambda) == length(Ylist))
 
   G <- length(Ylist)
   ns <- sapply(Ylist, nrow)
@@ -1698,11 +1697,10 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
   Plist.obs <- list()
   for (i in seq_len(G)) {
     Plist.obs[[i]] <- .armaRidgeP(Spool.obs, target = Tlist[[i]],
-                                  lambda = lambda.null)
+                                  lambda = lambda.null[i,i])
   }
-  Uobs <- .scoreStatistic(Plist = Plist.obs,
-                          Slist = Slist,
-                          ns = ns)
+
+  Uobs <- .scoreStatistic(Plist = Plist.obs, Slist = Slist, ns = ns)
 
   # Approximate null distribution by permutation
   if (verbose) {message("Computing the score statistics under permutation... ")}
@@ -1714,11 +1712,11 @@ fused.test <- function(Ylist, Tlist, lambda, lambdaF,
     for (i in seq_len(G)) {
       Plist.null[[i]] <- .armaRidgeP(Spool.tmp,
                                      target = Tlist[[i]],
-                                     lambda = lambda.null)
+                                     lambda = lambda.null[i,i])
     }
     Unull[j] <- .scoreStatistic(Plist = Plist.null,
-                                Slist = lapply(Ylist.tmp, covML),
-                                ns = ns)
+                                Slist = lapply(Ylist.tmp, covML), ns = ns)
+
     if (verbose && j %% 10 == 0) {
       cat(sprintf("%d of %d done\n", j, n.permutations))
     }
