@@ -58,7 +58,7 @@ is.Xlist <- function(Xlist, Ylist = FALSE) {
 
   xlist <- deparse(substitute(Xlist))
   if (!is.list(Xlist)) {
-    stop(xlist, "should be a list")
+    stop(xlist, " should be a list")
   }
   if (!all(sapply(Xlist, is.matrix))) {
     stop("All elements of ", xlist, " should be matrices")
