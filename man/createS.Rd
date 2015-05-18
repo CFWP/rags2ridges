@@ -115,7 +115,7 @@ round(solve(C3), 1)
 C5 <- createS(2000, p = 10, topology = "clique", m = 5)
 round(solve(C5), 1)
 
-## Can also return the precision matrix too see what happens
+## Can also return the precision matrix to see what happens
 ## m = 2 blocks, each "banded" with 4 off-diagonal bands
 round(createS(1, 12, "banded", m = 2, banded.n = 4, precision = TRUE), 2)
 
