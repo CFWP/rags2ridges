@@ -33,7 +33,7 @@
     .Call('rags2ridges_armaFusedUpdateIII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda, lambdaF)
 }
 
-.armaRidgeP_fused <- function(Slist, ns, Tlist, lambda, lambdaF, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
+.armaRidgeP.fused <- function(Slist, ns, Tlist, lambda, lambdaF, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
     .Call('rags2ridges_armaRidgeP_fused', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, lambdaF, Plist, maxit, eps, verbose)
 }
 

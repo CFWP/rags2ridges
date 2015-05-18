@@ -522,7 +522,7 @@ arma::mat armaFusedUpdateIIIC(int g0,
 
 
 
-// [[Rcpp::export(.armaRidgeP_fused)]]
+// [[Rcpp::export(.armaRidgeP.fused)]]
 Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::vec & ns,
                             const Rcpp::List & Tlist,

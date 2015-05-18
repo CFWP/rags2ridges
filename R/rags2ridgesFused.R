@@ -850,7 +850,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
 
   # Overwrite the starting estimate with the fused estimate
   Plist <-
-    .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
+    .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist, lambda = lambda,
                       lambdaF = lambdaF, Plist = Plist, maxit = maxit,
                       eps = eps, verbose = verbose)
 
@@ -893,7 +893,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
   # - Plist   > Initial estimates
-  # - ...     > Arguments passed to .armaRidgeP_fused
+  # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
   G <- length(Ylist)
@@ -918,7 +918,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       Slist <- Slist.org
       Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
 
-      Plist <- .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist,
+      Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
                                  lambda = lambda, lambdaF = lambdaF,
                                  Plist = Plist, verbose = FALSE, ...)
 
@@ -949,7 +949,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # - k       > The fold of the cross validation. I.e. k is the number of
   #             roughly equally sized parts the samples for each class are
   #             partitioned into. Hence G times k is the total number of parts.
-  # - ...     > Arguments passed to .armaRidgeP_fused
+  # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
   G <- length(Ylist)
@@ -982,7 +982,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
       ns[g] <- ns[g] - nrow(Ylist.sp[[g]][[i]])
       Slist[[g]] <- covML(do.call("rbind", Ylist.sp[[g]][-i]))
 
-      Plist <- .armaRidgeP_fused(Slist = Slist, ns = ns, Tlist = Tlist,
+      Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
                                  lambda = lambda, lambdaF = lambdaF,
                                  Plist = Plist, verbose = FALSE, ...)
 
@@ -1008,7 +1008,7 @@ ridgeP.fused <- function(Slist, ns, Tlist = default.target.fused(Slist, ns),
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
   # - Plist   > Initial estimates
-  # - ...     > Arguments passed to .armaRidgeP_fused and ridgeP.fused
+  # - ...     > Arguments passed to .armaRidgeP.fused and ridgeP.fused
   ##############################################################################
 
   G <- length(Ylist)

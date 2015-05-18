@@ -1,6 +1,6 @@
-context("Unit test of the armaRidgeP_fused function")
+context("Unit test of the .armaRidgeP.fused function")
 
-armaRidgeP_fused <- rags2ridges:::.armaRidgeP_fused
+armaRidgeP.fused <- rags2ridges:::.armaRidgeP.fused
 armaRidgeP       <- rags2ridges:::.armaRidgeP
 
 # Random number of sample, random number of classes
@@ -11,7 +11,7 @@ tgt <- default.target.fused(S, n)
 G <- length(n)
 
 
-test_that("armaRidgeP_fused returns proper format", {
+test_that("armaRidgeP.fused returns proper format", {
 
   test.lambdas <- c(1e-200, 1e-100, 1e-50, 1e-10, 1, 1e10, 1e50, 1e100,
                     1e200, 1e300, 1e500, Inf)
@@ -19,7 +19,7 @@ test_that("armaRidgeP_fused returns proper format", {
 
   for (l in test.lambdas) {
 
-    res <- armaRidgeP_fused(S, n, tgt, l, lF, Plist = tgt)
+    res <- armaRidgeP.fused(S, n, tgt, l, lF, Plist = tgt)
 
     expect_that(res, is_a("list"))
     expect_that(length(res), equals(G))
@@ -33,12 +33,12 @@ test_that("armaRidgeP_fused returns proper format", {
 
 })
 
-test_that("armaRidgeP_fused ignores the diagonal in lambdaF", {
+test_that("armaRidgeP.fused ignores the diagonal in lambdaF", {
 
   lF <- matrix(1, G, G)
-  res.diag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
+  res.diag <- armaRidgeP.fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
   diag(lF) <- 0
-  res.nodiag <- armaRidgeP_fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
+  res.nodiag <- armaRidgeP.fused(S, n, tgt, lambda = 1, lambdaF = lF, tgt)
 
   expect_that(res.nodiag, equals(res.diag))  # Returns numeric (dobule)
 
@@ -128,7 +128,7 @@ environment(ridgeP.fused.old) <- asNamespace('rags2ridges')
 
 
 # TESTING
-test_that("armaRidgeP_fused agrees with the R implmentation", {
+test_that("armaRidgeP.fused agrees with the R implmentation", {
 
   lambda <- abs(rcauchy(n = 1))
   Spool <- pooledS(S, n, mle = FALSE)
@@ -141,7 +141,7 @@ test_that("armaRidgeP_fused agrees with the R implmentation", {
 
   res_old <- ridgeP.fused.old(S, n, tgt, lambda, lambdaF,
                               maxit = 1000, eps = 1e-10, verbose = FALSE)
-  res_new <- armaRidgeP_fused(S, n, tgt, lambda, lambdaF, P,
+  res_new <- armaRidgeP.fused(S, n, tgt, lambda, lambdaF, P,
                               maxit = 1000, eps = 1e-10, verbose = FALSE)
 
   expect_that(res_new, is_equivalent_to(res_old))
