@@ -296,9 +296,7 @@ arma::mat armaFusedUpdateI(int g0,
                    lambdaF[g1, g2] determine the (rate of) shrinkage
                    between estimates in classes corresponding to Slist[g1]
                    and Slist[g1].
-
-   NOTE1: The C++ implmentation of .fusedUpdateI.
-   NOTE2: The index starts from zero in C++. This is exported to the R side!
+   NOTE: The index starts from zero in C++. This is exported to the R side!
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
@@ -373,8 +371,7 @@ arma::mat armaFusedUpdateII(int g0,
                    lambdaF[g1, g2] determine the (rate of) shrinkage
                    between estimates in classes corresponding to Slist[g1]
                    and Slist[g1].
-    NOTE1: The C++ implmentation of .fusedUpdateII.
-    NOTE2: The indexing starts in zero.
+   NOTE: The index starts from zero in C++. This is exported to the R side!
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
@@ -470,7 +467,7 @@ arma::mat armaFusedUpdateIII(int g0,
                    lambdaF[g1, g2] determine the (rate of) shrinkage
                    between estimates in classes corresponding to Slist[g1]
                    and Slist[g1].
-    NOTE: The C++ implementaiton of .fusedUpdateIII.
+   NOTE: The index starts from zero in C++. This is exported to the R side!
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
