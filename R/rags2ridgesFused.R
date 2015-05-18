@@ -700,8 +700,7 @@ ridgeP.fused <- function(Slist,
                          Plist,
                          maxit = 100L, verbose = TRUE, eps = 1e-4) {
   ##############################################################################
-  # - The user function for the fused ridge estimate for a given
-  #   lambda and lambdaF.
+  # - The user function for the fused ridge estimate for a given lambda.
   # - Slist   > A list of length G of sample correlation matrices the same size
   #             as those of Plist.
   # - Tlist   > A list of length G of target matrices the same size
@@ -710,7 +709,7 @@ ridgeP.fused <- function(Slist,
   # - lambda  > A numeric non-negative symmetric G by G penalty matrix giving
   #             the penalties of the fused ridge estimator. The diagonal entries
   #             correspond to the class ridge penalites. The off-diagonal
-  #             entries, lambdaF[g1, g2] say, determine the retainment of
+  #             entries, lambda[g1, g2] say, determine the retainment of
   #             similarities between estimates in classes g1 and g2.
   #             If lambda is a single number, a diagonal penalty with lambda in
   #             the diagonal is used (lambda*diag(G)).
@@ -1081,7 +1080,7 @@ ridgeP.fused <- function(Slist,
 
 .reconstructLambda <- function(lambdas, parsedLambda, G) {
   ##############################################################################
-  # - Reconstruct the numeric penalty matrix lambdaF from a vector (lambdas)
+  # - Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
   #   of penalties using the .parseLambda output.
   # - lambdas      > A numeric vector of the penalties. The length of lambdas
   #                  is the number of non-fixed entries in parsedLambda
@@ -1114,7 +1113,7 @@ ridgeP.fused <- function(Slist,
 
 # .reconstructLambda2 <- function(lambdas, lambda) {
 #   ##############################################################################
-#   # Reconstruct the numeric penalty matrix lambdaF from a vector (lambdas)
+#   # Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
 #   # of penalties using the .parseLambda output. Alternative to reconstructLambda
 #   # - lambdas > A numeric vector of the penalties. The length of lambdas
 #   #             is the number of non-fixed entries in parsedLambda
@@ -1284,11 +1283,6 @@ optPenalty.fused.LOOCVauto <-
   # - debug              > logical. If TRUE the raw output from the optimizer is
   #                        appended as an attribute to the output.
   # - ...                > arguments passed to the optimizer.
-  #
-  # The function returns a list of length 4 with entries (1) lambda,
-  # (2) lambdaF, (3) the optimal penalty matrix lambdaF, and (4) the value of
-  # the loss in the optimum. If lambdaF is the complete graph, then lambdaF
-  # is given. Otherwise lambdaF is NA.
   ##############################################################################
 
   cv.method <- match.arg(cv.method)
@@ -1299,7 +1293,7 @@ optPenalty.fused.LOOCVauto <-
     diag(lambda) <- "ridge"
   }
 
-  parsedLambda <- rags2ridges:::.parseLambda(lambda)
+  parsedLambda <-.parseLambda(lambda)
 
   ridge <- names(parsedLambda) %in% unique.default(diag(lambda))
   suppressWarnings({
@@ -1423,14 +1417,14 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   #            optPenalty.fused.LOOCVgrid
   ##############################################################################
 
-  cv.method <- arg.match(cv.method)
+  cv.method <- match.arg(cv.method)
 
   if (grid) {
     res <- optPenalty.fused.LOOCVgrid(Ylist = Ylist, Tlist = Tlist,
                                       cv.method = cv.method, k = k, ... )
   } else {
     res <- optPenalty.fused.LOOCVauto(Ylist = Ylist, Tlist = Tlist,
-                                      lambdaF = lambdaF,
+                                      lambda = lambda,
                                       cv.method = cv.method, k = k,...)
   }
   return(res)

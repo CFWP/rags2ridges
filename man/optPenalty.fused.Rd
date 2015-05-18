@@ -201,7 +201,7 @@ print(bb)
 cc <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "sLOOCV",
                                  method = "BFGS")
 print(cc)
-dd <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "kCV", k = 2,
+dd <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "kCV", k = 3,
                                  method = "BFGS")
 print(dd)
 
@@ -249,20 +249,20 @@ lambda <- default.penalty(df, type = "CartesianUnequal")
 
 # Find optimal parameters,
 # Using optim with method "Nelder-Mead" with "special" LOOCV
-ans1 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda = lambda,
-                                   cv.method = "sLOOCV", verbose = FALSE)
+ans1 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+                         cv.method = "sLOOCV", verbose = FALSE)
 print(ans1$lambda.unique)
 
 # By approximate LOOCV using optim with method "BFGS"
-ans2 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda = lambda,
-                                   cv.method = "aLOOCV", verbose = FALSE,
-                                   method = "BFGS")
+ans2 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+                         cv.method = "aLOOCV", verbose = FALSE,
+                         method = "BFGS")
 print(ans2$lambda.unique)
 
 # By LOOCV using nlm
-ans3 <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda = lambda,
-                                   cv.method = "LOOCV", verbose = FALSE,
-                                   optimizer = "nlm")
+ans3 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+                         cv.method = "LOOCV", verbose = FALSE,
+                         optimizer = "nlm")
 print(ans3$lambda.unique)
 
 # Quite different results!
@@ -283,8 +283,8 @@ print(lambda)  # Say we want to penalize the pair (1,2) with strength 2.1;
 lambda[2,1] <- lambda[1,2] <- 2.1
 print(lambda)
 
-res <- optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda = lambda,
-                                  cv.method = "aLOOCV", optimizer = "nlm")
+res <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+                        cv.method = "aLOOCV", optimizer = "nlm")
 print(res)
 }
 
