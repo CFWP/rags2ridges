@@ -1064,11 +1064,10 @@ ridgeP.fused <- function(Slist,
   stopifnot(is.matrix(lambda))
   stopifnot(nrow(lambda) == ncol(lambda))
 
-  lambda[is.na(lambda)] <- ""
-  lambda[lambda %in% c("0", "NA")] <- ""
+  lambda[is.na(lambda)] <- "0"
+  lambda[lambda %in% c("", "NA")] <- "0"
 
   lvls <- unique.default(lambda)
-  lvls <- lvls[lvls != ""]
 
   # For each non-empty level get boolean matrices
   parsedLambda <- lapply(lvls, function(l) which(l == lambda, arr.ind = TRUE))
@@ -1108,49 +1107,6 @@ ridgeP.fused <- function(Slist,
   }
   return(lambda)
 }
-
-
-
-# .reconstructLambda2 <- function(lambdas, lambda) {
-#   ##############################################################################
-#   # Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
-#   # of penalties using the .parseLambda output. Alternative to reconstructLambda
-#   # - lambdas > A numeric vector of the penalties. The length of lambdas
-#   #             is the number of non-fixed entries in parsedLambda
-#   # - lambda  > A symmetric G by G character matrix defining the class of penalty
-#   #             matrices to cross validate over.
-#   #             Entries coercible to numeric are (in turn) interpreted as fixed.
-#   #             Entries with NA are intrepreted as "0" and thus interpreted as
-#   #             that that pair should omitted.
-#   ##############################################################################
-#
-#   G <- nrow(lambda)
-#   out <- matrix(0, G, G)
-#
-#   # Clean lambda
-#   lambda[is.na(lambda)] <- "0"
-#
-#   lvls <- unique.default(lambda)
-#   lvls <- lvls[lvls != ""]
-#
-#   get.num <- suppressWarnings(as.numeric(lvls))
-#
-#   if (length(lambdas) != sum(is.na(get.num))) {
-#     stop("The number of lambdas does not correspond with the number of",
-#          " non-fixed penalties given i lambda")
-#   }
-#
-#   j <- 1
-#   for (i in seq_along(get.num)) {
-#     if (is.na(get.num[i])) {
-#       out[lambda == lvls[i]] <- lambdas[j]
-#       j <- j + 1
-#     } else {
-#       out[lambda == lvls[i]] <- get.num[i]
-#     }
-#   }
-#   return(out)
-# }
 
 
 
@@ -1293,7 +1249,7 @@ optPenalty.fused.LOOCVauto <-
     diag(lambda) <- "ridge"
   }
 
-  parsedLambda <-.parseLambda(lambda)
+  parsedLambda <- .parseLambda(lambda)
 
   ridge <- names(parsedLambda) %in% unique.default(diag(lambda))
   suppressWarnings({
@@ -1305,8 +1261,10 @@ optPenalty.fused.LOOCVauto <-
     message("Found ", length(fixed), " unique penalties of which ", sum(fixed),
             " are interpreted as fixed and ", n.lambdas,
             " are to be determined by ", cv.method, ".\n",
-            "The non-fixed CV parameters are: ",
-            paste(names(parsedLambda)[!fixed], collapse = ", "))
+            "Non-fixed parameters: ",
+            paste(names(parsedLambda)[!fixed], collapse = ", "),
+            "\nFixed parameters: ",
+            paste(names(parsedLambda)[fixed], collapse = ", "))
   }
 
   # Determine what loss function to use
@@ -1389,6 +1347,8 @@ optPenalty.fused.LOOCVauto <-
 
   return(res)
 }
+
+
 
 optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
                              cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
