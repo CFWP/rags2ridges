@@ -23,7 +23,9 @@
   }
   \item{df}{
     A \code{data.frame} with \code{G} rows and factors in the columns.
+    Note, the columns has to be of type \code{factor}.
     Can be omitted when \code{G} is given and \code{type == "Complete"}.
+    The factors can be ordered.
   }
   \item{type}{
     A character giving the type of fused penalty graph to construct.

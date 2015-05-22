@@ -1055,7 +1055,7 @@ ridgeP.fused <- function(Slist,
   # This list is to be used to construct numeric matrices of penalties.
   # - lambda > A symmetric G by G character matrix defining the class of penalty
   #            matrices to cross validate over.
-  #            Entries with NA, "NA", "" (the empty string), or "0" are
+  #            Entries with NA, "" (the empty string), or "0" are
   #            interpreted as that that pair should omitted.
   #            Entries coercible to numeric are (in turn) interpreted as fixed
   ##############################################################################
@@ -1065,7 +1065,7 @@ ridgeP.fused <- function(Slist,
   stopifnot(nrow(lambda) == ncol(lambda))
 
   lambda[is.na(lambda)] <- "0"
-  lambda[lambda %in% c("", "NA")] <- "0"
+  lambda[lambda %in% ""] <- "0"
 
   lvls <- unique.default(lambda)
 
@@ -1224,7 +1224,7 @@ optPenalty.fused.LOOCVauto <-
   # - lambda      > A symmetric G by G character matrix defining the class of
   #                 penalty matrices to cross validate over. The unique elements
   #                 of lambda specify the penalties to determine. Pairs can be
-  #                 left out using either of "", NA, "NA" or "0". Penalties
+  #                 left out using either of "", NA or "0". Penalties
   #                 can be fixed if they are coercible to numeric values,
   #                 e.g. "2.5".
   # - cv.method   > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
@@ -1367,7 +1367,7 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   #            penalties to determine. Penalties can be fixed by using
   #            entries coercible to a numeric, e.g. "2.1".
   #            Pairs can be left out using either
-  #            of "", NA, "NA" or "0".
+  #            of "", NA or "0".
   # - method > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
   #            sLOOCV, kCV for leave-one-out cross validation (LOOCV),
   #            appproximate LOOCV, special LOOCV, and k-fold CV, resp.
@@ -1403,17 +1403,19 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 ################################################################################
 
 
-.charAdjMat <- function(fac, name = "X") {
+.charAdjMat <- function(fac, name = "X", ordered = is.ordered(fac)) {
   ##############################################################################
   # Create a complete character adjacency matrix from a factor. This function
   # is used in the constructing the character penalty matrix in default.penalty.
-  # - fac  > A factor of some length.
+  # - fac  > A factor of some length. Can be ordered.
   # - name > A character giving the text which should appear in the adjacent
   #          entries. If not a character, the object name of fac is used.
+  # - ordered > logical specifiying if fac should be interpreted as ordered.
   # Examples:
-  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
-  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "Y")
-  # rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = NULL)
+  #  rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
+  #  rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "Y")
+  #  rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = NULL)
+  #  rags2ridges:::.charAdjMat(ordered(factor(LETTERS[1:5])))
   ##############################################################################
 
   G <- nlevels(fac)
@@ -1422,11 +1424,19 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   } else {
     lab <- deparse(substitute(fac))
   }
-  M <- matrix(lab, G, G)
-  diag(M) <- ""
-  dimnames(M) <- replicate(2, levels(fac), simplify = FALSE)
+  if (ordered) {
+    M <- matrix("", G, G)
+    M[row(M) == (col(M) + 1)] <- lab
+    M[row(M) == (col(M) - 1)] <- lab
+  } else {
+    M <- matrix(lab, G, G)
+    diag(M) <- ""
+  }
+  rownames(M) <- colnames(M) <- levels(fac)
   return(M)
 }
+
+
 
 .char2num <- function(X) {
   ##############################################################################
@@ -1442,6 +1452,8 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   Y <- structure(as.numeric(X), dim = dim(X), dimnames = dimnames(X))
   return(Y)
 }
+
+
 
 .cartesianProd <- function(A, B) {
   ##############################################################################
@@ -1491,6 +1503,7 @@ default.penalty <- function(G, df,
                                      "CartesianUnequal", "TensorProd")) {
   ##############################################################################
   # Select a one of standard penalty matrix types from a dataframe
+  # NOTE: default.penalty can use ordered factors of df
   # - G     > The number of classes. Can also be list of length G such as
   #           the usual argument "Slist".
   #           Can be omitted if 'df' is given.
@@ -1508,6 +1521,8 @@ default.penalty <- function(G, df,
   # Setting type == 'CartesianUnequal' corresponds to a penalizing each
   # direction of factors with individual penalties.
   ##############################################################################
+
+
   type <- match.arg(type)
 
   if (missing(G) && !missing(df)) {
@@ -1542,6 +1557,12 @@ default.penalty <- function(G, df,
 
   stopifnot(G == nrow(df))
 
+  # Make sure the levels of the factors are ordered correctly
+  for (i in seq_len(ncol(df))) {
+    df[[i]] <- factor(df[[i]], levels = unique(df[[i]]))
+  }
+
+  # Construct penalty matrix class
   if (type == "Complete") {
 
     M <- matrix("fusion", G, G)
