@@ -25,6 +25,10 @@ getKEGGPathway(kegg.id)
 \references{
   \url{http://www.genome.jp/kegg/}
 }
+\note{
+  It is currently nessesary to \code{require("KEGGgraph")} (or
+  \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
+}
 \author{
   Anders Ellern Bilgrau,
   Carel F.W. Peeters <cf.peeters@vumc.nl>,
