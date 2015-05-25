@@ -135,25 +135,21 @@ penalty graphs.
 LOOCV loss.
 }
 \value{
-  \code{optPenalty.fused.LOOCVauto} returns a \code{list}:
-  \itemize{
-    \item \code{Plist}{A \code{list} of the precision estimates for the
-      optimal parameters.}
-    \item \code{lambda}{The estimated optimal fused penalty matrix.}
-    \item \code{lambda.unique}{The unique entries of the \code{lambda}.
-      A more concise overview of \code{lambda}}
-    \item \code{value}{The value of the loss function in the estimated optimum.}
-  }
+\code{optPenalty.fused.LOOCVauto} returns a \code{list}:\cr
+\item{Plist}{A \code{list} of the precision estimates for the optimal
+  parameters.}
+\item{lambda}{The estimated optimal fused penalty matrix.}
+\item{lambda.unique}{The unique entries of the \code{lambda}.
+  A more concise overview of \code{lambda}}
+\item{value}{The value of the loss function in the estimated optimum.}
 
-  \code{optPenalty.fused.LOOCV} returns a \code{list}:
-  \itemize{
-    \item \code{ridge}{A \code{numeric} vector of grid values for the ridge
-      penalty}
-    \item \code{fusion}{The \code{numeric} vector of grid values for the fusion
-      penalty}
-    \item \code{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
-      loss function}
-  }
+\code{optPenalty.fused.LOOCV} returns a \code{list}:\cr
+\item{ridge}{A \code{numeric} vector of grid values for the ridge
+  penalty}
+\item{fusion}{The \code{numeric} vector of grid values for the fusion
+  penalty}
+\item{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
+  loss function}
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
