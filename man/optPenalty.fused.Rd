@@ -24,8 +24,8 @@ optPenalty.fused(Ylist, Tlist,
 # A simple wrapper for:
 optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda,
                            cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
-                           k = 10,
-                           verbose = TRUE, maxit.ridgeP.fused = 1000,
+                           k = 10, verbose = TRUE, lambda.init,
+                           maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
                            debug = FALSE, ...)
 optPenalty.fused.LOOCVgrid(Ylist, Tlist,
@@ -75,6 +75,12 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
   \item{verbose}{
     \code{logical}. If \code{TRUE}, progress information is printed to the
     console.
+  }
+  \item{lambda.init}{
+    A \code{numeric} penalty \code{matrix} of initial values passed to the
+    optimizer. If omitted, the function selects a starting values using
+    a common ridge penaltiy (determined by 1D optimization)
+    and all fusion penalties to zero.
   }
   \item{maxit.ridgeP.fused}{
     A \code{integer} giving the maximum number of iterations allowed for each

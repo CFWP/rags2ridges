@@ -341,13 +341,12 @@ getKEGGPathway <- function(kegg.id) {
   # adjacency matrix, use gRbase::as.adjMAT() or igraph::get.adjacency()
   ##############################################################################
 
-  if (!requireNamespace("KEGGgraph")) {
+  if (!requireNamespace("KEGGgraph", quietly=TRUE)) {
 
-    stop("This function requires the bioconductor package 'KEGGgraph'.\n",
-         " To use it, install KEGGgraph to use it by running:\n",
+    stop("This function requires the bioconductor package 'KEGGgraph' and its.",
+         "\ndependencies. To use it, install KEGGgraph to use it by running:\n",
          'source("http://bioconductor.org/biocLite.R")\n',
          'biocLite("KEGGgraph")\n')
-
   }
 
   # Download
@@ -362,8 +361,6 @@ getKEGGPathway <- function(kegg.id) {
 
   # Pathway igraph and graphNEL
   graph <- KEGGgraph::KEGGpathway2Graph(KEGGgraph::parseKGML(tmp.file))
-  #graph::nodes(graph) <-
-  #  KEGGgraph::translateKEGGID2GeneID(KEGGgraph::nodes(graph))
 
   # Make sure that the graph is simple
   # A confirmed bug in KEGGgraph and now corrected in the development branch.
@@ -1047,12 +1044,13 @@ ridgeP.fused <- function(Slist,
 
 
 
+
 .parseLambda <- function(lambda) {
   ##############################################################################
   # A function to parse a character matrix that defines the class of penalty
-  # graphs and unique parameters for cross validation. Returns a list of
-  # indices for each level to be penalized equally.
-  # This list is to be used to construct numeric matrices of penalties.
+  # graphs and unique parameters for cross validation. Returns a data.frame of
+  # different indices for each level to be penalized equally.
+  # This data.frame is to be used to construct numeric matrices of penalties.
   # - lambda > A symmetric G by G character matrix defining the class of penalty
   #            matrices to cross validate over.
   #            Entries with NA, "" (the empty string), or "0" are
@@ -1064,48 +1062,73 @@ ridgeP.fused <- function(Slist,
   stopifnot(is.matrix(lambda))
   stopifnot(nrow(lambda) == ncol(lambda))
 
+  # Handle special values
   lambda[is.na(lambda)] <- "0"
   lambda[lambda %in% ""] <- "0"
 
-  lvls <- unique.default(lambda)
+  parsedLambda <-
+    data.frame(name = as.character(lambda), row = as.integer(row(lambda)),
+               col = as.integer(col(lambda)), stringsAsFactors = FALSE)
+  parsedLambda$val <- suppressWarnings({as.numeric(parsedLambda$name)})
+  parsedLambda$fixed <- !is.na(parsedLambda$val)
+  nf <- !parsedLambda$fixed
+  parsedLambda$index[nf] <- as.numeric(as.factor(parsedLambda$name[nf]))
 
-  # For each non-empty level get boolean matrices
-  parsedLambda <- lapply(lvls, function(l) which(l == lambda, arr.ind = TRUE))
-  names(parsedLambda) <- lvls
+  u <- unique(subset(parsedLambda, select = -c(row, col)))
 
+  attr(parsedLambda, "n.classes") <- nrow(lambda)
+  attr(parsedLambda, "n.fixed") <- sum(u$fixed)
+  attr(parsedLambda, "n.variables") <- nrow(u) - attr(parsedLambda, "n.fixed")
   return(parsedLambda)
 }
 
 
-.reconstructLambda <- function(lambdas, parsedLambda, G) {
+
+.reconstructLambda <- function(lambdas, parsedLambda) {
   ##############################################################################
-  # - Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
-  #   of penalties using the .parseLambda output.
+  # Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
+  # of penalties using the .parseLambda output.
   # - lambdas      > A numeric vector of the penalties. The length of lambdas
   #                  is the number of non-fixed entries in parsedLambda
-  # - parsedLambda > A list of matrix indicies for each unique entry.
+  # - parsedLambda > A data.frame describing the penalty matrix.
   #                  Should be the output from .parseLambda.
-  # - G            > The dimension of the penalty matrix
   ##############################################################################
-
-  get.num <- suppressWarnings(as.numeric(names(parsedLambda)))
-
-  if (length(lambdas) != length(parsedLambda[is.na(get.num)])) {
+  if (length(lambdas) != attributes(parsedLambda)$n.variables) {
     stop("The number of lambdas does not correspond with the number of",
          " non-fixed penalties given i parsedLambda")
   }
 
-  lambda <- matrix(0, G, G)
-  j <- 1
-  for (i in seq_along(parsedLambda)) {
-    if (is.na(get.num[i])) {
-      lambda[parsedLambda[[i]]] <- lambdas[j]
-      j <- j + 1
-    } else {
-      lambda[parsedLambda[[i]]] <- get.num[i]
-    }
-  }
+  G <- attributes(parsedLambda)$n.classes
+  var <- !parsedLambda$fixed
+  parsedLambda$val[var] <- lambdas[parsedLambda$index[var]]
+  lambda <- matrix(parsedLambda$val, G, G)
   return(lambda)
+}
+
+
+
+.lambdasFromMatrix <- function(lambda.init, parsedLambda) {
+  ##############################################################################
+  # Create the "lambdas" vector used in the optimizers from a numeric
+  # matrix.
+  # - lambda.init  > A numeric matrix of the initial penalty matrix.
+  # - parsedLambda > A data.frame describing the penalty matrix.
+  #                  Should be the output from .parseLambda.
+  ##############################################################################
+
+  u <- parsedLambda[!duplicated(parsedLambda$index), ]
+  u <- u[!u$fixed, ]
+  lambdas <- numeric(attributes(parsedLambda)$n.variables)
+  stopifnot(length(lambdas) == nrow(u))
+  lambdas[u$index] <- lambda.init[as.matrix(subset(u, select = c(row, col)))]
+
+  # Try to reconstruct the given matrix
+  relambda.init <- .reconstructLambda(lambdas, parsedLambda)
+  if (!all(relambda.init == lambda.init)) {
+    warning("The fixed penalties do not agree with the specified initial ",
+            "penalty matrix.")
+  }
+  return(lambdas)
 }
 
 
@@ -1207,6 +1230,7 @@ optPenalty.fused.LOOCVauto <-
            cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
            k = 10,
            verbose = TRUE,
+           lambda.init,
            maxit.ridgeP.fused = 1000,
            optimizer = "optim",
            maxit.optimizer = 1000,
@@ -1232,6 +1256,10 @@ optPenalty.fused.LOOCVauto <-
   #                 appproximate LOOCV, special LOOCV, and k-fold CV, resp.
   # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - verbose     > logical. Should extra info be printed? Defaults to TRUE.
+  # - lambda.init > A numeric penalty matrix of initial values.
+  #                 If omitted, the function selects a starting values using
+  #                 a common ridge penaltiy (determiend by 1D otimization)
+  #                 setting all fusion penalties to zero.
   # - maxit.ridgeP.fused > integer. Max. number of iterations for ridgeP.fused
   # - optimizer          > character giving the stadard optimizer.
   #                        Either "optim" or "nlm".
@@ -1251,20 +1279,17 @@ optPenalty.fused.LOOCVauto <-
 
   parsedLambda <- .parseLambda(lambda)
 
-  ridge <- names(parsedLambda) %in% unique.default(diag(lambda))
-  suppressWarnings({
-    fixed.lambda <- as.numeric(names(parsedLambda))
-    fixed <- !is.na(fixed.lambda)
-  })
-  n.lambdas <- sum(!fixed)
+  n.fixed     <- attributes(parsedLambda)$n.fixed
+  n.variables <- attributes(parsedLambda)$n.variables
+
   if (verbose) {
-    message("Found ", length(fixed), " unique penalties of which ", sum(fixed),
-            " are interpreted as fixed and ", n.lambdas,
+    nonfix <- with(parsedLambda, paste(unique(name[!fixed]), collapse = ", "))
+    fixed  <- with(parsedLambda, paste(unique(name[ fixed]), collapse = ", "))
+    message("Found ", n.fixed + n.variables, " unique penalties of which ",
+            n.fixed, " are interpreted as fixed and ", n.variables,
             " are to be determined by ", cv.method, ".\n",
-            "Non-fixed parameters: ",
-            paste(names(parsedLambda)[!fixed], collapse = ", "),
-            "\nFixed parameters: ",
-            paste(names(parsedLambda)[fixed], collapse = ", "))
+            "Non-fixed parameters: ", nonfix,
+            "\nFixed parameters: ", ifelse(length(fixed), fixed, "<none>"))
   }
 
   # Determine what loss function to use
@@ -1284,37 +1309,39 @@ optPenalty.fused.LOOCVauto <-
 
   cvl <- function(lambdas, ...) {
     elambdas <- exp(lambdas)
-    lambda <- .reconstructLambda(elambdas, parsedLambda, G)
+    lambda <- .reconstructLambda(elambdas, parsedLambda)
     return(cvfunc(lambda = lambda, Ylist = Ylist, Tlist = Tlist,
                   maxit = maxit.ridgeP.fused, ...))
   }
 
-  # Get somewhat sensible starting value for non-fixed diagonal entries
-  # (ridge penalties) and by choosing off-diag lambda to be zero.
-  f <- function(x) {
-    lambdas <- rep(x, n.lambdas)
-    lambdas[!ridge[!fixed]] <- 0  # Set non-fixed non-ridge penalties to zero
-    return(cvl(lambdas))
-  }
-  st <- optimize(f, lower = -30, upper = 30)
+  if (missing(lambda.init)) {
+    # Get somewhat sensible starting value for non-fixed diagonal entries
+    # (ridge penalties) and by choosing off-diag lambda to be zero.
+    f <- function(x) {
+      lambdas <- suppressWarnings(.lambdasFromMatrix(diag(x, G),parsedLambda))
+      return(cvl(lambdas))
+    }
+    st <- optimize(f, lower = -30, upper = 30)$minimum
+    lambdas.st <- suppressWarnings(.lambdasFromMatrix(diag(st,G), parsedLambda))
 
-  # Construct initial estimates (off-diagonal are zero, non-fixed
-  # on-diagnoal entries equal determined by one-dimensional optimization are
-  # set to that:
-  #   rags2ridges:::.reconstructLambda(lambdas.init, parsedLambda, G = G)
-  lambdas.init <- rep(0, n.lambdas)
-  lambdas.init[ridge[!fixed]] <- st$minimum
+  } else {
+    if (is.matrix(lambda.init) && is.numeric(lambda.init)) {
+      lambdas.st <- .lambdasFromMatrix(lambda.init, parsedLambda)
+    } else {
+      stop("The supplied inital parameters must be a numeric matrix")
+    }
+  }
 
   if (optimizer == "optim") {
 
-    ans <- optim(lambdas.init, fn = cvl, ...,
+    ans <- optim(lambdas.st, fn = cvl, ...,
                  control = list(trace = verbose, maxit = maxit.optimizer))
     par <- ans$par
     val <- ans$value
 
   } else if (optimizer == "nlm") {
 
-    ans <- nlm(cvl, lambdas.init, iterlim = maxit.optimizer, ...)
+    ans <- nlm(cvl, lambdas.st, iterlim = maxit.optimizer, ...)
     par <- ans$estimate
     val <- ans$minimum
 
@@ -1322,7 +1349,7 @@ optPenalty.fused.LOOCVauto <-
 
   # Format optimal values
   opt.lambdas <- exp(par)
-  opt.lambda <- .reconstructLambda(opt.lambdas, parsedLambda, G)
+  opt.lambda <- .reconstructLambda(opt.lambdas, parsedLambda)
   dimnames(opt.lambda) <- dimnames(lambda)
 
   # Construct output
@@ -1336,7 +1363,6 @@ optPenalty.fused.LOOCVauto <-
                             ns = sapply(Ylist, nrow),
                             Tlist = Tlist, lambda = res$lambda,
                             maxit = maxit.ridgeP.fused, verbose = FALSE)
-
 
   res$lambda.unique <- unique(opt.lambda[lower.tri(opt.lambda, diag = TRUE)])
   names(res$lambda.unique) <- lambda[match(res$lambda.unique, opt.lambda)]
