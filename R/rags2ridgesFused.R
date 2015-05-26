@@ -1289,7 +1289,7 @@ optPenalty.fused.LOOCVauto <-
             n.fixed, " are interpreted as fixed and ", n.variables,
             " are to be determined by ", cv.method, ".\n",
             "Non-fixed parameters: ", nonfix,
-            "\nFixed parameters: ", ifelse(length(fixed), fixed, "<none>"))
+            "\nFixed parameters: ", ifelse(n.fixed, fixed, "<none>"))
   }
 
   # Determine what loss function to use
