@@ -1,21 +1,23 @@
+# Imports
 import("igraph")
-
 importFrom("stats", cov2cor, optim)
-
 importFrom("expm", sqrtm)
-
 importFrom("Hmisc", minor.tick)
-
 importFrom("snowfall", sfInit, sfLibrary, sfSapply, sfStop)
-
 importFrom("fdrtool", fdrtool)
-
-importFrom("ggplot2", ggplot, aes, geom_tile, scale_fill_gradient2, theme, element_blank, element_text, xlab, ylab, ylim, ggtitle)
-
+importFrom("ggplot2", ggplot, aes, geom_tile, scale_fill_gradient2, theme,
+           element_blank, element_text, xlab, ylab, ylim, ggtitle)
 import("reshape")
 
+# Exports
 exportPattern("^[[:alpha:]]+")
 
-# To make Rcpp work
+# Registering S3 methods
+S3method(print, "ptest")
+S3method(summary, "ptest")
+S3method(plot, "ptest")
+S3method(hist, "ptest")
+
+# Register shared object (to make Rcpp work)
 useDynLib(rags2ridges)
 
