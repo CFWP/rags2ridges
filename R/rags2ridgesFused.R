@@ -1235,6 +1235,7 @@ optPenalty.fused.LOOCVauto <-
            optimizer = "optim",
            maxit.optimizer = 1000,
            debug = FALSE,
+           optim.control = list(trace = verbose, maxit = maxit.optimizer),
            ...) {
   ##############################################################################
   # Selection of the optimal penalties w.r.t. to (possibly approximate)
@@ -1266,6 +1267,7 @@ optPenalty.fused.LOOCVauto <-
   # - maxit.optimizer    > integer. Max. number of iterations for the optimizer.
   # - debug              > logical. If TRUE the raw output from the optimizer is
   #                        appended as an attribute to the output.
+  # - optim.control      > Control arguments for optim.
   # - ...                > arguments passed to the optimizer.
   ##############################################################################
 
@@ -1334,8 +1336,7 @@ optPenalty.fused.LOOCVauto <-
 
   if (optimizer == "optim") {
 
-    ans <- optim(lambdas.st, fn = cvl, ...,
-                 control = list(trace = verbose, maxit = maxit.optimizer))
+    ans <- optim(lambdas.st, fn = cvl, ..., control = optim.control)
     par <- ans$par
     val <- ans$value
 

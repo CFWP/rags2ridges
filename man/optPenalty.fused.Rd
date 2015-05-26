@@ -27,7 +27,9 @@ optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda,
                            k = 10, verbose = TRUE, lambda.init,
                            maxit.ridgeP.fused = 1000,
                            optimizer = "optim", maxit.optimizer = 1000,
-                           debug = FALSE, ...)
+                           debug = FALSE,
+                           optim.control = list(trace = verbose, maxit = maxit.optimizer),
+                           ...)
 optPenalty.fused.LOOCVgrid(Ylist, Tlist,
                            lambdaMin, lambdaMax, step1 = 20,
                            lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
@@ -123,8 +125,11 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
   \item{grid}{
     \code{logical.} Should a grid based search be used? Default is \code{FALSE}.
   }
+  \item{optim.control}{
+    A \code{list} of control arguments for \code{\link{optim}}.
+  }
   \item{\dots}{
-    In \code{optPenalty.fused.LOOCV}, arguments are passed to
+    For \code{optPenalty.fused}, arguments are passed to
     \code{optPenalty.fused.LOOCVgrid} or \code{optPenalty.fused.LOOCVauto}
     depending on the value of \code{grid}.
     In \code{optPenalty.fused.LOOCVgrid}, arguments are passed to
