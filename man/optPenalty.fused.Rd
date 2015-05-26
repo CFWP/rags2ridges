@@ -285,7 +285,11 @@ print(lambda)  # Say we want to penalize the pair (1,2) with strength 2.1;
 lambda[2,1] <- lambda[1,2] <- 2.1
 print(lambda)
 
-res <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+# Specifiying starting values is also possible:
+init <- diag(length(ns))
+init[2,1] <- init[1,2] <- 2.1
+
+res <- optPenalty.fused(Ylist, Tlist, lambda = lambda, lambda.init = init,
                         cv.method = "aLOOCV", optimizer = "nlm")
 print(res)
 }
