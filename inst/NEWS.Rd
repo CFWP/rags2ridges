@@ -1,6 +1,6 @@
 \name{NEWS}
 \title{News for Package \pkg{rags2ridges}}
-\newcommand{\cpkg}{\href{http://CRAN.R-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\cpkg}{\href{http://cran.r-project.org/package=#1}{\pkg{#1}}}
 
 \section{Changes in version 2.0}{
   \itemize{
@@ -13,7 +13,7 @@
     \item Added LOOCV and approximations hereof to determine optimal ridge and
       fused penalties. The fused pairs to cross-validate over are specified by
       a character matrix.
-    \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadilo} with
+    \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadillo} with
       core functions written in \code{C++}. The package should now be at least
       two orders of magnitude faster in most cases.
   }
