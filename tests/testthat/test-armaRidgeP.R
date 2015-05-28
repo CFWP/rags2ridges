@@ -3,13 +3,8 @@ context("Unit test of the .armaRidgeP")
 # The funciton to test
 armaRidgeP <- rags2ridges:::.armaRidgeP  # To avoid writing rags2ridges:::
 
-
-
-
 for (n in c(5, 9, 14)) {
-# n <- 4
 for (p in c(4, 10, 15)){
-# p <- 10
 
 # Create some toy data
 S <- unname(createS(n = n, p = p))
@@ -50,21 +45,26 @@ for (type in tgt.types) {
 
   test_that(paste("proper values for very small lambda, type =", type), {
 
+    expect_that(armaRidgeP(S, tgt, 1e-10), not(equals(tgt)))
+    expect_that(armaRidgeP(S, tgt, 1e-50), not(equals(tgt)))
+    expect_that(armaRidgeP(S, tgt, 1e-100), not(equals(tgt)))
     expect_that(armaRidgeP(S, tgt, 1e-200), not(equals(tgt)))
     expect_that(armaRidgeP(S, tgt, 1e-300), not(equals(tgt)))
     expect_that(armaRidgeP(S, tgt, 1e-400), throws_error("postive"))
     expect_that(armaRidgeP(S, tgt, 0),      throws_error("postive"))
 
-    aa <- armaRidgeP(S, tgt, 1e-10)
-    bb <- armaRidgeP(S, tgt, 1e-50)
-    cc <- armaRidgeP(S, tgt, 1e-100)
-    dd <- armaRidgeP(S, tgt, 1e-200)
-    ee <- armaRidgeP(S, tgt, 1e-300)
+    if (p > n) {
+      aa <- armaRidgeP(S, tgt, 1e-10)
+      bb <- armaRidgeP(S, tgt, 1e-50)
+      cc <- armaRidgeP(S, tgt, 1e-100)
+      dd <- armaRidgeP(S, tgt, 1e-200)
+      ee <- armaRidgeP(S, tgt, 1e-300)
 
-    expect_that(all(abs(aa) <= abs(bb)), is_true())
-    expect_that(all(abs(bb) <= abs(cc)), is_true())
-    expect_that(all(abs(cc) <= abs(dd)), is_true())
-    expect_that(all(abs(dd) <= abs(ee)), is_true())
+      expect_that(all(abs(aa) <= abs(bb)), is_true())
+      expect_that(all(abs(bb) <= abs(cc)), is_true())
+      expect_that(all(abs(cc) <= abs(dd)), is_true())
+      expect_that(all(abs(dd) <= abs(ee)), is_true())
+    }
 
   })
 
@@ -72,6 +72,4 @@ for (type in tgt.types) {
 
 } ## End for p
 } ## End for n
-
-armaRidgeP(S, tgt, 1e-200)
 
