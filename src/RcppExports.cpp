@@ -32,29 +32,55 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// armaRidgePAnyTarget
-arma::mat armaRidgePAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+// armaRidgePAnyTargetInv
+arma::mat armaRidgePAnyTargetInv(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePAnyTargetInv(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP);
     Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
-    __result = Rcpp::wrap(armaRidgePAnyTarget(S, target, lambda));
+    __result = Rcpp::wrap(armaRidgePAnyTargetInv(S, target, lambda));
     return __result;
 END_RCPP
 }
-// armaRidgePRotationInvariantTarget
-arma::mat armaRidgePRotationInvariantTarget(const arma::mat& S, const double alpha, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgePRotationInvariantTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
+// armaRidgePAnyTargetNoInv
+arma::mat armaRidgePAnyTargetNoInv(const arma::mat& S, const arma::mat& target, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePAnyTargetNoInv(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(armaRidgePAnyTargetNoInv(S, target, lambda));
+    return __result;
+END_RCPP
+}
+// armaRidgePScalarTargetInv
+arma::mat armaRidgePScalarTargetInv(const arma::mat& S, const double alpha, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePScalarTargetInv(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
     Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
     Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
-    __result = Rcpp::wrap(armaRidgePRotationInvariantTarget(S, alpha, lambda));
+    __result = Rcpp::wrap(armaRidgePScalarTargetInv(S, alpha, lambda));
+    return __result;
+END_RCPP
+}
+// armaRidgePScalarTargetNoInv
+arma::mat armaRidgePScalarTargetNoInv(const arma::mat& S, const double alpha, const double lambda);
+RcppExport SEXP rags2ridges_armaRidgePScalarTargetNoInv(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const double >::type alpha(alphaSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(armaRidgePScalarTargetNoInv(S, alpha, lambda));
     return __result;
 END_RCPP
 }

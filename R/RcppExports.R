@@ -9,12 +9,20 @@
     .Call('rags2ridges_armaPooledP', PACKAGE = 'rags2ridges', Plist, ns, mle)
 }
 
-.armaRidgePAnyTarget <- function(S, target, lambda) {
-    .Call('rags2ridges_armaRidgePAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
+.armaRidgePAnyTargetInv <- function(S, target, lambda) {
+    .Call('rags2ridges_armaRidgePAnyTargetInv', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
-.armaRidgePRotationInvariantTarget <- function(S, alpha, lambda) {
-    .Call('rags2ridges_armaRidgePRotationInvariantTarget', PACKAGE = 'rags2ridges', S, alpha, lambda)
+.armaRidgePAnyTargetNoInv <- function(S, target, lambda) {
+    .Call('rags2ridges_armaRidgePAnyTargetNoInv', PACKAGE = 'rags2ridges', S, target, lambda)
+}
+
+.armaRidgePScalarTargetInv <- function(S, alpha, lambda) {
+    .Call('rags2ridges_armaRidgePScalarTargetInv', PACKAGE = 'rags2ridges', S, alpha, lambda)
+}
+
+.armaRidgePScalarTargetNoInv <- function(S, alpha, lambda) {
+    .Call('rags2ridges_armaRidgePScalarTargetNoInv', PACKAGE = 'rags2ridges', S, alpha, lambda)
 }
 
 .armaRidgeP <- function(S, target, lambda) {

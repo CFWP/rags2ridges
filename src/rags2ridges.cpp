@@ -84,93 +84,97 @@ arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
 ////////////////////////////////////////////////////////////////////////////////
 
 
-inline arma::mat armaEigShrink(const arma::vec eigvals,
-                               const double lambda,
-                               const double alpha) {
+inline arma::mat rev_eig(const arma::vec eigval, const arma::mat eigvec) {
   /* ---------------------------------------------------------------------------
-   Helper function that shrinks the eigenvalues.
-   Shrinkage is that of the rotation equivariant alternative ridge estimator.
-   - eigvals > A vector of containing the eigenvalues
-   - lambda  > A double giving the ridge penalty
-   - alpha   > A double giving the diagonal value in the rotaional equivariant
-               target.
+   "Reverse" the eigen decomposition, i.e. perform the multiplcation
+   - eigval > a vector of eigenvalues
+   - eigvec > a matrix of corresponding eigenvectors
   --------------------------------------------------------------------------- */
 
-  arma::vec seigvals = eigvals - lambda*alpha;
-  return sqrt(lambda + 0.25f*pow(seigvals, 2.0f)) + 0.5f*seigvals;
+  return eigvec*diagmat(eigval)*eigvec.t();  // Could be more efficient
 }
 
 
+// Arbitrary target subroutines:
 
-arma::mat armaRidgePAnyTarget_OLD(const arma::mat & S,
-                                  const arma::mat & target,
-                                  const double lambda) {
+// [[Rcpp::export(.armaRidgePAnyTargetInv)]]
+arma::mat armaRidgePAnyTargetInv(const arma::mat & S,
+                                 const arma::mat & target,
+                                 const double lambda) {
   /* ---------------------------------------------------------------------------
-   Compute the ridge estimate for general targets.
-   Old ridge estimator using matrix inversion.
+   Compute the ridge estimate for general targets using matrix inversion.
    - S      > A sample covariance matrix
    - target > The target matrix with the same size as S
    - lambda > The the ridge penalty
   --------------------------------------------------------------------------- */
 
-  const int n = S.n_cols;
-  const arma::mat E = symmatl(S) - lambda * symmatl(target);
+  const arma::mat M = S - lambda * target;
 
   arma::vec eigval;
   arma::mat eigvec;
-  arma::eig_sym(eigval, eigvec, 0.25f*E*E + lambda*arma::eye(n, n), "dc");
+  eig_sym(eigval, eigvec, M, "dc");
 
-  return inv_sympd(0.5f*E + eigvec*diagmat(sqrt(eigval))*eigvec.t());
+  arma::vec eigval_sq = pow(eigval, 2.0);
+
+  // Return target if eigenvals^2 contain infinite values due to large lambda
+  // Usually happens for lambda greater than or on the order of 1e154
+  if (!eigval_sq.is_finite() && lambda > 1e6) {
+    return target;
+  }
+
+  // "Inversion" through the diagnoalization
+  eigval = 1.0/(sqrt(lambda + 0.25*eigval_sq) + 0.5*eigval);
+
+  if (any(eigval < 0)) { // Throw error if non PD result
+    Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
+  }
+
+  return rev_eig(eigval, eigvec);
 }
 
 
 
-// [[Rcpp::export(.armaRidgePAnyTarget)]]
-arma::mat armaRidgePAnyTarget(const arma::mat & S,
-                              const arma::mat & target,
-                              const double lambda) {
+// [[Rcpp::export(.armaRidgePAnyTargetNoInv)]]
+arma::mat armaRidgePAnyTargetNoInv(const arma::mat & S,
+                                   const arma::mat & target,
+                                   const double lambda) {
   /* ---------------------------------------------------------------------------
-   Compute the ridge estimate for general targets.
-   Not using matrix inversion.
+   Compute the ridge estimate for general targets ot using matrix inversion.
    - S      > A sample covariance matrix
    - target > The target matrix with the same size as S
    - lambda > The ridge penalty
    NOTE -- S should not contain any NAs, Infs, or NaNs!
   --------------------------------------------------------------------------- */
 
-  if (lambda == arma::datum::inf) {  //
-    return target;
-  }
-
-  const int n = S.n_cols;
-  const double inv_lambda = 1.0f/lambda;
-  const arma::mat E = S - lambda * target;
+  const arma::mat M = S - lambda * target;
 
   arma::vec eigval;
-  arma::mat eigvec = E*E;  // Temporarily set to E*E
+  arma::mat eigvec;
+  arma::eig_sym(eigval, eigvec, M, "dc");
 
-  // Return target if E*E contain infinite values due to large lambda
+  arma::vec eigval_sq = pow(eigval, 2.0);
+
+  // Return target if eigenvals^2 contain infinite values due to large lambda
   // Usually happens for lambda greater than or on the order of 1e154
-  if (!eigvec.is_finite()) {
+  if (!eigval_sq.is_finite() && lambda > 1e6) {
     return target;
   }
 
-  // The following line overwrite eigvec
-  arma::eig_sym(eigval, eigvec, 0.25f*eigvec + lambda*arma::eye(n, n), "dc");
-  if (any(eigval < 0)) { // Throw error if matrix square root is not defined.
+  eigval = (1.0/lambda)*(sqrt(lambda + 0.25*eigval_sq) - 0.5*eigval);
+
+  if (any(eigval < 0)) { // Throw error if non PD result
     Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
   }
 
-  eigval = inv_lambda*sqrt(eigval);  // Take the matrix square root and scale
-
-  return symmatl((-0.5f*inv_lambda)*E + eigvec*diagmat(eigval)*eigvec.t());
+  return rev_eig(eigval, eigvec);
 }
 
 
 
-arma::mat armaRidgePRotationInvariantTarget_OLD(const arma::mat & S,
-                                                const double alpha,
-                                                const double lambda) {
+// [[Rcpp::export(.armaRidgePScalarTargetInv)]]
+arma::mat armaRidgePScalarTargetInv(const arma::mat & S,
+                                    const double alpha,
+                                    const double lambda) {
   /* ---------------------------------------------------------------------------
    Compute the ridge estimate for rotational equivariant targets.
    Old ridge estimator using matrix inversion.
@@ -181,19 +185,20 @@ arma::mat armaRidgePRotationInvariantTarget_OLD(const arma::mat & S,
 
   arma::vec eigvals;
   arma::mat eigvecs;
-  arma::eig_sym(eigvals, eigvecs, symmatl(S), "dc");  // Eigen decomposition
+  arma::eig_sym(eigvals, eigvecs, S, "dc");  // Eigen decomposition
 
-  eigvals = armaEigShrink(eigvals, lambda, alpha);
+  arma::vec seigvals = eigvals - lambda*alpha;
+  eigvals = 1.0/(sqrt(lambda + 0.25*pow(seigvals, 2.0)) + 0.5*seigvals);
 
-  return inv_sympd(eigvecs*diagmat(eigvals)*eigvecs.t());
+  return rev_eig(eigvals, eigvecs);
 }
 
 
 
-// [[Rcpp::export(.armaRidgePRotationInvariantTarget)]]
-arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
-                                            const double alpha,
-                                            const double lambda) {
+// [[Rcpp::export(.armaRidgePScalarTargetNoInv)]]
+arma::mat armaRidgePScalarTargetNoInv(const arma::mat & S,
+                                      const double alpha,
+                                      const double lambda) {
   /* ---------------------------------------------------------------------------
    The ridge estimator in the rotational equivariant case.
    Not using matrix inversion. When the shrunken eigen-values become infinite
@@ -204,37 +209,27 @@ arma::mat armaRidgePRotationInvariantTarget(const arma::mat & S,
    - lambda > The ridge penalty. Can be set to Inf (on the R side)
   --------------------------------------------------------------------------- */
 
-  if (lambda == arma::datum::inf) {
-    const int p = S.n_rows;
-    return alpha*arma::eye<arma::mat>(p, p);
-  }
-
-  if (lambda <= 0) {
-    Rcpp::stop("The penalty (lambda) must be strictly postive");
-  }
-
-  const double inv_lambda = 1.0f/lambda;
   arma::vec eigvals;
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, S, "dc");
 
   // Eigenvalue shrinkage + addition to avoid inversion
-  eigvals = inv_lambda*(armaEigShrink(eigvals,lambda,alpha) - eigvals) + alpha;
+  arma::vec seigvals = eigvals - lambda*alpha;
+  eigvals = (1.0/lambda)*(sqrt(lambda+ 0.25*pow(seigvals, 2.0)) - 0.5*seigvals);
 
-  // Throw error any eigenvalues are negative.
-  if (any(eigvals < 0)) {
+  if (any(eigvals < 0)) { // Throw error if any eigenvalues are negative.
     Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
   }
 
   // Return target if shrunken evals are infinite and lambda is "large"
   // Usually happens for lambda >= 1e154
-  if (!eigvals.is_finite() && lambda > 1) {
+  if (!eigvals.is_finite() && lambda > 1e6) {
     const int p = S.n_rows;
     return alpha*arma::eye<arma::mat>(p, p);
   }
 
   // Transform back and return results
-  return symmatl(eigvecs*diagmat(eigvals)*eigvecs.t());
+  return rev_eig(eigvals, eigvecs);
 }
 
 
@@ -250,14 +245,24 @@ arma::mat armaRidgeP(const arma::mat & S,
    - lambda > The penalty (a numeric of length one on the R side)
   --------------------------------------------------------------------------- */
 
+ if (lambda <= 0) {
+    Rcpp::stop("The penalty (lambda) must be strictly postive");
+  }
+
+  if (lambda == arma::datum::inf) {
+    return target;
+  }
+
   const int n = S.n_rows;
   const double alpha = target(0, 0);
   const arma::mat alphaI = alpha*arma::eye<arma::mat>(n, n);
+
   if (arma::all(arma::all(target == alphaI))) {
-    return armaRidgePRotationInvariantTarget(S, alpha, lambda);
+    return armaRidgePScalarTargetNoInv(S, alpha, lambda);
   } else {
-    return armaRidgePAnyTarget(S, target, lambda);
+    return armaRidgePAnyTargetNoInv(S, target, lambda);
   }
+
 }
 
 
@@ -705,7 +710,7 @@ ridgeS2 <- function(S, lambda) {
 }
 target <- default.target(S, "Null")
 microbenchmark(A2 <- ridgeS2(S, lambda),
-               B2 <- armaRidgePRotationInvariantTarget(S, 0.0, lambda),
+               B2 <- armaRidgePScalarTarget(S, 0.0, lambda),
                C2 <- armaRidgeP(S, target, lambda))
 stopifnot(all.equal(unname(A2), unname(B2)))
 stopifnot(all.equal(unname(A2), unname(C2)))
@@ -720,7 +725,7 @@ ridgeS3 <- function(S, target, lambda) {
 
 target <- default.target(S) # Equal diagnoal
 microbenchmark(A3 <- ridgeS3(S, target, lambda),
-               B3 <- armaRidgePRotationInvariantTarget(S, target[1,1], lambda),
+               B3 <- armaRidgePScalarTarget(S, target[1,1], lambda),
                C3 <- armaRidgeP(S, target, lambda))
 stopifnot(all.equal(unname(A3), unname(B3)))
 stopifnot(all.equal(unname(A3), unname(C3)))
