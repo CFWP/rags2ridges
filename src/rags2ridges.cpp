@@ -127,7 +127,7 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
   arma::vec d = sqrt(lambda + 0.25*pow(eigval, 2.0)) - 0.5*eigval;
 
   if (invert == 2) { // Determine to invert or not
-    invert = arma::all(d==0) ? 1 : 0;
+    invert = (lambda < 1 || arma::all(d == 0)) ? 1 : 0;
   }
 
   // Inversion through the diagonalization or not
@@ -172,10 +172,10 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
   arma::vec d = sqrt(lambda + 0.25*pow(eigvals,2.0)) - 0.5*eigvals;
 
   if (invert == 2) { // Determine to invert or not
-    invert = arma::all(d==0) ? 1 : 0;
+    invert = (lambda < 1 || arma::all(d == 0)) ? 1 : 0;
   }
 
-  if (invert == 1) {  // "Proper"" inversion
+  if (invert == 1) {  // "Proper" inversion
     eigvals = 1.0/(d + eigvals);
   } else if (invert == 0) { // Inversion by proposion
     eigvals = d/lambda;
