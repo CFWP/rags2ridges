@@ -1,22 +1,56 @@
-context("Unit test of the .armaRidgeP")
+context("Unit test of armaRidgeP")
 
-# The funciton to test
+# To make the R versions of armaRidgePAnyTarget and armaRidgePScalarTarget
+# available.
+# warning(paste(search(), collapse = ", "))
+example("armaRidgeP", package = "rags2ridges", character.only = TRUE)
+
+# The functions to test
 armaRidgeP <- rags2ridges:::.armaRidgeP  # To avoid writing rags2ridges:::
+aRidgePAnyTarget <- rags2ridges:::.armaRidgePAnyTarget
+aRidgePScalarTarget <- rags2ridges:::.armaRidgePScalarTarget
 
+# Values to test
+test.lambdas <- c(1e-200, 1e-100, 1e-50, 1e-14, 1e-10, 1,
+                  1e10, 1e50, 1e100, 1e200, 1e300, 1e500, Inf)
+tgt.types <- c("DAIE", "DIAES", "DUPV", "DAPV", "DCPV", "DEPV", "Null")
+
+
+# Create some data
+S <- unname(createS(n = 5, p = 10))
+for (type in tgt.types) {
+  tgt <- default.target(S, type = type, const = 1)
+  for (j in 1:2) {
+    a <- switch(j, "aRidgePAnyTarget", "aRidgePScalarTarget")
+    r <- switch(j, "ridgePAnyTarget", "ridgePScalarTarget")
+    t <- switch(j, tgt, tgt[1,1])
+    for (l in c(1e-14, 1e-5, 1, 10, 1e4)) {
+      for (invert in 0:2) {
+        test_that(sprintf("%s() agrees with %s() for l=%g, type=%s, invert=%d",
+                          a, r, l, type, invert), {
+          expect_equal(get(a)(S, t, l, invert),
+                       get(r)(S, t, l, invert))
+
+        })
+      }
+    }
+  }
+}
+
+#
+# Futher tests of armaRidgeP
+#
+
+p <- 4
+n <- 5
 for (n in c(5, 9, 14)) {
 for (p in c(4, 10, 15)){
 
 # Create some toy data
 S <- unname(createS(n = n, p = p))
 
-tgt.types <- c("DAIE", "DIAES", "DUPV", "DAPV", "DCPV", "DEPV", "Null")
-
 for (type in tgt.types) {
-
   tgt <- default.target(S, type = type, const = 1)
-
-  test.lambdas <- c(1e-200, 1e-100, 1e-50, 1e-14, 1e-10, 1,
-                    1e10, 1e50, 1e100, 1e200, 1e300, 1e500, Inf)
 
   for (l in test.lambdas) {
 
@@ -34,14 +68,12 @@ for (type in tgt.types) {
 
   } ## End for l
 
-
   test_that(paste("proper values for very large lambda, tgt =", type), {
 
     expect_that(armaRidgeP(S, tgt, 1e200), equals(tgt))
     expect_that(armaRidgeP(S, tgt, Inf), equals(tgt))
 
   })
-
 
   test_that(paste("proper values for very small lambda, type =", type), {
 
@@ -72,4 +104,3 @@ for (type in tgt.types) {
 
 } ## End for p
 } ## End for n
-
