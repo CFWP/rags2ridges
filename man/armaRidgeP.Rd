@@ -14,13 +14,13 @@ ridge precision estimators. They serves as core functions for many other
 functions.
 }
 \usage{
-.armaRidgeP(S, target, lambda)
+.armaRidgeP(S, target, lambda, invert = 2L)
 
 # Arbitrary target estimator
-.armaRidgePAnyTarget(S, target, lambda, invert = 2)
+.armaRidgePAnyTarget(S, target, lambda, invert = 2L)
 
 # Scalar target (alpha*I) estimator
-.armaRidgePScalarTarget(S, alpha, lambda, invert = 2)
+.armaRidgePScalarTarget(S, alpha, lambda, invert = 2L)
 }
 \arguments{
   \item{S}{
@@ -87,7 +87,7 @@ rags2ridges:::.armaRidgePScalarTarget(S, 1, 1.2)
 #
 
 rev_eig <- function(evalues, evectors) { # "Reverse" eigen decomposition
-  evectors %*% diag(evalues) %*% t(evectors)
+  evectors \%*\% diag(evalues) \%*\% t(evectors)
 }
 
 # R implementations
@@ -142,6 +142,7 @@ ridgeP2 <- function(S, tgt, l) {
   1.0/l*(sqrtm(l*diag(nrow(S)) + 0.25*crossprod(S - l*tgt)) - 0.5*(S - l*tgt))
 }
 
+set.seed(1)
 n <- 3
 p <- 6
 S <- covML(matrix(rnorm(p*n), n, p))
@@ -151,11 +152,11 @@ l <- 1.21
 
 (AA <- ridgeP1(S, tgt, l))
 (BB <- ridgeP2(S, tgt, l))
+
 (CC <- rags2ridges:::.armaRidgePAnyTarget(S, tgt, l))
 (CCR<- ridgePAnyTarget(S, tgt, l))
 (DD <- rags2ridges:::.armaRidgePScalarTarget(S, a, l))
 (DDR<- ridgePScalarTarget(S, a, l))
-
 (EE <- rags2ridges:::.armaRidgeP(S, tgt, l))
 
 # Check

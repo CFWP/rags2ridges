@@ -17,8 +17,8 @@
     .Call('rags2ridges_armaRidgePScalarTarget', PACKAGE = 'rags2ridges', S, alpha, lambda, invert)
 }
 
-.armaRidgeP <- function(S, target, lambda) {
-    .Call('rags2ridges_armaRidgeP', PACKAGE = 'rags2ridges', S, target, lambda)
+.armaRidgeP <- function(S, target, lambda, invert = 2L) {
+    .Call('rags2ridges_armaRidgeP', PACKAGE = 'rags2ridges', S, target, lambda, invert)
 }
 
 .armaFusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda) {

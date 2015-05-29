@@ -61,15 +61,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // armaRidgeP
-arma::mat armaRidgeP(const arma::mat& S, const arma::mat& target, const double lambda);
-RcppExport SEXP rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+arma::mat armaRidgeP(const arma::mat& S, const arma::mat& target, const double lambda, int invert);
+RcppExport SEXP rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
     Rcpp::traits::input_parameter< const arma::mat& >::type target(targetSEXP);
     Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
-    __result = Rcpp::wrap(armaRidgeP(S, target, lambda));
+    Rcpp::traits::input_parameter< int >::type invert(invertSEXP);
+    __result = Rcpp::wrap(armaRidgeP(S, target, lambda, invert));
     return __result;
 END_RCPP
 }

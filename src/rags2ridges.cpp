@@ -130,7 +130,7 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
     invert = arma::all(d==0) ? 1 : 0;
   }
 
-  // Inversion through the diagnoalization or not
+  // Inversion through the diagonalization or not
   if (invert == 1) {  // "Proper"" inversion
     eigval = 1.0/(d + eigval);
   } else if (invert == 0) {  // Inversion by proposion
@@ -183,7 +183,6 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
     Rcpp::stop("invert should be 0, 1, or 2. invert =", invert);
   }
 
-
   if (any(eigvals < 0)) { // Throw error if any eigenvalues are negative.
     Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
   }
@@ -204,12 +203,15 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 // [[Rcpp::export(.armaRidgeP)]]
 arma::mat armaRidgeP(const arma::mat & S,
                      const arma::mat & target,
-                     const double lambda) {
+                     const double lambda,
+                     int invert = 2) {
   /* ---------------------------------------------------------------------------
    The ridge estimator in C++. Wrapper for the subroutines
    - S      > The sample covariance matrix (a numeric matrix on the R side)
    - target > Target matrix (a numeric matrix on the R side, same size as S)
    - lambda > The penalty (a numeric of length one on the R side)
+   - invert > Should the estimate be compute using inversion?
+              0 = "no", 1 = "yes", 2 = "automatic", (default).
   --------------------------------------------------------------------------- */
 
  if (lambda <= 0) {
@@ -225,9 +227,9 @@ arma::mat armaRidgeP(const arma::mat & S,
   const arma::mat alphaI = alpha*arma::eye<arma::mat>(p, p);
 
   if (arma::all(arma::all(target == alphaI))) {
-    return armaRidgePScalarTarget(S, alpha, lambda);
+    return armaRidgePScalarTarget(S, alpha, lambda, invert);
   } else {
-    return armaRidgePAnyTarget(S, target, lambda);
+    return armaRidgePAnyTarget(S, target, lambda, invert);
   }
 
 }
