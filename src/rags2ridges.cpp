@@ -6,7 +6,6 @@
 //using namespace RcppArmadillo;
 //using namespace arma;
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
@@ -112,38 +111,41 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
               0 = "no", 1 = "yes", 2 = "automatic" (default).
   --------------------------------------------------------------------------- */
 
-  arma::vec eigval;
-  arma::mat eigvec;
-  eig_sym(eigval, eigvec, S - lambda*target, "dc");
+  arma::vec eigvals;
+  arma::mat eigvecs;
+  eig_sym(eigvals, eigvecs, S - lambda*target, "dc");
+  eigvals = 0.5*eigvals;
+  arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
+  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
+  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
-  arma::vec eigval_sq = pow(eigval, 2.0);
-
-  // Return target if eigenvals^2 contain infinite values due to large lambda
-  // Usually happens for lambda greater than or on the order of 1e154
-  if (!eigval_sq.is_finite() && lambda > 1e6) {
+  // Return target if shrunken evals are infinite and lambda is "large"
+  // Usually happens for lambda >= 1e154
+  if (lambda > 1e6 && (!eigvals.is_finite() || !sqroot.is_finite())) {
     return target;
   }
 
-  arma::vec d = sqrt(lambda + 0.25*pow(eigval, 2.0)) - 0.5*eigval;
-
-  if (invert == 2) { // Determine to invert or not
-    invert = (lambda < 1 || arma::all(d == 0)) ? 1 : 0;
+  // Determine to invert or not
+  if (invert == 2) {
+    // Generally, inversion for "small" lambda
+    if (lambda > 1) {
+      invert = 0;
+    } else {
+      if (!D_inv.is_finite()) {
+        invert = 0;
+      } else {
+        invert = 1;
+      }
+    }
   }
 
-  // Inversion through the diagonalization or not
-  if (invert == 1) {  // "Proper"" inversion
-    eigval = 1.0/(d + eigval);
-  } else if (invert == 0) {  // Inversion by proposion
-    eigval = (1.0/lambda)*d;
+  // Determine to invert or not
+  if (invert == 1) {
+    return rev_eig(D_inv, eigvecs);  // Proper inversion
   } else {
-    Rcpp::stop("invert should be 0, 1, or 2. invert =", invert);
+    return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
   }
 
-  if (any(eigval < 0)) { // Throw error if non PD result
-    Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
-  }
-
-  return rev_eig(eigval, eigvec);
 }
 
 
@@ -168,34 +170,39 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
   arma::mat eigvecs;
   arma::eig_sym(eigvals, eigvecs, S, "dc");
 
-  eigvals = eigvals - lambda*alpha;
-  arma::vec d = sqrt(lambda + 0.25*pow(eigvals,2.0)) - 0.5*eigvals;
-
-  if (invert == 2) { // Determine to invert or not
-    invert = (lambda < 1 || arma::all(d == 0)) ? 1 : 0;
-  }
-
-  if (invert == 1) {  // "Proper" inversion
-    eigvals = 1.0/(d + eigvals);
-  } else if (invert == 0) { // Inversion by proposion
-    eigvals = d/lambda;
-  } else {
-    Rcpp::stop("invert should be 0, 1, or 2. invert =", invert);
-  }
-
-  if (any(eigvals < 0)) { // Throw error if any eigenvalues are negative.
-    Rcpp::stop("Eigenvalues are not all positive. lambda is too small.");
-  }
+  eigvals = 0.5*(eigvals - lambda*alpha);
+  arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
+  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
+  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
   // Return target if shrunken evals are infinite and lambda is "large"
   // Usually happens for lambda >= 1e154
-  if (!eigvals.is_finite() && lambda > 1e6) {
+  if (lambda > 1e6 && (!eigvals.is_finite() || !sqroot.is_finite())) {
     const int p = S.n_rows;
     return alpha*arma::eye<arma::mat>(p, p);
   }
 
-  // Transform back and return results
-  return rev_eig(eigvals, eigvecs);
+  // Determine to invert or not
+  if (invert == 2) {
+    // Generally, inversion for "small" lambda
+    if (lambda > 1) {
+      invert = 0;
+    } else {
+      if (!D_inv.is_finite()) {
+        invert = 0;
+      } else {
+        invert = 1;
+      }
+    }
+  }
+
+  // Determine to invert or not
+  if (invert == 1) {
+    return rev_eig(D_inv, eigvecs);  // Proper inversion
+  } else {
+    return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
+  }
+
 }
 
 
@@ -648,95 +655,7 @@ arma::cube armaRInvWishart(const int n,
 
 
 /*** R
-# Testing
-library("rags2ridges")
-library("microbenchmark")
-S  <- createS(n = 10, p = 10)
-target <- default.target(S, type = "DEPV")
-lambda <- 2
-
-
-
-# General target
-ridgeS1 <- function(S, target, lambda) {
-  E <- (S - lambda * target)
-  return(solve(E/2 + expm::sqrtm((E %*% E)/4 + lambda * diag(nrow(S)))))
-}
-
-microbenchmark(A1 <- ridgeS1(S, target, lambda),
-               B1 <- armaRidgePAnyTarget(S, target, lambda),
-               C1 <- armaRidgeP(S, target, lambda),
-               D1 <- ridgeS(S, lambda, target = target),
-               times = 1)
-stopifnot(all.equal(unname(A1), B1))
-stopifnot(all.equal(unname(A1), C1))
-
-# NULL TARGET
-ridgeS2 <- function(S, lambda) {
-  Spectral  <- eigen(S, symmetric = TRUE)
-  Eigshrink <- rags2ridges:::.eigShrink(Spectral$values, lambda)
-  return(solve(Spectral$vectors %*% diag(Eigshrink) %*% t(Spectral$vectors)))
-}
-target <- default.target(S, "Null")
-microbenchmark(A2 <- ridgeS2(S, lambda),
-               B2 <- armaRidgePScalarTarget(S, 0.0, lambda),
-               C2 <- armaRidgeP(S, target, lambda))
-stopifnot(all.equal(unname(A2), unname(B2)))
-stopifnot(all.equal(unname(A2), unname(C2)))
-
-# Equal diagnonal target
-ridgeS3 <- function(S, target, lambda) {
-  varPhi    <- unique(diag(target))
-  Spectral  <- eigen(S, symmetric = TRUE)
-  Eigshrink <- rags2ridges:::.eigShrink(Spectral$values, lambda, const = varPhi)
-  return(solve(Spectral$vectors %*% diag(Eigshrink) %*% t(Spectral$vectors)))
-}
-
-target <- default.target(S) # Equal diagnoal
-microbenchmark(A3 <- ridgeS3(S, target, lambda),
-               B3 <- armaRidgePScalarTarget(S, target[1,1], lambda),
-               C3 <- armaRidgeP(S, target, lambda))
-stopifnot(all.equal(unname(A3), unname(B3)))
-stopifnot(all.equal(unname(A3), unname(C3)))
-
-
-
-library("rags2ridges")
-library("microbenchmark")
-S  <- createS(n = 10, p = 500)
-target <- default.target(S, type = "DEPV")#default.target(S)#
-lambda <- 2
-system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
-microbenchmark(A <- ridgeS(S, target = target, lambda = lambda),
-               B <- armaRidgeP(S, target = target, lambda = lambda),
-               times = 1)
-stopifnot(all.equal(A, B))
-
-S  <- createS(n = 10, p = 5000)
-target <- default.target(S, type = "DEPV")
-lambda <- 2
-system.time(B <- ridgeSArma(S, target = target, lambda = lambda))
-# Takes about 2 mins -- about 10-20 hours for the ridgeS
-
-
-#
-# Test armaFusedUpdate
-#
-ns <- c(100, 100)
-Plist <- createS(n = c(100, 100), p = 10)
-Slist <- createS(n = c(100, 100), p = 10)
-Tlist <- default.target.fused(Slist, ns)
-g0 <- 1
-
-res <- microbenchmark(
-  A = armaFusedUpdate2(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
-  B = armaFusedUpdate(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
-  C = rags2ridges:::.fusedUpdate(g0, Plist, Slist, Tlist, ns, 1, matrix(1, 2, 2)),
-  times = 10000)
-boxplot(res)
-
-all.equal(A, C)
-all.equal(A2, A)
-all.equal(A, B)
+getwd()
+source("./../../fnorm.R")
 */
 
