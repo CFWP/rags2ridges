@@ -112,8 +112,11 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
   --------------------------------------------------------------------------- */
 
   arma::vec eigvals;
-  arma::mat eigvecs;
-  eig_sym(eigvals, eigvecs, S - lambda*target, "dc");
+  arma::mat eigvecs = S - lambda*target;
+  if (!eigvecs.is_finite()) {
+    return target;
+  }
+  eig_sym(eigvals, eigvecs, eigvecs, "dc");
   eigvals = 0.5*eigvals;
   arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
 
@@ -160,8 +163,9 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
    Compute the ridge estimate for rotational equivariant targets.
    Depending on the value of "invert"" using matrix inversion (via
    diagonalization) or avoiding it.
-   - S      > A sample covariance matrix
-   - alpha  > The scaling of the identity matrix.
+   - S      > A sample covariance matrix.
+   - alpha  > The scaling of the identity matrix. Shoud not contain NaNs, Infs,
+              or NA.s
    - lambda > The ridge penalty. Can be set to Inf (on the R side)
    - invert > Should the estimate be compute using inversion?
               0 = "no", 1 = "yes", 2 = "automatic", (default).

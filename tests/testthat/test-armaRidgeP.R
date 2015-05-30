@@ -112,11 +112,12 @@ for (type in tgt.types) {
 # Test for very large lambda AND targets
 #
 
+# source("../tests/testthat/reference-values.R")
 source("reference-values.R")
 
 test_that("Test armaRidgeP in various special cases (by reference)", {
 
-  expect_that(any(!is.finite(armaRidgeP(Sbar, Tbar, aa)), is_false()))
+  expect_that(any(!is.finite(armaRidgeP(Sbar, Tbar, aa))), is_false())
   expect_that(armaRidgeP(Sbar, Tbar, aa), equals(Tbar))
 
 })
