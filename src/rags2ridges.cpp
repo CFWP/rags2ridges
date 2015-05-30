@@ -116,14 +116,15 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
   eig_sym(eigvals, eigvecs, S - lambda*target, "dc");
   eigvals = 0.5*eigvals;
   arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
-  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
-  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
   // Return target if shrunken evals are infinite and lambda is "large"
   // Usually happens for lambda >= 1e154
   if (lambda > 1e6 && (!eigvals.is_finite() || !sqroot.is_finite())) {
     return target;
   }
+
+  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
+  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
   // Determine to invert or not
   if (invert == 2) {
@@ -172,8 +173,6 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 
   eigvals = 0.5*(eigvals - lambda*alpha);
   arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
-  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
-  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
   // Return target if shrunken evals are infinite and lambda is "large"
   // Usually happens for lambda >= 1e154
@@ -181,6 +180,9 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
     const int p = S.n_rows;
     return alpha*arma::eye<arma::mat>(p, p);
   }
+
+  arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
+  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
   // Determine to invert or not
   if (invert == 2) {
