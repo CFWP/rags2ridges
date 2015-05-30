@@ -38,11 +38,12 @@ functions.
   }
   \item{invert}{
   An \code{integer}. Should the estimate be compute using inversion?
-  Permitted values are 0 = "no", 1 = "yes", and 2 = "automatic" (default).
+  Permitted values are \code{0L}, \code{1L}, and \code{2L} meaning "no", "yes",
+  and "automatic" (default).
   }
 }
 \details{
-  The function are interface the low-level \code{C++} implementations
+  The functions are R-interfaces to low-level \code{C++} implementations
   of the ridge estimators in the reference below.
   Cf. Lemma 1, Remark 6, Remark 7, and section 4.1 herein.
 
@@ -51,21 +52,48 @@ functions.
   the estimators for arbitrary and scalar targets, respectively.
   The \code{invert} argument of the functions indicate that the computation
   uses matrix inversion or not.
+
+  Essentially, the functions compute
+  \deqn{
+    \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) =
+    \left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+    \lambda_{a}\mathbf{T})^{2}\right]^{1/2} + \frac{1}{2}(\mathbf{S} -
+    \lambda_{a}\mathbf{T})\right\}^{-1},
+  }{%
+    \Omega(\lambda) =
+    \{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
+    + 1/2(S - \lambda T)\}^{-1},
+  }
+  if \code{invert == 1} or
+  \deqn{
+    \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) =
+    \frac{1}{\lambda}\left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+    \lambda_{a}\mathbf{T})^{2}\right]^{1/2} - \frac{1}{2}(\mathbf{S} -
+    \lambda_{a}\mathbf{T})\right\}
+  }{%
+    \Omega(\lambda) =
+    1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
+    - 1/2(S - \lambda T)},
+  }
+  if \code{invert == 0} using appropriate singular value decompostions.
+  See the R implemetations in the example section below.
 }
 \value{
-  Returns a symmetric positive definite \code{matrix} of the same size as \code{S}.
+  Returns a symmetric positive definite \code{matrix} of the same size as
+  \code{S}.
 }
 \references{
   van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse
   Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
 }
 \author{
-  Anders Ellern Bilgrau
-  Carel Peeters
-  Wessel van Wieringen
+  Anders Ellern Bilgrau, \cr
+  Carel F.W. Peeters <cf.peeters@vumc.nl>, and \cr
+  Wessel N. van Wieringen
 }
 \section{Warning}{
-  The functions themselves perform very few checks on the input.
+  The functions themselves perform no checks on the input. Correct input should
+  be ensured by wrappers.
 }
 \seealso{
   Used as a backbone in \code{\link{ridgeP}}, \code{\link{ridgeP.fused}}, etc.
@@ -79,12 +107,9 @@ rags2ridges:::.armaRidgePAnyTarget(S, tgt, 1.2)
 rags2ridges:::.armaRidgePScalarTarget(S, 1, 1.2)
 
 
-
-
-
-#
-# The estimators essentially amount C++ versions of the following functions.
-#
+################################################################################
+# The C++ estimators essentially amount to the following functions.
+################################################################################
 
 rev_eig <- function(evalues, evectors) { # "Reverse" eigen decomposition
   evectors \%*\% diag(evalues) \%*\% t(evectors)
@@ -93,37 +118,74 @@ rev_eig <- function(evalues, evectors) { # "Reverse" eigen decomposition
 # R implementations
 
 # As armaRidgePScalarTarget Inv
-ridgePScalarTarget <- function(S, a, l, invert = 2) {
+rRidgePScalarTarget <- function(S, a, l, invert = 2) {
   ED <- eigen(S)
-  tmp <- ED$values - l*a
-  d <- (sqrt(l + 0.25*(tmp)^2) - 0.5*tmp)
+  eigvals <- 0.5*(ED$values - l*a)
+  sqroot <- sqrt(l + eigvals^2)
 
-  if (invert == 2)
-    invert <- ifelse(all(d == 0), 1, 0)
+  if (l > 1e6 && (any(!is.finite(eigvals)) || any(!is.finite(sqroot)))) {
+    return(diag(a, nrow(S)))
+  }
+
+  D_inv <- 1.0/(sqroot + eigvals)
+  D_noinv <- (sqroot - eigvals)/l
+
+  if (invert == 2) {   # Determine to invert or not
+    if (l > 1) {  # Generally, use inversion for "small" lambda
+      invert = 0;
+    } else {
+      invert <- ifelse(any(!is.finite(D_inv)), 0, 1)
+    }
+  }
 
   if (invert) {
-    eigvals <- 1.0/(sqrt(l + 0.25*(tmp)^2) + 0.5*tmp)
+    eigvals <- D_inv
   } else {
-    eigvals <- (1.0/l)*d
+    eigvals <- D_noinv
   }
   return(rev_eig(eigvals, ED$vectors))
 }
 
 # As armaRidgePAnyTarget
-ridgePAnyTarget <- function(S, tgt, l, invert = 2) {
+rRidgePAnyTarget <- function(S, tgt, l, invert = 2) {
   ED <- eigen(S - l*tgt)
+  eigvals <- 0.5*ED$values
+  sqroot <- sqrt(l + eigvals^2)
 
-  d <- (sqrt(l + 0.25*(ED$values)^2) - 0.5*ED$values)
+  if (l > 1e6 && (any(!is.finite(eigvals)) || any(!is.finite(sqroot)))) {
+    return(tgt)
+  }
 
-  if (invert == 2)
-    invert <- ifelse(all(d == 0), 1, 0)
+  D_inv <- 1.0/(sqroot + eigvals)
+  D_noinv <- (sqroot - eigvals)/l
+
+  if (invert == 2) {   # Determine to invert or not
+    if (l > 1) {  # Generally, use inversion for "small" lambda
+      invert = 0;
+    } else {
+      invert <- ifelse(any(!is.finite(D_inv)), 0, 1)
+    }
+  }
 
   if (invert == 1) {
-    eigvals <- 1.0/(sqrt(l + 0.25*(ED$values^2)) + 0.5*(ED$values))
+    eigvals <- D_inv
   } else {
-    eigvals <- (1.0/l)*d
+    eigvals <- D_noinv
   }
   return(rev_eig(eigvals, ED$vectors))
+}
+
+rRidgeP <- function(S, tgt, l, invert = 2) {
+  if (l == Inf) {
+    return(tgt)
+  }
+  a <- tgt[1,1]
+  if (tgt == diag(a, nrow(tgt))) {
+    rRidgePScalarTarget(S, tgt, l, invert)
+  } else {
+    rRidgePAnyTarget(S, tgt, l, invert)
+  }
+
 }
 
 # Contrasted to the straight forward implementations:
@@ -150,19 +212,19 @@ a <- 2.2
 tgt <- diag(a, p)
 l <- 1.21
 
-(AA <- ridgeP1(S, tgt, l))
-(BB <- ridgeP2(S, tgt, l))
+(A <- ridgeP1(S, tgt, l))
+(B <- ridgeP2(S, tgt, l))
 
-(CC <- rags2ridges:::.armaRidgePAnyTarget(S, tgt, l))
-(CCR<- ridgePAnyTarget(S, tgt, l))
-(DD <- rags2ridges:::.armaRidgePScalarTarget(S, a, l))
-(DDR<- ridgePScalarTarget(S, a, l))
-(EE <- rags2ridges:::.armaRidgeP(S, tgt, l))
+(C  <- rags2ridges:::.armaRidgePAnyTarget(S, tgt, l))
+(CR <-                   rRidgePAnyTarget(S, tgt, l))
+(D  <- rags2ridges:::.armaRidgePScalarTarget(S, a, l))
+(DR <-                   rRidgePScalarTarget(S, a, l))
+(E  <- rags2ridges:::.armaRidgeP(S, tgt, l))
 
 # Check
 equal <- function(x, y) {isTRUE(all.equal(x, y))}
-equal(AA, BB) & equal(AA, CC) & equal(AA, DD) & equal(AA, EE)
-equal(CC, CCR) & equal(DD, DDR)
+stopifnot(equal(A, B) & equal(A, C) & equal(A, D) & equal(A, E))
+stopifnot(equal(C, CR) & equal(D, DR))
 
 }
 \keyword{internal}
