@@ -2,7 +2,8 @@ context("Unit test of armaRidgeP")
 
 # To make the R versions of armaRidgePAnyTarget and armaRidgePScalarTarget
 # available.
-example("armaRidgeP", package = "rags2ridges", character.only = TRUE)
+example("armaRidgeP", package = "rags2ridges",
+        character.only = TRUE, echo = FALSE)
 
 # The functions to test
 armaRidgeP <- rags2ridges:::.armaRidgeP  # To avoid writing rags2ridges:::
@@ -105,3 +106,17 @@ for (type in tgt.types) {
 
 } ## End for p
 } ## End for n
+
+
+#
+# Test for very large lambda AND targets
+#
+
+source("reference-values.R")
+
+test_that("Test armaRidgeP in various special cases (by reference)", {
+
+  expect_that(any(!is.finite(armaRidgeP(Sbar, Tbar, aa)), is_false()))
+  expect_that(armaRidgeP(Sbar, Tbar, aa), equals(Tbar))
+
+})
