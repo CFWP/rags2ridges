@@ -808,8 +808,8 @@ ridgeP.fused <- function(Slist,
     S <- .armaPooledS(Slist.org, ns.org)
     Plist <- list()
     for (i in seq_len(G)) {
-      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
-                                lambda = G*lambda[i,i]/sum(ns.org))
+      lambda.i <- G*lambda[i,i]/sum(ns.org)
+      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]], lambda = lambda.i)
     }
   }
 
@@ -836,8 +836,8 @@ ridgeP.fused <- function(Slist,
 
 .kfcvl <- function(lambda, Ylist, Tlist, Plist, k, ...) {
   ##############################################################################
-  # (Internal) Computes the k-fold fused cross-validation loss for given penalty
-  # parameters. The data for each class is divided into k parts. The first part
+  # (Internal) Computes the k-fold fused cross-validation loss for a penalty
+  # matrix. The data for each class is divided into k parts. The first part
   # in each class is left out, the fused estimate is computed based on the
   # remaning, and the loss is computed. Then this is repeated for the remaning
   # parts.
@@ -850,47 +850,48 @@ ridgeP.fused <- function(Slist,
   # - Plist   > Initial estimates
   # - k       > The fold of the cross validation. I.e. k is the number of
   #             roughly equally sized parts the samples for each class are
-  #             partitioned into. Hence G times k is the total number of parts.
+  #             partitioned into.
   # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
   G <- length(Ylist)
   ns.org <- sapply(Ylist, nrow)
   if (min(ns.org) < k) {
-    stop(paste("The least class sample size is less than the specified k =", k))
+    stop("The least class sample size is less than the specified k = ", k)
   }
-  Slist.org <- lapply(Ylist, covML)
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    S <- .armaPooledS(Slist.org, ns.org)
-    Plist <- list()
+    Slist.org <- lapply(Ylist, covML)
+    Spool <- .armaPooledS(Slist.org, ns.org)
+    Plist <- vector("list", G)
     for (i in seq_len(G)) {
-      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
-                                lambda = G*lambda[i,i]/sum(ns.org))
+      lambda.i <- G*lambda[i,i]/sum(ns.org)
+      Plist[[i]] <- .armaRidgeP(Spool, target = Tlist[[i]], lambda = lambda.i)
     }
   }
 
   # Split each class into k equally sized parts
   parts <- lapply(ns.org, function(n) sample(ceiling(k*seq_len(n)/n)))
-  Ylist.sp <- mapply(split.data.frame, Ylist, parts, SIMPLIFY = FALSE)
 
   # Run through all k splits in each class
-  slh <- numeric()
-  for (g in seq_len(G)) {
-    ns    <- ns.org     # To be "updated"
-    Slist <- Slist.org  # To be "updated"
-    for (i in seq_len(k)) {
-      ns[g] <- ns[g] - nrow(Ylist.sp[[g]][[i]])
-      Slist[[g]] <- covML(do.call("rbind", Ylist.sp[[g]][-i]))
-
-      Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
+  slh <- matrix(0, k, G)
+  for (i in seq_len(k)) {
+    Ylist.i <- mapply(function(x, ind) x[ind != i, , drop = FALSE],
+                      Ylist, parts, SIMPLIFY = FALSE)
+    ns.i    <- sapply(Ylist.i, nrow)
+    Slist.i <- lapply(Ylist.i, covML)
+    Plist.i <- .armaRidgeP.fused(Slist = Slist.i, ns = ns.i, Tlist = Tlist,
                                  lambda = lambda, Plist = Plist,
                                  verbose = FALSE, ...)
 
-      Sig <- crossprod(Ylist.sp[[g]][[i]])
-      slh <- c(slh, .LL(Sig, Plist[[g]]))
+    for (g in seq_len(G)) {
+      Ylist.ig <- Ylist[[g]][parts[[g]] == i, , drop = FALSE]
+      nig <- nrow(Ylist.ig)
+      Sig <- crossprod(Ylist.ig)/nig
+      slh[i, g] <- .LL(Sig, Plist.i[[g]])
     }
+
   }
 
   return(mean(slh))
