@@ -732,7 +732,7 @@ ridgeP.fused <- function(Slist,
     diag(tmp) <- lambda[1]
     lambda <- tmp
   }
-  if (!isSymmetric(lambda)) {
+  if (!isSymmetric(lambda, check.attributes = FALSE)) {
     stop("lambda must be symmetric")
   }
   if (!all(lambda >= 0)) {
