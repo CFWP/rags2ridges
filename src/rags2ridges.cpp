@@ -532,17 +532,19 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
     }
     delta = max(diffs);
-    if (delta > eps) {
+
+    if (verbose) {
+      Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
+    }
+    if (delta < eps) {
       if (verbose) {
-        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
+        Rprintf("Max diff < %f. Converged in %d iterations.\n", eps, i + 1);
       }
-    } else {
-      if (verbose) {
-        Rprintf("Converged in %d iterations.\n", i + 1);
-      }
-      break;
+      return Plist_out;
     }
   }
+
+  Rcpp::warning("Max iterations (%d) hit.", maxit);
   return Plist_out;
 }
 
