@@ -1325,10 +1325,12 @@ optPenalty.fused.LOOCVauto <-
     # Get somewhat sensible starting value for non-fixed diagonal entries
     # (ridge penalties) and by choosing off-diag lambda to be zero.
     f <- function(x) {
-      lambdas <- suppressWarnings(.lambdasFromMatrix(diag(x, G),parsedLambda))
-      return(cvl(lambdas))
+      lambdas <- suppressWarnings({
+        .lambdasFromMatrix(diag(exp(x), G), parsedLambda)
+        })
+      return(cvl(log(lambdas)))
     }
-    st <- optimize(f, lower = -30, upper = 30)$minimum
+    st <- optimize(f, lower = -20, upper = 20)$minimum
     lambdas.st <- suppressWarnings(.lambdasFromMatrix(diag(st,G), parsedLambda))
 
   } else {
