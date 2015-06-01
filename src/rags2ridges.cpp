@@ -14,6 +14,77 @@
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
 
+// [[Rcpp::export(NLL)]]
+inline double NLL(const arma::mat S, const arma::mat P) {
+  /* The negative loglikelihood */
+  double logdet;
+  double sign;
+  log_det(logdet, sign, P);
+  if (sign < 0) {
+    Rcpp::stop("Supplied precision matrix is not postive definite.");
+  }
+  return -logdet + accu(S % P);
+}
+
+// [[Rcpp::export(PNLL)]]
+double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
+            const double lambda) {
+  /* The penalized negative loglikelihood */
+  return NLL(S, P) + 0.5*lambda*pow(arma::norm(P - T, "fro"), 2.0);
+}
+
+// [[Rcpp::export(NLL.fused)]]
+double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
+                const arma::vec ns) {
+  /* ---------------------------------------------------------------------------
+   Function that computes the value of the (negative) combined log-likelihood
+   - Slist > A list sample covariance matrices for each class
+   - Plist > A list of the same length as (Slist) of precision matrices
+             (possibly regularized inverse covariance or correlation matrices)
+   - ns    > A vector of sample sizes of the same length as Slist.
+  --------------------------------------------------------------------------- */
+
+  const int G = ns.size();
+  double nll = 0;
+  for (int i = 0; i < G; ++i) {
+    arma::mat Si = Slist[i];
+    arma::mat Pi = Plist[i];
+    nll += ns[i]*NLL(Si, Pi);
+  }
+  return nll;
+}
+
+// [[Rcpp::export(PNLL.fused)]]
+double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
+                  const arma::vec ns, const Rcpp::List Tlist,
+                  const arma::mat lambda) {
+  /* ---------------------------------------------------------------------------
+   Function that computes the value of the penalized (negative) fused
+   log-likelihood.
+   - Slist  > A list sample covariance matrices for each class
+   - Plist  > A list of the same length as (Slist) of precision matrices
+              (possibly regularized inverse covariance or correlation matrices)
+   - Tlist  > A list of target matrices
+   - ns     > A vector of sample sizes of the same length as Slist.
+   - lambda > The penalty matrix
+  --------------------------------------------------------------------------- */
+
+  const int G = ns.size();
+  double pnll = LL_fused(Slist, Plist, ns);
+  for (int i = 0; i < G; i++) {
+    arma::mat Pi = Plist[i];
+    arma::mat Ti = Tlist[i];
+    arma::mat diff = Pi - Ti;
+    pnll += 0.5*lambda(i,i)*pow(arma::norm(diff, "fro"), 2.0);
+    for (int j = 0; j < i; j++) {
+      arma::mat Pj = Plist[j];
+      arma::mat Tj = Tlist[j];
+      pnll += 0.25*lambda(i,j)*pow(arma::norm(diff - Pj + Tj, "fro"), 2.0);
+    }
+  }
+  return pnll;
+}
+
 
 // [[Rcpp::export(.armaPooledS)]]
 arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
@@ -511,8 +582,6 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-
-  // Initialize
   const double lambdasize = accu(lambda);  // Sum of all entries
   double delta;
   arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
@@ -532,17 +601,21 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
     }
     delta = max(diffs);
-    if (delta > eps) {
+
+    if (verbose) {
+      double pnll = PNLL_fused(Slist, Plist_out, ns, Tlist, lambda);
+      Rprintf("i = %-3d | max diff = %-15.10e | pnll = %-15.10e\n",
+              i + 1, delta, pnll);
+    }
+    if (delta < eps) {
       if (verbose) {
-        Rprintf("i = %-3d | max diffs = %0.10f\n", i + 1, delta);
+        Rprintf("Converged in %d iterations. max diff < %1.2e.\n", i + 1, eps);
       }
-    } else {
-      if (verbose) {
-        Rprintf("Converged in %d iterations.\n", i + 1);
-      }
-      break;
+      return Plist_out;
     }
   }
+
+  Rcpp::warning("Max iterations (%d) hit.", maxit);
   return Plist_out;
 }
 

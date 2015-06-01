@@ -803,6 +803,7 @@ ridgeP.fused <- function(Slist,
   ns.org <- sapply(Ylist, nrow)
   Slist.org <- lapply(Ylist, covML)
 
+
   # If Plist is not supplied
   if (missing(Plist)) {
     S <- .armaPooledS(Slist.org, ns.org)
@@ -813,7 +814,8 @@ ridgeP.fused <- function(Slist,
     }
   }
 
-  slh <- numeric()
+  slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
+  j <- 1
   for (g in seq_len(G)) {
     ns <- ns.org        # "Reset" number of samples in each group
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
@@ -826,9 +828,11 @@ ridgeP.fused <- function(Slist,
                                  verbose = FALSE, ...)
 
       Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
-      slh <- c(slh, .LL(Sig, Plist[[g]]))
+      slh[j] <- .LL(Sig, Plist[[g]])
+      j <- j + 1
     }
   }
+
   return(mean(slh))
 }
 
