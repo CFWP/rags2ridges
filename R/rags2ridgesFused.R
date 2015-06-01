@@ -1076,6 +1076,7 @@ ridgeP.fused <- function(Slist,
                col = as.integer(col(lambda)), stringsAsFactors = FALSE)
   parsedLambda$val <- suppressWarnings({as.numeric(parsedLambda$name)})
   parsedLambda$fixed <- !is.na(parsedLambda$val)
+  parsedLambda$variable <- !parsedLambda$fixed
   nf <- !parsedLambda$fixed
   parsedLambda$index[nf] <- as.numeric(as.factor(parsedLambda$name[nf]))
 
@@ -1098,15 +1099,17 @@ ridgeP.fused <- function(Slist,
   # - parsedLambda > A data.frame describing the penalty matrix.
   #                  Should be the output from .parseLambda.
   ##############################################################################
+
   if (length(lambdas) != attributes(parsedLambda)$n.variables) {
     stop("The number of lambdas does not correspond with the number of",
-         " non-fixed penalties given i parsedLambda")
+         " non-fixed penalties given in parsedLambda")
   }
 
   G <- attributes(parsedLambda)$n.classes
-  var <- !parsedLambda$fixed
-  parsedLambda$val[var] <- lambdas[parsedLambda$index[var]]
-  lambda <- matrix(parsedLambda$val, G, G)
+  var <- parsedLambda$variable
+  vals <- parsedLambda$val
+  vals[var] <- lambdas[parsedLambda$index[var]]
+  lambda <- matrix(vals, G, G)
   return(lambda)
 }
 
