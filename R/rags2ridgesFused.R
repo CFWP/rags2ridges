@@ -819,16 +819,17 @@ ridgeP.fused <- function(Slist,
   for (g in seq_len(G)) {
     ns <- ns.org        # "Reset" number of samples in each group
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
+    this.Plist <- Plist # "Reset" the hot stat for each class
     for (i in seq_len(ns.org[g])) {
       Slist <- Slist.org
       Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
 
-      Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
-                                 lambda = lambda, Plist = Plist,
-                                 verbose = FALSE, ...)
+      this.Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
+                                      lambda = lambda, Plist = this.Plist,
+                                      verbose = FALSE, ...)
 
       Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
-      slh[j] <- .LL(Sig, Plist[[g]])
+      slh[j] <- .LL(Sig, this.Plist[[g]])
       j <- j + 1
     }
   }
