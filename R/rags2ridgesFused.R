@@ -1338,7 +1338,9 @@ optPenalty.fused.LOOCVauto <-
 
   } else {
     if (is.matrix(lambda.init) && is.numeric(lambda.init)) {
-      lambdas.st <- .lambdasFromMatrix(lambda.init, parsedLambda)
+      lambdas.st <- log(.lambdasFromMatrix(lambda.init, parsedLambda))
+      lambdas.st[!is.finite(lambdas.st)] <- -50
+
     } else {
       stop("The supplied inital parameters must be a numeric matrix")
     }
