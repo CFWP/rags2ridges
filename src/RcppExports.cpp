@@ -6,6 +6,60 @@
 
 using namespace Rcpp;
 
+// NLL
+inline double NLL(const arma::mat S, const arma::mat P);
+RcppExport SEXP rags2ridges_NLL(SEXP SSEXP, SEXP PSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type P(PSEXP);
+    __result = Rcpp::wrap(NLL(S, P));
+    return __result;
+END_RCPP
+}
+// PNLL
+double PNLL(const arma::mat S, const arma::mat P, const arma::mat T, const double lambda);
+RcppExport SEXP rags2ridges_PNLL(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::mat >::type S(SSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type P(PSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type T(TSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(PNLL(S, P, T, lambda));
+    return __result;
+END_RCPP
+}
+// LL_fused
+double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns);
+RcppExport SEXP rags2ridges_LL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type Slist(SlistSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type Plist(PlistSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type ns(nsSEXP);
+    __result = Rcpp::wrap(LL_fused(Slist, Plist, ns));
+    return __result;
+END_RCPP
+}
+// PNLL_fused
+double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns, const Rcpp::List Tlist, const arma::mat lambda);
+RcppExport SEXP rags2ridges_PNLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const Rcpp::List >::type Slist(SlistSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type Plist(PlistSEXP);
+    Rcpp::traits::input_parameter< const arma::vec >::type ns(nsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List >::type Tlist(TlistSEXP);
+    Rcpp::traits::input_parameter< const arma::mat >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(PNLL_fused(Slist, Plist, ns, Tlist, lambda));
+    return __result;
+END_RCPP
+}
 // armaPooledS
 arma::mat armaPooledS(const Rcpp::List& Slist, const Rcpp::NumericVector ns, const int mle);
 RcppExport SEXP rags2ridges_armaPooledS(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
