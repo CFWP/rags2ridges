@@ -21,7 +21,7 @@ inline double NLL(const arma::mat S, const arma::mat P) {
   double sign;
   log_det(logdet, sign, P);
   if (sign < 0) {
-    Rcpp::stop("Supplied precision matrix is not postive definite.");
+    Rcpp::warning("Supplied precision matrix is not postive definite.");
   }
   return -logdet + accu(S % P);
 }
