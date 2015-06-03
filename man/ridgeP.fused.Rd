@@ -43,10 +43,12 @@ ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
     a common ridge penalty and the second as a common fusion penalty.
   }
   \item{Plist}{
-    An optional \code{list} of initial starting values for the algorithm,
-    i.e. a list of precision matrices of the same size as \code{Slist}.
-    Can be omitted. Default is the (regular) ridge precision estimate using
-    the pooled covariance matrix.
+    An optional \code{list} of initial precision matrices for the fused ridge
+    algorithm the same size as \code{Slist}.
+    Can be omitted.
+    Default is the nonfused ridge precision estimate using
+    the pooled covariance matrix corresponding to setting all fusion penalties
+    to zero.
   }
   \item{maxit}{
     A single \code{integer} giving the maximum number of allowed iterations.
@@ -67,6 +69,10 @@ likelihood problem for a given ridge penalty \eqn{lambda} and fused penalty matr
 }
 \value{
 Returns a \code{list} as \code{Slist} with precision estimates of the corresponding classes.
+}
+\note{
+  For extreme fusion penalties in \code{lambda} the algorithm is quite sensitive to
+  the initial values given in \code{Plist}.
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN

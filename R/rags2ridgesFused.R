@@ -689,6 +689,34 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 ################################################################################
 ################################################################################
 
+.init.ridgeP.fused <- function(Slist, ns, Tlist, lambda, ...) {
+  ##############################################################################
+  # Internal function for selecting initial values for Plist
+  # - Slist   > A list of length G of sample correlation matrices the same size
+  #             as those of Plist.
+  # - Tlist   > A list of length G of target matrices the same size
+  #             as those of Plist. Default is given by default.target.
+  # - ns      > A vector of length G giving the sample sizes.
+  # - lambda  > A numeric non-negative symmetric G by G penalty matrix giving
+  #             the penalties of the fused ridge estimator. The diagonal entries
+  #             correspond to the class ridge penalites. The off-diagonal
+  #             entries, lambda[g1, g2] say, determine the retainment of
+  #             similarities between estimates in classes g1 and g2.
+  #             If lambda is a single number, a diagonal penalty with lambda in
+  #             the diagonal is used (lambda*diag(G)).
+  #             If lambda is supplied as a numeric vector of two numbers,
+  #             the first is used as a common ridge penalty and the second
+  #             as a common fusion penalty.
+  # - ...     > Arguments passed to .armaRidgeP.fused
+  ##############################################################################
+  G <- length(Slist)
+  Spool <- pooledS(Slist, ns, mle = FALSE)
+  Pinit <- diag(nrow(Spool))
+  Slist.p <- replicate(G, Spool, simplify = FALSE)
+  Plist.i <- replicate(G, Pinit, simplify = FALSE)
+  return(.armaRidgeP.fused(Slist.p, ns, Tlist, diag(diag(lambda)), Plist.i,...))
+}
+
 
 ridgeP.fused <- function(Slist,
                          ns,
@@ -748,12 +776,8 @@ ridgeP.fused <- function(Slist,
 
   # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(Plist)) {
-    Spool <- pooledS(Slist, ns, mle = FALSE)
-    Plist <- vector("list", G)
-    for (i in seq_len(G)) {
-      Plist[[i]] <-
-        .armaRidgeP(Spool, target = Tlist[[i]], lambda = G*lambda[i,i]/sum(ns))
-    }
+    Plist <- .init.ridgeP.fused(Slist, ns, Tlist, lambda,
+                                maxit = maxit, eps = eps)
   }
   stopifnot(length(Slist) == length(Plist))
 
@@ -806,12 +830,8 @@ ridgeP.fused <- function(Slist,
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    S <- .armaPooledS(Slist.org, ns.org)
-    Plist <- list()
-    for (i in seq_len(G)) {
-      lambda.i <- G*lambda[i,i]/sum(ns.org)
-      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]], lambda = lambda.i)
-    }
+    Plist <- .init.ridgeP.fused(Slist.org, ns.org, Tlist, lambda,
+                                verbose = FALSE, ...)
   }
 
   slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
