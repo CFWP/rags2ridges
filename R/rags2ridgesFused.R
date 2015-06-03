@@ -724,13 +724,17 @@ ridgeP.fused <- function(Slist,
   G <- length(Slist)  # Number of groups
 
   # Hande special imputs of lambda
-  if (!is.matrix(lambda) && is.numeric(lambda) && length(lambda) == 1) {
-    lambda <- lambda*diag(G)
-  }
-  if (!is.matrix(lambda) && is.numeric(lambda) && length(lambda) == 2) {
-    tmp <- matrix(lambda[2], G, G)
-    diag(tmp) <- lambda[1]
-    lambda <- tmp
+  if (!is.matrix(lambda) && is.numeric(lambda)) {
+    if (length(lambda) == 1) {
+      lambda <- diag(lambda, G)
+    } else if (length(lambda) == 2) {
+      tmp <- matrix(lambda[2], G, G)
+      diag(tmp) <- lambda[1]
+      lambda <- tmp
+    } else {
+      stop("If lambda is not a numeric matrix, it should have length 1 or 2.")
+    }
+
   }
   if (!isSymmetric(lambda, check.attributes = FALSE)) {
     stop("lambda must be symmetric")
@@ -745,7 +749,7 @@ ridgeP.fused <- function(Slist,
   # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(Plist)) {
     Spool <- pooledS(Slist, ns, mle = FALSE)
-    Plist <- list()
+    Plist <- vector("list", G)
     for (i in seq_len(G)) {
       Plist[[i]] <-
         .armaRidgeP(Spool, target = Tlist[[i]], lambda = G*lambda[i,i]/sum(ns))
