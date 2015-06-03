@@ -506,8 +506,7 @@ arma::mat armaFusedUpdateIII(int g0,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  const double lambdasum = sum(lambda.row(g0));
-  const double a = lambdasum/ns[g0];
+  const double a = sum(lambda.row(g0));
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
   arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
@@ -515,12 +514,15 @@ arma::mat armaFusedUpdateIII(int g0,
      if (g == g0) {
        continue;
      }
+
+     double factor = arma::is_finite(lambda(g0, g)) ? lambda(g0, g)/a : 1;
+
      arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
-     Tbar += (lambda(g0, g)/lambdasum)*(P - T);
+     Tbar += factor*(P - T);
   }
 
-  return armaRidgeP(Sbar, Tbar, a);
+  return armaRidgeP(Sbar, Tbar, a/ns[g0]);
 }
 
 
