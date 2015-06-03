@@ -762,10 +762,6 @@ ridgeP.fused <- function(Slist,
                              lambda = lambda, Plist = Plist, maxit = maxit,
                              eps = eps, verbose = verbose)
 
-  if (i == maxit + 1) {
-    warning("Maximum iterations (", maxit, ") hit")
-  }
-
   # Keep dimnames and names
   for (g in seq_along(Slist)) {
     dimnames(Plist[[g]]) <- dimnames(Slist[[g]])
