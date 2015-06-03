@@ -578,8 +578,8 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  const double lambdasize = accu(lambda);  // Sum of all entries
   double delta;
+  const arma::colvec lambda_colsum = sum(lambda, 1);  // row sums
   arma::vec diffs = arma::ones(G);  // Vector of ones, will be overwritten
   arma::mat tmp;
   Rcpp::List Plist_out = Rcpp::clone(Plist);
@@ -587,7 +587,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
-      if (lambdasize < 1e50) {
+      if (lambda_colsum[g] < 1e3) {
         // Update I is faster but unstable for very large lambda
         Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns, lambda);
       } else {
