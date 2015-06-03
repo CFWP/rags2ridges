@@ -198,12 +198,9 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
   }
 
   arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
-  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
-  // Determine to invert or not
-  if (invert == 2) {
-    // Generally, inversion for "small" lambda
-    if (lambda > 1) {
+  if (invert == 2) {   // Determine to invert or not
+    if (lambda > 1) {  // Generally, don't use inversion for "large" lambda
       invert = 0;
     } else {
       if (!D_inv.is_finite()) {
@@ -218,6 +215,7 @@ arma::mat armaRidgePAnyTarget(const arma::mat & S,
   if (invert == 1) {
     return rev_eig(D_inv, eigvecs);  // Proper inversion
   } else {
+    arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
     return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
   }
 
@@ -257,12 +255,9 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
   }
 
   arma::vec D_inv = 1.0/(sqroot + eigvals); // inversion diagonal
-  arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
 
-  // Determine to invert or not
-  if (invert == 2) {
-    // Generally, inversion for "small" lambda
-    if (lambda > 1) {
+  if (invert == 2) {   // Determine to invert or not
+    if (lambda > 1) {  // Generally, don't use inversion for "large" lambda
       invert = 0;
     } else {
       if (!D_inv.is_finite()) {
@@ -277,6 +272,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
   if (invert == 1) {
     return rev_eig(D_inv, eigvecs);  // Proper inversion
   } else {
+    arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
     return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
   }
 
