@@ -1375,6 +1375,14 @@ optPenalty.fused.LOOCVauto <-
     par <- ans$par
     val <- ans$value
 
+    if (method != "SANN" && ans$convergence == 1) {
+      warning("Iteration limit of optim had been reached.")
+    }
+
+    if (method == "Nelder-Mead" && ans$convergence == 10) {
+      warning("Degeneracy of the Nelder–Mead simplex.")
+    }
+
   } else if (optimizer == "nlm") {
 
     ans <- nlm(cvl, lambdas.st, iterlim = maxit.optimizer, ...)
