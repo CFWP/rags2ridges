@@ -830,8 +830,7 @@ ridgeP.fused <- function(Slist,
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    Plist <- .init.ridgeP.fused(Slist.org, ns.org, Tlist, lambda,
-                                verbose = FALSE, ...)
+    Plist <- ridgeP.fused(Slist.org, ns.org, Tlist, lambda, verbose = FALSE,...)
   }
 
   slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
@@ -840,13 +839,13 @@ ridgeP.fused <- function(Slist,
     ns <- ns.org        # "Reset" number of samples in each group
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
     this.Plist <- Plist # "Reset" the hot stat for each class
+    this.Slist <- Slist.org
     for (i in seq_len(ns.org[g])) {
-      Slist <- Slist.org
-      Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
+      this.Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
 
-      this.Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
-                                      lambda = lambda, Plist = this.Plist,
-                                      verbose = FALSE, ...)
+      this.Plist <- .armaRidgeP.fused(Slist = this.Slist, ns = ns,
+                                      Tlist = Tlist, lambda = lambda,
+                                      Plist = Plist, verbose = FALSE, ...)
 
       Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
       slh[j] <- .LL(Sig, this.Plist[[g]])
