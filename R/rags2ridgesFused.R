@@ -824,10 +824,10 @@ ridgeP.fused <- function(Slist,
   # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
+  covML2 <- function(Y) crossprod(Y)/nrow(Y)
   G <- length(Ylist)
   ns.org <- sapply(Ylist, nrow)
-  Slist.org <- lapply(Ylist, covML)
-
+  Slist.org <- lapply(Ylist, covML2)
 
   # If Plist is not supplied
   if (missing(Plist)) {
@@ -840,16 +840,15 @@ ridgeP.fused <- function(Slist,
   for (g in seq_len(G)) {
     ns <- ns.org        # "Reset" number of samples in each group
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
-    this.Plist <- Plist # "Reset" the hot stat for each class
+    this.Slist <- Slist.org
     for (i in seq_len(ns.org[g])) {
-      Slist <- Slist.org
-      Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
+      this.Slist[[g]] <- covML2(Ylist[[g]][-i, , drop = FALSE])
 
-      this.Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
-                                      lambda = lambda, Plist = this.Plist,
-                                      verbose = FALSE, ...)
+      this.Plist <- .armaRidgeP.fused(Slist = this.Slist, ns = ns,
+                                      Tlist = Tlist, lambda = lambda,
+                                      Plist = Plist, verbose = FALSE, ...)
 
-      Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
+      Sig <- covML2(Ylist[[g]][i,  , drop = FALSE])
       slh[j] <- .LL(Sig, this.Plist[[g]])
       j <- j + 1
     }
