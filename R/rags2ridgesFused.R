@@ -1380,7 +1380,7 @@ optPenalty.fused.LOOCVauto <-
         warning("Iteration limit of optim had been reached.")
       }
       if (args$method == "Nelder-Mead" && ans$convergence == 10) {
-        warning("Degeneracy of the Nelder–Mead simplex.")
+        warning("Degeneracy of the Nelder-Mead simplex.")
       }
     }
   } else if (optimizer == "nlm") {
