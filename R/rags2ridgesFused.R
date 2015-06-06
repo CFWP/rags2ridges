@@ -831,8 +831,7 @@ ridgeP.fused <- function(Slist,
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    Plist <- .init.ridgeP.fused(Slist.org, ns.org, Tlist, lambda,
-                                verbose = FALSE, ...)
+    Plist <- ridgeP.fused(Slist.org, ns.org, Tlist, lambda, verbose = FALSE,...)
   }
 
   slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
