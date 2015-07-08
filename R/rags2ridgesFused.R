@@ -820,14 +820,13 @@ ridgeP.fused <- function(Slist,
   #             samples (rows) are needed in each entry.
   # - Tlist   > A list of length G of target matrices the same size
   #             as those of Plist. Default is given by default.target.
-  # - Plist   > Initial estimates
+  # - Plist   > Initial estimate
   # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
-  covML2 <- function(Y) crossprod(Y)/nrow(Y)
   G <- length(Ylist)
   ns.org <- sapply(Ylist, nrow)
-  Slist.org <- lapply(Ylist, covML2)
+  Slist.org <- lapply(Ylist, covML)
 
   # If Plist is not supplied
   if (missing(Plist)) {
@@ -841,13 +840,13 @@ ridgeP.fused <- function(Slist,
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
     this.Slist <- Slist.org
     for (i in seq_len(ns.org[g])) {
-      this.Slist[[g]] <- covML2(Ylist[[g]][-i, , drop = FALSE])
+      this.Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
 
       this.Plist <- .armaRidgeP.fused(Slist = this.Slist, ns = ns,
                                       Tlist = Tlist, lambda = lambda,
                                       Plist = Plist, verbose = FALSE, ...)
 
-      Sig <- covML2(Ylist[[g]][i,  , drop = FALSE])
+      Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
       slh[j] <- .LL(Sig, this.Plist[[g]])
       j <- j + 1
     }
