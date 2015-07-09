@@ -1237,6 +1237,8 @@ optPenalty.fused.grid <-
   }
 
   slh <- matrix(NA, step1, step2)
+  rownames(slh) <- lambdas
+  colnames(slh) <- lambdaFs
   for (l1 in seq_along(lambdas)) {
     for (l2 in seq_along(lambdaFs)) {
       lambda <- matrix(lambdaFs[l2], G, G)
