@@ -588,8 +588,9 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
 
   for (int i = 0; i < maxit; ++i) {
     for (int g = 0; g < G; ++g) {
+
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
-      if (lambda_colsum[g] < 1e3) {
+      if (lambda_colsum[g] < 1) {
         // Update I is faster but unstable for very large lambda
         Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns, lambda);
       } else {
@@ -601,13 +602,11 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
     delta = max(diffs);
 
     if (verbose) {
-      double pnll = PNLL_fused(Slist, Plist_out, ns, Tlist, lambda);
-      Rprintf("i = %-3d | max diff = %-15.10e | pnll = %-15.10e\n",
-              i + 1, delta, pnll);
+      Rprintf("i = %-3d | max diff = %-15.10e\n", i + 1, delta);
     }
     if (delta < eps) {
       if (verbose) {
-        Rprintf("Converged in %d iterations. max diff < %1.2e.\n", i + 1, eps);
+        Rprintf("Converged in %d iterations, max diff < %1.2e.\n", i + 1, eps);
       }
       return Plist_out;
     }
