@@ -1162,7 +1162,7 @@ ridgeP.fused <- function(Slist,
 
 
 
-optPenalty.fused.LOOCVgrid <-
+optPenalty.fused.grid <-
   function(Ylist,
            Tlist,
            lambdaMin, lambdaMax,
@@ -1252,7 +1252,7 @@ optPenalty.fused.LOOCVgrid <-
 
 
 
-optPenalty.fused.LOOCVauto <-
+optPenalty.fused.auto <-
   function(Ylist,
            Tlist,
            lambda,
@@ -1428,7 +1428,7 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   ##############################################################################
   # Selection of the optimal penalties w.r.t. to (possibly approximate)
   # LOOCV using multi-dimensional optimization routines. A simple wrapper for
-  # optPenalty.fused.LOOCVauto and optPenalty.fused.LOOCVgrid
+  # optPenalty.fused.auto and optPenalty.fused.grid
   #
   # - Ylist  > A list of length G of matrices of observations with samples
   #            in the rows and variables in the columns.
@@ -1445,19 +1445,19 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   #            appproximate LOOCV, special LOOCV, and k-fold CV, resp.
   # - k      > Number of parts in k-fold CV. Only use if method is "kCV".
   # - grid   > logical Should grid based search be used? Default is FALSE.
-  # - ...    > arguments passed to optPenalty.fused.LOOCVauto and
-  #            optPenalty.fused.LOOCVgrid
+  # - ...    > arguments passed to optPenalty.fused.auto and
+  #            optPenalty.fused.grid
   ##############################################################################
 
   cv.method <- match.arg(cv.method)
 
   if (grid) {
-    res <- optPenalty.fused.LOOCVgrid(Ylist = Ylist, Tlist = Tlist,
-                                      cv.method = cv.method, k = k, ... )
+    res <- optPenalty.fused.grid(Ylist = Ylist, Tlist = Tlist,
+                                 cv.method = cv.method, k = k, ... )
   } else {
-    res <- optPenalty.fused.LOOCVauto(Ylist = Ylist, Tlist = Tlist,
-                                      lambda = lambda,
-                                      cv.method = cv.method, k = k,...)
+    res <- optPenalty.fused.auto(Ylist = Ylist, Tlist = Tlist,
+                                 lambda = lambda,
+                                 cv.method = cv.method, k = k,...)
   }
   return(res)
 }
@@ -1956,7 +1956,7 @@ GGMpathStats.fused <- function(sparsePlist, ...) {
       ###################################################
       ###################################################
       I'm from rags to ridges baby I ain't dumb
-      I got 99 problems but the ridge ain't one.
+      I got 99 problems but a ridge ain't one.
       - Jay Z-score
       ###################################################
       ################################################### \n")

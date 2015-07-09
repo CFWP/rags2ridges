@@ -1,8 +1,7 @@
 \name{optPenalty.fused}
 \alias{optPenalty.fused}
-\alias{optPenalty.fused.LOOCV}
-\alias{optPenalty.fused.LOOCVauto}
-\alias{optPenalty.fused.LOOCVgrid}
+\alias{optPenalty.fused.auto}
+\alias{optPenalty.fused.grid}
 
 \title{
 Identify optimal ridge and fused ridge penalties
@@ -22,21 +21,20 @@ optPenalty.fused(Ylist, Tlist,
                  k = 10, grid = FALSE, ...)
 
 # A simple wrapper for:
-optPenalty.fused.LOOCVauto(Ylist, Tlist, lambda,
-                           cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
-                           k = 10, verbose = TRUE, lambda.init,
-                           maxit.ridgeP.fused = 1000,
-                           optimizer = "optim", maxit.optimizer = 1000,
-                           debug = FALSE,
-                           optim.control = list(trace = verbose, maxit = maxit.optimizer),
-                           ...)
-optPenalty.fused.LOOCVgrid(Ylist, Tlist,
-                           lambdaMin, lambdaMax, step1 = 20,
-                           lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
-                           step2 = step1,
-                           cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
-                           k = 10,
-                           verbose = TRUE, ...)
+optPenalty.fused.auto(Ylist, Tlist, lambda,
+                      cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                      k = 10, verbose = TRUE, lambda.init,
+                      maxit.ridgeP.fused = 1000,
+                      optimizer = "optim", maxit.optimizer = 1000,
+                      debug = FALSE,
+                      optim.control = list(trace = verbose, maxit = maxit.optimizer),
+                          ...)
+optPenalty.fused.grid(Ylist, Tlist,
+                      lambdaMin, lambdaMax, step1 = 20,
+                      lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
+                      step2 = step1,
+                      cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
+                      k = 10, verbose = TRUE, ...)
 }
 \arguments{
   \item{Ylist}{
@@ -130,23 +128,23 @@ optPenalty.fused.LOOCVgrid(Ylist, Tlist,
   }
   \item{\dots}{
     For \code{optPenalty.fused}, arguments are passed to
-    \code{optPenalty.fused.LOOCVgrid} or \code{optPenalty.fused.LOOCVauto}
+    \code{optPenalty.fused.grid} or \code{optPenalty.fused.auto}
     depending on the value of \code{grid}.
-    In \code{optPenalty.fused.LOOCVgrid}, arguments are passed to
+    In \code{optPenalty.fused.grid}, arguments are passed to
     \code{fusedRidgeS}.
-    In \code{optPenalty.fused.LOOCVauto}, arguments are passed to the optimizer.
+    In \code{optPenalty.fused.auto}, arguments are passed to the optimizer.
   }
 }
 \details{
-\code{optPenalty.fused.LOOCVauto} serves a utilizes \code{\link{optim}} for
+\code{optPenalty.fused.auto} serves a utilizes \code{\link{optim}} for
 identifying the optimal fused parameters and works for general classes of
 penalty graphs.
 
-\code{optPenalty.fused.LOOCV} gives a grid-based evaluation of the (approximate)
+\code{optPenalty.fused.grid} gives a grid-based evaluation of the (approximate)
 LOOCV loss.
 }
 \value{
-\code{optPenalty.fused.LOOCVauto} returns a \code{list}:\cr
+\code{optPenalty.fused.auto} returns a \code{list}:\cr
 \item{Plist}{A \code{list} of the precision estimates for the optimal
   parameters.}
 \item{lambda}{The estimated optimal fused penalty matrix.}
@@ -184,32 +182,32 @@ Tlist <- default.target.fused(Slist, ns, type = "DIAES")
 
 
 # Grid-based
-a <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
-                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
-                                lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
-                                cv.method = "LOOCV", maxit = 1000)
-b <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
-                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
-                                cv.method = "aLOOCV", maxit = 1000)
-c <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
-                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
-                                cv.method = "sLOOCV", maxit = 1000)
-d <- optPenalty.fused.LOOCVgrid(Ylist, Tlist,
-                                lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
-                                cv.method = "kCV", k = 2, maxit = 1000)
+a <- optPenalty.fused.grid(Ylist, Tlist,
+                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
+                           lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
+                           cv.method = "LOOCV", maxit = 1000)
+b <- optPenalty.fused.grid(Ylist, Tlist,
+                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           cv.method = "aLOOCV", maxit = 1000)
+c <- optPenalty.fused.grid(Ylist, Tlist,
+                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           cv.method = "sLOOCV", maxit = 1000)
+d <- optPenalty.fused.grid(Ylist, Tlist,
+                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           cv.method = "kCV", k = 2, maxit = 1000)
 
 # Numerical optimization (uses the default "optim" optimizer with method "BFGS")
-aa <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "LOOCV",
-                                 method = "BFGS")
+aa <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "LOOCV",
+                            method = "BFGS")
 print(aa)
-bb <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "aLOOCV",
-                                 method = "BFGS")
+bb <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV",
+                           method = "BFGS")
 print(bb)
-cc <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "sLOOCV",
-                                 method = "BFGS")
+cc <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "sLOOCV",
+                           method = "BFGS")
 print(cc)
-dd <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "kCV", k = 3,
-                                 method = "BFGS")
+dd <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "kCV", k = 3,
+                            method = "BFGS")
 print(dd)
 
 

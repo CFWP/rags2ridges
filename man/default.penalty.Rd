@@ -7,7 +7,7 @@
   Function that constructs default or commonly use penalty matrices
   according to a study design.
   The constructed penalty matrix can be used directly in
-  \code{\link{optPenalty.fused.LOOCVauto}} or serve as basis for modification.
+  \code{\link{optPenalty.fused.auto}} or serve as basis for modification.
 }
 \usage{
   default.penalty(G, df,
@@ -54,7 +54,7 @@
   Returns a \code{G} by \code{G} character matrix which specify the class
   of penalty graphs to be used.
   The output is suitable as input for the penalty matrix
-  used in \code{\link{optPenalty.fused.LOOCVauto}}.
+  used in \code{\link{optPenalty.fused.auto}}.
 }
 \references{
 Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN

@@ -39,8 +39,8 @@ Slist <- lapply(Ylist, covML)
 Tlist <- default.target.fused(Slist, ns)
 
 # Obtain regularized precision under optimal penalty
-opt <- optPenalty.fused.LOOCVauto(Ylist, Tlist, cv.method = "aLOOCV",
-                                  maxit.ridgeP.fused = 1500)
+opt <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV",
+                            maxit.ridgeP.fused = 1500)
 # Use the optimal penalties
 Plist <- ridgeP.fused(Slist, ns, lambda = opt$lambda, maxit = 1000)
 
