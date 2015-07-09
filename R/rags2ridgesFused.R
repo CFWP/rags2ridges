@@ -830,7 +830,12 @@ ridgeP.fused <- function(Slist,
 
   # If Plist is not supplied
   if (missing(Plist)) {
-    Plist <- ridgeP.fused(Slist.org, ns.org, Tlist, lambda, verbose = FALSE,...)
+    S <- .armaPooledS(Slist.org, ns.org)
+    Plist <- list()
+    for (i in seq_len(G)) {
+      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
+                                lambda = .trace(lambda)/sum(ns.org))
+    }
   }
 
   slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
@@ -1205,7 +1210,6 @@ optPenalty.fused.grid <-
   }
 
   G <- length(Ylist)
-  ns <- sapply(Ylist, nrow)
 
   # Choose lambdas log-equidistantly
   lambdas  <- exp(seq(log(lambdaMin),  log(lambdaMax),  length.out = step1))
@@ -1233,14 +1237,13 @@ optPenalty.fused.grid <-
   }
 
   slh <- matrix(NA, step1, step2)
-  total.n <- sum(sapply(Ylist, nrow))
   for (l1 in seq_along(lambdas)) {
     for (l2 in seq_along(lambdaFs)) {
       lambda <- matrix(lambdaFs[l2], G, G)
       diag(lambda) <- lambdas[l1]
       slh[l1, l2] <-
         cvfunc(lambda = lambda, Ylist = Ylist, Tlist = Tlist, ...)
-      if (verbose){
+      if (verbose) {
         cat(sprintf("lambda = %.3f (%d), lambdaF = %.3f (%d), -ll = %.3f\n",
                    lambdas[l1],  l1, lambdaFs[l2], l2, slh[l1, l2]))
       }
@@ -1308,12 +1311,12 @@ optPenalty.fused.auto <-
     diag(lambda) <- "ridge"
   }
 
+  # Interpret given lambda
   parsedLambda <- .parseLambda(lambda)
 
-  n.fixed     <- attributes(parsedLambda)$n.fixed
-  n.variables <- attributes(parsedLambda)$n.variables
-
-  if (verbose) {
+  if (verbose) {  # Report interpretation
+    n.fixed     <- attributes(parsedLambda)$n.fixed
+    n.variables <- attributes(parsedLambda)$n.variables
     nonfix <- with(parsedLambda, paste(unique(name[!fixed]), collapse = ", "))
     fixed  <- with(parsedLambda, paste(unique(name[ fixed]), collapse = ", "))
     message("Found ", n.fixed + n.variables, " unique penalties of which ",
@@ -1338,6 +1341,7 @@ optPenalty.fused.auto <-
     stop("cv.method not implmented.")
   }
 
+  # Construct optim/nlm objective function, parameters are assumed on log-scale
   cvl <- function(lambdas, ...) {
     elambdas <- exp(lambdas)
     lambda <- .reconstructLambda(elambdas, parsedLambda)
@@ -1349,24 +1353,26 @@ optPenalty.fused.auto <-
     # Get somewhat sensible starting value for non-fixed diagonal entries
     # (ridge penalties) and by choosing off-diag lambda to be zero.
     f <- function(x) {
-      lambdas <- suppressWarnings({
-        .lambdasFromMatrix(diag(exp(x), G), parsedLambda)
-        })
-      return(cvl(log(lambdas)))
+      lambdas <- suppressWarnings({.lambdasFromMatrix(diag(exp(x), G),
+                                                      parsedLambda)})
+      return(cvl(lambdas))
     }
     st <- optimize(f, lower = -20, upper = 20)$minimum
-    lambdas.st <- suppressWarnings(.lambdasFromMatrix(diag(st,G), parsedLambda))
+    lambdas.st <- suppressWarnings({log(.lambdasFromMatrix(diag(exp(st), G),
+                                                           parsedLambda))})
+    lambdas.st[lambdas.st == -Inf] <- -40
+    lambdas.st[lambdas.st ==  Inf] <-  40
 
   } else {
-    if (is.matrix(lambda.init) && is.numeric(lambda.init)) {
-      lambdas.st <- log(.lambdasFromMatrix(lambda.init, parsedLambda))
-      lambdas.st[!is.finite(lambdas.st)] <- -50
-    } else {
-      stop("The supplied inital parameters must be a numeric matrix")
-    }
 
-    if (!isSymmetric(lambda.init)) {
-      stop("lambda.init is not symmetric")
+    if (is.matrix(lambda.init) && is.numeric(lambda.init) &&
+        isSymmetric(lambda.init)) {
+      lambdas.st <- log(.lambdasFromMatrix(lambda.init, parsedLambda))
+      lambdas.st[lambdas.st == -Inf] <- -40
+      lambdas.st[lambdas.st ==  Inf] <-  40
+
+    } else {
+      stop("The supplied inital parameters must be a symmetric numeric matrix")
     }
   }
 
@@ -1385,6 +1391,7 @@ optPenalty.fused.auto <-
         warning("Degeneracy of the Nelder-Mead simplex.")
       }
     }
+
   } else if (optimizer == "nlm") {
 
     ans <- nlm(cvl, lambdas.st, iterlim = maxit.optimizer, ...)
