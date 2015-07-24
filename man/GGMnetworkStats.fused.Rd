@@ -37,8 +37,8 @@ Slist <- createS(ns, p)
 ## Obtain sparsified partial correlation matrix
 Plist    <- ridgeP.fused(Slist, ns, lambda = c(5.2, 1.3), verbose = FALSE)
 PCsparse <- sparsify.fused(Plist , threshold = "top")
+SPlist <- lapply(PCsparse, "[[", "sparsePrecision") # Get sparse precisions
 
 ## Calculate GGM network statistics in each class
-GGMnetworkStats.fused(Plist)
-
+GGMnetworkStats.fused(SPlist)
 }

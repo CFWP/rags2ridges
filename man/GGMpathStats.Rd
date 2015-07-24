@@ -10,9 +10,9 @@ graphical model. The contribution to the observed covariance between the specifi
 for each (heuristically) determined path between the endpoints.
 }
 \usage{
-GGMpathStats(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE, 
-nrPaths = 2, lay = layout.circle, nodecol = "skyblue", Vsize = 15, Vcex = 0.6, 
-VBcolor = "darkblue", VLcolor = "black", all.edges = TRUE, prune = TRUE, 
+GGMpathStats(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE,
+nrPaths = 2, lay = layout.circle, nodecol = "skyblue", Vsize = 15, Vcex = 0.6,
+VBcolor = "darkblue", VLcolor = "black", all.edges = TRUE, prune = TRUE,
 legend = TRUE, scale = 1, Lcex = 0.8, PTcex = 2, main = "")
 }
 \arguments{
@@ -28,8 +28,8 @@ A \code{numeric} specifying a second endpoint. The numeric should correspond to 
 and as such represents the corresponding variable.
 }
   \item{neiExpansions}{
-A \code{numeric} determining how many times the neighborhood around the respective endpoints should be expanded 
-in the search for shortest paths between the node pair. 
+A \code{numeric} determining how many times the neighborhood around the respective endpoints should be expanded
+in the search for shortest paths between the node pair.
 }
   \item{verbose}{
 A \code{logical} indicating if a summary of the results should be printed on screen.
@@ -89,29 +89,29 @@ A \code{character} giving the main figure title.
 The conditional independence graph (as implied by the sparse precision matrix) is undirected. In undirected
 graphs origin and destination are interchangeable and are both referred to as 'endpoints' of a path. The
 function searches for shortest paths between the specified endpoints \code{node1} and \code{node2}.
-It searches for shortest paths that visit nodes only once. The shortest paths 
-between the provided endpoints are determined heuristically by the following procedure. The search is initiated 
-by application of the \code{get.all.shortest.paths}-function from the \code{\link{igraph}}-package, 
+It searches for shortest paths that visit nodes only once. The shortest paths
+between the provided endpoints are determined heuristically by the following procedure. The search is initiated
+by application of the \code{get.all.shortest.paths}-function from the \code{\link{igraph}}-package,
 which yields all shortest paths between the nodes. Next, the neighborhoods of the endpoints are defined
 (excluding the endpoints themselves). Then, the shortest paths are found between: (a)
-\code{node1} and node \emph{Vs} in its neighborhood; (b) node \emph{Vs} in the \code{node1}-neighborhood and node 
-\emph{Ve} in the \code{node2}-neighborhood; and (c) node \emph{Ve} in the \code{node2}-neighborhood and \code{node2}. 
-These paths are glued and new shortest path candidates are obtained (preserving only novel paths). In additional 
-iterations (specified by \code{neiExpansions}) the \code{node1}- and \code{node2}-neighborhood are expanded by 
+\code{node1} and node \emph{Vs} in its neighborhood; (b) node \emph{Vs} in the \code{node1}-neighborhood and node
+\emph{Ve} in the \code{node2}-neighborhood; and (c) node \emph{Ve} in the \code{node2}-neighborhood and \code{node2}.
+These paths are glued and new shortest path candidates are obtained (preserving only novel paths). In additional
+iterations (specified by \code{neiExpansions}) the \code{node1}- and \code{node2}-neighborhood are expanded by
 including their neighbors (still excluding the endpoints) and shortest paths are again
 searched as described above.
 
-The contribution of a particular path to the observed covariance between the specified 
-node pair is calculated in accordance with Theorem 1 of Jones and West (2005). As in Jones and West (2005), 
+The contribution of a particular path to the observed covariance between the specified
+node pair is calculated in accordance with Theorem 1 of Jones and West (2005). As in Jones and West (2005),
 paths whose weights have an opposite sign to the marginal covariance
-(between endnodes of the path) are referred to as 'moderating paths' while paths whose weights 
+(between endnodes of the path) are referred to as 'moderating paths' while paths whose weights
 have the same sign as the marginal covariance are referred to as 'mediating' paths. Such
 paths are visualized when \code{graph = TRUE}.
 
-All arguments following the \code{graph} argument are only (potentially) used when \code{graph = TRUE}. 
-When \code{graph = TRUE} the conditional independence graph is returned with the paths highlighted that have the 
+All arguments following the \code{graph} argument are only (potentially) used when \code{graph = TRUE}.
+When \code{graph = TRUE} the conditional independence graph is returned with the paths highlighted that have the
 highest contribution to the marginal covariance between the specified endpoints. The number of paths highlighted
-is indicated by \code{nrPaths}. The edges of mediating paths are represented in green while the edges of moderating 
+is indicated by \code{nrPaths}. The edges of mediating paths are represented in green while the edges of moderating
 paths are represented in red. When \code{all.edges = TRUE} the edges other than those implied by the \code{nrPaths}-paths between
 \code{node1} and {node2} are also visualized (in lightgrey). When \code{all.edges = FALSE} only the mediating and
 moderating paths implied by \code{nrPaths} are visualized.
@@ -119,19 +119,19 @@ moderating paths implied by \code{nrPaths} are visualized.
 The default layout gives a circular placement of the vertices. All layout functions supported by
 \code{\link{igraph}} are supported. The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend = TRUE}.
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by any edge) are removed. For the colors supported
-by the arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see 
+by the arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
 \url{www.stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
 }
 \value{
 An object of class list:
-\item{pathStats}{A \code{matrix} specifying the paths, their respective lengths, and their respective contributions to 
+\item{pathStats}{A \code{matrix} specifying the paths, their respective lengths, and their respective contributions to
 the marginal covariance between the endpoints.}
 \item{paths}{A \code{list} representing the respective paths as numeric vectors.}
 \item{Identifier}{A \code{data.frame} in which each numeric from \code{paths} is connected to an identifier such as a variable name.}
 }
 \note{
-Eppstein (1998) describes a more sophisticated algorithm for finding the top \emph{k} shortest paths in a graph. 
-} 
+Eppstein (1998) describes a more sophisticated algorithm for finding the top \emph{k} shortest paths in a graph.
+}
 \references{
 Eppstein, D. (1998). Finding the k Shortest Paths. SIAM Journal on computing 28: 652-673.
 
@@ -145,11 +145,11 @@ Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \examples{
 ## Obtain some (high-dimensional) data
-p = 25
-n = 10
+p <- 25
+n <- 10
 set.seed(333)
-X = matrix(rnorm(n*p), nrow = n, ncol = p)
-colnames(X)[1:25] = letters[1:25]
+X <- matrix(rnorm(n*p), nrow = n, ncol = p)
+colnames(X) <- letters[1:p]
 
 ## Obtain regularized precision under optimal penalty
 OPT <- optPenalty.LOOCVauto(X, lambdaMin = .5, lambdaMax = 30)

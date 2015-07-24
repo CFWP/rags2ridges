@@ -33,14 +33,15 @@ Anders Ellern Bilgrau
 ## Obtain some (high-dimensional) data
 set.seed(10)
 ns <- c(10, 11)
-Slist <- createS(ns, p = 7)
+Slist <- createS(ns, p = 7, topology = "banded")
 Tlist <- default.target.fused(Slist, ns)
 
 ## Obtain regularized precision and sparsify
-Plist <- ridgeP.fused(Slist, ns, Tlist, lambda = c(0.2, 1.6))
+Plist <- ridgeP.fused(Slist, ns, Tlist, lambda = c(1, 1.6))
 sparsePlist <- sparsify.fused(Plist, threshold = "absValue", absValueCut = 0.20)
-sparsePlist <- lapply(sparsePlist, "[[", "sparsePrecision")
+SPlist <- lapply(sparsePlist, "[[", "sparsePrecision")
 
 ## Obtain information on mediating and moderating paths between nodes 14 and 23
-res <- GGMpathStats.fused(sparsePlist, node1 = 1, node2 = 2, graph = FALSE)
+res <- GGMpathStats.fused(SPlist, node1 = 3, node2 = 4, graph = FALSE)
+
 }
