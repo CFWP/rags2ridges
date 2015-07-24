@@ -265,7 +265,10 @@ ans2 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
 print(ans2$lambda.unique)
 
 # By LOOCV using nlm
+lambda.init <- matrix(1, 4, 4)
+lambda.init[cbind(1:4,4:1)] <- 0
 ans3 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+                         lambda.init = lambda.init,
                          cv.method = "LOOCV", verbose = FALSE,
                          optimizer = "nlm")
 print(ans3$lambda.unique)
