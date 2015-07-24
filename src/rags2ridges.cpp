@@ -351,7 +351,7 @@ arma::mat armaFusedUpdateI(int g0,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  const double lambda_a = sum(lambda.row(g0))/ns[g0];
+  const double lambda_a = 2.0*sum(lambda.row(g0))/ns[g0];
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
   arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
@@ -380,7 +380,7 @@ arma::mat armaFusedUpdateIC(int g0,
   --------------------------------------------------------------------------- */
 
   const int G = Scube.n_slices;
-  const double lambda_a = sum(lambda.row(g0))/ns[g0];
+  const double lambda_a = 2.0*sum(lambda.row(g0))/ns[g0];
 
   arma::mat Sbar = Scube.slice(g0);
   for (int g = 0; g < G; ++g) {
@@ -418,7 +418,7 @@ arma::mat armaFusedUpdateII(int g0,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  const double lambdasum = sum(lambda.row(g0));
+  const double lambdasum = 2.0*sum(lambda.row(g0));
   const double a = lambdasum/ns[g0];
   const double b = (lambdasum - 1.0)/ns[g0];
 
@@ -459,7 +459,7 @@ arma::mat armaFusedUpdateIIC(int g0,
   const int G = Scube.n_slices;
   const int p = Scube.n_rows;
 
-  const double lambdasum = sum(lambda.row(g0));
+  const double lambdasum = 2.0*sum(lambda.row(g0));
   const double a = lambdasum/ns[g0];
   const double b = (lambdasum - 1.0)/ns(g0);
 
@@ -506,7 +506,7 @@ arma::mat armaFusedUpdateIII(int g0,
   --------------------------------------------------------------------------- */
 
   const int G = Slist.size();
-  const double a = sum(lambda.row(g0));
+  const double a = 2.0*sum(lambda.row(g0));
 
   arma::mat Sbar = Rcpp::as<arma::mat>(Rcpp::wrap(Slist[g0]));
   arma::mat Tbar = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g0]));
@@ -539,7 +539,7 @@ arma::mat armaFusedUpdateIIIC(int g0,
 
   const int G = Scube.n_slices;
   const double lambdasum = sum(lambda.row(g0));
-  const double a = lambdasum/ns[g0];
+  const double a = 2.0*lambdasum/ns[g0];
   arma::mat Tbar = Tcube.slice(g0);
   for (int g = 0; g < G; ++g) {
      if (g == g0) {

@@ -35,7 +35,7 @@ context("Unit test of the .armaFusedUpdateX-familiy of functions")
   #   in the fused case.
   ##############################################################################
 
-  a <- (sum(lambda[g0, ]))/ns[g0]
+  a <- 2.0*(sum(lambda[g0, ]))/ns[g0]
   b <- lambda[g0, -g0]/ns[g0]
 
   OmT <- mapply(`-`, Plist[-g0], Tlist[-g0], SIMPLIFY = FALSE) # Omega - Target
@@ -66,8 +66,8 @@ context("Unit test of the .armaFusedUpdateX-familiy of functions")
   ##############################################################################
 
   p <- nrow(Plist[[1]])
-  lambdaa <- sum(lambda[g0, ])/ns[g0]
-  b <- (sum(lambda[g0, ]) - 1)/ns[g0]
+  lambdaa <- 2.0*sum(lambda[g0, ])/ns[g0]
+  b <- (2.0*sum(lambda[g0, ]) - 1)/ns[g0]
 
   Psum <- Tsum <- matrix(0, p, p)
   for (g in setdiff(seq_along(Plist), g0)) {
@@ -104,7 +104,7 @@ context("Unit test of the .armaFusedUpdateX-familiy of functions")
   #   updating scheme, that is also correct.
   ##############################################################################
 
-  lambdasum <- sum(lambda[g0, ])
+  lambdasum <- 2.0*sum(lambda[g0, ])
   lambdaa <- lambdasum/ns[g0]
 
   Tbar <- Tlist[[g0]]
