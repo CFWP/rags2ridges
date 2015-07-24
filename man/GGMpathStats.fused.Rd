@@ -31,7 +31,7 @@ Anders Ellern Bilgrau
 }
 \examples{
 ## Obtain some (high-dimensional) data
-set.seed(10)
+set.seed(1)
 ns <- c(10, 11)
 Slist <- createS(ns, p = 7, topology = "banded")
 Tlist <- default.target.fused(Slist, ns)
