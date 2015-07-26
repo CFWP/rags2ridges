@@ -8,13 +8,14 @@ Print and summarize fusion test
 Print and summary functions for the fusion test performed by \code{\link{fused.test}}.
 }
 \usage{
-print(x, digits = 4L, ...)
-print.ptest(x, digits = 4L, ...)
-summary(object, ...)
-summary.ptest(object, ...)
+## S3 method for class 'ptest'
+\method{print}{ptest}(x, digits = 4L, ...)
+
+## S3 method for class 'ptest'
+\method{summary}{ptest}(object, ...)
 }
 \arguments{
-  \item{object}{
+  \item{x, object}{
     The object to print or summarize. Usually the output of \code{\link{fused.test}}.
   }
   \item{digits}{
