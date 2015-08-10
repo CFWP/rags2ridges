@@ -48,11 +48,44 @@ isSymmetricPD <- function(M) {
 
 }
 
-is.Xlist <- function(Xlist, Ylist = FALSE) {
+
+isSymmetricPSD <- function(M, tol = 1e-4) {
+  ##############################################################################
+  # Test if matrix is symmetric postive semi-definite
+  # - M > A numeric matrix
+  # Returns TRUE if the matrix is symmetric positive definite and FALSE if not.
+  # In practice, it tests if all eigenvalues are larger than -tol*|l| where
+  # l is the largest eigenvalue.
+  # See http://scicomp.stackexchange.com/questions/12979/
+  #          testing-if-a-matrix-is-positive-semi-definite
+  ##############################################################################
+
+  nm <- deparse(substitute(M))
+  if (!is.matrix(M) || !is.numeric(M)) {
+    stop(nm, " is not a numeric matrix")
+  }
+  if (!isSymmetric(M)) {
+    stop(nm, " is not a symmetric matrix")
+  }
+
+  evals <- eigen(M)$values  # M is P.S.D. iff eigenvalues >= 0  SLOW!
+  if (all(evals > -tol*abs(max(evals)))) {
+    return(TRUE)
+  } else {
+    return(FALSE)
+  }
+
+}
+
+
+is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
   ##############################################################################
   # Test if generic fused list arguments (such as Slist, Tlist, Plist)
   # are properly formatted
   # - Xlist > A list of covariance matrices or matrices.
+  # - Ylist > Is the supplied list a "Ylist"?
+  # - semi  > Should the matrices be tested for postive (semi) definiteness
+  #           If TRUE postive definiteness is tested.
   # Returns TRUE if all tests are passed, throws error if not.
   ##############################################################################
 
@@ -70,9 +103,16 @@ is.Xlist <- function(Xlist, Ylist = FALSE) {
     stop("All matrices in ", xlist,
          " should be square and have the same size.")
   }
-  if (!all(sapply(Xlist, isSymmetricPD))) {
-    stop("All matrices in ", xlist, " should be symmetric and positive ",
-         "definite.")
+  if (semi) {
+    if (!all(sapply(Xlist, isSymmetricPSD))) {
+      stop("All matrices in ", xlist, " should be symmetric and positive ",
+           "semi definite.")
+    }
+  } else {
+    if (!all(sapply(Xlist, isSymmetricPD))) {
+      stop("All matrices in ", xlist, " should be symmetric and positive ",
+           "definite.")
+    }
   }
   if (!all(sapply(seq_along(Xlist),
                   function(i) identical(dimnames(Xlist[[1]]),
