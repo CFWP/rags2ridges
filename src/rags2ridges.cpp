@@ -15,7 +15,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 // [[Rcpp::export(NLL)]]
-inline double NLL(const arma::mat S, const arma::mat P) {
+double NLL(const arma::mat S, const arma::mat P) {
   /* The negative loglikelihood */
   double logdet;
   double sign;

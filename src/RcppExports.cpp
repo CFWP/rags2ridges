@@ -7,7 +7,7 @@
 using namespace Rcpp;
 
 // NLL
-inline double NLL(const arma::mat S, const arma::mat P);
+double NLL(const arma::mat S, const arma::mat P);
 RcppExport SEXP rags2ridges_NLL(SEXP SSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
