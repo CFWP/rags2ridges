@@ -9,7 +9,7 @@
 Core ridge precision estimators
 }
 \description{
-This is the R interface to the \code{C++} implementations of the
+This is the \R interface to the \code{C++} implementations of the
 ridge precision estimators. They serves as core functions for many other
 functions.
 }
@@ -75,8 +75,8 @@ functions.
     1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
     - 1/2(S - \lambda T)},
   }
-  if \code{invert == 0} using appropriate singular value decompostions.
-  See the R implemetations in the example section below.
+  if \code{invert == 0} using appropriate eigenvalue decompositions.
+  See the R implementations in the example section below.
 }
 \value{
   Returns a symmetric positive definite \code{matrix} of the same size as
