@@ -754,7 +754,8 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
   Spool <- pooledS(Slist, ns, mle = FALSE)
   Slist.p <- replicate(length(Slist), Spool, simplify = FALSE)
-  return(.armaRidgeP.fused(Slist.p, ns, Tlist, diag(diag(lambda)), Tlist,...))
+  lambda[row(lambda) != col(lambda)] <- 0
+  return(.armaRidgeP.fused(Slist.p, ns, Tlist, lambda, Tlist,...))
 }
 
 
