@@ -853,18 +853,18 @@ ridgeP.fused <- function(Slist,
 ################################################################################
 
 
-.fcvl <- function(lambda, Ylist, Tlist, Plist, ...) {
+.fcvl <- function(lambda, Ylist, Tlist, init.Plist, ...) {
   ##############################################################################
   # (Internal) Computes the fused leave-one-out cross-validation loss for
-  # given penalty parameters
-  # - lambda  > The G by G penalty matrix.
-  # - Ylist   > A list of length G of matrices of observations with samples
-  #             in the rows and variables in the columns. A least 2
-  #             samples (rows) are needed in each entry.
-  # - Tlist   > A list of length G of target matrices the same size
-  #             as those of Plist. Default is given by default.target.
-  # - Plist   > Initial estimate
-  # - ...     > Arguments passed to .armaRidgeP.fused
+  # given penalty matrix
+  # - lambda     > The G by G penalty matrix.
+  # - Ylist      > A list of length G of matrices of observations with samples
+  #                in the rows and variables in the columns. A least 2
+  #                samples (rows) are needed in each entry.
+  # - Tlist      > A list of length G of target matrices the same size
+  #                as those of Plist. Default is given by default.target.
+  # - init.Plist > Initial estimate
+  # - ...        > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
   G <- length(Ylist)
@@ -872,13 +872,8 @@ ridgeP.fused <- function(Slist,
   Slist.org <- lapply(Ylist, covML)
 
   # If Plist is not supplied
-  if (missing(Plist)) {
-    S <- .armaPooledS(Slist.org, ns.org)
-    Plist <- list()
-    for (i in seq_len(G)) {
-      Plist[[i]] <- .armaRidgeP(S, target = Tlist[[i]],
-                                lambda = .trace(lambda)/sum(ns.org))
-    }
+  if (missing(init.Plist)) {
+    init.Plist <- .init.ridgeP.fused(Slist.org, ns.org, Tlist, lambda)
   }
 
   slh <- numeric(sum(ns.org))  # To store LOOCV losses for each sample
@@ -888,14 +883,16 @@ ridgeP.fused <- function(Slist,
     ns[g] <- ns[g] - 1  # Update sample size in g'th group
     this.Slist <- Slist.org
     for (i in seq_len(ns.org[g])) {
-      this.Slist[[g]] <- covML(Ylist[[g]][-i, , drop = FALSE])
+      this.Slist[[g]] <-
+        crossprod(Ylist[[g]][-i, , drop = FALSE])/ns[g]
+        # covML(Ylist[[g]][-i, , drop = FALSE])
 
       this.Plist <- .armaRidgeP.fused(Slist = this.Slist, ns = ns,
                                       Tlist = Tlist, lambda = lambda,
-                                      Plist = Plist, verbose = FALSE, ...)
+                                      Plist = init.Plist, verbose = FALSE, ...)
 
       Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
-      slh[j] <- .LL(Sig, this.Plist[[g]])
+      slh[j] <- ns[g]*.LL(Sig, this.Plist[[g]])
       j <- j + 1
     }
   }
