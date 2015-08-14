@@ -49,7 +49,7 @@ PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
     .Call('rags2ridges_armaFusedUpdateIII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda)
 }
 
-.armaRidgeP.fused <- function(Slist, ns, Tlist, lambda, Plist, maxit = 100L, eps = 1e-5, verbose = FALSE) {
+.armaRidgeP.fused <- function(Slist, ns, Tlist, lambda, Plist, maxit = 100L, eps = 1e-4, verbose = FALSE) {
     .Call('rags2ridges_armaRidgeP_fused', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, Plist, maxit, eps, verbose)
 }
 
