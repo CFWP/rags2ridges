@@ -730,7 +730,6 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 ################################################################################
 
 
-
 .init.ridgeP.fused <- function(Slist, ns, Tlist, lambda, ...) {
   ##############################################################################
   # Internal function for selecting initial values for Plist
@@ -752,10 +751,13 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   # - ...     > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
-  Spool <- pooledS(Slist, ns, mle = FALSE)
-  Slist.p <- replicate(length(Slist), Spool, simplify = FALSE)
-  lambda[row(lambda) != col(lambda)] <- 0
-  return(.armaRidgeP.fused(Slist.p, ns, Tlist, lambda, Tlist,...))
+  Spool <- pooledS(Slist, ns, mle = TRUE)
+  init.Plist <- structure(vector("list", length(ns)), names = names(Slist))
+  for (i in seq_along(ns)) {
+    init.Plist[[i]] <-
+      .armaRidgeP(Spool, target = Tlist[[i]], lambda[i,i]/ns[i])
+  }
+  return(init.Plist)
 }
 
 
