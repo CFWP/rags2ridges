@@ -560,7 +560,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::mat & lambda,
                             const Rcpp::List & Plist,
                             const int maxit = 100,
-                            const double eps = 1e-4,
+                            const double eps = 1e-7,
                             const bool verbose = false) {
   /* ---------------------------------------------------------------------------
    The fused ridge estimate workhorse function for a given lambda.
@@ -575,7 +575,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
    - Plist   > A list of length G of symmetric p.d. matrices that serves as
                initial estimates of the algorithm.
    - maxit   > integer. The maximum number of interations, default is 100.
-   - eps     > numeric. A positive convergence criterion. Default is 1e-4.
+   - eps     > numeric. A positive convergence criterion. Default is 1e-7.
    - verbose > logical. Should the function print extra info. Defaults to false.
   --------------------------------------------------------------------------- */
 

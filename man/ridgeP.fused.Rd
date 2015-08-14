@@ -9,7 +9,8 @@
 }
 \usage{
 ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
-             lambda, Plist, maxit = 100L, verbose = TRUE, eps = 1e-04)
+             lambda, Plist, maxit = 100L, verbose = TRUE,
+             eps = sqrt(.Machine$double.eps))
 }
 \arguments{
   \item{Slist}{

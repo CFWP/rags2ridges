@@ -767,7 +767,9 @@ ridgeP.fused <- function(Slist,
                          Tlist = default.target.fused(Slist, ns),
                          lambda,
                          Plist,
-                         maxit = 100L, verbose = TRUE, eps = 1e-4) {
+                         maxit = 100L,
+                         verbose = TRUE,
+                         eps = sqrt(.Machine$double.eps)) {
   ##############################################################################
   # - The user function for the fused ridge estimate for a given lambda.
   # - Slist   > A list of length G of sample correlation matrices the same size
@@ -789,7 +791,7 @@ ridgeP.fused <- function(Slist,
   #             the ridge estimate of the pooled estimate is used.
   # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
-  # - eps     > numeric. A positive convergence criterion. Default is 1e-4.
+  # - eps     > numeric. A positive convergence criterion. Default is about 1e-8
   ##############################################################################
 
   stopifnot(length(Slist) == length(Tlist))
@@ -820,7 +822,7 @@ ridgeP.fused <- function(Slist,
 
   # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(Plist)) {
-    Plist <- .init.ridgeP.fused(Slist, ns, Tlist, lambda,
+    Plist <- .init.ridgeP.fused(Slist, ns = ns, Tlist = Tlist, lambda = lambda,
                                 maxit = maxit, eps = eps)
   }
   stopifnot(length(Slist) == length(Plist))
