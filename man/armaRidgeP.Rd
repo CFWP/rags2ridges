@@ -119,7 +119,7 @@ rev_eig <- function(evalues, evectors) { # "Reverse" eigen decomposition
 
 # As armaRidgePScalarTarget Inv
 rRidgePScalarTarget <- function(S, a, l, invert = 2) {
-  ED <- eigen(S)
+  ED <- eigen(S, symmetric = TRUE)
   eigvals <- 0.5*(ED$values - l*a)
   sqroot <- sqrt(l + eigvals^2)
 
@@ -148,7 +148,7 @@ rRidgePScalarTarget <- function(S, a, l, invert = 2) {
 
 # As armaRidgePAnyTarget
 rRidgePAnyTarget <- function(S, tgt, l, invert = 2) {
-  ED <- eigen(S - l*tgt)
+  ED <- eigen(S - l*tgt, symmetric = TRUE)
   eigvals <- 0.5*ED$values
   sqroot <- sqrt(l + eigvals^2)
 
@@ -190,7 +190,7 @@ rRidgeP <- function(S, tgt, l, invert = 2) {
 
 # Contrasted to the straight forward implementations:
 sqrtm <- function(X) { # Matrix square root
-  ed <- eigen(X)
+  ed <- eigen(X, symmetric = TRUE)
   rev_eig(sqrt(ed$values), ed$vectors)
 }
 

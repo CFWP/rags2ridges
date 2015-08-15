@@ -68,7 +68,7 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
     stop(nm, " is not a symmetric matrix")
   }
 
-  evals <- eigen(M)$values  # M is P.S.D. iff eigenvalues >= 0  SLOW!
+  evals <- eigen(M, symmetric = TRUE)$values # M is PSD iff eigenvals >= 0 SLOW!
   if (all(evals > -tol*abs(max(evals)))) {
     return(TRUE)
   } else {
