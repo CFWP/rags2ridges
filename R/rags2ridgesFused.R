@@ -904,7 +904,7 @@ ridgeP.fused <- function(Slist,
 
 
 
-.kfcvl <- function(lambda, Ylist, Tlist, Plist, k, ...) {
+.kfcvl <- function(lambda, Ylist, Tlist, init.Plist, k, ...) {
   ##############################################################################
   # (Internal) Computes the k-fold fused cross-validation loss for a penalty
   # matrix. The data for each class is divided into k parts. The first part
@@ -931,14 +931,9 @@ ridgeP.fused <- function(Slist,
   }
 
   # If Plist is not supplied
-  if (missing(Plist)) {
-    Slist.org <- lapply(Ylist, covML)
-    Spool <- .armaPooledS(Slist.org, ns.org)
-    Plist <- vector("list", G)
-    for (i in seq_len(G)) {
-      lambda.i <- G*lambda[i,i]/sum(ns.org)
-      Plist[[i]] <- .armaRidgeP(Spool, target = Tlist[[i]], lambda = lambda.i)
-    }
+  if (missing(init.Plist)) {
+    Slist.org  <- lapply(Ylist, covML)
+    init.Plist <- .init.ridgeP.fused(Slist.org, ns.org, Tlist, lambda)
   }
 
   # Split each class into k equally sized parts
@@ -947,14 +942,16 @@ ridgeP.fused <- function(Slist,
   # Run through all k splits in each class
   slh <- matrix(0, k, G)
   for (i in seq_len(k)) {
+    # Pick out ALL BUT the i'th fold in each class and compute estimate
     Ylist.i <- mapply(function(x, ind) x[ind != i, , drop = FALSE],
                       Ylist, parts, SIMPLIFY = FALSE)
     ns.i    <- sapply(Ylist.i, nrow)
     Slist.i <- lapply(Ylist.i, covML)
     Plist.i <- .armaRidgeP.fused(Slist = Slist.i, ns = ns.i, Tlist = Tlist,
-                                 lambda = lambda, Plist = Plist,
+                                 lambda = lambda, Plist = init.Plist,
                                  verbose = FALSE, ...)
 
+    # Evaluate estimate with left out data:
     for (g in seq_len(G)) {
       Ylist.ig <- Ylist[[g]][parts[[g]] == i, , drop = FALSE]
       nig <- nrow(Ylist.ig)
