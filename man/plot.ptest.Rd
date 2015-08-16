@@ -8,10 +8,8 @@
 Plot a histogram of the null distribution and the observed test statistic in a permutation type "fusion test".
 }
 \usage{
-## S3 method for class 'ptest'
 \method{plot}{ptest}(x, add.extra = TRUE, ...)
 
-## S3 method for class 'ptest'
 \method{hist}{ptest}(x, add.extra = TRUE, ...)
 }
 \arguments{

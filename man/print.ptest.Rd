@@ -8,10 +8,8 @@ Print and summarize fusion test
 Print and summary functions for the fusion test performed by \code{\link{fused.test}}.
 }
 \usage{
-## S3 method for class 'ptest'
 \method{print}{ptest}(x, digits = 4L, ...)
 
-## S3 method for class 'ptest'
 \method{summary}{ptest}(object, ...)
 }
 \arguments{
