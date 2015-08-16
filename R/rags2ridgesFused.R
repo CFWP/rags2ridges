@@ -748,15 +748,23 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   #             If lambda is supplied as a numeric vector of two numbers,
   #             the first is used as a common ridge penalty and the second
   #             as a common fusion penalty.
-  # - ...     > Arguments passed to .armaRidgeP.fused
+  # - ...     > Arguments passed to .armaRidgeP
   ##############################################################################
 
-  Spool <- pooledS(Slist, ns, mle = TRUE)
-  init.Plist <- structure(vector("list", length(ns)), names = names(Slist))
-  for (i in seq_along(ns)) {
-    init.Plist[[i]] <-
-      .armaRidgeP(Spool, target = Tlist[[i]], lambda[i,i]/ns[i])
+  Spool <- pooledS(Slist, ns)
+
+  if (length(unique(Tlist)) == 1L) { # If all targets equal
+    init.Plist <-
+      .armaRidgeP(Spool, target = Tlist[[1]], .trace(lambda)/sum(ns), ...)
+    init.Plist <- replicate(length(ns), init.Plist, simplify = FALSE)
+  } else {
+    init.Plist <- vector("list", length(ns))
+    for (i in seq_along(ns)) {
+      init.Plist[[i]] <-
+        .armaRidgeP(Spool, target = Tlist[[i]], lambda[i,i]/ns[i], ...)
+    }
   }
+  names(init.Plist) <- names(Slist)
   return(init.Plist)
 }
 
@@ -822,8 +830,7 @@ ridgeP.fused <- function(Slist,
 
   # Initialize estimates with the regular ridges from the pooled covariance
   if (missing(Plist)) {
-    Plist <- .init.ridgeP.fused(Slist, ns = ns, Tlist = Tlist, lambda = lambda,
-                                maxit = maxit, eps = eps)
+    Plist <- .init.ridgeP.fused(Slist, ns = ns, Tlist = Tlist, lambda = lambda)
   }
   stopifnot(length(Slist) == length(Plist))
 
@@ -1207,39 +1214,29 @@ ridgeP.fused <- function(Slist,
 
 
 optPenalty.fused.grid <-
-  function(Ylist,
-           Tlist,
-           lambdaMin, lambdaMax,
-           step1 = 20,
-           lambdaFMin = lambdaMin,
-           lambdaFMax = lambdaMax,
-           step2 = step1,
+  function(Ylist, Tlist,
+           lambdas = 10^seq(-5, 5, by = 20), lambdaFs = lambdas,
            cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
            k = 10,
            verbose = TRUE,
            ...) {
   ##############################################################################
-  #   Simple (approximate) leave one-out cross validation for the fused ridge
-  #   estimator on a grid to determine optimal lambda and lambdaF.
-  #   The complete penalty graph is assumed.
+  #   Cross validation for the fused ridge estimator on a grid to determine
+  #   optimal lambda and lambdaF.
+  #   NOTE: The complete penalty graph is assumed (i.e. all ridge penalties
+  #     equal and all fusion penalties equal)
   # - Ylist       > A list of length G of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - Tlist       > A list of length G of target matrices the same size
   #                 as those of Plist. Default is given by default.target.
-  # - lambdaMin  > Start of lambda value, the ridge penalty
-  # - lambdaMax  > End of lambda value
-  # - step1       > Number of evaluations
-  # - lambdaFMin  > As lambdaMin for the fused penalty. Default is lambdaMin.
-  # - lambdaFMax  > As lambdaMax for the fused penalty. Default is lambdaMax.
-  # - step2       > As step1 for the fused penalty. Default is step1.
+  # - lambdas     > A vector of ridge penalties
+  # - lambdaFs    > A vector of fusion penalties
   # - cv.method   > The LOOCV type to use. Allowed values are LOOCV, aLOOCV,
   #                 sLOOCV, kCV for leave-one-out cross validation (LOOCV),
   #                 appproximate LOOCV, special LOOCV, and k-fold CV, resp.
   # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - ...         > Arguments passed to ridgeP.fused
   # - verbose     > logical. Print extra information. Defaults is TRUE.
-  #
-  # The function evaluates the loss on a log-equidistant grid.
   ##############################################################################
 
   cv.method <- match.arg(cv.method)
@@ -1250,9 +1247,8 @@ optPenalty.fused.grid <-
 
   G <- length(Ylist)
 
-  # Choose lambdas log-equidistantly
-  lambdas  <- exp(seq(log(lambdaMin),  log(lambdaMax),  length.out = step1))
-  lambdaFs <- exp(seq(log(lambdaFMin), log(lambdaFMax), length.out = step2))
+  stopifnot(all(lambdas > 0))
+  stopifnot(all(lambdaFs >= 0))
   stopifnot(all(is.finite(lambdas)))
   stopifnot(all(is.finite(lambdaFs)))
 
@@ -1275,26 +1271,50 @@ optPenalty.fused.grid <-
     cat("Calculating cross-validated negative log-likelihoods...\n")
   }
 
-  slh <- matrix(NA, step1, step2)
-  rownames(slh) <- lambdas
-  colnames(slh) <- lambdaFs
+  slh <- matrix(NA, length(lambdas), length(lambdaFs))
+  dimnames(slh) <- list("lambdas" = lambdas, "lambdaFs" = lambdaFs)
   for (l1 in seq_along(lambdas)) {
     for (l2 in seq_along(lambdaFs)) {
+      # Create penalty matrix
       lambda <- matrix(lambdaFs[l2], G, G)
       diag(lambda) <- lambdas[l1]
-      slh[l1, l2] <-
-        cvfunc(lambda = lambda, Ylist = Ylist, Tlist = Tlist, ...)
+
+      # Evaluate loss
+      slh[l1, l2] <- cvfunc(lambda = lambda, Ylist = Ylist, Tlist = Tlist, ...)
+
       if (verbose) {
-        cat(sprintf("lambda = %.3f (%d), lambdaF = %.3f (%d), -ll = %.3f\n",
+        cat(sprintf("lambda = %.3e (%d), lambdaF = %.3e (%d), fcvl = %.3e\n",
                    lambdas[l1],  l1, lambdaFs[l2], l2, slh[l1, l2]))
       }
     }
   }
 
-  return(list(lambda = lambdas, lambdaF = lambdaFs, fcvl = slh))
+  output <- list(lambda = lambdas, lambdaF = lambdaFs, fcvl = slh)
+  class(output) <- "optPenaltyFusedGrid"
+  return(output)
 }
 
+print.optPenaltyFusedGrid <- function(x, ...) {
+  with(x, print(fcvl))
+  return(invisible(x))
+}
 
+plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
+                                     col = rainbow(100, end = 0.8), ...) {
+  with(x, {
+    image(log(lambda), log(lambdaF), fcvl, col = col)
+    if (add.contour) {
+      contour(log(lambda), log(lambdaF), log(fcvl - min(fcvl) + 1), add = TRUE,
+              nlevels = 15, col = "White", drawlabels = FALSE)
+    }
+    cols <- with(x, ifelse(fcvl == min(fcvl), "red", "black"))
+    if (add.text) {
+      text(log(lambda)[c(row(fcvl))], log(lambdaFs)[c(col(fcvl))],
+           sprintf("%0.1f", fcvl), cex = 0.7, col = cols)
+    }
+  })
+  return(invisible(x))
+}
 
 optPenalty.fused.auto <-
   function(Ylist,
