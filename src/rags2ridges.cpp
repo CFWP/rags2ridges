@@ -22,6 +22,7 @@ double NLL(const arma::mat S, const arma::mat P) {
   log_det(logdet, sign, P);
   if (sign < 0) {
     Rcpp::warning("Supplied precision matrix is not postive definite.");
+    return arma::datum::inf;
   }
   return -logdet + accu(S % P);
 }
@@ -34,7 +35,7 @@ double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
 }
 
 // [[Rcpp::export(NLL.fused)]]
-double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
+double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
                 const arma::vec ns) {
   /* ---------------------------------------------------------------------------
    Function that computes the value of the (negative) combined log-likelihood
@@ -70,7 +71,7 @@ double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   --------------------------------------------------------------------------- */
 
   const int G = ns.size();
-  double pnll = LL_fused(Slist, Plist, ns);
+  double pnll = NLL_fused(Slist, Plist, ns);
   for (int i = 0; i < G; i++) {
     arma::mat Pi = Plist[i];
     arma::mat Ti = Tlist[i];

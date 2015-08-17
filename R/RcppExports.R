@@ -10,7 +10,7 @@ PNLL <- function(S, P, T, lambda) {
 }
 
 NLL.fused <- function(Slist, Plist, ns) {
-    .Call('rags2ridges_LL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns)
+    .Call('rags2ridges_NLL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns)
 }
 
 PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {

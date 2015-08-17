@@ -32,16 +32,16 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// LL_fused
-double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns);
-RcppExport SEXP rags2ridges_LL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
+// NLL_fused
+double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns);
+RcppExport SEXP rags2ridges_NLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const Rcpp::List >::type Slist(SlistSEXP);
     Rcpp::traits::input_parameter< const Rcpp::List >::type Plist(PlistSEXP);
     Rcpp::traits::input_parameter< const arma::vec >::type ns(nsSEXP);
-    __result = Rcpp::wrap(LL_fused(Slist, Plist, ns));
+    __result = Rcpp::wrap(NLL_fused(Slist, Plist, ns));
     return __result;
 END_RCPP
 }
