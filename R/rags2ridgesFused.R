@@ -1310,7 +1310,7 @@ plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
     }
     cols <- with(x, ifelse(fcvl == min(fcvl), "red", "black"))
     if (add.text) {
-      text(log(lambda)[c(row(fcvl))], log(lambdaFs)[c(col(fcvl))],
+      text(log(lambda)[c(row(fcvl))], log(lambdaF)[c(col(fcvl))],
            sprintf("%0.1f", fcvl), cex = 0.7, col = cols)
     }
   })
