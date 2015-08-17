@@ -1215,7 +1215,8 @@ ridgeP.fused <- function(Slist,
 
 optPenalty.fused.grid <-
   function(Ylist, Tlist,
-           lambdas = 10^seq(-5, 5, by = 20), lambdaFs = lambdas,
+           lambdas = 10^seq(-5, 5, length.out = 15),
+           lambdaFs = lambdas,
            cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
            k = 10,
            verbose = TRUE,
