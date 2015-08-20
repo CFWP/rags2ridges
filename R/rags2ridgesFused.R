@@ -751,19 +751,25 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   # - ...     > Arguments passed to .armaRidgeP
   ##############################################################################
 
-  Spool <- pooledS(Slist, ns)
+#   Spool <- pooledS(Slist, ns)
+#   if (length(unique(Tlist)) == 1L) { # If all targets equal
+#
+#     init.Plist <-
+#       .armaRidgeP(Spool, target = Tlist[[1]], .trace(lambda)/sum(ns), ...)
+#     init.Plist <- replicate(length(ns), init.Plist, simplify = FALSE)
+#
+#   } else {
+#
+#     init.Plist <- vector("list", length(ns))
+#     for (i in seq_along(ns)) {
+#       init.Plist[[i]] <-
+#         .armaRidgeP(Spool, target = Tlist[[i]], lambda[i,i]/ns[i], ...)
+#     }
+#
+#   }
 
-  if (length(unique(Tlist)) == 1L) { # If all targets equal
-    init.Plist <-
-      .armaRidgeP(Spool, target = Tlist[[1]], .trace(lambda)/sum(ns), ...)
-    init.Plist <- replicate(length(ns), init.Plist, simplify = FALSE)
-  } else {
-    init.Plist <- vector("list", length(ns))
-    for (i in seq_along(ns)) {
-      init.Plist[[i]] <-
-        .armaRidgeP(Spool, target = Tlist[[i]], lambda[i,i]/ns[i], ...)
-    }
-  }
+  init.Plist <- default.target.fused(Slist, ns, type = "DAIE")
+
   names(init.Plist) <- names(Slist)
   return(init.Plist)
 }
