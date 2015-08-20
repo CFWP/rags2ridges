@@ -177,8 +177,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // armaRidgeP_fused
-Rcpp::List armaRidgeP_fused(const Rcpp::List& Slist, const arma::vec& ns, const Rcpp::List& Tlist, const arma::mat& lambda, const Rcpp::List& Plist, const int maxit, const double eps, const bool verbose);
-RcppExport SEXP rags2ridges_armaRidgeP_fused(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP verboseSEXP) {
+Rcpp::List armaRidgeP_fused(const Rcpp::List& Slist, const arma::vec& ns, const Rcpp::List& Tlist, const arma::mat& lambda, const Rcpp::List& Plist, const int maxit, const double eps, const bool relative, const bool verbose);
+RcppExport SEXP rags2ridges_armaRidgeP_fused(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP relativeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -189,8 +189,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const Rcpp::List& >::type Plist(PlistSEXP);
     Rcpp::traits::input_parameter< const int >::type maxit(maxitSEXP);
     Rcpp::traits::input_parameter< const double >::type eps(epsSEXP);
+    Rcpp::traits::input_parameter< const bool >::type relative(relativeSEXP);
     Rcpp::traits::input_parameter< const bool >::type verbose(verboseSEXP);
-    __result = Rcpp::wrap(armaRidgeP_fused(Slist, ns, Tlist, lambda, Plist, maxit, eps, verbose));
+    __result = Rcpp::wrap(armaRidgeP_fused(Slist, ns, Tlist, lambda, Plist, maxit, eps, relative, verbose));
     return __result;
 END_RCPP
 }

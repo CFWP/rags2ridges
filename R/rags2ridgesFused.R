@@ -777,6 +777,7 @@ ridgeP.fused <- function(Slist,
                          Plist,
                          maxit = 100L,
                          verbose = TRUE,
+                         relative = TRUE,
                          eps = sqrt(.Machine$double.eps)) {
   ##############################################################################
   # - The user function for the fused ridge estimate for a given lambda.
@@ -799,6 +800,7 @@ ridgeP.fused <- function(Slist,
   #             the ridge estimate of the pooled estimate is used.
   # - maxit   > integer. The maximum number of interations, default is 100.
   # - verbose > logical. Should the function print extra info. Defaults to TRUE.
+  # - relative> logical. Should the convergence criterion be on relative scale?
   # - eps     > numeric. A positive convergence criterion. Default is about 1e-8
   ##############################################################################
 
@@ -837,7 +839,7 @@ ridgeP.fused <- function(Slist,
   # Overwrite the starting estimate with the fused estimate
   Plist <- .armaRidgeP.fused(Slist = Slist, ns = ns, Tlist = Tlist,
                              lambda = lambda, Plist = Plist, maxit = maxit,
-                             eps = eps, verbose = verbose)
+                             eps = eps, relative = relative, verbose = verbose)
 
   # Keep dimnames and names
   for (g in seq_along(Slist)) {
