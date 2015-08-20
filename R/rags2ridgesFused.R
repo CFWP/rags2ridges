@@ -870,7 +870,7 @@ ridgeP.fused <- function(Slist,
 ################################################################################
 
 
-.fcvl <- function(lambda, Ylist, Tlist, init.Plist, ...) {
+.fcvl <- function(lambda, Ylist, Tlist, init.Plist, hotstart = FALSE, ...) {
   ##############################################################################
   # (Internal) Computes the fused leave-one-out cross-validation loss for
   # given penalty matrix
@@ -880,7 +880,8 @@ ridgeP.fused <- function(Slist,
   #                samples (rows) are needed in each entry.
   # - Tlist      > A list of length G of target matrices the same size
   #                as those of Plist. Default is given by default.target.
-  # - init.Plist > Initial estimate
+  # - init.Plist > Initial estimates used in .armaRidgeP.fused
+  # - hotstart   > If TRUE, the latest estimate is used for each left out
   # - ...        > Arguments passed to .armaRidgeP.fused
   ##############################################################################
 
@@ -901,8 +902,8 @@ ridgeP.fused <- function(Slist,
     this.Slist <- Slist.org
     for (i in seq_len(ns.org[g])) {
       this.Slist[[g]] <-
-        crossprod(Ylist[[g]][-i, , drop = FALSE])/ns[g]
-        # covML(Ylist[[g]][-i, , drop = FALSE])
+        covML(Ylist[[g]][-i, , drop = FALSE])
+        # crossprod(Ylist[[g]][-i, , drop = FALSE])/ns[g]
 
       this.Plist <- .armaRidgeP.fused(Slist = this.Slist, ns = ns,
                                       Tlist = Tlist, lambda = lambda,
@@ -910,6 +911,11 @@ ridgeP.fused <- function(Slist,
 
       Sig <- crossprod(Ylist[[g]][i,  , drop = FALSE])
       slh[j] <- ns[g]*.LL(Sig, this.Plist[[g]])
+
+      if (hotstart) {
+        init.Plist <- this.Plist
+      }
+
       j <- j + 1
     }
   }
