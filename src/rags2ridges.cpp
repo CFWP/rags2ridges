@@ -144,6 +144,25 @@ arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
 }
 
 
+// [[Rcpp::export(.armaEigShrink)]]
+arma::vec armaEigShrink(const arma::vec dVec,
+                        const double lambda,
+                        const double cons = 0) {
+  /* ---------------------------------------------------------------------------
+   - Function that shrinks the eigenvalues in an eigenvector
+   - Shrinkage is that of the rotation equivariant alternative ridge estimator
+   - Main use is in avoiding expensive matrix square root when choosing a
+   target that leads to a rotation equivariant version of the alternative
+   ridge estimator
+   - dVec   > numeric vector containing the eigenvalues of a matrix S
+   - lambda > penalty parameter
+   - const  > a constant, default = 0
+   --------------------------------------------------------------------------- */
+
+  arma::vec Evector = 0.5 * (dVec - lambda * cons);
+  return sqrt(lambda + pow(Evector, 2.0)) + Evector;
+}
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
