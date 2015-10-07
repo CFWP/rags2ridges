@@ -152,8 +152,8 @@ arma::vec armaEigShrink(const arma::vec dVec,
    - Function that shrinks the eigenvalues in an eigenvector
    - Shrinkage is that of the rotation equivariant alternative ridge estimator
    - Main use is in avoiding expensive matrix square root when choosing a
-   target that leads to a rotation equivariant version of the alternative
-   ridge estimator
+     target that leads to a rotation equivariant version of the alternative
+     ridge estimator
    - dVec   > numeric vector containing the eigenvalues of a matrix S
    - lambda > penalty parameter
    - const  > a constant, default = 0
