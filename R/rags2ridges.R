@@ -3,25 +3,31 @@
 ################################################################################
 ##
 ## Name: rags2ridges
-## Authors: Carel F.W. Peeters, Wessel N. van Wieringen, Anders E. Bilgrau
-##			Molecular Biostatistics Unit
-##			Dept. of Epidemiology & Biostatistics
-##			VU University medical center
-##			Amsterdam, the Netherlands
-## Email:	cf.peeters@vumc.nl
+## Authors: Carel F.W. Peeters, Anders E. Bilgrau, and Wessel N. van Wieringen
+##
+## Maintainer: Carel F.W. Peeters
+##             Statistics for Omics Research Unit
+##             Dept. of Epidemiology & Biostatistics
+##             VU University medical center
+##             Amsterdam, the Netherlands
+## Email:	     cf.peeters@vumc.nl
 ##
 ## Version: 2.0
-## Last Update:	19/02/2015
-## Description:	Ridge estimation, with supporting functions, for
-##   high-dimensional precision matrices
+## Last Update:	08/10/2015
+## Description:	Ridge estimation for high-dimensional precision matrices
+##              Includes supporting functions for (integrative) graphical modeling
 ##
 ## Publications:
-##   [1] Wessel N. van Wieringen & Carel F.W. Peeters (2014)
+##   [1] van Wieringen, W.N. & Peeters, C.F.W. (2015).
 ##       "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional
-##       Data", arXiv:1403.0904 [stat.ME].
-## 	 [2] Carel F.W. Peeters & Wessel N. van Wieringen (in preparation)
+##       Data", arXiv:1403.0904v3 [stat.ME].
+##   [2] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., &
+##       van Wieringen, W.N. (2015).
+##       "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from
+##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
+## 	 [3] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2015).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
-##       Selection"
+##       Determination".
 ##
 ################################################################################
 ################################################################################
