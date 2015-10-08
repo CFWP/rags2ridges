@@ -3,14 +3,8 @@ Type: Package
 Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
 Version: 2.0
 Date: 2015-8-10
-Authors@R: c(person("Carel F.W.", "Peeters", role = c("cre", "aut"),
-                    email = "cf.peeters@vumc.nl"),
-             person("Anders Ellern", "Bilgrau", role = "aut"),
-             person("Wessel N.", "van Wieringen", role = "aut")
 Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
-Author: Carel F.W. Peeters [cre, aut],
-Anders Ellern Bilgrau [aut],
-Wessel N. van Wieringen [aut]
+Author: Carel F.W. Peeters [cre, aut], Anders Ellern Bilgrau [aut], Wessel N. van Wieringen [aut]
 Description: Package contains proper L2-penalized ML estimators for the
   precision matrix as well as supporting functions to employ these estimators
   in a graphical modeling setting.
