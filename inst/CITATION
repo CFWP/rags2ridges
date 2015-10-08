@@ -1,29 +1,52 @@
 citHeader("To cite the rags2ridges package in publications please use:")
 
+year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
+vers <- paste("R package version", meta$Version)
+
 citEntry(entry="Manual",
     title = "rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data",
-    author = personList(as.person("C.F.W. Peeters"), as.person("W.N. van Wieringen")),
-    year = substring(packageDescription("rags2ridges")$Date,1,4),
-    note = paste("R package version", packageDescription("rags2ridges")$Version),
+    author = personList(as.person("C.F.W. Peeters"),
+                        as.person("A.E. Bilgrau"),
+                        as.person("W.N. van Wieringen")),
+    year = year,
+    note = vers,
     textVersion =
-      paste("Peeters, C.F.W. and van Wieringen, W.N. (",
-        substring(packageDescription("rags2ridges")$Date,1,4),
-        ") rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data. ",
-        "R package, version ", packageDescription("rags2ridges")$Version,
-        ".", sep = "")
+      paste("Peeters, C.F.W., Bilgrau, A.E., and van Wieringen, W.N. (",
+            year,
+            ") rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data. ",
+            vers,
+            ".", sep = "")
 )
 
 citEntry(entry="Article",
     title = "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data",
     author = personList(as.person("W.N. van Wieringen"),
-        as.person("C.F.W. Peeters")),
-    journal = "arXiv:1403.0904 [stat.ME]",
-    volume = "", 
-    number = "", 
+                        as.person("C.F.W. Peeters")),
+    journal = "arXiv:1403.0904v3 [stat.ME]",
+    volume = "",
+    number = "",
     pages =  "",
-    year = 2014,
+    year = 2015,
     textVersion =
-      paste("van Wieringen, W.N. and Peeters, C.F.W. (2014). ",
-		"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. ", 
-        	"arXiv:1403.0904 [stat.ME].", sep = "")
+      paste("van Wieringen, W.N. and Peeters, C.F.W. (2015). ",
+		        "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. ",
+        	  "arXiv:1403.0904v3 [stat.ME].", sep = "")
+)
+
+citEntry(entry="Article",
+    title = "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes",
+    author = personList(as.person("A.E. Bilgrau"),
+                        as.person("C.F.W. Peeters"),
+                        as.person("P.S. Eriksen"),
+                        as.person("M. Boegsted"),
+                        as.person("W.N. van Wieringen")),
+    journal = "arXiv:1509.07982v1 [stat.ME]",
+    volume = "",
+    number = "",
+    pages =  "",
+    year = 2015,
+    textVersion =
+      paste("Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and Wieringen, W.N. (2015). ",
+		        "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes. ",
+        	  "arXiv:1509.07982v1 [stat.ME].", sep = "")
 )
