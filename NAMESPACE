@@ -7,6 +7,7 @@ importFrom("snowfall", sfInit, sfLibrary, sfSapply, sfStop)
 importFrom("fdrtool", fdrtool)
 importFrom("ggplot2", ggplot, aes, geom_tile, scale_fill_gradient2, theme,
            element_blank, element_text, xlab, ylab, ylim, ggtitle)
+importFrom("sfsmisc", lseq)
 import("reshape")
 
 # Exports
