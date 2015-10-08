@@ -1271,54 +1271,47 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
 
 
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
-                                target = default.target(S),
-                                norm = "2", rlDist = FALSE, vertical = FALSE,
-                                value, main = TRUE,
+                                target = default.target(S), norm = "2",
+                                digitLoss = FALSE, rlDist = FALSE,
+                                vertical = FALSE, value, main = TRUE,
                                 nOutput = FALSE, verbose = TRUE){
-  ##############################################################################
-  # - Function that visualizes the spectral condition number against the
-  # - regularization parameter
-  # - Can be used to heuristically determine the (minimal) value of the penalty
-  # - parameter
-  # - The ridges are rotation equivariant, meaning they work by shrinking the
-  # - eigenvalues
-  # - Maximum shrinkage implies that all eigenvalues will be equal
-  # - Ratio of maximum and minimum eigenvalue of P can then function as a
-  # - heuristic
+  #####################################################################################################
+  # - Function that visualizes the spectral condition number against the regularization parameter
+  # - Can be used to heuristically determine the (minimal) value of the penalty parameter
+  # - The ridge estimators operate by shrinking the eigenvalues
+  # - This is especially the case when targets are used that lead to rotation equivariant estimators
+  # - Maximum shrinkage (under rotation equivariance) implies that all eigenvalues will be equal
+  # - Ratio of maximum and minimum eigenvalue of P can then function as a heuristic
   # - It's point of stabilization can give an acceptable value for the penalty
   # - The ratio boils down to the (spectral) condition number of a matrix
   # - S         > sample covariance/correlation matrix
   # - lambdaMin > minimum value penalty parameter (dependent on 'type')
   # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid
-  #               [lambdaMin, lambdaMax]
+  # - step      > determines the coarseness in searching the grid [lambdaMin, lambdaMax].
+  #               The steps on the grid are equidistant on the log scale
   # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators,
-  #               default = default.target(S)
-  # - norm      > indicates the norm under which the condition number is to be
-  #               estimated
-  # - rlDist    > logical indicating if relative distance to set of singular
-  #               matrices should also be plotted. Default = FALSE
-  # - vertical  > optional argument for visualization vertical line in graph
-  #               output, default = FALSE
-  #               Can be used to indicate the value of, e.g., the optimal
-  #               penalty as indicated by some routine. Can be used to assess
-  #               if this optimal penalty will lead to a well-conditioned
-  #               estimate
-  # - value     > indicates constant on which to base vertical line when
-  #               vertical = TRUE
-  # - main      > logical indicating if plot should contain type of estimator
-  #               as main title
-  # - nOutput   > logical indicating if numeric output should be given (lambdas
-  #               and condition numbers)
-  # - verbose   > logical indicating if intermediate output should be printed
-  #               on screen
-  ##############################################################################
+  # - target    > target (precision terms) for Type I estimators, default = default.target(S)
+  # - norm      > indicates the norm under which the condition number is to be estimated.
+  #               Default is the L2-norm. The L1-norm can be (cheaply) approximated
+  # - digitLoss > logical indicating if the approximate loss in digits of accuracy should also be
+  #               plotted. Default = FALSE
+  # - rlDist    > logical indicating if relative distance to set of singular matrices should also be
+  #               plotted. Default = FALSE
+  # - vertical  > optional argument for visualization vertical line in graph output, default = FALSE
+  #               Can be used to indicate the value of, e.g., the optimal penalty as indicated by some
+  #               routine. Can be used to assess if this optimal penalty will lead to a
+  #               well-conditioned estimate
+  # - value     > indicates constant on which to base vertical line when vertical = TRUE
+  # - main      > logical indicating if plot should contain type of estimator as main title
+  # - nOutput   > logical indicating if numeric output should be given (lambdas and condition numbers)
+  # - verbose   > logical indicating if intermediate output should be printed on screen
+  #####################################################################################################
 
   # Dependencies
   # require("base")
   # require("graphics")
   # require("Hmisc")
+  # require("sfsmisc")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
@@ -1330,7 +1323,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     stop("S should be a matrix")
   }
   else if (!isSymmetric(S)){
-    stop("S should be a symmetric matrix")
+    stop("S should be a covariance matrix")
   }
   else if (class(lambdaMin) != "numeric"){
     stop("Input (lambdaMin) is of wrong class")
@@ -1368,22 +1361,26 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (dim(target)[1] != dim(S)[1]){
     stop("S and target should be of the same dimension")
   }
-  else if (type == "Alt" & !all(target == 0) &
-             any(eigen(target, symmetric = TRUE, only.values = T)$values <= 0)){
+  else if (type == "Alt" & !all(target == 0) & any(eigen(target, symmetric = TRUE, only.values = T)$values <= 0)){
     stop("When target is not a null-matrix it should be p.d.")
   }
   else if (type == "ArchI" & lambdaMax > 1){
     stop("lambda should be in (0,1] for this type of Ridge estimator")
   }
-  else if (type == "ArchI" &
-             any(eigen(target, symmetric = TRUE, only.values = T)$values <= 0)){
+  else if (type == "ArchI" & any(eigen(target, symmetric = TRUE, only.values = T)$values <= 0)){
     stop("Target should be p.d.")
   }
   else if (!(norm %in% c("2", "1"))){
     stop("norm should be one of {'2', '1'}")
   }
+  else if (class(digitLoss) != "logical"){
+    stop("Input (digitLoss) is of wrong class")
+  }
   else if (class(rlDist) != "logical"){
     stop("Input (rlDist) is of wrong class")
+  }
+  else if (digitLoss & rlDist){
+    stop("Only one of 'digitLoss' and 'rlDist' may be TRUE")
   }
   else if (class(vertical) != "logical"){
     stop("Input (vertical) is of wrong class")
@@ -1396,7 +1393,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   }
   else {
     # Set preliminaries
-    lambdas <- seq(lambdaMin, lambdaMax, len = step)
+    lambdas <- lseq(lambdaMin, lambdaMax, length = step)
     condNR  <- numeric()
 
     if (norm == "2"){
@@ -1405,23 +1402,30 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
       if (type == "Alt" & all(target == 0)){
         Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
         for (k in 1:length(lambdas)){
-          Eigshrink <- .eigShrink(Spectral, lambdas[k])
+          Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
           condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
         }
-      } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
-                   (length(unique(diag(target))) == 1)){
+      } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) & (length(unique(diag(target))) == 1)){
         varPhi   <- unique(diag(target))
         Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
         for (k in 1:length(lambdas)){
-          Eigshrink <- .eigShrink(Spectral, lambdas[k], const = varPhi)
+          Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
           condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
         }
       } else {
-        for (k in 1:length(lambdas)){
-          P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-          Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
-          condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-          if (verbose){cat("lambda = ", lambdas[k], " done\n", sep = "")}
+        if (type == "Alt"){
+          for (k in 1:length(lambdas)){
+            P         <- .armaRidgePAnyTarget(S, target = target, lambdas[k])
+            Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
+            condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
+          }
+        }
+        if (type != "Alt"){
+          for (k in 1:length(lambdas)){
+            P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+            Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
+            condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
+          }
         }
       }
     }
@@ -1429,14 +1433,22 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (norm == "1"){
       # Calculate approximation to condition number under 1-norm
       if (verbose){cat("Approximating condition number under 1-norm...", "\n")}
-      for (k in 1:length(lambdas)){
-        P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-        condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        if (verbose){cat("lambda = ", lambdas[k], " done\n", sep = "")}
+      if (type == "Alt"){
+        for (k in 1:length(lambdas)){
+          P         <- .armaRidgeP(S, target = target, lambdas[k])
+          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
+        }
+      }
+      if (type != "Alt"){
+        for (k in 1:length(lambdas)){
+          P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
+        }
       }
     }
 
     # Visualization
+    if (verbose){cat("Plotting...", "\n")}
     if (main){
       if (type == "Alt"){Main = "Alternative ridge estimator"}
       if (type == "ArchI"){Main = "Archetypal I ridge estimator"}
@@ -1445,21 +1457,27 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (!main){Main = " "}
     if (norm == "2"){Ylab = "spectral condition number"}
     if (norm == "1"){Ylab = "condition number under 1-norm"}
-    if (rlDist){par(mar = c(5,4,4,5)+.1)}
-    plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4",
-         xlab = "ln(penalty value)", ylab = Ylab, main = Main)
+    if (digitLoss | rlDist){par(mar = c(5,4,4,5)+.1)}
+    plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4", xlab = "ln(penalty value)", ylab = Ylab, main = Main)
     axis(2, ylim = c(0,max(condNR)), col = "black", lwd = 1)
     axis(1, col = "black", lwd = 1)
     minor.tick(nx = 10, ny = 0, tick.ratio = .4)
+    par(xpd = FALSE)
+    if (digitLoss){
+      dLoss <- floor(log10(condNR))
+      par(new = TRUE)
+      plot(log(lambdas), dLoss,, axes = FALSE, type = "l", col = "green3", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+      axis(4, col = "black", lwd = 1)
+      mtext("Loss in digits of accuracy", side = 4, line = 3)
+      legend("top", col=c("blue4","green3"), lty = 1, legend = c("Condition number", "floor(log10(Condition number))"), cex = .8)
+    }
     if (rlDist){
       RlDist <- 1/condNR
-      par(new=TRUE)
-      plot(log(lambdas), RlDist,, axes = FALSE, type = "l", col = "green3",
-           xaxt = "n", yaxt = "n", xlab = "", ylab = "")
+      par(new = TRUE)
+      plot(log(lambdas), RlDist,, axes = FALSE, type = "l", col = "green3", xaxt = "n", yaxt = "n", xlab = "", ylab = "")
       axis(4, col = "black", lwd = 1)
       mtext("relative distance to singular matrix", side = 4, line = 3)
-      legend("top", col=c("blue4","green3"), lty = 1,
-             legend = c("Condition number", "Relative distance"), cex = .8)
+      legend("top", col=c("blue4","green3"), lty = 1, legend = c("Condition number", "Relative distance"), cex = .8)
     }
     if (vertical){
       if (missing(value)){
