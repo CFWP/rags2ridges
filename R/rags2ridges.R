@@ -1323,7 +1323,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     stop("S should be a matrix")
   }
   else if (!isSymmetric(S)){
-    stop("S should be a covariance matrix")
+    stop("S should be a symmetric matrix")
   }
   else if (class(lambdaMin) != "numeric"){
     stop("Input (lambdaMin) is of wrong class")
