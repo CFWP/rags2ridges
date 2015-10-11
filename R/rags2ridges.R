@@ -339,10 +339,10 @@
                             lambdaInit, target, type){
   ##############################################################################
   # - Function that determines the optimal value of the penalty parameter for a
-  #     single permutation
+  #   single permutation
   # - Optimal penalty determined using the 'optPenalty.LOOCVauto' function
   # - i          > number of permutations; passed by nPerm in
-  #     'GGMblockNullPenalty'
+  #                'GGMblockNullPenalty'
   # - Y          > (raw) Data matrix, variables in columns
   # - id         > indicator variable for the two blocks of the precision matrix
   # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
@@ -377,6 +377,9 @@
   return(log(det(S[id == 0, id == 0])) +
            log(det(S[id == 1, id == 1])) - log(det(S)))
 }
+
+
+
 
 ##------------------------------------------------------------------------------
 ##
