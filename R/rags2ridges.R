@@ -702,7 +702,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 
 ##------------------------------------------------------------------------------
 ##
-## Function for Ridge Estimators of the Precision matrix
+## Function for Ridge Estimation of the Precision matrix
 ##
 ##------------------------------------------------------------------------------
 
