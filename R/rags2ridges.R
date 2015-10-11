@@ -476,11 +476,11 @@ evaluateS <- function(S, verbose = TRUE){
   ##############################################################################
   # - Function evualuating various properties of an input matrix
   # - Intended use is to evaluate the various properties of what is assumed to
-  #     be a covariance matrix
+  #   be a covariance matrix
   # - Another use is to evaluate the various properties of a (regularized)
-  #     precision matrix
+  #   precision matrix
   # - S       > sample covariance/correlation matrix or (regularized) precision
-  #     matrix
+  #             matrix
   # - verbose > logical indicating if output should be printed on screen
   ##############################################################################
 
@@ -541,11 +541,11 @@ evaluateS <- function(S, verbose = TRUE){
 pcor <- function(P, pc = TRUE){
   ##############################################################################
   # - Function computing partial correlation/standardized precision matrix from
-  #     a precision matrix
+  #   a precision matrix
   # - P  > precision matrix (possibly regularized inverse of covariance or
-  #     correlation matrix)
+  #        correlation matrix)
   # - pc > logical indicating if the partial correlation matrix should be
-  #     computed
+  #        computed
   ##############################################################################
 
   # Dependencies
@@ -580,7 +580,7 @@ pcor <- function(P, pc = TRUE){
 default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   ##############################################################################
   # - Function that generates a (data-driven) default target for usage in
-  #     ridge-type shrinkage estimation
+  #   ridge-type shrinkage estimation
   # - The target that is generated is to be understood in precision terms
   # - See function 'ridgeS'
   # S        > sample covariance/correlation matrix
@@ -593,10 +593,10 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   #
   # Notes:
   # - The van Wieringen-Peeters type I estimator and the archetypal I estimator
-  #     utilize a p.d. target
+  #   utilize a p.d. target
   # - DAIE: diagonal average inverse eigenvalue
   #   Diagonal matrix with average of inverse nonzero eigenvalues of S as
-  #     entries
+  #   entries
   # - DIAES: diagonal inverse average eigenvalue S
   #   Diagonal matrix with inverse of average of eigenvalues of S as entries
   # - DUPV: diagonal unit partial variance
@@ -605,8 +605,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   #   Diagonal matrix with average of inverse variances of S as entries
   # - DCPV: diagonal constant partial variance
   #   Diagonal matrix with constant partial variance as entries. Allows one to
-  #     use other constant than
-  #   [DAIE, DUPV, DAPV, and in a sense Null]
+  #   use other constant than [DAIE, DUPV, DAPV, and in a sense Null]
   # - DEPV: diagonal empirical partial variance
   #   Diagonal matrix with the inverse of variances of S as entries
   # - Null: Null matrix
@@ -697,10 +696,6 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
     return(target)
   }
 }
-
-
-
-
 
 
 
