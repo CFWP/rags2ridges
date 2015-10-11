@@ -1126,7 +1126,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
       } else if (dim(target)[1] != dim(S)[1]){
         stop("Covariance matrix based on data input (Y) and target should be ",
              "of the same dimension")
-      } else if (any(diag(target) <= 0)){  ## THIS TEST IS NOT CORRECT I GUESS?
+      } else if (any(diag(target) <= 0)){
         stop("Input (target) should be p.d.")
       } else {
         varPhi   <- unique(diag(target))
