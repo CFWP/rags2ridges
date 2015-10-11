@@ -1202,8 +1202,8 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
                                   type = "Alt") {
   ##############################################################################
   # - Function that determines the optimal value of the penalty parameter by
-  #   application of the Brent
-  #   algorithm to the (leave-one-out) cross-validated log-likelihood
+  #   application of the Brent algorithm to the (leave-one-out) cross-validated
+  #   log-likelihood
   # - Y          > (raw) Data matrix, variables in columns
   # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
   # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
