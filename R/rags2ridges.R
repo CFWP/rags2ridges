@@ -3332,7 +3332,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
   #
   # - NOTES:
   # - Always uses the alternative ridge estimator by van Wieringen and Peeters
-  #     (2014)
+  #   (2014)
   # - Always uses LOOCV by Brent for optimal penalty parameter determination
   # - Always uses support determination by local FDR thresholding
   # - Visualizes the network by 'Ugraph' with type = "fancy". Network on basis
