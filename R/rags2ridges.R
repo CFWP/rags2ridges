@@ -810,10 +810,10 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 
 
-ridgeSArma <- function(S, lambda, type = "Alt", target = default.target(S)){
+ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
   # - Function that calculates ridge estimators of a precision matrix
-  # - which use the RcppArmadillo implementation.
+  # - Version that uses the RcppArmadillo implementation
   # - S       > sample covariance matrix
   # - lambda  > penalty parameter (choose in accordance with type of Ridge
   #             estimator)
@@ -829,7 +829,7 @@ ridgeSArma <- function(S, lambda, type = "Alt", target = default.target(S)){
   # - When type = "Alt" and target is p.d., one obtains the
   #   van Wieringen-Peeters type I estimator
   # - When type = "Alt" and target is null-matrix, one obtains the
-  #   van Wieringen-Peeters type II est.
+  #   van Wieringen-Peeters type II estimator
   # - When target is not the null-matrix it is expected to be p.d. for the
   #   vWP type I estimator
   # - The target is always expected to be p.d. in case of the archetypal I
