@@ -54,7 +54,7 @@
   ##############################################################################
   # - Internal function to compute the trace of a matrix
   # - Faster support function (as opposed to 'matrix.trace') when input M is
-  #     already forced to 'matrix'
+  #   already forced to 'matrix'
   # - M > matrix input
   ##############################################################################
 
@@ -66,7 +66,7 @@
 .is.int <- function(x, tolerance = .Machine$double.eps){
   ##############################################################################
   # - Logical function that checks if a number is an integer within machine
-  #     precision
+  #   precision
   # - x         > input number
   # - tolerance > tolerance threshold for determining integer quality
   ##############################################################################
@@ -82,7 +82,7 @@
   # - Function that computes the value of the (negative) log-likelihood
   # - S > sample covariance matrix
   # - P > precision matrix (possibly regularized inverse of covariance or
-  #     correlation matrix)
+  #       correlation matrix)
   ##############################################################################
 
   LL <- -log(det(P)) + sum(S*P) #.trace(S %*% P)
@@ -145,8 +145,8 @@
   # - Function that shrinks the eigenvalues in an eigenvector
   # - Shrinkage is that of rotation equivariant alternative ridge estimator
   # - Main use is in avoiding expensive matrix square root when choosing a
-  #     target that leads to a rotation equivariant version of the alternative
-  #     ridge estimator
+  #   target that leads to a rotation equivariant version of the alternative
+  #   ridge estimator
   # - dVec   > numeric vector containing the eigenvalues of a matrix S
   # - lambda > penalty parameter
   # - const  > a constant, default = 0
@@ -163,30 +163,30 @@
   # - Hidden function that calculates Ridge estimators of a covariance matrix
   # - Function is mirror image main routine 'ridgeS'
   # - Main use is to circumvent (unnecessary) inversion (especially in
-  #     'conditionNumberPlot' function)
+  #   'conditionNumberPlot' function)
   # - S       > sample covariance matrix
   # - lambda  > penalty parameter (choose in accordance with type of Ridge
-  #     estimator)
+  #             estimator)
   # - type    > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
   # - Alt     > van Wieringen-Peeters alternative ridge estimator of a
-  #     covariance matrix
+  #             covariance matrix
   # - ArchI   > Archetypal I ridge estimator of a covariance matrix
   # - ArchII  > Archetypal II ridge estimator of a covariance matrix
   # - target  > target (precision terms) for Type I estimators,
-  #     default = default.target(S)
+  #             default = default.target(S)
   #
   # - NOTES:
   # - When type = "Alt" and target is p.d., one obtains the
-  #     van Wieringen-Peeters type I estimator
+  #   van Wieringen-Peeters type I estimator
   # - When type = "Alt" and target is null-matrix, one obtains the
-  #     van Wieringen-Peeters type II est.
+  #   van Wieringen-Peeters type II estimator
   # - When target is not the null-matrix it is expected to be p.d. for the vWP
-  #     type I estimator
+  #   type I estimator
   # - The target is always expected to be p.d. in case of the archetypal I
-  #     estimator
+  #   estimator
   # - When type = "Alt" and target is null matrix or of form c * diag(p), a
-  #     rotation equivariant estimator ensues. In these cases the expensive
-  #     matrix square root can be circumvented
+  #   rotation equivariant estimator ensues. In these cases the expensive
+  #   matrix square root can be circumvented
   ##############################################################################
 
   # Alternative estimator
