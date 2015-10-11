@@ -230,7 +230,7 @@
 .pathContribution <- function(sparseP, path, detSparseP){
   ##############################################################################
   # - Function calculating the contribution of a path to the covariance between
-  #     begin and end node
+  #   begin and end node
   # - sparseP    > sparse precision/partial correlation matrix
   # - path       > path between two nodes (start and end node)
   # - detSparseP > determinant of 'sparseP'
@@ -268,7 +268,7 @@
                           pathNames){
   ##############################################################################
   # - Function determining shortest paths (and their contribution) between
-  #     node 1 and node 2
+  #   node 1 and node 2
   # - It does so via the neighborhoods 1 and 2
   # - Gt        > graphical object
   # - node1t    > start node of the path
@@ -316,11 +316,11 @@
 .cvl <- function(lambda, Y,  target = default.target(covML(Y)), type = "Alt"){
   ##############################################################################
   # - Function that calculates a cross-validated negative log-likelihood score
-  #     for single penalty value
+  #   for single penalty value
   # - lambda > value penalty parameter
   # - Y      > (raw) Data matrix, variables in columns
   # - target > target (precision terms) for Type I estimators,
-  #     default = default.target(covML(Y))
+  #            default = default.target(covML(Y))
   # - type   > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
   ##############################################################################
 
