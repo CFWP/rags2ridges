@@ -49,7 +49,7 @@ citEntry(entry="InCollection",
 		        "Application of a New Ridge Estimator of the Inverse Covariance Matrix to the Reconstruction of Gene-Gene Interaction Networks. ", "In: ", "C. di Serio, P. Lio, A. Nonis, and R. Tagliaferri (Eds.) ",
 		        "Computational Intelligence Methods for Bioinformatics and Biostatistics. ",
         	  "Lecture Notes in Computer Science, vol. 8623. ",
-        	  "Springer International Publishing, pp. 170-179."sep = "")
+        	  "Springer International Publishing, pp. 170-179.", sep = "")
 )
 
 citEntry(entry="Article",
