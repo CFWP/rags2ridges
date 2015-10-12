@@ -1949,7 +1949,6 @@ mutualInfoGGM <- function(S, split1){
   # - No dependencies at current
   ##############################################################################
 
-  # input checks
   if (!is.matrix(S)){
     stop("Input (S) should be a matrix")
   }
