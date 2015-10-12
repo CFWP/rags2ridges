@@ -22,8 +22,11 @@
     \item fixed bug in sparsify: now always returns symmetric objects
     \item added covMLknown function
     \item added mutualInfoGGM function
+    \item importing from default packages explicit
+    \item sectioning (documentation: added news file and fixed citation file)
   }
 }
+
 
 \section{Changes in version 1.4}{
   \itemize{
