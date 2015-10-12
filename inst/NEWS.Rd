@@ -89,61 +89,80 @@
 }
 
 \section{Changes in version 1.3}{
-  \itemize{
-    \item Inclusion hidden function \code{.ridgeSi} for usage in
-      \code{conditionNumberPlot} function.
-    \item Inclusion hidden function \code{.eigShrink} for usage in (a.o.)
-      \code{ridgeS} function.
-    \item Inclusion function calculating various network statistics from a
-      sparse matrix: \code{GGMnetworkStats}
-    \item Inclusion function for visual inspection fit of regularized precision
-      matrix to sample covariance matrix: \code{evaluateSfit}
-    \item Inclusion function for visualization of regularization paths:
-      \code{ridgePathS}
-    \item Inclusion function for default target matrix generation:
-      \code{default.target}
-    \item New features updated \code{evaluateS} function:
-      The printed output of the \code{evaluateS} function is now aligned
-      Calculation spectral condition number has been improved
-    \item \code{conditionNumber} function now called \code{conditionNumberPlot}.
-      Updated function has new features:
-      Main plot can now be obtained with either the spectral (l2) or the
-      (approximation to) l1 condition number
-      Main plot can now be amended with plot of the relative distance to the
-      set of singular matrices
-      The title of the main plot can now be suppressed
-      One can now obtain numeric output from the function: lambdas and
-      condition numbers
-    \item New features updated \code{sparsify} function:
-      Changed \code{type = c("threshold", "localFDR")} to
-      \code{threshold = c("absValue", "localFDR")} (clarifying nomenclature)
-      Changed \code{threshold} to \code{absValueCut} (clarifying nomenclature)
-      Will now output both sparsified partial correlation/standardized
-      precision matrix and the sparsified precison matrix >>
-      when input consists of the unstandardized precision matrix
-    \item New features updated \code{ridgeS} function:
-      Contains an improved evaluation of the target matrix possibly being a
-      null matrix
-      Now evaluates if a rotation equivariant alternative estimator ensues for
-      a given target matrix
-      When rotation equivariant alternative estimator ensues, computation is
-      sped up considerably by circumventing the matrix square root
-    \item \code{optPenaltyCV} function now called \code{optPenalty.LOOCV}, for sake
-      of (naming) consistency. Updated function has new features:
-      \code{targetScale} option has been removed
-      Replaced \code{log} in optional graph by \code{ln}
-      Visual layout of optional graph now more in line with recommendations by
-      Tufte.
-    \item New features updated \code{optPenalty.aLOOCV} function:
-      Replaced \code{log} in optional graph by \code{ln}
-      Visual layout of optional graph now more in line with recommendations by Tufte
-    \item Computation optimal penalty in \code{conditionNumberPlot},
-      \code{optPenalty.aLOOCV} and \code{optPenalty.LOOCV} functions sped up
-      considerably: For rotation equivariant alternative estimator
-      By usage new ridgeS and avoidance of redundant eigendecompositions
-    \item Default target in \code{ridgeS}, \code{conditionNumberPlot},
-      \code{optPenalty.aLOOCV} and \code{optPenalty.LOOCV} now \code{"DAIE"}
-      option in \code{default.target}.
+  \subsection{Additions:}{
+    \itemize{
+      \item Inclusion hidden function \code{.ridgeSi} for usage in
+        \code{conditionNumberPlot} function.
+      \item Inclusion hidden function \code{.eigShrink} for usage in (a.o.)
+        \code{ridgeS} function.
+      \item Inclusion function calculating various network statistics from a
+        sparse matrix: \code{GGMnetworkStats}
+      \item Inclusion function for visual inspection fit of regularized precision
+        matrix to sample covariance matrix: \code{evaluateSfit}
+      \item Inclusion function for visualization of regularization paths:
+        \code{ridgePathS}
+      \item Inclusion function for default target matrix generation:
+        \code{default.target}
+    }
+  }
+  \subsection{Adjustments and name changes:}{
+    \itemize{
+      \item New features updated \code{evaluateS} function:
+        \itemize{
+          \item The printed output of the \code{evaluateS} function is now aligned
+          \item Calculation spectral condition number has been improved
+        }
+      \item \code{conditionNumber} function now called \code{conditionNumberPlot}.
+        The updated function has new features:
+        \itemize{
+          \item Main plot can now be obtained with either the spectral (l2) or the
+            (approximation to) l1 condition number
+          \item Main plot can now be amended with plot of the relative distance to the
+            set of singular matrices
+          \item The title of the main plot can now be suppressed
+          \item One can now obtain numeric output from the function: lambdas and
+            condition numbers
+        }
+      \item New features updated \code{sparsify} function:
+        \itemize{
+          \item Changed \code{type = c("threshold", "localFDR")} to
+            \code{threshold = c("absValue", "localFDR")} (clarifying nomenclature)
+          \item Changed \code{threshold} to \code{absValueCut} (clarifying nomenclature)
+          \item Will now output both sparsified partial correlation/standardized
+            precision matrix and the sparsified precison matrix,
+            when input consists of the unstandardized precision matrix
+        }
+      \item New features updated \code{ridgeS} function:
+        \itemize{
+          \item Contains an improved evaluation of the target matrix possibly being a
+            null matrix
+          \item Now evaluates if a rotation equivariant alternative estimator ensues for
+            a given target matrix
+          \item When rotation equivariant alternative estimator ensues, computation is
+            sped up considerably by circumventing the matrix square root
+        }
+      \item \code{optPenaltyCV} function now called \code{optPenalty.LOOCV}, for sake
+        of (naming) consistency. The updated function has new features:
+        \itemize{
+          \item \code{targetScale} option has been removed
+          \item Replaced \code{log} in optional graph by \code{ln}
+          \item Visual layout of optional graph now more in line with recommendations by
+            Tufte (regarding data-ink ratio)
+        }
+      \item New features updated \code{optPenalty.aLOOCV} function:
+        \itemize{
+          \item Replaced \code{log} in optional graph by \code{ln}
+          \item Visual layout of optional graph now more in line with recommendations by
+            Tufte (regarding data-ink ratio)
+        }
+      \item Computation optimal penalty in \code{conditionNumberPlot},
+        \code{optPenalty.aLOOCV} and \code{optPenalty.LOOCV} functions sped up
+        considerably for rotation equivariant alternative estimator.
+        By usage new ridgeS and avoidance of redundant eigendecompositions
+      \item Default target in \code{ridgeS}, \code{conditionNumberPlot},
+        \code{optPenalty.aLOOCV} and \code{optPenalty.LOOCV} now \code{"DAIE"}
+        option from \code{default.target}
+    }
   }
 }
 
