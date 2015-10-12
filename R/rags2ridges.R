@@ -3084,8 +3084,9 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
     }
 
     # Precision associated graph
-    adjMat <- adjacentMat(P0)
+    colnames(P0) <- colnames(P0, do.NULL = FALSE)
     Names  <- colnames(P0)
+    adjMat <- adjacentMat(P0)
     colnames(adjMat) <- 1:nrow(P0)
     rownames(adjMat) <- 1:nrow(P0)
     G <- graph.adjacency(adjMat, mode = "undirected")
@@ -3136,9 +3137,11 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
       }
 
       # Wrap up
-      paths <- paths[order(abs(pathStats[,2]), decreasing=TRUE)]
-      pathStats <- pathStats[order(abs(pathStats[,2]), decreasing=TRUE),]
-      names(paths) <- rownames(pathStats)
+      pNames <- rownames(pathStats)
+      paths  <- paths[order(abs(pathStats[,2]), decreasing=TRUE)]
+      pathStats <- matrix(pathStats[order(abs(pathStats[,2]),
+                                          decreasing=TRUE),], ncol = 2)
+      names(paths) = rownames(pathStats) <- pNames
       colnames(pathStats) <- c("length", "contribution")
       if (verbose | graph){covNo1No2 <- solve(P0)[node1, node2]}
 
