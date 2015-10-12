@@ -859,27 +859,22 @@ ridgeP.fused <- function(Slist,
   }
   names(Plist) <- names(Slist)
 
-
   return(Plist)
 }
 
 
 
-################################################################################
-################################################################################
-## ----------------------------------------------------------------------------
-##
-## Section: LOOCV (and approximation) in the fused setting
-##
-## -----------------------------------------------------------------------------
-################################################################################
-################################################################################
 
+##------------------------------------------------------------------------------
+##
+## LOOCV (and approximation) for the fused setting
+##
+##------------------------------------------------------------------------------
 
 .fcvl <- function(lambda, Ylist, Tlist, init.Plist, hotstart = FALSE, ...) {
   ##############################################################################
-  # (Internal) Computes the fused leave-one-out cross-validation loss for
-  # given penalty matrix
+  # - (Internal) Computes the fused leave-one-out cross-validation loss for
+  #   given penalty matrix
   # - lambda     > The G by G penalty matrix.
   # - Ylist      > A list of length G of matrices of observations with samples
   #                in the rows and variables in the columns. A least 2
@@ -933,11 +928,11 @@ ridgeP.fused <- function(Slist,
 
 .kfcvl <- function(lambda, Ylist, Tlist, init.Plist, k, ...) {
   ##############################################################################
-  # (Internal) Computes the k-fold fused cross-validation loss for a penalty
-  # matrix. The data for each class is divided into k parts. The first part
-  # in each class is left out, the fused estimate is computed based on the
-  # remaning, and the loss is computed. Then this is repeated for the remaning
-  # parts.
+  # - (Internal) Computes the k-fold fused cross-validation loss for a penalty
+  #   matrix. The data for each class is divided into k parts. The first part
+  #   in each class is left out, the fused estimate is computed based on the
+  #   remaning, and the loss is computed. Then this is repeated for the remaning
+  #   parts.
   # - lambda  > The G by G penalty matrix.
   # - Ylist   > A list of length G of matrices of observations with samples
   #             in the rows and variables in the columns. A least 2
@@ -995,8 +990,8 @@ ridgeP.fused <- function(Slist,
 
 .sfcvl <- function(lambda, Ylist, Tlist, Plist, ...) {
   ##############################################################################
-  # (Internal) Computes the "special" LOOCV loss for given penalty parameters
-  # Only updates the class estimate in which the sample is left out.
+  # - (Internal) Computes the "special" LOOCV loss for given penalty parameters
+  # - Only updates the class estimate in which the sample is left out.
   # - lambda  > The G by G penalty matrix.
   # - Ylist   > A list of length G of matrices of observations with samples
   #             in the rows and variables in the columns. A least 2
@@ -1055,8 +1050,8 @@ ridgeP.fused <- function(Slist,
 
 .afcvl <- function(lambda, Ylist, Tlist, Plist, ...) {
   ##############################################################################
-  # (Internal) Computes the approximate LOOCV loss for at given penalty
-  # parameters.
+  # - (Internal) Computes the approximate LOOCV loss for at given penalty
+  #   parameters.
   # - lambda  > The G by G penalty matrix.
   # - Ylist   > A list of length G of matrices of observations with samples
   #             in the rows and variables in the columns.
@@ -1141,13 +1136,13 @@ ridgeP.fused <- function(Slist,
 
 
 
-
 .parseLambda <- function(lambda) {
   ##############################################################################
-  # A function to parse a character matrix that defines the class of penalty
-  # graphs and unique parameters for cross validation. Returns a data.frame of
-  # different indices for each level to be penalized equally.
-  # This data.frame is to be used to construct numeric matrices of penalties.
+  # - A function to parse a character matrix that defines the class of penalty
+  #   graphs and unique parameters for cross validation.
+  # - Returns a data.frame of different indices for each level to be penalized
+  #   equally.
+  # - This data.frame is to be used to construct numeric matrices of penalties.
   # - lambda > A symmetric G by G character matrix defining the class of penalty
   #            matrices to cross validate over.
   #            Entries with NA, "" (the empty string), or "0" are
@@ -1184,8 +1179,8 @@ ridgeP.fused <- function(Slist,
 
 .reconstructLambda <- function(lambdas, parsedLambda) {
   ##############################################################################
-  # Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
-  # of penalties using the .parseLambda output.
+  # - Reconstruct the numeric penalty matrix lambda from a vector (lambdas)
+  #   of penalties using the .parseLambda output.
   # - lambdas      > A numeric vector of the penalties. The length of lambdas
   #                  is the number of non-fixed entries in parsedLambda
   # - parsedLambda > A data.frame describing the penalty matrix.
@@ -1209,8 +1204,7 @@ ridgeP.fused <- function(Slist,
 
 .lambdasFromMatrix <- function(lambda.init, parsedLambda) {
   ##############################################################################
-  # Create the "lambdas" vector used in the optimizers from a numeric
-  # matrix.
+  # - Create the "lambdas" vector used in the optimizers from a numeric matrix.
   # - lambda.init  > A numeric matrix of the initial penalty matrix.
   # - parsedLambda > A data.frame describing the penalty matrix.
   #                  Should be the output from .parseLambda.
@@ -1242,10 +1236,8 @@ optPenalty.fused.grid <-
            verbose = TRUE,
            ...) {
   ##############################################################################
-  #   Cross validation for the fused ridge estimator on a grid to determine
+  # - Cross validation for the fused ridge estimator on a grid to determine
   #   optimal lambda and lambdaF.
-  #   NOTE: The complete penalty graph is assumed (i.e. all ridge penalties
-  #     equal and all fusion penalties equal)
   # - Ylist       > A list of length G of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - Tlist       > A list of length G of target matrices the same size
@@ -1258,6 +1250,10 @@ optPenalty.fused.grid <-
   # - k           > Number of parts in k-fold CV. Only use if method is "kCV".
   # - ...         > Arguments passed to ridgeP.fused
   # - verbose     > logical. Print extra information. Defaults is TRUE.
+  #
+  # NOTES:
+  # - The complete penalty graph is assumed (i.e. all ridge penalties
+  #   equal and all fusion penalties equal)
   ##############################################################################
 
   cv.method <- match.arg(cv.method)
@@ -1315,10 +1311,14 @@ optPenalty.fused.grid <-
   return(output)
 }
 
+
+
 print.optPenaltyFusedGrid <- function(x, ...) {
   with(x, print(fcvl))
   return(invisible(x))
 }
+
+
 
 plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
                                      col = rainbow(100, end = 0.8), ...) {
@@ -1337,6 +1337,8 @@ plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
   return(invisible(x))
 }
 
+
+
 optPenalty.fused.auto <-
   function(Ylist,
            Tlist,
@@ -1352,10 +1354,9 @@ optPenalty.fused.auto <-
            optim.control = list(trace = verbose, maxit = maxit.optimizer),
            ...) {
   ##############################################################################
-  # Selection of the optimal penalties w.r.t. to (possibly approximate)
-  # leave-one-out cross-validation using multi-dimensional optimization
-  # routines.
-  #
+  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
+  #   leave-one-out cross-validation using multi-dimensional optimization
+  #   routines.
   # - Ylist       > A list of length G of matrices of observations with samples
   #                 in the rows and variables in the columns.
   # - Tlist       > A list of length G of target matrices the same size
@@ -1515,10 +1516,9 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
                              cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
                              k = 10, grid = FALSE, ...) {
   ##############################################################################
-  # Selection of the optimal penalties w.r.t. to (possibly approximate)
-  # LOOCV using multi-dimensional optimization routines. A simple wrapper for
-  # optPenalty.fused.auto and optPenalty.fused.grid
-  #
+  # - Selection of the optimal penalties w.r.t. to (possibly approximate)
+  #   LOOCV using multi-dimensional optimization routines. A simple wrapper for
+  #   optPenalty.fused.auto and optPenalty.fused.grid
   # - Ylist  > A list of length G of matrices of observations with samples
   #            in the rows and variables in the columns.
   # - Tlist  > A list of length G of target matrices the same size
@@ -1550,6 +1550,7 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
   }
   return(res)
 }
+
 
 
 
