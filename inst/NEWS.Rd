@@ -20,6 +20,7 @@
     \item fixed bug in GGMpathstats (automatic naming variables if absent)
     \item fixed another bug in GGMpathstats (now properly handles singleton pathsets)
     \item fixed bug in sparsify: now always returns symmetric objects
+    \item added covMLknown function
   }
 }
 
