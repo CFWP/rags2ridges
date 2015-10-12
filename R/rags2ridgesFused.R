@@ -1554,25 +1554,22 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 
 
 
-################################################################################
-################################################################################
-## -----------------------------------------------------------------------------
+##------------------------------------------------------------------------------
 ##
-## Section: Automatic penalty matrix constructor
+## Automatic penalty matrix constructor
 ##
-## -----------------------------------------------------------------------------
-################################################################################
-################################################################################
-
+##------------------------------------------------------------------------------
 
 .charAdjMat <- function(fac, name = "X", ordered = is.ordered(fac)) {
   ##############################################################################
-  # Create a complete character adjacency matrix from a factor. This function
-  # is used in the constructing the character penalty matrix in default.penalty.
-  # - fac  > A factor of some length. Can be ordered.
-  # - name > A character giving the text which should appear in the adjacent
-  #          entries. If not a character, the object name of fac is used.
+  # - Create a complete character adjacency matrix from a factor. This function
+  #   is used in the constructing the character penalty matrix in
+  #   default.penalty.
+  # - fac     > A factor of some length. Can be ordered.
+  # - name    > A character giving the text which should appear in the adjacent
+  #             entries. If not a character, the object name of fac is used.
   # - ordered > logical specifiying if fac should be interpreted as ordered.
+  #
   # Examples:
   #  rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
   #  rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "Y")
@@ -1602,8 +1599,9 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 
 .char2num <- function(X) {
   ##############################################################################
-  # Create a character adjacency matrix to a numeric one
+  # - Create a character adjacency matrix to a numeric one
   # - X  > A character matrix where "" signify non-adjacency.
+  #
   # Examples:
   # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]))
   # rags2ridges:::.char2num(A)
@@ -1619,9 +1617,10 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 
 .cartesianProd <- function(A, B) {
   ##############################################################################
-  # Construct the Cartesian product graph from two "character" matrices.
-  # - A     > A character matrix where "" signify non-adjacency.
-  # - B     > A character matrix where "" signify non-adjacency.
+  # - Construct the Cartesian product graph from two "character" matrices.
+  # - A > A character matrix where "" signify non-adjacency.
+  # - B > A character matrix where "" signify non-adjacency.
+  #
   # Examples:
   # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "X")
   # B <- rags2ridges:::.charAdjMat(factor(letters[4:5]), name = "Y")
@@ -1641,10 +1640,11 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 
 .tensorProd <- function(A, B) {
   ##############################################################################
-  # Construct the Tensor (or categorical) product graph from two "character"
-  # matrices.
-  # - A     > A character matrix where "" signify non-adjacency.
-  # - B     > A character matrix where "" signify non-adjacency.
+  # - Construct the Tensor (or categorical) product graph from two "character"
+  #   matrices.
+  # - A > A character matrix where "" signify non-adjacency.
+  # - B > A character matrix where "" signify non-adjacency.
+  #
   # Examples:
   # A <- rags2ridges:::.charAdjMat(factor(LETTERS[1:3]), name = "X")
   # B <- rags2ridges:::.charAdjMat(factor(letters[4:5]), name = "Y")
@@ -1664,8 +1664,7 @@ default.penalty <- function(G, df,
                             type = c("Complete", "CartesianEqual",
                                      "CartesianUnequal", "TensorProd")) {
   ##############################################################################
-  # Select a one of standard penalty matrix types from a dataframe
-  # NOTE: default.penalty can use ordered factors of df
+  # - Select a one of standard penalty matrix types from a dataframe
   # - G     > The number of classes. Can also be list of length G such as
   #           the usual argument "Slist".
   #           Can be omitted if 'df' is given.
@@ -1676,14 +1675,16 @@ default.penalty <- function(G, df,
   #           Should be one of 'Complete' (default), 'CartesianEqual',
   #           'CartesianUnequal', or 'TensorProd' or an unique abbreviation
   #           hereof.
-  # Setting type == 'Complete' is the complete penalty graph with equal
-  # penalties.
-  # Setting type == 'CartesianEqual' corresponds to a penalizing along each
-  # "direction" of factors with a common penalty.
-  # Setting type == 'CartesianUnequal' corresponds to a penalizing each
-  # direction of factors with individual penalties.
+  #
+  # NOTES:
+  # - default.penalty can use ordered factors of df
+  # - Setting type == 'Complete' is the complete penalty graph with equal
+  #   penalties.
+  # - Setting type == 'CartesianEqual' corresponds to a penalizing along each
+  #   "direction" of factors with a common penalty.
+  # - Setting type == 'CartesianUnequal' corresponds to a penalizing each
+  #   direction of factors with individual penalties.
   ##############################################################################
-
 
   type <- match.arg(type)
 
@@ -1761,19 +1762,16 @@ default.penalty <- function(G, df,
 
 
 
-################################################################################
-################################################################################
-## -----------------------------------------------------------------------------
+
+##------------------------------------------------------------------------------
 ##
-## Section: To fuse or not to fuse --- Test H0: Omega_1 = ... = Omega_G
+## To fuse or not to fuse --- Test H0: Omega_1 = ... = Omega_G
 ##
-## -----------------------------------------------------------------------------
-################################################################################
-################################################################################
+##------------------------------------------------------------------------------
 
 .scoreStatistic <- function(Plist, Slist, ns) {
   ##############################################################################
-  # Function for computing the score statistic
+  # - Function for computing the score statistic
   # - Plist > A list of precision matrices
   # - Slist > A list of sample covariance matrices
   # - ns    > A vector with the same length as Plist and Slist of sample sizes
@@ -1791,10 +1789,12 @@ default.penalty <- function(G, df,
   return(U)
 }
 
+
+
 .scambleYlist <- function(Ylist) {
   ##############################################################################
-  # Function for permuting the class labels of Ylist, equivalent to
-  # scrambling/permuting all obervations.
+  # - Function for permuting the class labels of Ylist, equivalent to
+  #   scrambling/permuting all obervations.
   # - Ylist > A list of observations matrices for each class
   ##############################################################################
 
@@ -1811,17 +1811,19 @@ default.penalty <- function(G, df,
 fused.test <- function(Ylist, Tlist, lambda,
                        n.permutations = 100, verbose = FALSE, ...) {
   ##############################################################################
-  # Function for testing the null hypothesis that all population precision
-  # matrices are equal. Note, the test performed is conditional on the
-  # supplied penalties and targets.
+  # - Function for testing the null hypothesis that all population precision
+  #   matrices are equal.
   # - Ylist  > A list of G observation matrices for each class.
   # - Tlist  > A list of G p.d. target matrices.
   # - lambda > The non-negative, symmetric G by G penalty matrix
   # - n.permutations > The number of permutation to perform
   # - verbose        > Print out extra progress information
   # - ...            > Arguments passed to ridgeP.fused
-  # Returns a object of class "ptest", which has plot, print, and summary
-  # methods.
+  #
+  # NOTES:
+  # - The test performed is conditional on the supplied penalties and targets.
+  # - Returns a object of class "ptest", which has plot, print, and summary
+  #   methods.
   ##############################################################################
 
   stopifnot(length(Ylist) == length(Tlist))
@@ -1875,7 +1877,7 @@ fused.test <- function(Ylist, Tlist, lambda,
 
 print.ptest <- function(x, digits = 4L, ...) {
   ##############################################################################
-  # Print function for ptest objects
+  # - Print function for ptest objects
   # - x > A ptest object. Usually created by fused.test()
   ##############################################################################
 
@@ -1900,7 +1902,7 @@ print.ptest <- function(x, digits = 4L, ...) {
 
 summary.ptest <- function(object, ...) {
   ##############################################################################
-  # Summary function for ptest objects
+  # - Summary function for ptest objects
   # - x > A ptest object. Usually created by fused.test()
   ##############################################################################
 
@@ -1916,7 +1918,7 @@ summary.ptest <- function(object, ...) {
 
 hist.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
-  # Plot function for ptest objects as a histogram
+  # - Plot function for ptest objects as a histogram
   # - x          > A ptest object. Usually created by fused.test()
   # - add.extra  > Add the rug of values under the null distribution and
   #                the observed values? Default is TRUE.
@@ -1952,7 +1954,7 @@ hist.ptest <- function(x, add.extra = TRUE, ...) {
 
 plot.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
-  # Alias for plot.ptest
+  # - Alias for plot.ptest
   ##############################################################################
 
   hist.ptest(x, add.extra = add.extra, ...)
@@ -1960,20 +1962,16 @@ plot.ptest <- function(x, add.extra = TRUE, ...) {
 
 
 
-################################################################################
-################################################################################
-## -----------------------------------------------------------------------------
-##
-## Section: Sparsification and network stats
-##
-## -----------------------------------------------------------------------------
-################################################################################
-################################################################################
 
+##------------------------------------------------------------------------------
+##
+## Sparsification and network stats
+##
+##------------------------------------------------------------------------------
 
 sparsify.fused <- function(Plist, ...) {
   ##############################################################################
-  # Simple wrapper for sparsify. See help(sparsify).
+  # - Simple wrapper for sparsify. See help(sparsify).
   # - Plist > A list of precision matrices.
   # - ...   > Arguments passed to sparsify.
   ##############################################################################
@@ -1985,7 +1983,7 @@ sparsify.fused <- function(Plist, ...) {
 
 GGMnetworkStats.fused <- function(Plist) {
   ##############################################################################
-  # Simple wrapper for GGMnetworkStats. See help(GGMnetworkStats).
+  # - Simple wrapper for GGMnetworkStats. See help(GGMnetworkStats).
   # - Plist > A list of sparse precision matrices.
   ##############################################################################
 
@@ -2000,7 +1998,7 @@ GGMnetworkStats.fused <- function(Plist) {
 
 GGMpathStats.fused <- function(sparsePlist, ...) {
   ##############################################################################
-  # A wrapper for GGMpathStats in the fused case. See GMMpathStats.
+  # - A wrapper for GGMpathStats in the fused case. See GMMpathStats.
   # - sparsePlist > A list of sparsified precision matrices
   # - ...         > Arguments passed to GGMpathStats
   ##############################################################################
