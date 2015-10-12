@@ -17,6 +17,11 @@
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
+## Code files: rags2ridges.R      >> master file/core module
+##             rags2ridgesFused.R >> fused module
+##             rags2ridgesMisc.R  >> miscellaneous module
+##             rags2ridges.cpp    >> C++ work horses
+##
 ## Publications:
 ##   [1] van Wieringen, W.N. & Peeters, C.F.W. (2015).
 ##       "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional
