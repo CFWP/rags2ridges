@@ -730,20 +730,15 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
-################################################################################
-################################################################################
 ##------------------------------------------------------------------------------
 ##
-## Section: The fused ridge estimator
+## Functions for the fused ridge estimator
 ##
 ##------------------------------------------------------------------------------
-################################################################################
-################################################################################
-
 
 .init.ridgeP.fused <- function(Slist, ns, Tlist, lambda, ...) {
   ##############################################################################
-  # Internal function for selecting initial values for Plist
+  # - Internal function for selecting initial values for Plist
   # - Slist   > A list of length G of sample correlation matrices the same size
   #             as those of Plist.
   # - Tlist   > A list of length G of target matrices the same size
