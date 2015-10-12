@@ -17,7 +17,8 @@
       core functions written in \code{C++}. The package should now be at least
       two orders of magnitude faster in most cases.
     \item enhanced conditionNumberPlot
-    \item fixed bug in GGMpathstats
+    \item fixed bug in GGMpathstats (automatic naming variables if absent)
+    \item fixed another bug in GGMpathstats (now properly handles singleton pathsets)
   }
 }
 
