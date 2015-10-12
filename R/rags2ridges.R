@@ -477,6 +477,116 @@ covML <- function(Y){
 
 
 
+covMLknown <- function(Y, covMat=NULL, corMat=NULL,
+                       corType="none", varType="none", nInit=100){
+  ##############################################################################
+  # - Maximum likelihood estimation of the covariance matrix, with various
+  #   types of assumptions on the structure of this matrix.
+  # - Y	      > (raw) data matrix, assumed to have variables in columns
+  # - covMat  > A positive-definite covariance 'matrix'. When specified, the
+  #             to-be-estimated covariance matrix is assumed to be proportional
+  #             to the specified covariance matrix. Hence, only a constant needs
+  #             to be estimated
+  # - corMat  > A positive-definite correlation 'matrix'. When specified, the
+  #             to-be-estimated covariance matrix is assumed to have this
+  #             correlation structure. Hence, only the variances need to
+  #		          be estimated.
+  # - corType > character that is either "none" (no structure on the correlation
+  #             among variate assumed) or "equi" (variates are equi-correlated).
+  # - varType	> character that is either "none" (no structure on the marginal
+  #             variances of the variates assumed) or "common" (variates have
+  #             equal marginal variances).
+  # - nInit   > Maximum number of iterations for likelihood maximization
+  #             when corType='equi'.
+  #
+  # NOTES:
+  # - Currently no dependencies. In the future chunks of code may be C-ed
+  #   through Rcpp.
+  # - Future version should a.o. also allow a first order autoregressive
+  #   correlation assumption.
+  ##############################################################################
+
+  # center data
+  Ys <- scale(Y, center = TRUE, scale = FALSE)
+
+  # equicorrelated covariance: parameter estimation
+  if (corType=="equi" & varType !="none"){
+
+    # initial variance estimate
+    sds <- sqrt(apply(Ys^2, 2, mean))
+    rho <- 0
+    llNew <- 10^(-10)
+    for (k in 1:nInit){
+      # update current log-likelihood
+      llPrev <- llNew
+
+      # estimate rho
+      Sml <- diag(1/sds) %*% ((t(Ys) %*% Ys)/nrow(Ys)) %*% diag(1/sds)
+      a1 <- sum(diag(Sml))
+      a2 <- (ncol(Ys)-1) * a1 - sum(Sml)
+      p <- nrow(Sml)
+      minLoglikEqui <- function(rho, p, a1, a2){ (p-1) * log(1-rho)
+        +  log((p-1) * rho + 1) + ((1-rho) * ((p-1) * rho + 1))^(-1)
+        * (a1 + a2 * rho) }
+      rho <- optim(par=0.1, fn=minLoglikEqui, method="Brent", lower=-1/(p-1)
+                   + .Machine$double.eps, upper=1-.Machine$double.eps, p=ncol(Ys),
+                   a1=a1, a2=a2)$par
+      llNew <- minLoglikEqui(rho, p, a1, a2)
+      if (abs(llNew - llPrev) < 0.0001){ break }
+
+      # estimate variance(s)
+      Sml <- matrix(rho, ncol(Ys), ncol(Ys))
+      diag(Sml) <- 1
+      if (varType!="common"){
+        V <- eigen(Sml)
+        D <- abs(V$values)
+        V <- V$vectors
+        Vinner <- eigen(diag(1/sqrt(D)) %*% t(V) %*% ((t(Ys) %*% Ys)/nrow(Ys))
+                        %*% V %*% diag(1/sqrt(D)))
+        Vinner$values <- sqrt(abs(Re(Vinner$values)))
+        sds <- Re(diag(V %*% diag(sqrt(D)) %*% Vinner$vectors
+                       %*% diag(Vinner$values) %*% t(Vinner$vectors)
+                       %*% diag(sqrt(D)) %*% t(V)))
+      }
+      if (varType=="common"){
+        sds <- rep(sum(diag(solve(Sml) %*% (t(Ys) %*% Ys)/nrow(Ys))) /
+                     ncol(Ys), ncol(Ys))
+      }
+    }
+
+    # equicorrelated covariance: matrix construction
+    Sml <- matrix(rho, ncol(Ys), ncol(Ys))
+    diag(Sml) <- 1
+    Sml <- diag(sds) %*% Sml %*% diag(sds)
+    return(Sml)
+  }
+  if (!is.null(covMat)){
+    # covariance known up to a constant
+    c <- sum(diag(solve(covMat) %*% (t(Ys) %*% Ys)/nrow(Ys))) / ncol(Ys)
+    Sml <- c * covMat
+    return(Sml)
+  }
+  if (!is.null(corMat)){
+    # correlation matrix known, variances unknown
+    V <- eigen(corMat)
+    D <- abs(V$values)
+    V <- V$vectors
+    Vinner <- eigen(diag(1/sqrt(D)) %*% t(V) %*% ((t(Ys) %*% Ys)/nrow(Ys))
+                    %*% V %*% diag(1/sqrt(D)))
+    Vinner$values <- sqrt(abs(Re(Vinner$values)))
+    sds <- Re(diag(V %*% diag(sqrt(D)) %*% Vinner$vectors
+                   %*% diag(Vinner$values) %*% t(Vinner$vectors)
+                   %*% diag(sqrt(D)) %*% t(V)))
+    Sml <- diag(sds) %*% corMat %*% diag(sds)
+    return(Sml)
+  }
+  if (!is.null(covMat) & !is.null(corMat) & corType=="none" & varType=="none"){
+    return(covML(Ys))
+  }
+}
+
+
+
 evaluateS <- function(S, verbose = TRUE){
   ##############################################################################
   # - Function evualuating various properties of an input matrix
