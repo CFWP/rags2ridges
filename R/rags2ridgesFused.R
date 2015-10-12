@@ -16,7 +16,7 @@
 
 isSymmetricPD <- function(M) {
   ##############################################################################
-  # Test if matrix is symmetric postive definite
+  # - Test if matrix is symmetric postive definite
   # - M > A numeric matrix
   #
   # NOTES:
@@ -44,7 +44,7 @@ isSymmetricPD <- function(M) {
 
 isSymmetricPSD <- function(M, tol = 1e-4) {
   ##############################################################################
-  # Test if matrix is symmetric postive semi-definite
+  # - Test if matrix is symmetric postive semi-definite
   # - M > A numeric matrix
   #
   # NOTES:
@@ -76,8 +76,8 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
 
 is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
   ##############################################################################
-  # Test if generic fused list arguments (such as Slist, Tlist, Plist)
-  # are properly formatted
+  # - Test if generic fused list arguments (such as Slist, Tlist, Plist)
+  #   are properly formatted
   # - Xlist > A list of covariance matrices or matrices.
   # - Ylist > Is the supplied list a "Ylist"?
   # - semi  > Should the matrices be tested for postive (semi) definiteness
@@ -125,8 +125,8 @@ is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
 
 default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   ##############################################################################
-  # Generate a list of (data-driven) targets to use in fused ridge estimation
-  # A nice wrapper for default.target
+  # - Generate a list of (data-driven) targets to use in fused ridge estimation
+  # - A nice wrapper for default.target
   # - Slist > A list of covariance matrices
   # - ns    > A numeric vector of sample sizes corresponding to Slist
   # - type  > A character giving the choice of target. See default.target.
@@ -375,12 +375,15 @@ createS <- function(n, p,
 
 getKEGGPathway <- function(kegg.id) {
   ##############################################################################
-  # Download information and graph object of a given kegg pathway.
+  # - Download information and graph object of a given kegg pathway.
   # - kegg.id  > The kegg id, e.g. "map04210", "map04064", "map04115". Can
   #              be prefixed with "path:".
-  # The igraph objects can be obtained with igraph::igraph.from.graphNEL().
-  # The moral graph can be obtained with gRbase::moralize(). To obtain the
-  # adjacency matrix, use gRbase::as.adjMAT() or igraph::get.adjacency()
+  #
+  # NOTES:
+  # - The igraph objects can be obtained with igraph::igraph.from.graphNEL().
+  # - The moral graph can be obtained with gRbase::moralize().
+  # - To obtain the adjacency matrix, use gRbase::as.adjMAT() or
+  #   igraph::get.adjacency()
   ##############################################################################
 
   if (!requireNamespace("KEGGgraph", quietly=TRUE)) {
@@ -417,10 +420,12 @@ getKEGGPathway <- function(kegg.id) {
 
 .parents <- function(node, graph) {
   ##############################################################################
-  # Function for extracting the parents of a node
+  # - Function for extracting the parents of a node
   # - node  > A characther giving the node name in the graph
   # - graph > The graph
-  # Alternative to gRbase::parents()
+  #
+  # NOTES:
+  # - Alternative to gRbase::parents()
   ##############################################################################
 
   if (!requireNamespace("graph")) {
@@ -436,8 +441,8 @@ getKEGGPathway <- function(kegg.id) {
 kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
                         graph = getKEGGPathway(kegg.id)$graph) {
   ##############################################################################
-  # Generate a target matrix from the KEGG database and pilot data.
-  # Requires a connection to the internet.
+  # - Generate a target matrix from the KEGG database and pilot data.
+  # - Requires a connection to the internet.
   # - Y        > The complete observation matrix of observations with variables
   #              in columns. The column names should be on the form e.g.
   #              "hsa:3988" ("<organism>:<Entrez id>"). It can however also be
@@ -450,7 +455,9 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
   #              "hsa" (homo-sapiens).
   # - graph    > A graphNEL object. Can be used to avoid repeatedly downloading
   #              the information.
-  # See also default.target, and default.target.fused
+  #
+  # NOTES:
+  # - See also default.target, and default.target.fused
   ##############################################################################
 
   method <- match.arg(method)
