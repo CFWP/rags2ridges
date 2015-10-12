@@ -525,9 +525,8 @@ covMLknown <- function(Y, covMat=NULL, corMat=NULL,
       a1 <- sum(diag(Sml))
       a2 <- (ncol(Ys)-1) * a1 - sum(Sml)
       p <- nrow(Sml)
-      minLoglikEqui <- function(rho, p, a1, a2){ (p-1) * log(1-rho)
-        +  log((p-1) * rho + 1) + ((1-rho) * ((p-1) * rho + 1))^(-1)
-        * (a1 + a2 * rho) }
+      minLoglikEqui <- function(rho, p, a1, a2){
+        (p-1) * log(1-rho) +  log((p-1) * rho + 1) + ((1-rho) * ((p-1) * rho + 1))^(-1) * (a1 + a2 * rho) }
       rho <- optim(par=0.1, fn=minLoglikEqui, method="Brent", lower=-1/(p-1)
                    + .Machine$double.eps, upper=1-.Machine$double.eps, p=ncol(Ys),
                    a1=a1, a2=a2)$par
