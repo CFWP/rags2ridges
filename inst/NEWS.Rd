@@ -88,6 +88,7 @@
   }
 }
 
+
 \section{Changes in version 1.3}{
   \subsection{Additions:}{
     \itemize{
