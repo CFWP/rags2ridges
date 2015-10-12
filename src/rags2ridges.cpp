@@ -350,11 +350,10 @@ arma::mat armaRidgeP(const arma::mat & S,
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
-  FUSED RIDGE ESTIMATOR
+ TOOLS FOR THE FUSED RIDGE ESTIMATOR OF THE FUSED MODULE
 
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // [[Rcpp::export(.armaFusedUpdateI)]]
 arma::mat armaFusedUpdateI(int g0,
@@ -651,6 +650,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
   Rcpp::warning("Max iterations (%d) hit.", maxit);
   return Plist_out;
 }
+
 
 
 
