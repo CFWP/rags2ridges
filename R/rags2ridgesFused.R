@@ -18,7 +18,9 @@ isSymmetricPD <- function(M) {
   ##############################################################################
   # Test if matrix is symmetric postive definite
   # - M > A numeric matrix
-  # Returns TRUE if the matrix is symmetric positive definite and FALSE if not.
+  #
+  # NOTES:
+  # - Returns TRUE if the matrix is symmetric positive definite and FALSE if not
   ##############################################################################
 
   nm <- deparse(substitute(M))
@@ -44,10 +46,12 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
   ##############################################################################
   # Test if matrix is symmetric postive semi-definite
   # - M > A numeric matrix
-  # Returns TRUE if the matrix is symmetric positive definite and FALSE if not.
-  # In practice, it tests if all eigenvalues are larger than -tol*|l| where
-  # l is the largest eigenvalue.
-  # See http://scicomp.stackexchange.com/questions/12979/
+  #
+  # NOTES:
+  # - Returns TRUE if the matrix is symmetric positive definite and FALSE if not
+  # - In practice, it tests if all eigenvalues are larger than -tol*|l| where
+  #   l is the largest eigenvalue.
+  # - See http://scicomp.stackexchange.com/questions/12979/
   #          testing-if-a-matrix-is-positive-semi-definite
   ##############################################################################
 
@@ -78,7 +82,9 @@ is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
   # - Ylist > Is the supplied list a "Ylist"?
   # - semi  > Should the matrices be tested for postive (semi) definiteness
   #           If TRUE postive definiteness is tested.
-  # Returns TRUE if all tests are passed, throws error if not.
+  #
+  # NOTES:
+  # - Returns TRUE if all tests are passed, throws error if not.
   ##############################################################################
 
   xlist <- deparse(substitute(Xlist))
@@ -128,7 +134,7 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   #           which groups should share target. If omitted, each class
   #           has a unique target.
   # - ...   > Arguments passed to default.target.
-  # See also default.target
+  #           See also default.target
   ##############################################################################
 
   stopifnot(is.list(Slist))
@@ -193,6 +199,8 @@ createS <- function(n, p,
   #                Must be greater than p + 1.
   # - Plist      > A list of user-supplied precision matrices. Should be the
   #                same length as n.
+  #
+  # NOTES:
   # - Returns a list of matrices if length(n) > 1. The output is simplified if
   #   n has length 1 where only the matrix is returned
   ##############################################################################
