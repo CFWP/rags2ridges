@@ -1639,7 +1639,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 
 ##------------------------------------------------------------------------------
 ##
-## Functions for Block Independence Testing
+## Functions for Block Independence Testing and Mutual Information
 ##
 ##------------------------------------------------------------------------------
 
@@ -1931,6 +1931,41 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
     # Return
     return(list(statistic = llObs, pvalue = pVal, nulldist = nullDist,
                 nperm = nPerm, remark = remark))
+  }
+}
+
+
+
+mutualInfoGGM <- function(S, split1){
+  ##############################################################################
+  # - Function that calculates the mutual information between two exhaustive and
+  #   mutually exclusive splits of normal p-variate random variable.
+  # - S      > Sample Covariance matrix.
+  # - split1 > A numeric indicating the variates (by column number) forming the
+  #            first split. The second split is automatically formed from its
+  #            complement.
+  #
+  # NOTES:
+  # - No dependencies at current
+  ##############################################################################
+
+  # input checks
+  if (!is.matrix(S)){
+    stop("Input (S) should be a matrix")
+  }
+  else if (!isSymmetric(S)){
+    stop("Input (S) should be a symmetric matrix")
+  }
+  else if (length(split1) < 1 & length(split1) > nrow(S)-1){
+    stop("Input (split1) is of wrong length.")
+  }
+  else {
+    # mutual information
+    MI <- log(det(S[-split1,-split1])) -
+          log(det(S[-split1,-split1] - S[-split1,split1,drop=FALSE] %*%
+                  solve(S[split1,split1,drop=FALSE])
+                  %*% S[split1,-split1,drop=FALSE]))
+    return(MI)
   }
 }
 
