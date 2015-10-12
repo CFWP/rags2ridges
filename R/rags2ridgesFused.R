@@ -8,32 +8,11 @@
 ################################################################################
 ################################################################################
 
-
-################################################################################
-################################################################################
-################################################################################
-##
-## Fused Ridge estimation with supporting functions for high-dimensional
-## precision matrices
-##
-## Authors: Anders E. Bilgrau, Carel F.W. Peeters, Wessel N. van Wieringen
-## Email:	  cf.peeters@vumc.nl
-##
-################################################################################
-################################################################################
-################################################################################
-
-
-################################################################################
-################################################################################
 ##------------------------------------------------------------------------------
 ##
-## Section: Support Functions
+## (Hidden) Support functions
 ##
 ##------------------------------------------------------------------------------
-################################################################################
-################################################################################
-
 
 isSymmetricPD <- function(M) {
   ##############################################################################
@@ -58,6 +37,7 @@ isSymmetricPD <- function(M) {
   }
 
 }
+
 
 
 isSymmetricPSD <- function(M, tol = 1e-4) {
@@ -87,6 +67,7 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
   }
 
 }
+
 
 
 is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
@@ -135,6 +116,7 @@ is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
 }
 
 
+
 default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   ##############################################################################
   # Generate a list of (data-driven) targets to use in fused ridge estimation
@@ -171,6 +153,7 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
 
   return(Tlist)
 }
+
 
 
 createS <- function(n, p,
@@ -609,6 +592,7 @@ pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
 }
 
 
+
 pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled precision estimate
@@ -727,6 +711,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
   ans <- .LL.fused(Slist, Plist, ns) + penalty
   return(ans)
 }
+
 
 
 
