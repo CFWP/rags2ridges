@@ -1905,7 +1905,7 @@ sparsify <- function(P, threshold = c("absValue", "localFDR", "top"),
       PC  <- P
     } else {
       stan = FALSE
-      PC  <- pcor(P)
+      PC  <- symm(pcor(P))
     }
 
     # Number of nonredundant elements
