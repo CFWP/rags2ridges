@@ -179,11 +179,10 @@ arma::vec armaEigShrink(const arma::vec dVec,
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
-  REGULAR (NON-FUSED) RIDGE ESTIMATOR
+  TOOLS FOR THE REGULAR (NON-FUSED) RIDGE ESTIMATOR OF THE CORE MODULE
 
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
-
 
 inline arma::mat rev_eig(const arma::vec eigval, const arma::mat eigvec) {
   /* ---------------------------------------------------------------------------
@@ -344,6 +343,7 @@ arma::mat armaRidgeP(const arma::mat & S,
   }
 
 }
+
 
 
 
