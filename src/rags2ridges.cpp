@@ -662,7 +662,6 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
 
-
 // [[Rcpp::export]]
 arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
   /* ---------------------------------------------------------------------------
@@ -671,7 +670,7 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
    - n     > An integer giving the number of samples to simulate.
    - mu    > A vector giving the population mean.
    - sigma > A matrix giving the population covariance matrix.
-   (Copied taken from package GMCM)
+   NOTE: Copied from package GMCM
   --------------------------------------------------------------------------- */
 
   Rcpp::RNGScope();  // Allows for using set.seed(...) on the R side
@@ -700,11 +699,10 @@ arma::mat armaRWishartSingle(const arma::mat L,
                              const int p) {
   /* ---------------------------------------------------------------------------
     Wishart simulation. Simulate a single Wishart distributed matrix
-    (Taken from package AEBilgrau/correlateR)
     L  > A cholesky decomposition matrix
     nu > The degrees of freedom
     p  > The dimension of the distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   arma::mat A(p, p, arma::fill::randn);
@@ -729,7 +727,7 @@ arma::cube armaRWishart(const int n,
     n     > A integer giving the number of matrices to generate
     sigma > The scale matrix in the Wishart distribution
     nu    > The degrees of freedom in the Wishart distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   const int p = sigma.n_cols;
@@ -752,7 +750,7 @@ arma::cube armaRInvWishart(const int n,
     n     > A integer giving the number of matrices to generate
     psi   > The scale matrix in the inverse Wishart distribution
     nu    > The degrees of freedom in the inverse Wishart distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   const int p = psi.n_cols ;
