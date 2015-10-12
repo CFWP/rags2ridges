@@ -16,6 +16,8 @@
     \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadillo} with
       core functions written in \code{C++}. The package should now be at least
       two orders of magnitude faster in most cases.
+    \item enhanced conditionNumberPlot
+    \item fixed bug in GGMpathstats
   }
 }
 
