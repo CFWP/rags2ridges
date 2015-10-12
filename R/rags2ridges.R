@@ -3140,10 +3140,10 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
       pathStats <- pathStats[order(abs(pathStats[,2]), decreasing=TRUE),]
       names(paths) <- rownames(pathStats)
       colnames(pathStats) <- c("length", "contribution")
+      if (verbose | graph){covNo1No2 <- solve(P0)[node1, node2]}
 
       # Summary
       if (verbose){
-        covNo1No2 <- solve(P0)[node1, node2]
         covNo1No2expl <- sum(pathStats[,2])
 
         # Reformat results
