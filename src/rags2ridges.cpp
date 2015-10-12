@@ -6,6 +6,7 @@
 //using namespace RcppArmadillo;
 //using namespace arma;
 
+
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
@@ -27,12 +28,16 @@ double NLL(const arma::mat S, const arma::mat P) {
   return -logdet + accu(S % P);
 }
 
+
+
 // [[Rcpp::export(PNLL)]]
 double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
             const double lambda) {
   /* The penalized negative loglikelihood */
   return NLL(S, P) + 0.5*lambda*pow(arma::norm(P - T, "fro"), 2.0);
 }
+
+
 
 // [[Rcpp::export(NLL.fused)]]
 double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
@@ -54,6 +59,8 @@ double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   }
   return nll;
 }
+
+
 
 // [[Rcpp::export(PNLL.fused)]]
 double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
@@ -87,6 +94,7 @@ double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
 }
 
 
+
 // [[Rcpp::export(.armaPooledS)]]
 arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
                       const Rcpp::NumericVector ns,
@@ -113,6 +121,7 @@ arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
   }
   return rdenum*S0;
 }
+
 
 
 // [[Rcpp::export(.armaPooledP)]]
@@ -144,6 +153,7 @@ arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
 }
 
 
+
 // [[Rcpp::export(.armaEigShrink)]]
 arma::vec armaEigShrink(const arma::vec dVec,
                         const double lambda,
@@ -162,6 +172,7 @@ arma::vec armaEigShrink(const arma::vec dVec,
   arma::vec Evector = 0.5 * (dVec - lambda * cons);
   return sqrt(lambda + pow(Evector, 2.0)) + Evector;
 }
+
 
 
 
