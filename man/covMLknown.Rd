@@ -1,0 +1,46 @@
+\name{covMLknown}
+\alias{covMLknown}
+\title{
+Maximum likelihood estimation of the covariance matrix, with various types of assumptions on its structure.
+}
+\description{
+Maximum likelihood estimation of the covariance matrix, with various types of assumptions on its structure.
+}
+\usage{
+covMLknown(Y, covMat=NULL, corMat=NULL, corType="none", varType="none", nInit=100)
+}
+\arguments{
+\item{Y}{ Data \code{matrix}. Variables assumed to be represented by columns. }
+\item{covMat}{ A positive-definite covariance \code{matrix}. When specified, the to-be-estimated covariance matrix is assumed to be proportional to the specified covariance matrix. Hence, only a
+constant needs to estimated.}
+\item{corMat}{ A positive-definite correlation \code{matrix}. When specified, the to-be-estimated covariance matrix is assumed to have this correlation structure. Hence, only the marginal variances need to be estimated. }
+\item{corType}{ A \code{character}, either \code{"none"} (no structure on the correlation among variate assumed) or \code{"equi"} (variates are equi-correlated). }
+\item{varType}{ A \code{character}, either \code{"none"} (no structure on the marginal variances of the variates assumed) or \code{"common"} (variates have equal marginal variances). }
+\item{nInit}{ An \code{integer} specifycing the maximum number of iterations for likelihood maximization when \code{corType="equi"}. }
+}
+\details{
+The function gives the maximum likelihood estimate of the covariance matrix. The input matrix \code{Y} assumes that the variables
+are represented by the columns.
+
+When simultaneously \code{covMat=NULL}, \code{corMat=NULL}, \code{corType="none"} and \code{varType="none"} the \code{covML}-function is invoked an the regular maximum likelihood estimate of the covariance matrix is returned.
+}
+\value{
+The maximum likelihood estimate of the covariance \code{matrix} under the specified assumptions on its structure.
+}
+\author{
+Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>.
+}
+\seealso{
+\code{\link{covML}}
+}
+\examples{
+## Obtain some data
+p = 10
+n = 100
+set.seed(333)
+X = matrix(rnorm(n*p), nrow = n, ncol = p)
+colnames(X)[1:10] = letters[1:10]
+
+## Obtain maximum likelihood estimate covariance matrix
+Cx <- covMLknown(X, corType="equi", varType="common")
+}
