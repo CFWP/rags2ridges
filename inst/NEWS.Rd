@@ -149,28 +149,33 @@
 
 
 \section{Changes in version 1.2}{
-  \itemize{
-    \item Inclusion function for ML estimation of the sample covariance matrix:
-      \code{covML}
-    \item Inclusion function for approximate leave-one-out cross-validation:
-      \code{optPenalty.aLOOCV}
-    \item Inclusion function \code{conditionNumber} to visualize the
-      spectral condition number over the regularization path
-    \item Inclusion function \code{evaluateS} to evaluate basic
-      properties of a covariance matrix
-    \item Inclusion function \code{KLdiv} that calculates the
-      Kullback-Leibler divergence between two normal distributions
-    \item Inclusion option to suppress on-screen output in \code{sparsify}
-      function
-    \item Corrected small error in \code{optPenaltyCV} function
-    \item Both \code{optPenaltyCV} and \code{optPenalty.aLOOCV} now utilize
-      \code{covML} instead of \code{cov}
-    \item Default output option in \code{optPenaltyCV} (as in
-      \code{optPenalty.aLOOCV}) is now \code{light}
+  \subsection{Additions:}{
+    \itemize{
+      \item Inclusion function for ML estimation of the sample covariance matrix:
+        \code{covML}
+      \item Inclusion function for approximate leave-one-out cross-validation:
+        \code{optPenalty.aLOOCV}
+      \item Inclusion function \code{conditionNumber} to visualize the
+        spectral condition number over the regularization path
+      \item Inclusion function \code{evaluateS} to evaluate basic
+        properties of a covariance matrix
+      \item Inclusion function \code{KLdiv} that calculates the
+        Kullback-Leibler divergence between two normal distributions
+      \item Inclusion option to suppress on-screen output in \code{sparsify}
+        function
+    }
+  }
+  \subsection{Bug fixes:}{
+    \itemize{
+      \item Corrected small error in \code{optPenaltyCV} function
+    }
+  }
+  \subsection{Adjustments:}{
+    \itemize{
+      \item Both \code{optPenaltyCV} and \code{optPenalty.aLOOCV} now utilize
+        \code{covML} instead of \code{cov}
+      \item Default output option in \code{optPenaltyCV} (as in
+        \code{optPenalty.aLOOCV}) is now \code{light}
+    }
   }
 }
-
-
-
-
-
