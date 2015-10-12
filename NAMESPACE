@@ -25,4 +25,3 @@ S3method(hist, "ptest")
 
 # Register shared object (to make Rcpp work)
 useDynLib(rags2ridges)
-
