@@ -19,12 +19,6 @@
   }
 }
 
-\section{Changes in version 1.4.1}{
-  \itemize{
-    \item Fixed issues with the citation file.
-  }
-}
-
 \section{Changes in version 1.4}{
   \itemize{
     \item Inclusion hidden function \code{.pathContribution} for usage in

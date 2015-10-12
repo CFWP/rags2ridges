@@ -2,7 +2,7 @@
 \alias{ridgeP}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Same as ridgeS
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~
@@ -56,7 +56,7 @@ ridgeP(S, lambda, type = "Alt", target = default.target(S))
 ##--	or do  help(data=index)  for the standard data sets.
 
 ## The function is currently defined as
-function (S, lambda, type = "Alt", target = default.target(S)) 
+function (S, lambda, type = "Alt", target = default.target(S))
 {
     if (!isSymmetric(S)) {
         stop("S should be a symmetric matrix")
@@ -91,12 +91,12 @@ function (S, lambda, type = "Alt", target = default.target(S))
             else if (dim(target)[1] != dim(S)[1]) {
                 stop("S and target should be of the same dimension")
             }
-            else if (any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <= 
+            else if (any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <=
                 0)) {
                 stop("Target should always be p.d. for this type of ridge estimator")
             }
             else {
-                P_ArchI <- solve((1 - lambda) * S + lambda * 
+                P_ArchI <- solve((1 - lambda) * S + lambda *
                   solve(target))
                 return(P_ArchI)
             }
