@@ -26,11 +26,17 @@
 ##   [1] van Wieringen, W.N. & Peeters, C.F.W. (2015).
 ##       "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional
 ##       Data", arXiv:1403.0904v3 [stat.ME].
-##   [2] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., &
+##   [2] van Wieringen, W.N. & Peeters, C.F.W. (2015).
+##       "Application of a New Ridge Estimator of the Inverse Covariance Matrix
+##       to the Reconstruction of Gene-Gene Interaction Networks", in: di Serio,
+##       C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.) Computational
+##       Intelligence Methods for Bioinformatics and Biostatistics. Lecture
+##       Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
+##   [3] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., &
 ##       van Wieringen, W.N. (2015).
 ##       "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from
 ##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
-## 	 [3] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2015).
+## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2015).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
 ##       Determination".
 ##
