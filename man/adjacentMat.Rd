@@ -4,8 +4,7 @@
 Transform real matrix into an adjacency matrix
 }
 \description{
-Function that transforms a real matrix into an adjacency matrix. Intended use: Turn sparsified precision matrix into an adjacency matrix for 
-undirected graphical representation.
+Function that transforms a real matrix into an adjacency matrix. Intended use: Turn sparsified precision matrix into an adjacency matrix for undirected graphical representation.
 }
 \usage{
 adjacentMat(M, diag = FALSE)

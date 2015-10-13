@@ -9,9 +9,8 @@
 Core ridge precision estimators
 }
 \description{
-This is the \R interface to the \code{C++} implementations of the
-ridge precision estimators. They perform core computations for many other
-functions.
+This is the \R interface to the \code{C++} implementations of the ridge precision estimators.
+They perform core computations for many other functions.
 }
 \usage{
 # General usage
