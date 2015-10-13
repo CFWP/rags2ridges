@@ -27,7 +27,7 @@ Function returns the maximum likelihood estimate of the covariance \code{matrix}
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{ridgeS}}
+\code{\link{ridgeP}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

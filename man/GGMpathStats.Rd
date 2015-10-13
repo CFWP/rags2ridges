@@ -141,7 +141,7 @@ Jones, B., and West, M. (2005). Covariance Decomposition in Undirected Gaussian 
 Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

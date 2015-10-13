@@ -24,7 +24,7 @@ Cover, T.M., Thomas, J.A. (2012), Elements of information theory.
 Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
-\code{\link{covML}}, \code{\link{ridgeS}}.
+\code{\link{covML}}, \code{\link{ridgeP}}.
 }
 \examples{
 # create a covariance matrix

@@ -59,7 +59,7 @@ A \code{logical} indicating if information on progress should be printed on scre
 }
 }
 \details{
-Under certain target choices the proposed ridge estimators (see \code{\link{ridgeS}}) are rotation equivariant, i.e., the eigenvectors of
+Under certain target choices the proposed ridge estimators (see \code{\link{ridgeP}}) are rotation equivariant, i.e., the eigenvectors of
 \eqn{\mathbf{S}} are left intact. Such rotation equivariant situations help to understand the effect of the ridge penalty on the precision estimate:
 The effect can be understood in terms of shrinkage of the eigenvalues of the unpenalized precision estimate \eqn{\mathbf{S}^{-1}}. Maximum shrinkage implies that all eigenvalues are
 forced to be equal (in the rotation equivariant situation). The spectral condition number w.r.t. inversion (ratio of maximum to minimum eigenvalue) of the regularized precision matrix may
@@ -74,7 +74,7 @@ may be termed an acceptable (minimal) value.
 
 The function outputs a graph of the (spectral) matrix condition number over the range [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the spectral
 condition number is calculated. It is determined by exact calculation using the spectral decomposition. For most purposes this exact calculation is fast enough,
-especially when considering rotation equivariant situations (see \code{\link{ridgeS}}). When exact computation of the spectral condition number
+especially when considering rotation equivariant situations (see \code{\link{ridgeP}}). When exact computation of the spectral condition number
 is deemed too costly one may approximate the computationally friendly L1-condition number. This approximation is accessed through the \link[base]{rcond} function
 (Anderson et al. 1999). When \code{rlDist = TRUE} the relative distance to the set of singular matrices is also visualized in the output graph.
 The relative distance to the set of singular matrices equals the reciprocal of the condition number (Demmel, 1987).
@@ -97,7 +97,7 @@ Demmel, J.W. (1987). On condition numbers and the distance to the nearest ill-po
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{covML}}, \code{\link{ridgeS}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
+\code{\link{covML}}, \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
