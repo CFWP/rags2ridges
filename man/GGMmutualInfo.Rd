@@ -1,10 +1,10 @@
 \name{GGMmutualInfo}
 \alias{GGMmutualInfo}
 \title{
-Mutual information between two sets of variates within a multivariate normal distribution.
+Mutual information between two sets of variates within a multivariate normal distribution
 }
 \description{
-Mutual information between two exhaustive and mutually exclusive splits of a multivariate normal random variable.
+Function computing the mutual information between two exhaustive and mutually exclusive splits of a set of multivariate normal random variables.
 }
 \usage{
 GGMmutualInfo(S, split1)
