@@ -1,8 +1,7 @@
 \name{KLdiv.fused}
 \alias{KLdiv.fused}
 \title{
-Fused Kullback-Leibler divergence between between sets multivariate normal
-distributions
+Fused Kullback-Leibler divergence for sets of distributions
 }
 \description{
 Function calculating the Kullback-Leibler divergence between two sets of
@@ -46,8 +45,8 @@ Function returns a \code{numeric} representing the (optionally symmetric) fused
 Kullback-Leibler divergence.
 }
 \author{
-Anders Ellern Bilgrau, \cr
-Wessel N. van Wieringen,\cr
+Anders Ellern Bilgrau,
+Wessel N. van Wieringen,
 Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
