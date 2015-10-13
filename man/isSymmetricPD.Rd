@@ -2,10 +2,10 @@
 \alias{isSymmetricPD}
 \alias{isSymmetricPSD}
 \title{
-  Test for symmetric positive definiteness
+  Test for symmetric positive (semi-)definiteness
 }
 \description{
-  Function to test if a \code{matrix} is symmetric positive definite or not.
+  Function to test if a \code{matrix} is symmetric positive (semi)definite or not.
 }
 \usage{
 isSymmetricPD(M)
@@ -16,7 +16,7 @@ isSymmetricPSD(M, tol = 1e-4)
   A square symmetric matrix.
   }
   \item{tol}{
-  A numeric giving the tolerance for determining positive semi definiteness.
+  A numeric giving the tolerance for determining positive semi-definiteness.
   }
 }
 \value{
@@ -26,11 +26,11 @@ isSymmetricPSD(M, tol = 1e-4)
 }
 \details{
   Tests positive definiteness by Cholesky decomposition.
-  Tests positive semi definiteness by checking if all eigenvalues are larger than \eqn{-\epsilon|\lambda_1|} where \eqn{\epsilon} is the tolerance and \eqn{\lambda_1} is the largest eigenvalue.
+  Tests positive semi-definiteness by checking if all eigenvalues are larger than \eqn{-\epsilon|\lambda_1|} where \eqn{\epsilon} is the tolerance and \eqn{\lambda_1} is the largest eigenvalue.
 }
 \author{
   Anders Ellern Bilgrau
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
   Wessel N. van Wieringen
 }
 \seealso{
