@@ -858,6 +858,8 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
   # require("base")
   # require("expm")
 
+  warning("This function is deprecated. Please use ridgeP instead.")
+
   if (!isSymmetric(S)) {
     stop("S should be a symmetric matrix")
   }
