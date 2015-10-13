@@ -8,9 +8,11 @@ Function that visualizes the spectral condition number of the regularized precis
 The function can be used to heuristically determine the (minimal) value of the penalty parameter.
 }
 \usage{
-conditionNumberPlot(S, lambdaMin, lambdaMax, step, type = "Alt", target =
-default.target(S), norm = "2", rlDist = FALSE, vertical = FALSE, value,
-main = TRUE, nOutput = FALSE, verbose = TRUE)
+conditionNumberPlot(S, lambdaMin, lambdaMax, step, type = "Alt",
+                    target = default.target(S), norm = "2",
+                    digitLoss = FALSE, rlDist = FALSE,
+                    vertical = FALSE, value, main = TRUE,
+                    nOutput = FALSE, verbose = TRUE)
 }
 \arguments{
   \item{S}{
@@ -33,6 +35,9 @@ A target \code{matrix} (in precision terms) for Type I ridge estimators.
 }
   \item{norm}{
 A \code{character} indicating the norm under which the condition number is to be calculated/estimated. Must be one of: "1", "2".
+}
+  \item{digitLoss}{
+A \code{logical} indicating if the approximate loss in digits of accuracy should also be visualized in the output graph.
 }
   \item{rlDist}{
 A \code{logical} indicating if the relative distance to the set of singular matrices should also be visualized in the output graph.
@@ -72,7 +77,9 @@ condition number is calculated. It is determined by exact calculation using the 
 especially when considering rotation equivariant situations (see \code{\link{ridgeS}}). When exact computation of the spectral condition number
 is deemed too costly one may approximate the computationally friendly L1-condition number. This approximation is accessed through the \link[base]{rcond} function
 (Anderson et al. 1999). When \code{rlDist = TRUE} the relative distance to the set of singular matrices is also visualized in the output graph.
-The relative distance to the set of singular matrices equals the reciprocal of the condition number (Demmel, 1987). When \code{vertical = TRUE} a vertical line is added
+The relative distance to the set of singular matrices equals the reciprocal of the condition number (Demmel, 1987).
+When \code{digitLoss = TRUE} the approximate loss in digits of accuracy (for the operation of inversion) is additionally visualized in the output graph. These options may enhance interpretation of the graph.
+When \code{vertical = TRUE} a vertical line is added
 at the constant \code{value}. This option can be used to assess if the optimal penalty obtained by, e.g., the routines \code{\link{optPenalty.LOOCV}}
 or \code{\link{optPenalty.aLOOCV}}, has led to a precision estimate that is well-conditioned.
 }

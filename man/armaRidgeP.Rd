@@ -10,10 +10,11 @@ Core ridge precision estimators
 }
 \description{
 This is the \R interface to the \code{C++} implementations of the
-ridge precision estimators. They serves as core functions for many other
+ridge precision estimators. They perform core computations for many other
 functions.
 }
 \usage{
+# General usage
 .armaRidgeP(S, target, lambda, invert = 2L)
 
 # Arbitrary target estimator
@@ -27,7 +28,7 @@ functions.
   A sample covariance \code{matrix}.
   }
   \item{target}{
-  A \code{numeric} symmetric positive definite target \code{matrix} the same
+  A \code{numeric} symmetric positive definite target \code{matrix} of the same
   size as \code{S}.
   }
   \item{alpha}{
@@ -37,20 +38,20 @@ functions.
   The ridge penalty. A \code{double} of length 1.
   }
   \item{invert}{
-  An \code{integer}. Should the estimate be compute using inversion?
+  An \code{integer}. Should the estimate be computed using inversion?
   Permitted values are \code{0L}, \code{1L}, and \code{2L} meaning "no", "yes",
   and "automatic" (default).
   }
 }
 \details{
   The functions are R-interfaces to low-level \code{C++} implementations
-  of the ridge estimators in the reference below.
-  Cf. Lemma 1, Remark 6, Remark 7, and section 4.1 herein.
+  of the ridge estimators in the reference below
+  (cf. Lemma 1, Remark 6, Remark 7, and section 4.1 therein).
 
   \code{.armaRidgeP} is simply a wrapper (on the C++ side) for
   \code{.armaRidgePAnyTarget} and \code{.armaRidgePScalarTarget} which are
   the estimators for arbitrary and scalar targets, respectively.
-  The \code{invert} argument of the functions indicate that the computation
+  The \code{invert} argument of the functions indicates if the computation
   uses matrix inversion or not.
 
   Essentially, the functions compute
@@ -76,19 +77,20 @@ functions.
     - 1/2(S - \lambda T)},
   }
   if \code{invert == 0} using appropriate eigenvalue decompositions.
-  See the R implementations in the example section below.
+  See the \R implementations in the example section below.
 }
 \value{
   Returns a symmetric positive definite \code{matrix} of the same size as
   \code{S}.
 }
 \references{
-  van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse
-  Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2015).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  arXiv:1403.0904v3 [stat.ME].
 }
 \author{
-  Anders Ellern Bilgrau, \cr
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, and \cr
+  Anders Ellern Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
   Wessel N. van Wieringen
 }
 \section{Warning}{

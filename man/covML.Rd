@@ -15,8 +15,10 @@ Data \code{matrix}. Variables assumed to be represented by columns.
 }
 }
 \details{
-The function gives the maximum likelihood estimate of the covariance matrix. The input matrix \code{Y} assumes that the variables
-are represented by the columns.
+The function gives the maximum likelihood estimate of the covariance matrix.
+The input matrix \code{Y} assumes that the variables are represented by the columns.
+Note that when the input data is standardized, the ML covariance matrix of the scaled data is computed.
+If a correlation matrix is desired, use \code{cor}.
 }
 \value{
 Function returns the maximum likelihood estimate of the covariance \code{matrix}.
