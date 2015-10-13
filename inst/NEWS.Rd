@@ -24,6 +24,7 @@
     \item added mutualInfoGGM function
     \item importing from default packages explicit
     \item sectioning (documentation: added news file and fixed citation file)
+    \item replaced usage ridgeS with ridgeP
   }
 }
 
