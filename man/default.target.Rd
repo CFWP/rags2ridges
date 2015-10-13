@@ -49,7 +49,9 @@ Function returns a target \code{matrix}.
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \references{
-van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+van Wieringen, W.N. & Peeters, C.F.W. (2015).
+Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+arXiv:1403.0904v3 [stat.ME].
 }
 \seealso{
 \code{\link{ridgeS}}, \code{\link{covML}}
