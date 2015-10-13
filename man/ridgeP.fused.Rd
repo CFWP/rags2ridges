@@ -10,6 +10,7 @@
 \usage{
 ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
              lambda, Plist, maxit = 100L, verbose = TRUE,
+             relative = TRUE,
              eps = sqrt(.Machine$double.eps))
 }
 \arguments{
@@ -56,6 +57,9 @@ ridgeP.fused(Slist, ns, Tlist = default.target.fused(Slist, ns),
     Can be set to \code{Inf}.
     If \code{maxit} is hit, a warning is given.
   }
+  \item{relative}{
+    \code{logical} indicating if the convergence criterion should be on a relative scale.
+  }
   \item{verbose}{
     \code{logical}. Set to \code{TRUE} for extra output.
   }
@@ -76,13 +80,13 @@ Returns a \code{list} as \code{Slist} with precision estimates of the correspond
   the initial values given in \code{Plist}.
 }
 \references{
-Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
-(in preparation) "Fused Ridge Estimation of Multiple Inverse Covariance
-Matrices from High-Dimensional Data Classes"
+Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
+Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
+arXiv:1509.07982v1 [stat.ME].
 }
 \author{
-Anders Ellern Bilgrau \cr
-Carel F.W. Peeters <cf.peeters@vumc.nl> \cr
+Anders Ellern Bilgrau,
+Carel F.W. Peeters <cf.peeters@vumc.nl>,
 Wessel N. van Wieringen
 }
 \seealso{
