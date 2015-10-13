@@ -157,6 +157,7 @@ Wessel N. van Wieringen
 See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 }
 \examples{
+\dontrun{
 # Generate some (not so) high-dimensional data witn (not so) many samples
 ns <- c(4, 5, 6)
 Ylist <- createS(n = ns, p = 6, dataset = TRUE)
@@ -277,5 +278,6 @@ init[2,1] <- init[1,2] <- 2.1
 res <- optPenalty.fused(Ylist, Tlist, lambda = lambda, lambda.init = init,
                         cv.method = "aLOOCV", optimizer = "nlm")
 print(res)
+}
 }
 
