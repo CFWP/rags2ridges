@@ -483,8 +483,8 @@ covML <- function(Y){
 
 
 
-covMLknown <- function(Y, covMat=NULL, corMat=NULL,
-                       corType="none", varType="none", nInit=100){
+covMLknown <- function(Y, covMat = NULL, corMat = NULL,
+                       corType = "none", varType = "none", nInit = 100){
   ##############################################################################
   # - Maximum likelihood estimation of the covariance matrix, with various
   #   types of assumptions on the structure of this matrix.
