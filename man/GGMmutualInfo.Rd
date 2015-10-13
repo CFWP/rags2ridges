@@ -1,5 +1,5 @@
-\name{mutualInfoGGM}
-\alias{mutualInfoGGM}
+\name{GGMmutualInfo}
+\alias{GGMmutualInfo}
 \title{
 Mutual information between two sets of variates within a multivariate normal distribution.
 }
@@ -7,7 +7,7 @@ Mutual information between two sets of variates within a multivariate normal dis
 Mutual information between two exhaustive and mutually exclusive splits of a multivariate normal random variable.
 }
 \usage{
-mutualInfoGGM(S, split1)
+GGMmutualInfo(S, split1)
 }
 \arguments{
 \item{S}{ A positive-definite covariance \code{matrix}. }
@@ -31,5 +31,5 @@ Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 Sigma <- covML(matrix(rnorm(100), ncol=5))
 
 # impulse response analysis
-mutualInfoGGM(Sigma, c(1,2))
+GGMmutualInfo(Sigma, c(1,2))
 }
