@@ -1,12 +1,11 @@
 \name{kegg.target}
 \alias{kegg.target}
 \title{
-Target matrix from KEGG
+Construct target matrix from KEGG
 }
 \description{
-Construct a target matrix from the Kyoto Encyclopedia of Genes and Genomes
+Construct a target matrix by combining topology information from the Kyoto Encyclopedia of Genes and Genomes
 (KEGG) database and pilot data.
-Requires a connection to the internet.
 }
 \usage{
 kegg.target(Y, kegg.id, method = "linreg", organism = "hsa",
@@ -41,6 +40,7 @@ kegg.target(Y, kegg.id, method = "linreg", organism = "hsa",
 \details{
   The function estimates the precision matrix based on the topology
   given by the KEGG database.
+  Requires a connection to the internet.
 }
 \value{
   Returns a target \code{matrix} with size depending on the \code{kegg.id}.
