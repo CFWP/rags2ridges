@@ -4,7 +4,7 @@
 Select optimal penalty parameter by approximate leave-one-out cross-validation
 }
 \description{
-Function that selects the optimal penalty parameter for the \code{\link{ridgeS}} call by usage of approximate
+Function that selects the optimal penalty parameter for the \code{\link{ridgeP}} call by usage of approximate
 leave-one-out cross-validation. Its output includes (a.o.) the precision matrix under the optimal value of the
 penalty parameter.
 }
@@ -42,9 +42,23 @@ A \code{logical} indicating if information on progress should be printed on scre
 }
 }
 \details{
-The function calculates an approximate leave-one-out cross-validated (aLOOCV) negative log-likelihood score (using a regularized ridge estimator for the precision matrix) for each value of the penalty parameter contained in the search grid. The utilized aLOOCV score was proposed by Lian (2011) and Vujacic et al. (2014). The aLOOCV negative log-likelihood score is computationally more efficient than its non-approximate counterpart (see \code{\link{optPenalty.LOOCV}}). For details on the aLOOCV negative log-likelihood score see Lian (2011) and Vujacic et al (2014). For scalar matrix targets (see \code{\link{default.target}}) the complete solution path of the alternative Type I and II ridge estimators (see \code{\link{ridgeS}}) depends on only 1 eigendecomposition and 1 matrix inversion, making the determination of the optimal penalty value particularly efficient (see van Wieringen and Peeters, 2015).
+The function calculates an approximate leave-one-out cross-validated (aLOOCV) negative log-likelihood score (using a
+regularized ridge estimator for the precision matrix) for each value of the penalty parameter contained in the search
+grid. The utilized aLOOCV score was proposed by Lian (2011) and Vujacic et al. (2014). The aLOOCV negative log-likeliho
+od score is computationally more efficient than its non-approximate counterpart (see \code{\link{optPenalty.LOOCV}}).
+For details on the aLOOCV negative log-likelihood score see Lian (2011) and Vujacic et al (2014).
+For scalar matrix  targets (see \code{\link{default.target}}) the complete solution path of the alternative
+Type I and II ridge estimators (see \code{\link{ridgeP}}) depends on only 1 eigendecomposition and 1 matrix
+inversion, making the determination of the optimal penalty value particularly efficient (see van Wieringen
+and Peeters, 2015).
 
-The value of the penalty parameter that achieves the lowest aLOOCV negative log-likelihood score is deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must be a positive scalar. The maximum allowable value of \code{lambdaMax} depends on the type of ridge estimator employed. For details on the type of ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeS}}. The ouput consists of an object of class list (see below). When \code{output = "light"} (default) only the \code{optLambda} and \code{optPrec} elements of the list are given.
+The value of the penalty parameter that achieves the lowest aLOOCV negative log-likelihood score is
+deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must be a
+positive scalar. The maximum allowable value of \code{lambdaMax} depends on the type of
+ridge estimator employed. For details on the type of ridge estimator one may use
+(one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeP}}. The ouput consists
+of an object of class list (see below). When \code{output = "light"} (default)
+only the \code{optLambda} and \code{optPrec} elements of the list are given.
 }
 \value{
 An object of class list:
@@ -68,7 +82,7 @@ penalized Gaussian graphical models. arXiv: 1309.6216v2 [stat.ME].
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

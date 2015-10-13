@@ -53,7 +53,7 @@ parameter. The range of the penalty parameter is given by [\code{lambdaMin},\cod
 The penalty parameter must be positive such that \code{lambdaMin} must
 be a positive scalar. The maximum allowable value of \code{lambdaMax} depends on the
 type of ridge estimator employed. For details on the type of
-ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeS}}.
+ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeP}}.
 
 Regularization paths may be visualized for (partial) correlations, covariances and precision elements.
 The type of element for which a visualization of the regularization paths is desired can be indicated by the argument \code{plotType}.
@@ -65,7 +65,7 @@ or \code{\link{optPenalty.aLOOCV}}, finds itself along the regularization path.
 Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{covML}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
+\code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

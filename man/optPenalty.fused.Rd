@@ -114,7 +114,7 @@ optPenalty.fused.grid(Ylist, Tlist,
     \code{optPenalty.fused.grid} or \code{optPenalty.fused.auto}
     depending on the value of \code{grid}.
     In \code{optPenalty.fused.grid}, arguments are passed to
-    \code{fusedRidgeS}.
+    \code{ridgeP.fused}.
     In \code{optPenalty.fused.auto}, arguments are passed to the optimizer.
   }
 }

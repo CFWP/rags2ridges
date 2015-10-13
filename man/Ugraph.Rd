@@ -112,7 +112,7 @@ Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

@@ -9,7 +9,7 @@ Ridge estimation for high-dimensional precision matrices
 Package contains proper L2-penalized ML estimators for the precision matrix as well as supporting functions to employ these estimators in a (integrative or meta-analytic) graphical modeling setting.
 }
 \details{
-The main function of the package is \code{\link{ridgeS}} which enables archetypal and proper alternative ML ridge estimation of the precision matrix. The alternative
+The main function of the package is \code{\link{ridgeP}} which enables archetypal and proper alternative ML ridge estimation of the precision matrix. The alternative
 ridge estimators can be found in van Wieringen and Peeters (2015) and encapsulate both target and non-target shrinkage for the multivariate normal precision
 matrix. The estimators are analytic and enable estimation in large \eqn{p} small \eqn{n} settings. Supporting functions to employ these estimators in a graphical
 modeling setting are also given. These supporting functions enable, a.o., the determination of the optimal value of the penalty parameter, the determination of
@@ -19,7 +19,7 @@ Function overview:
 \itemize{
 \item Function for (proper) ridge estimation of the precision matrix
 	\itemize{
-	\item \code{\link{ridgeS}}
+	\item \code{\link{ridgeP}}
 	}
 \item Functions for penalty parameter selection
 	\itemize{
