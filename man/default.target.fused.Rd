@@ -4,7 +4,7 @@
   Generate data-driven targets for fused ridge estimation
 }
 \description{
-  Generates a list of (data-driven) targets to use in fused ridge estimation
+  Generates a list of (data-driven) targets to use in fused ridge estimation.
   Simply a wrapper for \code{\link{default.target}}.
 }
 \usage{
@@ -35,8 +35,8 @@ default.target.fused(Slist, ns, type = "DAIE", by, ...)
   A \code{list} of \eqn{K} covariance target matrices of the same size.
 }
 \author{
-  Anders E. Bilgrau, \cr
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Anders E. Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
   Wessel N. van Wieringen
 }
 \seealso{
