@@ -339,7 +339,7 @@
   for (i in 1:nrow(Y)){
     S   <- covML(Y[-i, ])
     slh <- c(slh, .LL(t(Y[i, , drop = FALSE]) %*% Y[i, , drop = FALSE],
-                      ridgeS(S, lambda, target = target, type = type)))
+                      ridgeP(S, lambda, target = target, type = type)))
   }
   return(mean(slh))
 }
@@ -384,7 +384,7 @@
 
   reshuffle    <- sample(1:nrow(Y), nrow(Y))
   Y[, id == 1] <- Y[reshuffle, id == 1]
-  S <- solve(ridgeS(covML(Y), lambda = lambda, target = target, type = type))
+  S <- solve(ridgeP(covML(Y), lambda = lambda, target = target, type = type))
   return(log(det(S[id == 0, id == 0])) +
            log(det(S[id == 1, id == 1])) - log(det(S)))
 }
@@ -1099,7 +1099,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
       for (i in 1:nrow(Y)){
         S   <- covML(Y[-i,])
         slh <- c(slh, .LL(t(Y[i,,drop = F]) %*% Y[i,,drop = F],
-                          ridgeS(S, lambdas[k], type = type, target = target)))
+                          ridgeP(S, lambdas[k], type = type, target = target)))
       }
 
       LLs <- c(LLs, mean(slh))
@@ -1127,12 +1127,12 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     S <- covML(Y)
     if (output == "all"){
       return(list(optLambda = optLambda,
-                  optPrec = ridgeS(S, optLambda, type = type, target = target),
+                  optPrec = ridgeP(S, optLambda, type = type, target = target),
                   lambdas = lambdas, LLs = LLs))
     }
     if (output == "light"){
       return(list(optLambda = optLambda,
-                  optPrec = ridgeS(S, optLambda, type = type, target = target)))
+                  optPrec = ridgeP(S, optLambda, type = type, target = target)))
     }
   }
 }
@@ -1269,7 +1269,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
       }
     } else {
       for (k in 1:length(lambdas)){
-        P    <- ridgeS(S, lambdas[k], type = type, target = target)
+        P    <- ridgeP(S, lambdas[k], type = type, target = target)
         nLL  <- .5 * .LL(S, P)
         isum <- numeric()
 
@@ -1304,12 +1304,12 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     # Return
     if (output == "all"){
       return(list(optLambda = optLambda,
-                  optPrec = ridgeS(S, optLambda, type = type, target = target),
+                  optPrec = ridgeP(S, optLambda, type = type, target = target),
                   lambdas = lambdas, aLOOCVs = aLOOCVs))
     }
     if (output == "light"){
       return(list(optLambda = optLambda,
-                  optPrec = ridgeS(S, optLambda, type = type, target = target)))
+                  optPrec = ridgeP(S, optLambda, type = type, target = target)))
     }
   }
 }
@@ -1382,7 +1382,7 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
 
     # Return
     return(list(optLambda = optLambda,
-                optPrec = ridgeS(covML(Y), optLambda,
+                optPrec = ridgeP(covML(Y), optLambda,
                                  type = type, target = target)))
   }
 }
@@ -1859,7 +1859,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   }
   else {
     # Observed test statistics
-    S     <- solve(ridgeS(covML(Y), lambda = lambda,
+    S     <- solve(ridgeP(covML(Y), lambda = lambda,
                           target = target, type = type))
     llObs <- log(det(S[id == 0, id == 0, drop = FALSE])) +
       log(det(S[id == 1, id == 1, drop = FALSE])) - log(det(S))
@@ -2631,7 +2631,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
       }
     } else {
       for (k in 1:length(lambdas)){
-        P <- ridgeS(S, lambdas[k], type = type, target = target)
+        P <- ridgeP(S, lambdas[k], type = type, target = target)
         if (plotType=="pcor"){
           YforPlot <- cbind(YforPlot, pcor(symm(P))[upper.tri(P)])
         }
