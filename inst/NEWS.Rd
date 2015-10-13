@@ -53,7 +53,7 @@
       \item The following functions were added to the core module:
         \itemize{
           \item \code{covMLknown}
-          \item \code{mutualInfoGGM}
+          \item \code{GGMmutualInfo}
         }
       \item Added module with miscellaneous (hidden) functions: rags2ridgesMisc.R
     }
