@@ -48,7 +48,7 @@ The aLOOCV negative log-likelihood score is computationally more efficient than 
 \code{\link{optPenalty.LOOCV}}). For details on the aLOOCV negative log-likelihood score see Lian (2011) and Vujacic et al (2014).
 For scalar matrix targets (see \code{\link{default.target}}) the complete solution path of the alternative Type I and II ridge estimators
 (see \code{\link{ridgeS}}) depends on only 1 eigendecomposition and 1 matrix inversion, making the determination of the optimal penalty value particularly
-efficient (see van Wieringen and Peeters, 2014).
+efficient (see van Wieringen and Peeters, 2015).
 
 The value of the penalty parameter that achieves the lowest aLOOCV negative log-likelihood score is deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must
 be a positive scalar. The maximum allowable value of \code{lambdaMax} depends on the type of ridge estimator employed. For details on the type of
