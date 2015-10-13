@@ -1605,7 +1605,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (digitLoss){
       dLoss <- floor(log10(condNR))
       par(new = TRUE)
-      plot(log(lambdas), dLoss,, axes = FALSE, type = "l", col = "green3",
+      plot(log(lambdas), dLoss, axes = FALSE, type = "l", col = "green3",
            xaxt = "n", yaxt = "n", xlab = "", ylab = "")
       axis(4, col = "black", lwd = 1)
       mtext("Loss in digits of accuracy", side = 4, line = 3)
@@ -1615,7 +1615,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (rlDist){
       RlDist <- 1/condNR
       par(new = TRUE)
-      plot(log(lambdas), RlDist,, axes = FALSE, type = "l", col = "green3",
+      plot(log(lambdas), RlDist, axes = FALSE, type = "l", col = "green3",
            xaxt = "n", yaxt = "n", xlab = "", ylab = "")
       axis(4, col = "black", lwd = 1)
       mtext("relative distance to singular matrix", side = 4, line = 3)
@@ -3558,7 +3558,7 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
     if (verbose){cat("Visualizing network...", "\n")}
     if (fileTypeFig == "pdf"){pdf(paste(dir, "Network.pdf"))}
     if (fileTypeFig == "eps"){setEPS(); postscript(paste(dir, "Network.eps"))}
-    Ugraph(PC0, type = "fancy", Vsize = ncol(PC0)/10, Vcex = ncol(PC0)/130,)
+    Ugraph(PC0, type = "fancy", Vsize = ncol(PC0)/10, Vcex = ncol(PC0)/130)
     dev.off()
 
     # Calculate network statistics
