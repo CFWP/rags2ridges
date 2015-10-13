@@ -1945,7 +1945,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 
 
 
-mutualInfoGGM <- function(S, split1){
+GGMmutualInfo <- function(S, split1){
   ##############################################################################
   # - Function that calculates the mutual information between two exhaustive and
   #   mutually exclusive splits of normal p-variate random variable.

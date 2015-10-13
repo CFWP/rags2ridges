@@ -86,8 +86,8 @@ If \code{covariance} is \code{TRUE} the \code{p} by \code{p} sample covariances 
 When \code{n} has length 1 the \code{list} structure is dropped and the matrix is returned.
 }
 \author{
-  Anders E. Bilgrau, \cr
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Anders E. Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
   Wessel N. van Wieringen
 }
 \examples{
