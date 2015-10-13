@@ -2,30 +2,92 @@
 \title{News for Package \pkg{rags2ridges}}
 \newcommand{\cpkg}{\href{http://cran.r-project.org/package=#1}{\pkg{#1}}}
 
+
 \section{Changes in version 2.0}{
-  \itemize{
-    \item Added this \code{NEWS} file!
-    \item Added the fused ridge module. This provides estimation functionality
-      for estimation of multiple precision matrices for multiple classes.
-      Functions from this module are generally suffixed with \code{.fused}.
-    \item Argument \code{verticle} in various functions have been renamed to
-      \code{vertical}. Sorry for any inconvinience.
-    \item Added LOOCV and approximations hereof to determine optimal ridge and
-      fused penalties. The fused pairs to cross-validate over are specified by
-      a character matrix.
-    \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadillo} with
-      core functions written in \code{C++}. The package should now be at least
-      two orders of magnitude faster in most cases.
-    \item enhanced conditionNumberPlot
-    \item fixed bug in GGMpathstats (automatic naming variables if absent)
-    \item fixed another bug in GGMpathstats (now properly handles singleton pathsets)
-    \item fixed bug in sparsify: now always returns symmetric objects
-    \item added covMLknown function
-    \item added mutualInfoGGM function
-    \item importing from default packages explicit
-    \item sectioning (documentation: added news file and fixed citation file)
-    \item replaced usage ridgeS with ridgeP
-    \item Miscellaneous module added (with very important functions)
+  \subsection{Documentation:}{
+    \itemize{
+      \item Added this \code{NEWS} file!
+      \item Updated (and corrected) \code{CITATION} file
+      \item Added \code{README} file
+      \item Added (selective) import statements for default packages as required for R-devel
+    }
+  }
+  \subsection{Additions:}{
+    \itemize{
+      \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadillo} with
+        core functions written in \code{C++}. The package should now be at least
+        two orders of magnitude faster in most cases.
+      \item Added, next to the core module (rags2ridges.R) the fused ridge module (rags2ridgesFused.R).
+        This module provides functionality
+        for the estimation and graphical modeling of multiple precision matrices from
+        multiple high-dimensional data classes.
+        Functions from this module are generally suffixed with \code{.fused}.
+        Functions tied to (or added with) this module are:
+        \itemize{
+          \item \code{isSymmetricPD}
+          \item \code{isSymmetricPSD}
+          \item \code{is.Xlist}
+          \item \code{default.target.fused}
+          \item \code{createS}
+          \item \code{getKEGGPathway}
+          \item \code{kegg.target}
+          \item \code{pooledS}
+          \item \code{pooledP}
+          \item \code{KLdiv.fused}
+          \item \code{ridgeP.fused}
+          \item \code{optPenalty.fused.grid}
+          \item \code{print.optPenaltyFusedGrid}
+          \item \code{plot.optPenaltyFusedGrid}
+          \item \code{optPenalty.fused.auto}
+          \item \code{optPenalty.fused}
+          \item \code{default.penalty}
+          \item \code{fused.test}
+          \item \code{print.ptest}
+          \item \code{summary.ptest}
+          \item \code{hist.ptest}
+          \item \code{plot.ptest}
+          \item \code{sparsify.fused}
+          \item \code{GGMnetworkStats.fused}
+          \item \code{GGMpathStats.fused}
+        }
+      \item The following functions were added to the core module:
+        \itemize{
+          \item \code{covMLknown}
+          \item \code{mutualInfoGGM}
+        }
+      \item Added module with miscellaneous (hidden) functions: rags2ridgesMisc.R
+    }
+  }
+  \subsection{Bug fixes:}{
+    \itemize{
+      \item Fixed bugs in \code{GGMpathstats}:
+        \itemize{
+          \item Code no longer breaks down if variable names are absent.
+          \item Now properly handles singleton pathsets.
+        }
+      \item Fixed bug in \code{sparsify}: Now always returns symmetric objects
+    }
+  }
+  \subsection{Adjustments:}{
+    \itemize{
+      \item Argument \code{verticle} as used in various functions has been renamed to
+        \code{vertical}. Sorry for any inconvenience.
+      \item Internal usage of \code{ridgeS} replaced by the faster C++-dependent counterpart
+        \code{ridgeP}
+      \item New features updated \code{conditionNumberPlot} function:
+        \itemize{
+          \item Function has been sped up
+          \item Now uses log-equidistant grid for visualization
+          \item Now includes option to additionally plot the approximate loss in
+            digits of accuracy
+        }
+    }
+  }
+  \subsection{Notifications:}{
+    \itemize{
+      \item \code{ridgeS} is deprecated. Please use \code{ridgeP} instead
+      \item Future versions of rags2ridges will be subject to changes in naming conventions
+    }
   }
 }
 
