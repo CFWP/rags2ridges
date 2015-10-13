@@ -25,70 +25,93 @@
     \item importing from default packages explicit
     \item sectioning (documentation: added news file and fixed citation file)
     \item replaced usage ridgeS with ridgeP
+    \item Miscellaneous module added (with very important functions)
   }
 }
 
 
 \section{Changes in version 1.4}{
-  \itemize{
-    \item Inclusion hidden function \code{.pathContribution} for usage in
-      \code{GGMpathStats} function
-    \item Inclusion hidden function \code{.path2string} for usage in
-      \code{GGMpathStats} function
-    \item Inclusion hidden function \code{.pathAndStats} for usage in
-      \code{GGMpathStats} function
-    \item Inclusion hidden function \code{.cvl} for usage in
-      \code{optPenalty.LOOCVauto} function
-    \item Inclusion hidden function \code{.lambdaNullDist} for usage in
-      \code{GGMblockNullPenalty} function
-    \item Inclusion hidden function \code{.blockTestStat} for usage in
-      \code{GGMblockTest} function
-    \item Inclusion function that expresses the covariance between a pair of
-      variables as a sum of path weights: \code{GGMpathStats}
-    \item Inclusion function that determines the optimal penalty parameter
-      value by application of the Brent algorithm to the LOOCV log-likelihood:
-      \code{optPenalty.LOOCVauto}
-    \item Inclusion function that generates the distribution of the penalty
-      parameter under the null hypothesis of block independence:
-      \code{GGMblockNullPenalty}
-    \item Inclusion function that performs a permutation test for block
-      structure in the precision matrix: \code{GGMblockTest}
-    \item Inclusion wrapper function: \code{fullMontyS}
-    \item New features updated \code{optPenalty.aLOOCV} function:
-      For scalar matrix targets the complete solution path depends on only
-      1 eigendecomposition and 1 matrix inversion.
-      Meaning: the function is sped up somewhat by lifting redundant
-      inversions out of \code{for} loops
-      Optional graph now plots the approximated LOOCV negative log-likelihood
-      instead of ln(approximated LOOCV negative log-likelihood).
-      Legend in optional graph has been adapated accordingly
-    \item New features updated \code{optPenalty.LOOCV} function:
-      Optional graph now plots the LOOCV negative log-likelihood instead of
-      ln(LOOCV negative log-likelihood).
-      Legend in optional graph has been adapated accordingly
-    \item New features updated \code{default.target} function:
-      Inclusion new default target option: \code{type = DIAES}. Gives diagonal
-      matrix with inverse of average of eigenvalues of S as entries
-    \item New features updated \code{GGMnetworkStats} function:
-      Now also assesses (and returns a logical) if graph/network is chordal
-      Now also includes assesment of the eigenvalue centrality
-      Now includes option to have list or table output
-    \item New features updated \code{ridgePathS} function:
-      Sped up considerably for rotation equivariant alternative estimator
-      By avoidance of redundant eigendecompositions and inversions
-      Now catches breakdown due to rounding preculiarities when
-      \code{plotType = "pcor"}
-    \item New features updated \code{sparsify} function:
-      Inclusion new thresholding function \code{top}: retainment of top elements
-      based on absolute partial correlation
-      Inclusion output option: When \code{output = "light"}, only the (matrix)
-      positions of the zero and non-zero elements are returned
-      Function no longer dependent on GeneNet; now makes direct use of
-      \cpkg{fdrtool}.
-      Function now also prints some general information on the number of edges
-      retained.
-    \item Corrected small error in \code{evaluateSfit} function
-      The \code{dir} argument was not properly used previously.
+  \subsection{Additions:}{
+    \itemize{
+      \item Inclusion hidden function \code{.pathContribution} for usage in
+        \code{GGMpathStats} function
+      \item Inclusion hidden function \code{.path2string} for usage in
+        \code{GGMpathStats} function
+      \item Inclusion hidden function \code{.pathAndStats} for usage in
+        \code{GGMpathStats} function
+      \item Inclusion hidden function \code{.cvl} for usage in
+        \code{optPenalty.LOOCVauto} function
+      \item Inclusion hidden function \code{.lambdaNullDist} for usage in
+        \code{GGMblockNullPenalty} function
+      \item Inclusion hidden function \code{.blockTestStat} for usage in
+        \code{GGMblockTest} function
+      \item Inclusion function that expresses the covariance between a pair of
+        variables as a sum of path weights: \code{GGMpathStats}
+      \item Inclusion function that determines the optimal penalty parameter
+        value by application of the Brent algorithm to the LOOCV log-likelihood:
+        \code{optPenalty.LOOCVauto}
+      \item Inclusion function that generates the distribution of the penalty
+        parameter under the null hypothesis of block independence:
+        \code{GGMblockNullPenalty}
+      \item Inclusion function that performs a permutation test for block
+        structure in the precision matrix: \code{GGMblockTest}
+      \item Inclusion wrapper function: \code{fullMontyS}
+    }
+  }
+  \subsection{Bug fixes:}{
+    \itemize{
+      \item Corrected small error in \code{evaluateSfit} function.
+        The \code{dir} argument was not properly used previously.
+    }
+  }
+  \subsection{Adjustments:}{
+    \itemize{
+      \item New features updated \code{optPenalty.aLOOCV} function:
+        \itemize{
+          \item For scalar matrix targets the complete solution path depends on only
+            1 eigendecomposition and 1 matrix inversion.
+            Meaning: the function is sped up somewhat by lifting redundant
+            inversions out of \code{for} loops.
+          \item Optional graph now plots the approximated LOOCV negative log-likelihood
+            instead of ln(approximated LOOCV negative log-likelihood).
+          \item Legend in optional graph has been adapated accordingly.
+        }
+      \item New features updated \code{optPenalty.LOOCV} function:
+        \itemize{
+          \item Optional graph now plots the LOOCV negative log-likelihood instead of
+            ln(LOOCV negative log-likelihood).
+          \item Legend in optional graph has been adapated accordingly.
+        }
+      \item New features updated \code{default.target} function:
+        \itemize{
+          \item Inclusion new default target option: \code{type = DIAES}. Gives diagonal
+            matrix with inverse of average of eigenvalues of S as entries.
+        }
+      \item New features updated \code{GGMnetworkStats} function:
+        \itemize{
+          \item Now also assesses (and returns a logical) if graph/network is chordal.
+          \item Now also includes assesment of the eigenvalue centrality.
+          \item Now includes option to have list or table output.
+        }
+      \item New features updated \code{ridgePathS} function:
+        \itemize{
+          \item Sped up considerably for rotation equivariant alternative estimator.
+            By avoidance of redundant eigendecompositions and inversions.
+          \item Now catches breakdown due to rounding preculiarities when
+            \code{plotType = "pcor"}.
+        }
+      \item New features updated \code{sparsify} function:
+        \itemize{
+          \item Inclusion new thresholding function \code{top}: retainment of top elements
+            based on absolute partial correlation.
+          \item Inclusion output option: When \code{output = "light"}, only the (matrix)
+            positions of the zero and non-zero elements are returned.
+          \item Function no longer dependent on GeneNet; now makes direct use of
+            \cpkg{fdrtool}.
+          \item Function now also prints some general information on the number of edges
+            retained.
+        }
+    }
   }
 }
 
