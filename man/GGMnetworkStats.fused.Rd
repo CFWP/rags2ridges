@@ -19,7 +19,9 @@ GGMnetworkStats.fused(Plist)
 A \code{data.frame} of the various network statistics for each class. The names of \code{Plist} is prefixed to column-names.
 }
 \author{
-Anders Ellern Bilgrau
+  Anders E. Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
+  Wessel N. van Wieringen
 }
 \details{
 For details on the columns see \code{\link{GGMnetworkStats}}.
