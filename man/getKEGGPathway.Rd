@@ -6,7 +6,6 @@ Download KEGG pathway
 \description{
 Download information and graph object of a given pathway from the Kyoto
 Encyclopedia of Genes and Genomes (KEGG) database.
-Needs an internet connection.
 }
 \usage{
 getKEGGPathway(kegg.id)
@@ -35,6 +34,7 @@ getKEGGPathway(kegg.id)
   Wessel N. van Wieringen
 }
 \details{
+  Usage of this function requires an internet connection.
   The igraph objects can be obtained with \code{igraph::igraph.from.graphNEL}.
   The moral graph can be obtained with \code{gRbase::moralize}. To obtain the
   adjacency matrix, use \code{gRbase::as.adjMAT} or
