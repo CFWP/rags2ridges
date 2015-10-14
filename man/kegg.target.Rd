@@ -62,6 +62,7 @@ kegg.target(Y, kegg.id, method = "linreg", organism = "hsa",
   \code{\link{default.target.fused}}
 }
 \examples{
+\dontrun{
 if (require("KEGGgraph")) {
 kegg.g <- getKEGGPathway("map04115")$graph
 
@@ -71,6 +72,7 @@ colnames(Y) <- nodes(kegg.g)
 
 T <- kegg.target(Y, "map04115")
 print(T[1:10, 1:10])
+}
 }
 }
 

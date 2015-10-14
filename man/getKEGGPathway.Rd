@@ -44,8 +44,10 @@ getKEGGPathway(kegg.id)
   \code{\link{kegg.target}}
 }
 \examples{
+\dontrun{
 if (require("KEGGgraph")) {
   getKEGGPathway("map04064")
+}
 }
 }
 \keyword{internal}
