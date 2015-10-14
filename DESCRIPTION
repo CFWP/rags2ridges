@@ -4,7 +4,7 @@ Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
 Version: 2.0
 Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
 Author: Carel F.W. Peeters [cre, aut], Anders Ellern Bilgrau [aut], Wessel N. van Wieringen [aut]
-Description: Package contains proper L2-penalized ML estimators for the
+Description: Proper L2-penalized ML estimators for the
   precision matrix as well as supporting functions to employ these estimators
   in a graphical modeling setting.
 Depends: R (>= 2.15.1)
