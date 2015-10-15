@@ -22,6 +22,8 @@ S3method(print, "ptest")
 S3method(summary, "ptest")
 S3method(plot, "ptest")
 S3method(hist, "ptest")
+S3method(plot, "optPenaltyFusedGrid")
+S3method(print, "optPenaltyFusedGrid")
 
 # Register shared object (to make Rcpp work)
 useDynLib(rags2ridges)
