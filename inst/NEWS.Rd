@@ -1,7 +1,7 @@
 \name{NEWS}
-\title{News for Package \pkg{rags2ridges}}
 \newcommand{\cpkg}{\href{http://cran.r-project.org/package=#1}{\pkg{#1}}}
 
+\title{News for Package \cpkg{rags2ridges}}
 
 \section{Changes in version 2.0}{
   \subsection{Documentation:}{
@@ -17,8 +17,8 @@
       \item \cpkg{rags2ridges} now uses \cpkg{Rcpp} and \cpkg{RcppArmadillo} with
         core functions written in \code{C++}. The package should now be at least
         two orders of magnitude faster in most cases.
-      \item Added, next to the core module (rags2ridges.R) the fused ridge module (rags2ridgesFused.R).
-        This module provides functionality
+      \item Added, next to the core module, the fused ridge module.
+        The fused module provides functionality
         for the estimation and graphical modeling of multiple precision matrices from
         multiple high-dimensional data classes.
         Functions from this module are generally suffixed with \code{.fused}.
@@ -55,7 +55,7 @@
           \item \code{covMLknown}
           \item \code{GGMmutualInfo}
         }
-      \item Added module with miscellaneous (hidden) functions: rags2ridgesMisc.R
+      \item Added miscellaneous (hidden) functions.
     }
   }
   \subsection{Bug fixes:}{
