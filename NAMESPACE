@@ -1,6 +1,8 @@
 # Imports
 import("igraph")
-importFrom("stats", cov2cor, optim, qqplot, quantile)
+importFrom("stats", cov2cor, optim, qqplot, quantile, coef, lm.fit,
+           nlm, optimize)
+importFrom("methods", hasArg, is)
 importFrom("expm", sqrtm)
 importFrom("Hmisc", minor.tick)
 importFrom("snowfall", sfInit, sfLibrary, sfSapply, sfStop)
@@ -9,9 +11,9 @@ importFrom("ggplot2", ggplot, aes, geom_tile, scale_fill_gradient2, theme,
            element_blank, element_text, xlab, ylab, ylim, ggtitle)
 importFrom("sfsmisc", lseq)
 importFrom("utils", capture.output)
-importFrom("grDevices", dev.off, pdf, postscript, setEPS)
+importFrom("grDevices", dev.off, pdf, postscript, setEPS, rainbow)
 importFrom("graphics", abline, axis, hist, legend, lines,
-           mtext, par, plot, text)
+           mtext, par, plot, text, rug)
 import("reshape")
 
 # Exports
