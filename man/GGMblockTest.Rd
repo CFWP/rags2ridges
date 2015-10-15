@@ -57,15 +57,16 @@ which needs to be fixed before testing. To decide on the penalty parameter for t
 \code{\link{GGMblockNullPenalty}} function. With an informed choice on the penalty parameter at hand,
 the null hypothesis is evaluated by permutation. Hereto the samples are permutated within block.
 The resulting permuted data set represents the null hypothesis. Many permuted data sets are generated.
-For each permutation the test statistic is calculated. The observed test statistic is compared to the null distribution
-from the permutations.
+For each permutation the test statistic is calculated. The observed test statistic is
+compared to the null distribution from the permutations.
 
 The function implements an efficient permutation resampling algorithm (see van Wieringen et al., 2008, for details.):
-If the probability of a p-value being below \code{lowCiThres} is smaller than 0.001 (read: the test is unlikely to become significant),
+If the probability of a p-value being below \code{lowCiThres} is smaller than 0.001 (read: the test is
+unlikely to become significant),
 the permutation analysis is terminated and a p-value of unity (1) is reported.
 
 When \code{verbose = TRUE} also graphical output is generated: A histogram of the null-distribution. Note that, when
-\code{ncpus} is larger than 1, functionalities from \href{http://cran.r-project.org/web/packages/snowfall/index.html}{snowfall}
+\code{ncpus} is larger than 1, functionalities from \href{http://cran.r-project.org/package=snowfall}{snowfall}
 are imported.
 }
 \value{

@@ -43,7 +43,7 @@ those entries representing the ten strongest absolute partial correlations (\cod
 The argument \code{absValueCut} is only used when \code{threshold = "absValue"}. The argument \code{FDRcut} is only used when
 \code{threshold = "localFDR"}. The argument \code{top} is only used when
 \code{threshold = "top"}. The function is to some extent a wrapper around
-certain \href{http://cran.r-project.org/web/packages/fdrtool/index.html}{fdrtool} functions when
+certain \href{http://cran.r-project.org/package=fdrtool}{fdrtool} functions when
 \code{threshold = "localFDR"}. In that case a mixture model is fitted to the nonredundant partial correlations by
 \href{http://cran.r-project.org/web/packages/fdrtool/index.html}{fdrtool}. The decision to
 retain elements is then based on the argument \code{FDRcut}. Elements with a posterior probability \eqn{\geq} FDRcut (equalling
