@@ -3,6 +3,16 @@
 
 \title{News for Package \cpkg{rags2ridges}}
 
+
+\section{Changes in version 2.1}{
+  \subsection{Adjustments:}{
+    \itemize{
+      \item \code{edgeHeat} now has aligned x-axis labels
+    }
+  }
+}
+
+
 \section{Changes in version 2.0}{
   \subsection{Documentation:}{
     \itemize{
