@@ -2761,7 +2761,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
         theme(axis.ticks = element_blank()) +
         theme(axis.text.y = element_text(size = textsize)) +
         theme(axis.text.x =
-                element_text(angle = -90, vjust = .5, size = textsize)) +
+                element_text(angle = -90, vjust = .5, hjust = 0, size = textsize)) +
         xlab(" ") + ylab(" ") +
         ylim(rev(levels(Mmelt$X1))) +
         ggtitle(main)
@@ -2772,7 +2772,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
         theme(axis.ticks = element_blank()) +
         theme(axis.text.y = element_text(size = textsize)) +
         theme(axis.text.x =
-                element_text(angle = -90, vjust = .5, size = textsize)) +
+                element_text(angle = -90, vjust = .5, hjust = 0, size = textsize)) +
         xlab(" ") + ylab(" ") +
         ylim(rev(levels(Mmelt$X1))) +
         ggtitle(main) +
