@@ -8,6 +8,9 @@
   \subsection{Adjustments:}{
     \itemize{
       \item \code{edgeHeat} now has aligned x-axis labels
+      \item The visualizations of the \code{optPenalty.LOOCV} and \code{optPenalty.aLOOCV} functions
+      now will no longer produce horizontal and/or vertical lines that fall outside the boundaries
+      of the figure
     }
   }
 }
