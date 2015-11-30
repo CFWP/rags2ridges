@@ -1120,6 +1120,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
            main = Main)
       axis(2, ylim = c(min(LLs),max(LLs)), col = "black", lwd = 1)
       axis(1, col = "black", lwd = 1)
+      par(xpd = FALSE)
       abline(h = min(LLs), v = log(optLambda), col = "red")
       legend("topright",
              legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3),sep=""),
@@ -1297,6 +1298,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
            ylab = "Approximate LOOCV neg. log-likelihood", main = Main)
       axis(2, ylim = c(min(aLOOCVs),max(aLOOCVs)), col = "black", lwd = 1)
       axis(1, col = "black", lwd = 1)
+      par(xpd = FALSE)
       abline(h = min(aLOOCVs), v = log(optLambda), col = "red")
       legend("topright",
              legend = c(paste("min. approx. LOOCV neg. LL: ",
