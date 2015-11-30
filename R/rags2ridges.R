@@ -1091,7 +1091,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else {
     # Set preliminaries
     LLs     <- numeric()
-    lambdas <- seq(lambdaMin, lambdaMax, len = step)
+    lambdas <- lseq(lambdaMin, lambdaMax, length = step)
 
     # Calculate CV scores
     if (verbose) {
@@ -1214,7 +1214,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     # Set preliminaries
     S       <- covML(Y)
     n       <- nrow(Y)
-    lambdas <- seq(lambdaMin, lambdaMax, len = step)
+    lambdas <- lseq(lambdaMin, lambdaMax, length = step)
     aLOOCVs <- numeric()
 
     # Calculate approximate LOOCV scores

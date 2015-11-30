@@ -11,6 +11,10 @@
       \item The visualizations of the \code{optPenalty.LOOCV} and \code{optPenalty.aLOOCV} functions
       now will no longer produce horizontal and/or vertical lines that fall outside the boundaries
       of the figure
+      \item \code{optPenalty.LOOCV} now uses log-equidistant penalty grid for optimal penalty
+      parameter determination (this also enhances the visualization)
+      \item \code{optPenalty.aLOOCV} now uses log-equidistant penalty grid for optimal penalty
+      parameter determination (this also enhances the visualization)
     }
   }
 }
