@@ -10,12 +10,13 @@ citEntry(entry="Manual",
                         as.person("W.N. van Wieringen")),
     year = year,
     note = vers,
+    url = "http://CRAN.R-project.org/package=rags2ridges",
     textVersion =
       paste("Peeters, C.F.W., Bilgrau, A.E., and van Wieringen, W.N. (",
             year,
             ") rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data. ",
             vers,
-            ".", sep = "")
+            ". http://CRAN.R-project.org/package=rags2ridges", sep = "")
 )
 
 citEntry(entry="Article",
