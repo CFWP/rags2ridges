@@ -27,7 +27,7 @@ fused.test(Ylist, Tlist, lambda, n.permutations = 100,
   }
   \item{n.permutations}{
     The number of permutations to approximate the null distribution.
-    Default is 100. Should be increased if sufficent computing power is
+    Default is 100. Should be increased if sufficient computing power is
     available.
   }
   \item{verbose}{
