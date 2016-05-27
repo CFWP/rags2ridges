@@ -266,7 +266,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
    - alpha  > The scaling of the identity matrix. Shoud not contain NaNs, Infs,
               or NA.s
    - lambda > The ridge penalty. Can be set to Inf (on the R side)
-   - invert > Should the estimate be compute using inversion?
+   - invert > Should the estimate be computed using inversion?
               0 = "no", 1 = "yes", 2 = "automatic", (default).
   --------------------------------------------------------------------------- */
 
