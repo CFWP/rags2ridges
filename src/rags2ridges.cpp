@@ -303,7 +303,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
     return rev_eig(D_inv, eigvecs);  // Proper inversion
   } else {
     arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
-    return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
+    return rev_eig(D_noinv, eigvecs);  // Inversion by proposition
   }
 
 }
