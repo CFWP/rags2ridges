@@ -56,7 +56,7 @@ A \code{numeric} determining the size of the exemplary vertex in the legend box.
 A \code{numeric} indicating the cut-off for indicating strong edges when \code{type = "fancy"}.
 }
     \item{scale}{
-A \code{numeric} representing a scale factor for visualizing strenght of edges when \code{type = "weighted"}.
+A \code{numeric} representing a scale factor for visualizing strength of edges when \code{type = "weighted"}.
 }
   \item{pEcolor}{
 A \code{character} determining the color of the edges tied to positive precision elements. Only when \code{type = "weighted"}.
@@ -79,7 +79,7 @@ strong edges. Strong edges are deemed such by setting \code{cut}. If a the absol
 the corresponding edge is deemed strong and colored black in the graph. The argument \code{cut} is thus only used when
 \code{type = "fancy"}.
 
-When \code{type = "weighted"} an undirected graph is given in which edge thickness represents the strenght of the partial
+When \code{type = "weighted"} an undirected graph is given in which edge thickness represents the strength of the partial
 correlations. The \code{nEcolor} colored edges then represent negative partial correlations while \code{pEcolor} colored edges
 represent positive partial correlations. (Relative) edge thickness in this type of graph can be set by the argument \code{scale}.
 The arguments \code{scale}, \code{nEcolor}, and \code{pEcolor} are thus only used when \code{type = "weighted"}.
