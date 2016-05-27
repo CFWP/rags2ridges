@@ -175,6 +175,30 @@ arma::vec armaEigShrink(const arma::vec dVec,
 
 
 
+// [[Rcpp::export(.armaEigShrinkAnyTarget)]]
+arma::vec armaEigShrinkAnyTarget(const arma::mat & S,
+                                 const arma::mat & target,
+                                 const double lambda) {
+  /* ---------------------------------------------------------------------------
+  - Function that shrinks the eigenvalues
+  - Shrinkage is that of the alternative ridge estimator under a general target
+  - Main use is in avoiding expensive Schur-approach to computing the
+  matrix square root
+  - S      > A sample covariance matrix
+  - target > Target matrix of same dimensions as S
+  - lambda > penalty parameter
+  --------------------------------------------------------------------------- */
+
+  arma::vec eigvals;
+  arma::mat eigvecs = S - lambda * target;
+  eig_sym(eigvals, eigvecs, eigvecs, "dc");
+  eigvals = 0.5 * eigvals;
+  arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
+  return (sqroot + eigvals);
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
