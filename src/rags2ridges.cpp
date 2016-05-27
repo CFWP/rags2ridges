@@ -183,7 +183,7 @@ arma::vec armaEigShrinkAnyTarget(const arma::mat & S,
   - Function that shrinks the eigenvalues
   - Shrinkage is that of the alternative ridge estimator under a general target
   - Main use is in avoiding expensive Schur-approach to computing the
-  matrix square root
+    matrix square root
   - S      > A sample covariance matrix
   - target > Target matrix of same dimensions as S
   - lambda > penalty parameter
@@ -195,6 +195,24 @@ arma::vec armaEigShrinkAnyTarget(const arma::mat & S,
   eigvals = 0.5 * eigvals;
   arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
   return (sqroot + eigvals);
+}
+
+
+
+// [[Rcpp::export(.armaEigShrinkArchI)]]
+arma::vec armaEigShrinkArchI(const arma::vec dVec,
+                             const double lambda,
+                             const double cons) {
+  /* ---------------------------------------------------------------------------
+   - Function that shrinks the eigenvalues
+   - Shrinkage is that of the rotation equivariant Archetypal I estimator
+   - dVec   > numeric vector containing the eigenvalues of a matrix S
+   - lambda > penalty parameter
+   - const  > a constant
+   --------------------------------------------------------------------------- */
+
+  arma::vec Evector = (1 - lambda) * dVec + (lambda * (1.0/cons));
+  return Evector;
 }
 
 
