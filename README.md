@@ -39,7 +39,8 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     URL: https://cran.r-project.org/web/packages/rags2ridges/index.html.
  2. van Wieringen, W.N. & Peeters, C.F.W. (To appear).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
-    Computational Statistics & Data Analysis, available as arXiv:1403.0904v3 [stat.ME].
+    Computational Statistics & Data Analysis. 
+    Available as [arXiv:1403.0904v3 \[stat.ME\]](http://arxiv.org/abs/1403.0904).
  3. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016)
     *"The Spectral Condition Number Plot for Regularization Parameter Determination"*.
  4. van Wieringen, W.N. & Peeters, C.F.W. (2015).
@@ -49,7 +50,7 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     `Computational Intelligence Methods for Bioinformatics and Biostatistics'.
     Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
  5. Bilgrau\*, A.E., Peeters\*, C.F.W., Eriksen, P.S., Boegsted, M., & van Wieringen, W.N. (2015).
-    *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*,
-    arXiv:1509.07982v1 [stat.ME]. 
+    *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*.
+    Available as [arXiv:1509.07982v1 \[stat.ME\]](http://arxiv.org/abs/1509.07982). 
 
 Please cite the relevant publications if you use **rags2ridges**.
