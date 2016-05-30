@@ -107,8 +107,8 @@ colnames(X)[1:25] = letters[1:25]
 Cx <- covML(X)
 
 ## Assess spectral condition number across grid of penalty parameter
-conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
+CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
 
 ## Include interpretational aids
-conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
+CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
 }
