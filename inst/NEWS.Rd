@@ -5,6 +5,21 @@
 
 
 \section{Changes in version 2.1}{
+  \subsection{Notifications:}{
+    \itemize{
+      \item \code{conditionNumberPlot} is deprecated. Please use \code{CNplot} instead
+      \item Features of the \code{CNplot} function (above and beyond \code{conditionNumberPlot}):
+        \itemize{
+          \item The \code{digitLoss} and \code{rlDist} arguments have been removed
+          \item These arguments have been replaced with the logical argument \code{Iaids}
+          \item \code{Iaids = TRUE} amends the basic condition number plot with interpretational aids
+          \item These aids are the approximate loss in digits of accuracy and and approximation of the acceleration             along the regularization path of the condition number
+          \item Argument \code{main} is now a character argument
+          \item Argument \code{value} now by default takes the value 1e-100 (convenient)
+          \item Now uses C++ functionalty for additional speed
+      }
+    }
+  }
   \subsection{Adjustments:}{
     \itemize{
       \item \code{edgeHeat} now has aligned x-axis labels
