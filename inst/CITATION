@@ -23,15 +23,15 @@ citEntry(entry="Article",
     title = "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data",
     author = personList(as.person("W.N. van Wieringen"),
                         as.person("C.F.W. Peeters")),
-    journal = "arXiv:1403.0904v3 [stat.ME]",
+    journal = "Computational Statistics & Data Analysis",
     volume = "",
     number = "",
-    pages =  "",
-    year = 2015,
+    pages =  "Available as: arXiv:1403.0904v3 [stat.ME]",
+    year = To appear,
     textVersion =
-      paste("van Wieringen, W.N. and Peeters, C.F.W. (2015). ",
+      paste("van Wieringen, W.N. and Peeters, C.F.W. (To appear). ",
 		        "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. ",
-        	  "arXiv:1403.0904v3 [stat.ME].", sep = "")
+        	  "Computational Statistics & Data Analysis, available as arXiv:1403.0904v3 [stat.ME].", sep = "")
 )
 
 citEntry(entry="InCollection",
