@@ -1,18 +1,17 @@
-\name{conditionNumberPlot}
-\alias{conditionNumberPlot}
+\name{CNplot}
+\alias{CNplot}
 \title{
 Visualize the spectral condition number against the regularization parameter
 }
 \description{
-Function that visualizes the spectral condition number of the regularized precision matrix against the range of the regularization parameter.
-The function can be used to heuristically determine the (minimal) value of the penalty parameter.
+Function that visualizes the spectral condition number of the regularized precision matrix against the domain of the regularization parameter.
+The function can be used to heuristically determine an acceptable (minimal) value for the penalty parameter.
 }
 \usage{
-conditionNumberPlot(S, lambdaMin, lambdaMax, step, type = "Alt",
-                    target = default.target(S), norm = "2",
-                    digitLoss = FALSE, rlDist = FALSE,
-                    vertical = FALSE, value, main = TRUE,
-                    nOutput = FALSE, verbose = TRUE)
+CNplot(S, lambdaMin, lambdaMax, step, type = "Alt",
+       target = default.target(S), norm = "2",
+       Iaids = FALSE, vertical = FALSE, value = 1e-100,
+       main = "", nOutput = FALSE, verbose = TRUE)
 }
 \arguments{
   \item{S}{
@@ -36,11 +35,8 @@ A target \code{matrix} (in precision terms) for Type I ridge estimators.
   \item{norm}{
 A \code{character} indicating the norm under which the condition number is to be calculated/estimated. Must be one of: "1", "2".
 }
-  \item{digitLoss}{
-A \code{logical} indicating if the approximate loss in digits of accuracy should also be visualized in the output graph.
-}
-  \item{rlDist}{
-A \code{logical} indicating if the relative distance to the set of singular matrices should also be visualized in the output graph.
+  \item{Iaids}{
+A \code{logical} indicating if the basic condition number plot should be amended with interpretational aids.
 }
   \item{vertical}{
 A \code{logical} indicating if output graph should come with a vertical line at a pre-specified value for the penalty parameter.
@@ -49,7 +45,7 @@ A \code{logical} indicating if output graph should come with a vertical line at 
 A \code{numeric} indicating a pre-specified value for the penalty parameter.
 }
   \item{main}{
-A \code{logical} indicating if output graph should contain type of estimator as main title.
+A \code{character} with which to specify the main title of the output graph.
 }
   \item{nOutput}{
 A \code{logical} indicating if numeric output should be returned.
@@ -63,35 +59,37 @@ Under certain target choices the proposed ridge estimators (see \code{\link{ridg
 \eqn{\mathbf{S}} are left intact. Such rotation equivariant situations help to understand the effect of the ridge penalty on the precision estimate:
 The effect can be understood in terms of shrinkage of the eigenvalues of the unpenalized precision estimate \eqn{\mathbf{S}^{-1}}. Maximum shrinkage implies that all eigenvalues are
 forced to be equal (in the rotation equivariant situation). The spectral condition number w.r.t. inversion (ratio of maximum to minimum eigenvalue) of the regularized precision matrix may
-function as a heuristic in determining the (minimal) value of the penalty parameter. A matrix with a high condition number is near-singular
+function as a heuristic in determining the (minimal) value of the penalty parameter.
+A matrix with a high condition number is near-singular (the relative distance to the set of singular matrices equals the reciprocal of the condition number; Demmel, 1987)
 and its inversion is numerically unstable. Such a matrix is said to be ill-conditioned. Numerically, ill-conditioning will mean that
 small changes in the penalty parameter lead to dramatic changes in the condition number. From a numerical point of view one can thus track
-the range of the penalty parameter for which the regularized precision matrix is ill-conditioned. When plotting the condition number against
-the (range of the) penalty parameter, the point of stabilization of the former will often show up as an elbow (when working in the \eqn{p > n} situation). This
-suggest the following fast heuristic (in analogy to the use of the scree plot in factor analysis) for determining the (minimal) value
+the domain of the penalty parameter for which the regularized precision matrix is ill-conditioned. When plotting the condition number against
+the (domain of the) penalty parameter, there is a point of relative stabilization (when working in the \eqn{p > n} situation) that can be characterized by a leveling-off of the acceleration along the curve when plotting
+the condition number against the (chosen) domain of the penalty parameter. This
+suggest the following fast heuristic for determining the (minimal) value
 of the penalty parameter: The value of the penalty parameter for which the spectral condition number starts to stabilize
 may be termed an acceptable (minimal) value.
 
-The function outputs a graph of the (spectral) matrix condition number over the range [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the spectral
+The function outputs a graph of the (spectral) matrix condition number over the domain [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the spectral
 condition number is calculated. It is determined by exact calculation using the spectral decomposition. For most purposes this exact calculation is fast enough,
 especially when considering rotation equivariant situations (see \code{\link{ridgeP}}). When exact computation of the spectral condition number
 is deemed too costly one may approximate the computationally friendly L1-condition number. This approximation is accessed through the \link[base]{rcond} function
-(Anderson et al. 1999). When \code{rlDist = TRUE} the relative distance to the set of singular matrices is also visualized in the output graph.
-The relative distance to the set of singular matrices equals the reciprocal of the condition number (Demmel, 1987).
-When \code{digitLoss = TRUE} the approximate loss in digits of accuracy (for the operation of inversion) is additionally visualized in the output graph. These options may enhance interpretation of the graph.
+(Anderson et al. 1999). When \code{Iaids = TRUE} the basic condition number plot is amended/enhanced with two additional plots (over the same domain of the penalty parameter as the basic plot): The approximate loss in digits of accuracy (for the operation of inversion) and an approximation to the second-order derivative of the curvature in the basic plot. These interpretational aids can enhance interpretation of the basic condition number plot and may support choosing a value for the penalty parameter (see Peeters, van de Wiel, & van Wieringen, 2016).
 When \code{vertical = TRUE} a vertical line is added
 at the constant \code{value}. This option can be used to assess if the optimal penalty obtained by, e.g., the routines \code{\link{optPenalty.LOOCV}}
 or \code{\link{optPenalty.aLOOCV}}, has led to a precision estimate that is well-conditioned.
 }
 \value{
 The function returns a graph. If \code{nOutput = TRUE} the function also returns an object of class \code{list}:
-\item{lambdas}{A \code{numeric} vector representing all values of the penalty parameter for which the condition number was calculated.}
+\item{lambdas}{A \code{numeric} vector representing all values of the penalty parameter for which the condition number was calculated. The values of the penalty parameter are log-equidistant.}
 \item{conditionNumbers}{A \code{numeric} vector containing the condition number for each value of the penalty parameter given in \code{lambdas}.}
 }
 \references{
 Anderson, E, Bai, Z., ..., Sorenson, D. (1999). LAPACK Users' Guide (3rd ed.). Philadelphia, PA, USA: Society for Industrial and Applied Mathematics.
 
 Demmel, J.W. (1987). On condition numbers and the distance to the nearest ill-posed problem. Numerische Mathematik, 51: 251--289.
+
+Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016). The spectral condition number plot for regularization parameter determination.
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>
@@ -110,5 +108,7 @@ Cx <- covML(X)
 
 ## Assess spectral condition number across grid of penalty parameter
 conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
-}
 
+## Include interpretational aids
+conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
+}
