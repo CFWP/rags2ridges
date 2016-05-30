@@ -23,9 +23,10 @@
 ##             rags2ridges.cpp    >> C++ work horses
 ##
 ## Publications:
-##   [1] van Wieringen, W.N. & Peeters, C.F.W. (2015).
+##   [1] van Wieringen, W.N. & Peeters, C.F.W. (To appear).
 ##       "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional
-##       Data", arXiv:1403.0904v3 [stat.ME].
+##       Data", Computational Statistics & Data Analysis. Available from
+##       arXiv:1403.0904v3 [stat.ME].
 ##   [2] van Wieringen, W.N. & Peeters, C.F.W. (2015).
 ##       "Application of a New Ridge Estimator of the Inverse Covariance Matrix
 ##       to the Reconstruction of Gene-Gene Interaction Networks", in: di Serio,
