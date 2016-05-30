@@ -144,9 +144,13 @@ Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
   Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
   arXiv:1509.07982v1 [stat.ME].
 
-  van Wieringen, W.N. & Peeters, C.F.W. (2015).
+  Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
+  The Condition Number Plot for Regularization Parameter Determination.
+
+  van Wieringen, W.N. & Peeters, C.F.W. (To appear).
   Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-  arXiv:1403.0904v3 [stat.ME].
+  Computational Statistics & Data Analysis.
+  Available as arXiv:1403.0904v3 [stat.ME].
 
   van Wieringen, W.N. & Peeters, C.F.W. (2015).
   Application of a New Ridge Estimator of the Inverse Covariance Matrix

@@ -29,9 +29,10 @@ is.Xlist(Xlist, Ylist = FALSE, semi = FALSE)
   Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
   arXiv:1509.07982v1 [stat.ME].
 
-  van Wieringen, W.N. & Peeters, C.F.W. (2015).
+  van Wieringen, W.N. & Peeters, C.F.W. (To appear).
   Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-  arXiv:1403.0904v3 [stat.ME].
+  Computational Statistics & Data Analysis.
+  Available as arXiv:1403.0904v3 [stat.ME].
 }
 \author{
 Anders Bilgrau,
