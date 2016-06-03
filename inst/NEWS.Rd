@@ -5,6 +5,12 @@
 
 
 \section{Changes in version 2.1}{
+  \subsection{Documentation:}{
+    \itemize{
+      \item Updated \code{CITATION} file
+      \item Updated \code{README} file
+    }
+  }
   \subsection{Notifications:}{
     \itemize{
       \item \code{conditionNumberPlot} is deprecated. Please use \code{CNplot} instead
