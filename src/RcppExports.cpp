@@ -125,6 +125,18 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// armaEigShrinkArchII
+arma::vec armaEigShrinkArchII(const arma::vec dVec, const double lambda);
+RcppExport SEXP rags2ridges_armaEigShrinkArchII(SEXP dVecSEXP, SEXP lambdaSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const arma::vec >::type dVec(dVecSEXP);
+    Rcpp::traits::input_parameter< const double >::type lambda(lambdaSEXP);
+    __result = Rcpp::wrap(armaEigShrinkArchII(dVec, lambda));
+    return __result;
+END_RCPP
+}
 // armaRidgePAnyTarget
 arma::mat armaRidgePAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda, int invert);
 RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
