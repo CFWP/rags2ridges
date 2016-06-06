@@ -1825,8 +1825,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
         } else {
           if (type == "ArchI"){
             for (k in 1:length(lambdas)){
-              P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-              Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
+              Eigs      <- .armaEigShrinkArchIAnyTarget(S, target = target, lambdas[k])
               condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
             }
           }
