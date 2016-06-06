@@ -37,6 +37,10 @@ PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
     .Call('rags2ridges_armaEigShrinkArchI', PACKAGE = 'rags2ridges', dVec, lambda, cons)
 }
 
+.armaEigShrinkArchIAnyTarget <- function(S, target, lambda) {
+    .Call('rags2ridges_armaEigShrinkArchIAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
+}
+
 .armaEigShrinkArchII <- function(dVec, lambda) {
     .Call('rags2ridges_armaEigShrinkArchII', PACKAGE = 'rags2ridges', dVec, lambda)
 }

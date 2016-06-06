@@ -224,7 +224,7 @@ arma::vec armaEigShrinkArchIAnyTarget(const arma::mat & S,
   /* ---------------------------------------------------------------------------
    - Function that shrinks the eigenvalues
    - Shrinkage is that of the archetypal I ridge estimator under a
-   general target
+     general target
    - Main use is in deferring relative expensive spectral decomposition to C++
    - S      > A sample covariance matrix
    - target > Target matrix of same dimensions as S
@@ -233,7 +233,7 @@ arma::vec armaEigShrinkArchIAnyTarget(const arma::mat & S,
 
   arma::vec eigvals;
   arma::mat eigvecs = (1-lambda) * S + lambda * inv_sympd(target);
-    eig_sym(eigvals, eigvecs, eigvecs, "dc");
+  eig_sym(eigvals, eigvecs, eigvecs, "dc");
   return (eigvals);
 }
 
