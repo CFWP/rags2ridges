@@ -239,21 +239,6 @@ arma::vec armaEigShrinkArchIAnyTarget(const arma::mat & S,
 
 
 
-// [[Rcpp::export(.armaEigShrinkArchII)]]
-arma::vec armaEigShrinkArchII(const arma::vec dVec,
-                              const double lambda) {
-  /* ---------------------------------------------------------------------------
-  - Function that shrinks the eigenvalues
-  - Shrinkage is that of the Archetypal Type II estimator
-  - dVec   > numeric vector containing the eigenvalues of a matrix S
-  - lambda > penalty parameter
-  --------------------------------------------------------------------------- */
-
-  return (dVec + lambda);
-}
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
