@@ -3050,7 +3050,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 
 
 Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
-                   lay = layout.circle, Vsize = 15, Vcex = 1,
+                   lay = "layout.circle", Vsize = 15, Vcex = 1,
                    Vcolor = "orangered", VBcolor = "darkred",
                    VLcolor = "black", prune = FALSE, legend = FALSE,
                    label = "", Lcex = 1.3, PTcex = 4, cut = .5,
@@ -3070,7 +3070,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   #             then indicate negative partial correlations while black lines
   #             represent positive partial correlations.
   # - lay     > determines layout of the graph. All layouts in 'layout{igraph}'
-  #             are accepted. Default = layout.circle, giving circular layout.
+  #             are accepted. Default = layout.circle.
   # - Vsize   > gives vertex size, default = 15
   # - Vcex    > gives size vertex labels, default = 1
   # - Vcolor  > gives vertex color, default = "orangered"
@@ -3109,6 +3109,21 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (!(type %in% c("plain", "fancy", "weighted"))){
     stop("type should be one of {'plain', 'fancy', 'weighted'}")
   }
+  else if (!(lay %in% c("layout.auto", "layout.random",
+                        "layout.circle", "layout.sphere",
+                        "layout.fruchterman.reingold",
+                        "layout.kamada.kawai", "layout.spring",
+                        "layout.reingold.tilford",
+                        "layout.fruchterman.reingold.grid",
+                        "layout.lgl", "layout.graphopt", "layout.svd"))){
+    stop("lay should be one of {'layout.auto', 'layout.random',
+         'layout.circle', 'layout.sphere',
+         'layout.fruchterman.reingold',
+         'layout.kamada.kawai', 'layout.spring',
+         'layout.reingold.tilford',
+         'layout.fruchterman.reingold.grid',
+         'layout.lgl', 'layout.graphopt', 'layout.svd'}")
+}
   else if (class(Vsize) != "numeric"){
     stop("Input (Vsize) is of wrong class")
   }
@@ -3160,9 +3175,35 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
     GA <- graph.adjacency(AM, mode = "undirected")
     if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
 
+    # Layout specification
+    if(lay == "layout.lgl")
+    {lays = igraph:::layout.lgl}
+    if(lay == "layout.svd")
+    {lays = igraph:::layout.svd}
+    if(lay == "layout.auto")
+    {lays = igraph:::layout.auto}
+    if(lay == "layout.spring")
+    {lays = igraph:::layout.spring}
+    if(lay == "layout.random")
+    {lays = igraph:::layout.random}
+    if(lay == "layout.circle")
+    {lays = igraph:::layout.circle}
+    if(lay == "layout.sphere")
+    {lays = igraph:::layout.sphere}
+    if(lay == "layout.kamada.kawai")
+    {lays = igraph:::layout.kamada.kawai}
+    if(lay == "layout.layout.graphopt")
+    {lays = igraph:::layout.layout.graphopt}
+    if(lay == "layout.reingold.tilford")
+    {lays = igraph:::layout.reingold.tilford}
+    if(lay == "layout.fruchterman.reingold")
+    {lays = igraph:::layout.fruchterman.reingold}
+    if(lay == "layout.fruchterman.reingold.grid")
+    {lays = igraph:::layout.fruchterman.reingold.grid}
+
     # Plain graph
     if (type == "plain"){
-      plot(GA, layout = lay, vertex.size = Vsize, vertex.label.family = "sans",
+      plot(GA, layout = lays, vertex.size = Vsize, vertex.label.family = "sans",
            vertex.label.cex = Vcex, vertex.color = Vcolor,
            vertex.frame.color = VBcolor,
            vertex.label.color = VLcolor, main = main)
@@ -3187,7 +3228,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
         E(GA)[E(GA)$weight < 0]$style <- "dashed"
         E(GA)[E(GA)$weight > 0]$style <- "solid"
         E(GA)[abs(E(GA)$weight) > cut]$color <- "black"
-        plot(GA, layout = lay, vertex.size = Vsize,
+        plot(GA, layout = lays, vertex.size = Vsize,
              vertex.label.family = "sans", vertex.label.cex = Vcex,
              vertex.color = Vcolor, vertex.frame.color = VBcolor,
              vertex.label.color = VLcolor,
@@ -3220,7 +3261,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
         E(GA)$weight <- Mmelt$value
         E(GA)[E(GA)$weight < 0]$color <- nEcolor
         E(GA)[E(GA)$weight > 0]$color <- pEcolor
-        plot(GA, layout = lay, vertex.size = Vsize,
+        plot(GA, layout = lays, vertex.size = Vsize,
              vertex.label.family = "sans", vertex.label.cex = Vcex,
              vertex.color = Vcolor, vertex.frame.color = VBcolor,
              vertex.label.color = VLcolor,
@@ -3910,5 +3951,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 ################################################################################
 
 # In development
+
 
 
