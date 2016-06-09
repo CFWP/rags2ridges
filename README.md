@@ -1,6 +1,9 @@
 ![rags2ridges](https://github.com/CFWP/rags2ridges/blob/master/inst/RAGS.png)
 
 
+[![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
+
+
 **rags2ridges**
 ---------------
 
