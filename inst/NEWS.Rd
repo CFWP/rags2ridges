@@ -11,6 +11,15 @@
       \item Updated \code{README} file
     }
   }
+  \subsection{Bug fixes:}{
+    \itemize{
+      \item Fixed bug in \code{Ugraph}:
+        \itemize{
+          \item Incorrectly stated before that all igraph layouts were supported.
+          \item Now they indeed are supported.
+      }
+    }
+  }
   \subsection{Notifications:}{
     \itemize{
       \item \code{conditionNumberPlot} is deprecated. Please use \code{CNplot} instead
