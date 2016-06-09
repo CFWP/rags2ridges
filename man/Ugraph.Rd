@@ -7,10 +7,13 @@ Visualize undirected graph
 Function that visualizes the sparsified precision matrix as an undirected graph.
 }
 \usage{
-Ugraph(M, type = c("plain", "fancy", "weighted"), lay = layout.circle, Vsize = 15,
-Vcex = 1, Vcolor = "orangered", VBcolor = "darkred", VLcolor = "black",
-prune = FALSE, legend = FALSE, label = "", Lcex = 1.3, PTcex = 4, cut = 0.5,
-scale = 10, pEcolor = "black", nEcolor = "grey", main = "")
+Ugraph(M, type = c("plain", "fancy", "weighted"),
+lay = "layout.circle", Vsize = 15, Vcex = 1,
+Vcolor = "orangered", VBcolor = "darkred",
+VLcolor = "black", prune = FALSE, legend = FALSE,
+label = "", Lcex = 1.3, PTcex = 4, cut = .5,
+scale = 10, pEcolor = "black", nEcolor = "grey",
+main = "")
 }
 \arguments{
   \item{M}{
@@ -20,7 +23,8 @@ scale = 10, pEcolor = "black", nEcolor = "grey", main = "")
 A \code{character} indicating the type of graph to be produced. Must be one of: "plain", "fancy", "weighted".
 }
   \item{lay}{
-Function call to \code{\link{igraph}} determining the placement of vertices.
+A \code{character} mimicking a call to \code{\link{igraph}} layout functions.
+Determines the placement of vertices.
 }
   \item{Vsize}{
 A \code{numeric} determining the vertex size.
@@ -131,4 +135,7 @@ PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
 
 ## Obtain graphical representation
 Ugraph(PC0, type = "fancy", cut = 0.07)
+
+## Obtain graphical representation with Fruchterman-Reingold layout
+Ugraph(PC0, type = "fancy", lay = "layout.fruchterman.reingold", cut = 0.07)
 }
