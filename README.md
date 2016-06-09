@@ -1,4 +1,4 @@
-![rags2ridges](https://raw.githubusercontent.com/CFWP/rags2ridges/tree/master/inst/RAGS.png)
+![rags2ridges](https://github.com/CFWP/rags2ridges/tree/master/inst/RAGS.png)
 
 
 **rags2ridges**
