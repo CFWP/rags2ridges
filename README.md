@@ -3,6 +3,8 @@
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN version](http://www.r-pkg.org/badges/version/rags2ridges)](http://cran.r-project.org/package=rags2ridges)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](http://cran.r-project.org/web/packages/rags2ridges/index.html)
+
 
 
 **rags2ridges**
