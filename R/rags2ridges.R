@@ -3177,29 +3177,29 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 
     # Layout specification
     if(lay == "layout.lgl")
-    {lays = igraph:::layout.lgl}
+    {lays = igraph::layout.lgl}
     if(lay == "layout.svd")
-    {lays = igraph:::layout.svd}
+    {lays = igraph::layout.svd}
     if(lay == "layout.auto")
-    {lays = igraph:::layout.auto}
+    {lays = igraph::layout.auto}
     if(lay == "layout.spring")
-    {lays = igraph:::layout.spring}
+    {lays = igraph::layout.spring}
     if(lay == "layout.random")
-    {lays = igraph:::layout.random}
+    {lays = igraph::layout.random}
     if(lay == "layout.circle")
-    {lays = igraph:::layout.circle}
+    {lays = igraph::layout.circle}
     if(lay == "layout.sphere")
-    {lays = igraph:::layout.sphere}
+    {lays = igraph::layout.sphere}
     if(lay == "layout.kamada.kawai")
-    {lays = igraph:::layout.kamada.kawai}
-    if(lay == "layout.layout.graphopt")
-    {lays = igraph:::layout.layout.graphopt}
+    {lays = igraph::layout.kamada.kawai}
+    if(lay == "layout.graphopt")
+    {lays = igraph::layout.graphopt}
     if(lay == "layout.reingold.tilford")
-    {lays = igraph:::layout.reingold.tilford}
+    {lays = igraph::layout.reingold.tilford}
     if(lay == "layout.fruchterman.reingold")
-    {lays = igraph:::layout.fruchterman.reingold}
+    {lays = igraph::layout.fruchterman.reingold}
     if(lay == "layout.fruchterman.reingold.grid")
-    {lays = igraph:::layout.fruchterman.reingold.grid}
+    {lays = igraph::layout.fruchterman.reingold.grid}
 
     # Plain graph
     if (type == "plain"){
