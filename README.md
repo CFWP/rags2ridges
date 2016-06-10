@@ -5,6 +5,7 @@
 [![CRAN version](http://www.r-pkg.org/badges/version/rags2ridges)](http://cran.r-project.org/package=rags2ridges)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](http://cran.r-project.org/web/packages/rags2ridges/index.html)
 [![Total CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/rags2ridges)](http://www.r-pkg.org/pkg/rags2ridges)
+[![Coverage Status][coverage-badge]][coverage]
 
 
 
