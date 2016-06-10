@@ -114,7 +114,7 @@ In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
 Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
 \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
