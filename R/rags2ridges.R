@@ -1228,10 +1228,9 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
              "of the same dimension")
       } else {
         Spectral <- eigen(S, symmetric = TRUE)
-        Vinv     <- solve(Spectral$vectors)
         for (k in 1:length(lambdas)){
           Eigshrink <- .eigShrink(Spectral$values, lambdas[k])
-          P         <- t(Vinv) %*% diag(1/Eigshrink) %*% Vinv
+          P         <- Spectral$vectors %*% diag(1/Eigshrink) %*% t(Spectral$vectors)
           nLL       <- .5 * .LL(S, P)
           isum      <- numeric()
 
@@ -1256,10 +1255,9 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
       } else {
         varPhi   <- unique(diag(target))
         Spectral <- eigen(S, symmetric = TRUE)
-        Vinv     <- solve(Spectral$vectors)
         for (k in 1:length(lambdas)){
           Eigshrink <- .eigShrink(Spectral$values, lambdas[k], const = varPhi)
-          P         <- t(Vinv) %*% diag(1/Eigshrink) %*% Vinv
+          P         <- Spectral$vectors %*% diag(1/Eigshrink) %*% t(Spectral$vectors)
           nLL       <- .5 * .LL(S, P)
           isum      <- numeric()
 
