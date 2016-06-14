@@ -49,6 +49,7 @@
           \item now uses log-equidistant penalty grid for optimal penalty
           parameter determination (this also enhances the visualization)
       }
+      \item \code{ridgePathS} has been sped up by killing redundant inversion
     }
   }
 }
