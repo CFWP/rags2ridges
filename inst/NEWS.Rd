@@ -43,8 +43,12 @@
       of the figure
       \item \code{optPenalty.LOOCV} now uses log-equidistant penalty grid for optimal penalty
       parameter determination (this also enhances the visualization)
-      \item \code{optPenalty.aLOOCV} now uses log-equidistant penalty grid for optimal penalty
-      parameter determination (this also enhances the visualization)
+      \item New features updated \code{optPenalty.aLOOCV} function:
+        \itemize{
+          \item Function has been sped up by killing redundant inversion
+          \item now uses log-equidistant penalty grid for optimal penalty
+          parameter determination (this also enhances the visualization)
+      }
     }
   }
 }
