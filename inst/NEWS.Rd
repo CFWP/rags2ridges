@@ -49,6 +49,11 @@
           \item now uses log-equidistant penalty grid for optimal penalty
           parameter determination (this also enhances the visualization)
       }
+      \item New features updated \code{Ugraph} function:
+        \itemize{
+          \item One can now also specify vertex placement by coordinate specification
+          \item Now outputs, for convenience, the vertex coordinates of the plotted graph
+      }
       \item \code{ridgePathS} has been sped up by killing redundant inversion
     }
   }
