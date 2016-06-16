@@ -114,7 +114,8 @@
   cat("
       ###################################################
       ###################################################
-      This is my favorite natural package! Right babe?
+      This is my favorite natural ridge package!
+      No order 66 on this one, right babe?
       - Rich Piano
       ###################################################
       ################################################### \n")
