@@ -152,5 +152,10 @@ Ugraph(PC0, type = "fancy", lay = "layout_with_fr", cut = 0.07)
 
 ## Add pruning
 Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
-cut = 0.07, prune = TRUE)
+       cut = 0.07, prune = TRUE)
+
+## Obtain graph and its coordinates
+Coordinates <- Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
+                      cut = 0.07, prune = TRUE)
+Coordinates
 }
