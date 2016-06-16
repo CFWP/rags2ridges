@@ -48,10 +48,11 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     *"rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data"*. 
     R package, version 2.1. 
     URL: https://cran.r-project.org/web/packages/rags2ridges/index.html.
- 2. van Wieringen, W.N. & Peeters, C.F.W. (To appear).
+ 2. van Wieringen, W.N. & Peeters, C.F.W. (2016).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
-    Computational Statistics & Data Analysis. 
-    Available as [arXiv:1403.0904v3 \[stat.ME\]](http://arxiv.org/abs/1403.0904).
+    Computational Statistics & Data Analysis, vol. 103: 284-303
+    ([doi:10.1016/j.csda.2016.05.012](http://www.sciencedirect.com/science/article/pii/S0167947316301141)).
+    Also available as [arXiv:1403.0904v3 \[stat.ME\]](http://arxiv.org/abs/1403.0904).
  3. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016)
     *"The Spectral Condition Number Plot for Regularization Parameter Determination"*.
  4. van Wieringen, W.N. & Peeters, C.F.W. (2015).
