@@ -147,10 +147,10 @@ Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
   Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
   The Condition Number Plot for Regularization Parameter Determination.
 
-  van Wieringen, W.N. & Peeters, C.F.W. (To appear).
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
   Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-  Computational Statistics & Data Analysis.
-  Available as arXiv:1403.0904v3 [stat.ME].
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 
   van Wieringen, W.N. & Peeters, C.F.W. (2015).
   Application of a New Ridge Estimator of the Inverse Covariance Matrix

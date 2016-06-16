@@ -61,10 +61,10 @@ which can be approximated by the mean or median of losses over repeated simulati
 Function returns a \code{numeric} representing the loss under the chosen loss function.
 }
 \references{
-van Wieringen, W.N. & Peeters, C.F.W. (To appear).
-Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-Computational Statistics & Data Analysis.
-Available as arXiv:1403.0904v3 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen

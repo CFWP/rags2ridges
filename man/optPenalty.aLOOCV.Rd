@@ -71,10 +71,10 @@ An object of class list:
 Lian, H. (2011). Shrinkage tuning parameter selection in precision matrices estimation. Journal of Statistical
 Planning and Inference, 141: 2839-2848.
 
-van Wieringen, W.N. & Peeters, C.F.W. (To appear).
+van Wieringen, W.N. & Peeters, C.F.W. (2016).
 Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-Computational Statistics & Data Analysis.
-Available as arXiv:1403.0904v3 [stat.ME].
+Computational Statistics & Data Analysis, vol. 103: 284-303.
+Also available as arXiv:1403.0904v3 [stat.ME].
 
 Vujacic, I., Abbruzzo, A., and Wit, E.C. (2014). A computationally fast alternative to cross-validation in
 penalized Gaussian graphical models. arXiv: 1309.6216v2 [stat.ME].

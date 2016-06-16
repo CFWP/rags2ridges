@@ -101,10 +101,10 @@ by the arguments \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, 
 Csardi, G. and Nepusz, T. (2006). The igraph software package for complex network research. InterJournal, Complex Systems 1695.
 http://igraph.sf.net
 
-van Wieringen, W.N. & Peeters, C.F.W. (To appear).
+van Wieringen, W.N. & Peeters, C.F.W. (2016).
 Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
-Computational Statistics & Data Analysis.
-Available as arXiv:1403.0904v3 [stat.ME].
+Computational Statistics & Data Analysis, vol. 103: 284-303.
+Also available as arXiv:1403.0904v3 [stat.ME].
 
 van Wieringen, W.N. & Peeters, C.F.W. (2015).
 Application of a New Ridge Estimator of the Inverse Covariance Matrix
