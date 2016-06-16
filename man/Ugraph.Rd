@@ -148,9 +148,9 @@ PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
 Ugraph(PC0, type = "fancy", cut = 0.07)
 
 ## Obtain graphical representation with Fruchterman-Reingold layout
-Ugraph(PC0, type = "fancy", lay = "layout.fruchterman.reingold", cut = 0.07)
+Ugraph(PC0, type = "fancy", lay = "layout_with_fr", cut = 0.07)
 
 ## Add pruning
-Ugraph(PC0, type = "fancy", lay = "layout.fruchterman.reingold",
+Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
 cut = 0.07, prune = TRUE)
 }
