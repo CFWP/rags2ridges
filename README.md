@@ -60,7 +60,8 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     to the Reconstruction of Gene-Gene Interaction Networks"*.
     In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
     `Computational Intelligence Methods for Bioinformatics and Biostatistics'.
-    Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
+    Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179
+    ([doi:10.1007/978-3-319-24462-4_15](http://link.springer.com/chapter/10.1007%2F978-3-319-24462-4_15)).
  5. Bilgrau\*, A.E., Peeters\*, C.F.W., Eriksen, P.S., Boegsted, M., & van Wieringen, W.N. (2015).
     *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*.
     Available as [arXiv:1509.07982v1 \[stat.ME\]](http://arxiv.org/abs/1509.07982). 
