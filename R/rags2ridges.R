@@ -3045,8 +3045,8 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 
 
 Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
-                   lay = "layout.circle", Vsize = 15, Vcex = 1,
-                   Vcolor = "orangered", VBcolor = "darkred",
+                   lay = "layout_in_circle", coords = NULL, Vsize = 15,
+                   Vcex = 1, Vcolor = "orangered", VBcolor = "darkred",
                    VLcolor = "black", prune = FALSE, legend = FALSE,
                    label = "", Lcex = 1.3, PTcex = 4, cut = .5,
                    scale = 10, pEcolor = "black", nEcolor = "grey",
@@ -3064,8 +3064,15 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   #             indicates the strenght of the partial correlations. Grey lines
   #             then indicate negative partial correlations while black lines
   #             represent positive partial correlations.
-  # - lay     > determines layout of the graph. All layouts in 'layout{igraph}'
-  #             are accepted. Default = layout.circle.
+  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
+  #             are accepted. Default = layout_in_circle.
+  # - coords  > matrix of coordinates to determine layout of the graph.
+  #             The row dimension should equal the number of (pruned) vertices.
+  #             The column dimension should equal 2 (for 2D layouts) or
+  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
+  #             according to the coordinates of a previous call to Ugraph.
+  #             If both the the lay and the coords arguments are not NULL,
+  #             the lay argument takes precedence
   # - Vsize   > gives vertex size, default = 15
   # - Vcex    > gives size vertex labels, default = 1
   # - Vcolor  > gives vertex color, default = "orangered"
@@ -3104,21 +3111,30 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (!(type %in% c("plain", "fancy", "weighted"))){
     stop("type should be one of {'plain', 'fancy', 'weighted'}")
   }
-  else if (!(lay %in% c("layout.auto", "layout.random",
-                        "layout.circle", "layout.sphere",
-                        "layout.fruchterman.reingold",
-                        "layout.kamada.kawai", "layout.spring",
-                        "layout.reingold.tilford",
-                        "layout.fruchterman.reingold.grid",
-                        "layout.lgl", "layout.graphopt", "layout.svd"))){
-    stop("lay should be one of {'layout.auto', 'layout.random',
-         'layout.circle', 'layout.sphere',
-         'layout.fruchterman.reingold',
-         'layout.kamada.kawai', 'layout.spring',
-         'layout.reingold.tilford',
-         'layout.fruchterman.reingold.grid',
-         'layout.lgl', 'layout.graphopt', 'layout.svd'}")
-}
+  else if (!((length(intersect(lay,c("layout_as_star", "layout_as_tree",
+                                     "layout_in_circle", "layout_nicely",
+                                     "layout_with_dh", "layout_with_gem",
+                                     "layout_with_graphopt", "layout_on_grid",
+                                     "layout_with_mds", "layout_components",
+                                     "layout_on_sphere", "layout_randomly",
+                                     "layout_with_fr", "layout_with_kk",
+                                     "layout_with_lgl"))) > 0) | is.null(lay))){
+    stop("lay should be 'NULL' or one of
+         {'layout_as_star', 'layout_as_tree',
+         'layout_in_circle', 'layout_nicely',
+         'layout_with_dh', 'layout_with_gem',
+         'layout_with_graphopt', 'layout_on_grid',
+         'layout_with_mds', 'layout_components',
+         'layout_on_sphere', 'layout_randomly',
+         'layout_with_fr', 'layout_with_kk',
+         'layout_with_lgl'}")
+  }
+  else if (!is.null(coords) & class(coords) != "matrix"){
+    stop("Input (coords) is of wrong class")
+  }
+  else if (is.null(lay) & is.null(coords)){
+    stop("Input (lay) and input (coords) cannot be both NULL")
+  }
   else if (class(Vsize) != "numeric"){
     stop("Input (Vsize) is of wrong class")
   }
@@ -3171,30 +3187,47 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
     if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
 
     # Layout specification
-    if(lay == "layout.lgl")
-    {lays = igraph::layout.lgl}
-    if(lay == "layout.svd")
-    {lays = igraph::layout.svd}
-    if(lay == "layout.auto")
-    {lays = igraph::layout.auto}
-    if(lay == "layout.spring")
-    {lays = igraph::layout.spring}
-    if(lay == "layout.random")
-    {lays = igraph::layout.random}
-    if(lay == "layout.circle")
-    {lays = igraph::layout.circle}
-    if(lay == "layout.sphere")
-    {lays = igraph::layout.sphere}
-    if(lay == "layout.kamada.kawai")
-    {lays = igraph::layout.kamada.kawai}
-    if(lay == "layout.graphopt")
-    {lays = igraph::layout.graphopt}
-    if(lay == "layout.reingold.tilford")
-    {lays = igraph::layout.reingold.tilford}
-    if(lay == "layout.fruchterman.reingold")
-    {lays = igraph::layout.fruchterman.reingold}
-    if(lay == "layout.fruchterman.reingold.grid")
-    {lays = igraph::layout.fruchterman.reingold.grid}
+    if(is.null(lay)){
+      if(dim(coords)[1] != length(V(GA))){
+        stop("Row dimension of input (coords) does not match the
+             number of vertices to be plotted")
+      } else if (dim(coords)[2] > 3){
+        stop("Column dimension of input (coords) exceeds the number
+             of dimensions that can be visualized")
+      } else {lays = coords}
+      }
+    else{
+      if(lay == "layout_as_star"){
+        lays = igraph::layout_as_star(GA)}
+      if(lay == "layout_as_tree")
+      {lays = igraph::layout_as_tree(GA)}
+      if(lay == "layout_in_circle"){
+        lays = igraph::layout_in_circle(GA)}
+      if(lay == "layout_nicely"){
+        lays = igraph::layout_nicely(GA)}
+      if(lay == "layout_with_dh"){
+        lays = igraph::layout_with_dh(GA)}
+      if(lay == "layout_with_gem"){
+        lays = igraph::layout_with_gem(GA)}
+      if(lay == "layout_with_graphopt"){
+        lays = igraph::layout_with_graphopt(GA)}
+      if(lay == "layout_on_grid"){
+        lays = igraph::layout_on_grid(GA)}
+      if(lay == "layout_with_mds"){
+        lays = igraph::layout_with_mds(GA)}
+      if(lay == "layout_components"){
+        lays = igraph::layout_components(GA)}
+      if(lay == "layout_on_sphere"){
+        lays = igraph::layout_on_sphere(GA)}
+      if(lay == "layout_randomly"){
+        lays = igraph::layout_randomly(GA)}
+      if(lay == "layout_with_fr"){
+        lays = igraph::layout_with_fr(GA)}
+      if(lay == "layout_with_kk"){
+        lays = igraph::layout_with_kk(GA)}
+      if(lay == "layout_with_lgl"){
+        lays = igraph::layout_with_lgl(GA)}
+    }
 
     # Plain graph
     if (type == "plain"){
@@ -3288,7 +3321,10 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                cex = Lcex, pt.cex = PTcex)
       }
     }
-  }
+
+    # Return
+    return(coordinates <- lays)
+    }
 }
 
 
