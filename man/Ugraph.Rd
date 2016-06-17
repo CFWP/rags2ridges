@@ -108,6 +108,10 @@ The arguments \code{label}, \code{Lcex}, and \code{PTcex} are only used when \co
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by any edge) are removed.
 For the colors supported by the arguments \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and \code{nEcolor} see \url{www.stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
 }
+\value{
+The function returns a graph.
+The function also returns a \code{matrix} object containing the coordinates of the vertices in the given graph.
+}
 \references{
 Csardi, G. and Nepusz, T. (2006). The igraph software package for complex network research. InterJournal, Complex Systems 1695.
 http://igraph.sf.net
