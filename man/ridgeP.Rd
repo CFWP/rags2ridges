@@ -75,7 +75,7 @@ In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
 Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen, Anders E. Bilgrau
+Carel F.W. Peeters <cf.peeters@vumc.nl>, Anders E. Bilgrau
 }
 \seealso{
 \code{\link{default.target}}
