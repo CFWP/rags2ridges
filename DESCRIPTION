@@ -13,4 +13,5 @@ LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
 URL: http://www.bigstatistics.nl/carel-fw-peeters
+BugReports: https://github.com/CFWP/rags2ridges/issues
 Suggests: KEGGgraph, graph, testthat
