@@ -41,6 +41,8 @@ The targets \code{DAIE}, \code{DIAES}, \code{DAPV}, and \code{DEPV} are data-dri
 The argument \code{fraction} is only used when \code{type = "DAIE"}. The argument \code{const} is only used when \code{type = "DCPV"}.
 All types except \code{DEPV} and \code{Null} lead to rotation equivariant alternative and archetypal Type I ridge estimators.
 The target \code{Null} also leads to a rotation equivariant alternative Type II ridge estimator (see \code{\link{ridgeP}}).
+Note that the \code{DIAES}, \code{DAPV}, and \code{DEPV} targets amount to the identity matrix when the sample covariance matrix \code{S} is standardized to be the correlation matrix.
+The same goes, naturally, for the \code{DCPV} target when \code{const} is specified to be 1.
 }
 \value{
 Function returns a target \code{matrix}.
