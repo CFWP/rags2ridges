@@ -6,7 +6,7 @@
 [![Coverage Status](https://img.shields.io/codecov/c/github/CFWP/rags2ridges/master.svg)](https://codecov.io/github/CFWP/rags2ridges?branch=master)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](http://cran.r-project.org/web/packages/rags2ridges/index.html)
 [![Total CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/rags2ridges)](http://www.r-pkg.org/pkg/rags2ridges)
-[![Github All Releases](https://img.shields.io/github/downloads/rags2ridges/rags2ridges/total.svg?maxAge=2592000)]()
+[![Github All Releases](https://img.shields.io/github/downloads/atom/atom/total.svg?maxAge=2592000)]()
 
 
 **rags2ridges**
