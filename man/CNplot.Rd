@@ -94,6 +94,11 @@ Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016). The spectral c
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
+\note{
+The condition number of a (regularized) covariance matrix is equivalent to the condition number of its corresponding inverse, the (regularized) precision matrix.
+Please note that the \code{target} argument (for Type I ridge estimators) is assumed to be specified in precision terms.
+In case one is interested in the condition number of a Type I estimator under a covariance target, say \eqn{\mathbf{\Gamma}}, then just specify \code{target = solve}(\eqn{\mathbf{\Gamma}}).
+}
 \seealso{
 \code{\link{covML}}, \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
 }
