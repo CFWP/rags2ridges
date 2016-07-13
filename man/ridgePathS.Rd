@@ -9,7 +9,7 @@ Function that visualizes the regularization paths of the nonredundant elements o
 }
 \usage{
 ridgePathS(S, lambdaMin, lambdaMax, step, type = "Alt", target = default.target(S),
-plotType = "pcor", diag = FALSE, vertical = FALSE, value, verbose = TRUE)
+           plotType = "pcor", diag = FALSE, vertical = FALSE, value, verbose = TRUE)
 }
 \arguments{
   \item{S}{
