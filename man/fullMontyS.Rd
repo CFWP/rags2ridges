@@ -10,8 +10,9 @@ data to a penalized precision estimate, to the corresponding conditional indepen
 and topology summaries.
 }
 \usage{
-fullMontyS(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)), dir = getwd(),
-fileTypeFig = "pdf", FDRcut = 0.9, nOutput = TRUE, verbose = TRUE)
+fullMontyS(Y, lambdaMin, lambdaMax, target = default.target(covML(Y)),
+           dir = getwd(), fileTypeFig = "pdf", FDRcut = 0.9,
+           nOutput = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{Y}{
