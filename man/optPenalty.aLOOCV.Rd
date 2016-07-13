@@ -9,8 +9,9 @@ leave-one-out cross-validation. Its output includes (a.o.) the precision matrix 
 penalty parameter.
 }
 \usage{
-optPenalty.aLOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt", target =
-default.target(covML(Y)), output = "light", graph = TRUE, verbose = TRUE)
+optPenalty.aLOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt",
+                  target = default.target(covML(Y)),
+                  output = "light", graph = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{Y}{
