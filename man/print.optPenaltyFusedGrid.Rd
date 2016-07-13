@@ -17,7 +17,8 @@ Currently, only the complete penalty graph is supported.
 \arguments{
   \item{x}{
     A \code{optPenaltyFusedGrid}-object print or plot.
-    Usually the output of \code{\link{optPenalty.fused.grid}}.
+    Usually the output of
+    \code{\link{optPenalty.fused.grid}}.
   }
   \item{add.text}{
     A \code{logical} value controlling if the text should be added to the plot.
