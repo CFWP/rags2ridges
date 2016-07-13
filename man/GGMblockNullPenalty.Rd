@@ -10,8 +10,9 @@ It generates an empirical distribution of the penalty parameter under the null h
 }
 \usage{
 GGMblockNullPenalty(Y, id, nPerm = 25, lambdaMin, lambdaMax,
-lambdaInit = (lambdaMin + lambdaMax)/2, target = default.target(covML(Y)),
-type = "Alt", ncpus = 1)
+                    lambdaInit = (lambdaMin + lambdaMax)/2,
+                    target = default.target(covML(Y)),
+                    type = "Alt", ncpus = 1)
 }
 \arguments{
   \item{Y}{
