@@ -8,7 +8,7 @@ Function that determines the support of a partial correlation/precision matrix b
 }
 \usage{
 sparsify(P, threshold = c("absValue", "localFDR", "top"), absValueCut = 0.25,
-FDRcut = 0.9, top = 10, output = "heavy", verbose = TRUE)
+         FDRcut = 0.9, top = 10, output = "heavy", verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
