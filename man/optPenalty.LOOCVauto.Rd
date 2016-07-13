@@ -8,8 +8,9 @@ Function that performs an 'automatic' search for the optimal penalty parameter f
 call by employing Brent's method to the calculation of a cross-validated negative log-likelihood score.
 }
 \usage{
-optPenalty.LOOCVauto(Y, lambdaMin, lambdaMax, lambdaInit = (lambdaMin + lambdaMax)/2,
-target = default.target(covML(Y)), type = "Alt")
+optPenalty.LOOCVauto(Y, lambdaMin, lambdaMax,
+                     lambdaInit = (lambdaMin + lambdaMax)/2,
+                     target = default.target(covML(Y)), type = "Alt")
 }
 \arguments{
   \item{Y}{
