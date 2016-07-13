@@ -90,8 +90,7 @@ They perform core computations for many other functions.
 }
 \author{
   Anders Ellern Bilgrau,
-  Carel F.W. Peeters <cf.peeters@vumc.nl>,
-  Wessel N. van Wieringen
+  Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \section{Warning}{
   The functions themselves perform no checks on the input. Correct input should
