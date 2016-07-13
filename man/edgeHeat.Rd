@@ -9,7 +9,7 @@ matrix. May also be used in assessing the performance of edge selection techniqu
 }
 \usage{
 edgeHeat(M, lowColor = "blue", highColor = "red", textsize = 10, diag = TRUE,
-legend = TRUE, main = "")
+         legend = TRUE, main = "")
 }
 \arguments{
   \item{M}{
