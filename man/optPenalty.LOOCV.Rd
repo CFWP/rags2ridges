@@ -10,8 +10,8 @@ Its output includes (a.o.) the precision matrix under the optimal value of the p
 }
 \usage{
 optPenalty.LOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt",
-target = default.target(covML(Y)), output = "light", graph = TRUE,
-verbose = TRUE)
+                 target = default.target(covML(Y)), output = "light",
+                 graph = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{Y}{
