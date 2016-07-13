@@ -10,7 +10,7 @@ The mentioned test is a permutation-based test (see details).
 }
 \usage{
 GGMblockTest(Y, id, nPerm = 1000, lambda, target = default.target(covML(Y)),
-type = "Alt", lowCiThres = 0.1, ncpus = 1, verbose = TRUE)
+             type = "Alt", lowCiThres = 0.1, ncpus = 1, verbose = TRUE)
 }
 \arguments{
   \item{Y}{
