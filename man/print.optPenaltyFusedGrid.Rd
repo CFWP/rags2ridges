@@ -11,8 +11,7 @@ Currently, only the complete penalty graph is supported.
 \usage{
 \method{print}{optPenaltyFusedGrid}(x, ...)
 
-\method{plot}{optPenaltyFusedGrid}(x, add.text = TRUE, add.contour = TRUE,
-      col = rainbow(100, end = 0.8), ...)
+\method{plot}{optPenaltyFusedGrid}(x, add.text = TRUE, add.contour = TRUE, col = rainbow(100, end = 0.8), ...)
 }
 \arguments{
   \item{x}{
