@@ -8,7 +8,7 @@ Function that performs maximum likelihood estimation of the covariance matrix, w
 }
 \usage{
 covMLknown(Y, covMat = NULL, corMat = NULL, corType = "none",
-varType = "none", nInit = 100)
+           varType = "none", nInit = 100)
 }
 \arguments{
   \item{Y}{
