@@ -55,7 +55,8 @@ Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
 \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}}, \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
-\code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}
+\code{\link{optPenalty.LOOCV}}, \cr
+\code{\link{default.target}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
