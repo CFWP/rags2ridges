@@ -461,10 +461,11 @@ adjacentMat <- function(M, diag = FALSE){
 
 
 
-covML <- function(Y){
+covML <- function(Y, cor = FALSE){
   ##############################################################################
   # - function that gives the maximum likelihood estimate of the covariance
   # - Y   > (raw) data matrix, assumed to have variables in columns
+  # - cor > logical indicating if the correlation matrix should be returned
   ##############################################################################
 
   # Dependencies
@@ -474,9 +475,19 @@ covML <- function(Y){
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
+  else if (class(cor) != "logical"){
+    stop("Input (cor) is of wrong class")
+  }
   else {
-    Ys  <- scale(Y, center = TRUE, scale = FALSE)
-    Sml <- crossprod(Ys)/nrow(Ys)  # (t(Ys) %*% Ys)/nrow(Ys)
+    if (cor){
+      Sml <- cor(Y)
+    }
+    else {
+      Ys  <- scale(Y, center = TRUE, scale = FALSE)
+      Sml <- crossprod(Ys)/nrow(Ys)  # (t(Ys) %*% Ys)/nrow(Ys)
+    }
+
+    # Return
     return(Sml)
   }
 }
