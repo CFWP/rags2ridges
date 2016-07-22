@@ -7,21 +7,25 @@ Maximum likelihood estimation of the covariance matrix
 Function that gives the maximum likelihood estimate of the covariance matrix.
 }
 \usage{
-covML(Y)
+covML(Y, cor = FALSE)
 }
 \arguments{
   \item{Y}{
 Data \code{matrix}. Variables assumed to be represented by columns.
 }
+  \item{cor}{
+A \code{logical} indicating if the correlation matrix should be returned
+}
 }
 \details{
-The function gives the maximum likelihood estimate of the covariance matrix.
+The function gives the maximum likelihood (ML) estimate of the covariance matrix.
 The input matrix \code{Y} assumes that the variables are represented by the columns.
 Note that when the input data is standardized, the ML covariance matrix of the scaled data is computed.
-If a correlation matrix is desired, use \code{cor}.
+If a correlation matrix is desired, use \code{cor = TRUE}.
 }
 \value{
 Function returns the maximum likelihood estimate of the covariance \code{matrix}.
+In case \code{cor = TRUE}, the correlation matrix is returned.
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
@@ -39,4 +43,7 @@ colnames(X)[1:25] = letters[1:25]
 
 ## Obtain ML estimate covariance matrix
 Cx <- covML(X)
+
+## Obtain correlation matrix
+Cx <- covML(X, cor = TRUE)
 }
