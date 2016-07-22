@@ -55,6 +55,7 @@
           \item Now outputs, for convenience, the vertex coordinates of the plotted graph
       }
       \item \code{ridgePathS} has been sped up by killing redundant inversion
+      \item The \code{covML} function has been amended with an argument that indicates if a correlation matrix (instead of an ML estimate of a covariance matrix) is desired. This offers more flexibility
     }
   }
 }
