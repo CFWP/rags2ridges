@@ -1056,6 +1056,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # require("base")
   # require("stats")
   # require("graphics")
+  # require("sfsmisc")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
@@ -1178,6 +1179,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # Dependencies
   # require("base")
   # require("graphics")
+  # require("sfsmisc")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
