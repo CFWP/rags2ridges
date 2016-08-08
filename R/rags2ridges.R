@@ -517,11 +517,13 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
   #             when corType='equi'.
   #
   # NOTES:
-  # - Currently no dependencies. In the future chunks of code may be C-ed
-  #   through Rcpp.
   # - Future version should a.o. also allow a first order autoregressive
   #   correlation assumption.
   ##############################################################################
+
+  # Dependencies
+  # require("base")
+  # require("stats")
 
   # center data
   Ys <- scale(Y, center = TRUE, scale = FALSE)
