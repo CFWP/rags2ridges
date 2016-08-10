@@ -82,9 +82,9 @@ OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
 
 ## Another example with standardized data
-Xs <- scale(X, center = TRUE, scale = TRUE)
-OPT <- optPenalty.LOOCVauto(Xs, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
-                            target = default.target(covML(Y, cor = TRUE))); OPT
+X <- scale(X, center = TRUE, scale = TRUE)
+OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
+                            target = default.target(covML(X, cor = TRUE))); OPT
 OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
 }
