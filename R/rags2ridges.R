@@ -324,12 +324,15 @@
 
 
 
-.cvl <- function(lambda, Y,  target = default.target(covML(Y)), type = "Alt"){
+.cvl <- function(lambda, Y, cor = FALSE, target = default.target(covML(Y)),
+                 type = "Alt"){
   ##############################################################################
   # - Function that calculates a cross-validated negative log-likelihood score
   #   for single penalty value
   # - lambda > value penalty parameter
   # - Y      > (raw) Data matrix, variables in columns
+  # - cor    > logical indicating if evaluation of the LOOCV score should be
+  #            performed on the correlation matrix
   # - target > target (precision terms) for Type I estimators,
   #            default = default.target(covML(Y))
   # - type   > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
@@ -337,7 +340,7 @@
 
   slh <- numeric()
   for (i in 1:nrow(Y)){
-    S   <- covML(Y[-i, ])
+    S   <- covML(Y[-i, ], cor = cor)
     slh <- c(slh, .LL(t(Y[i, , drop = FALSE]) %*% Y[i, , drop = FALSE],
                       ridgeP(S, lambda, target = target, type = type)))
   }
