@@ -1037,7 +1037,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 ##------------------------------------------------------------------------------
 
 optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
-                             target = default.target(covML(Y)),
+                             cor = FALSE, target = default.target(covML(Y)),
                              output = "light", graph = TRUE, verbose = TRUE) {
   ##############################################################################
   # - Function that selects the optimal penalty parameter by leave-one-out
@@ -1048,6 +1048,8 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # - step        > determines the coarseness in searching the grid
   #                 [lambdaMin, lambdaMax]
   # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+  # - cor         > logical indicating if evaluation of the LOOCV score should be
+  #                 performed on the correlation matrix
   # - target      > target (precision terms) for Type I estimators,
   #                 default = default.target(covML(Y))
   # - output      > must be one of {"all", "light"}, default = "light"
@@ -1099,6 +1101,9 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
+  else if (class(cor) != "logical"){
+    stop("Input (cor) is of wrong class")
+  }
   else if (!(output %in% c("all", "light"))){
     stop("Input (output) should be one of {'all', 'light'}")
   }
@@ -1117,7 +1122,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     for (k in 1:length(lambdas)){
       slh <- numeric()
       for (i in 1:nrow(Y)){
-        S   <- covML(Y[-i,])
+        S   <- covML(Y[-i,], cor = cor)
         slh <- c(slh, .LL(t(Y[i,,drop = F]) %*% Y[i,,drop = F],
                           ridgeP(S, lambdas[k], type = type, target = target)))
       }
@@ -1145,7 +1150,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     }
 
     # Return
-    S <- covML(Y)
+    S <- covML(Y, cor = cor)
     if (output == "all"){
       return(list(optLambda = optLambda,
                   optPrec = ridgeP(S, optLambda, type = type, target = target),
