@@ -94,7 +94,8 @@ When performing evaluation on the correlation scale the data are assumed to be s
 If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
 }
 \seealso{
-\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}, \code{\link{covML}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.LOOCVauto}}, \cr
+\code{\link{default.target}}, \code{\link{covML}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
