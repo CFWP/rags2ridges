@@ -1161,7 +1161,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
-                              target = default.target(covML(Y)),
+                              cor = FALSE, target = default.target(covML(Y)),
                               output = "light", graph = TRUE, verbose = TRUE) {
   ##############################################################################
   # - Function that selects the optimal penalty parameter by approximate
@@ -1172,6 +1172,8 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # - step        > determines the coarseness in searching the grid
   #                 [lambdaMin, lambdaMax]
   # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+  # - cor         > logical indicating if evaluation of the LOOCV score should be
+  #                 performed on the correlation matrix
   # - target      > target (precision terms) for Type I estimators,
   #                 default = default.target(covML(Y))
   # - output      > must be one of {"all", "light"}, default = "light"
@@ -1184,7 +1186,6 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # Dependencies
   # require("base")
   # require("graphics")
-  # require("sfsmisc")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
@@ -1222,6 +1223,9 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
+  else if (class(cor) != "logical"){
+    stop("Input (cor) is of wrong class")
+  }
   else if (!(output %in% c("all", "light"))){
     stop("Input (output) should be one of {'all', 'light'}")
   }
@@ -1230,7 +1234,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   }
   else {
     # Set preliminaries
-    S       <- covML(Y)
+    S       <- covML(Y, cor = cor)
     n       <- nrow(Y)
     lambdas <- lseq(lambdaMin, lambdaMax, length = step)
     aLOOCVs <- numeric()
@@ -1261,7 +1265,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
         }
       }
     } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
-                 (length(unique(diag(target))) == 1)) {
+               (length(unique(diag(target))) == 1)) {
       if (!isSymmetric(target)){
         stop("Shrinkage target should be symmetric")
       } else if (dim(target)[1] != dim(S)[1]){
