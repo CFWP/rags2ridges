@@ -48,8 +48,7 @@ The function employs the Brent algorithm as implemented in the
 \value{
 An object of class \code{list}:
 \item{optLambda}{A \code{numeric} giving the optimal value for the penalty parameter.}
-\item{optPrec}{A \code{matrix} representing the precision matrix of the chosen type (see \code{\link{ridgeP}}) under the
-optimal value of the penalty parameter.}
+\item{optPrec}{A \code{matrix} representing the precision matrix of the chosen type (see \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
 }
 \references{
 Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for Finding a Zero of a Function. Computer Journal 14: 422-425.
