@@ -65,7 +65,7 @@ If \code{cor = TRUE} and one wishes to used the default target specification one
 \seealso{
 \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}}, \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
 \code{\link{optPenalty.LOOCV}}, \cr
-\code{\link{default.target}}
+\code{\link{default.target}}, \code{\link{covML}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
