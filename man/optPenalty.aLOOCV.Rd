@@ -10,7 +10,7 @@ penalty parameter.
 }
 \usage{
 optPenalty.aLOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt",
-                  target = default.target(covML(Y)),
+                  cor = FALSE, target = default.target(covML(Y)),
                   output = "light", graph = TRUE, verbose = TRUE)
 }
 \arguments{
@@ -28,6 +28,10 @@ An \code{integer} determining the number of steps in moving through the grid [\c
 }
   \item{type}{
 A \code{character} indicating the type of ridge estimator to be used. Must be one of: "Alt", "ArchI", "ArchII".
+}
+  \item{cor}{
+A \code{logical} indicating if the evaluation of the approximate LOOCV score should be performed on the correlation
+scale.
 }
   \item{target}{
 A target \code{matrix} (in precision terms) for Type I ridge estimators.
@@ -83,8 +87,14 @@ penalized Gaussian graphical models. arXiv: 1309.6216v2 [stat.ME].
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
+\note{
+When \code{cor = TRUE} correlation matrices are used in the computation of the approximate (cross-validated) negative
+log-likelihood score, i.e., the sample covariance matrix is a matrix on the correlation scale.
+When performing evaluation on the correlation scale the data are assumed to be standardized.
+If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
+}
 \seealso{
-\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}}, \code{\link{default.target}}, \code{\link{covML}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
@@ -97,5 +107,13 @@ colnames(X)[1:25] = letters[1:25]
 ## Obtain regularized precision under optimal penalty
 OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30, step = 400); OPT
 OPT$optLambda	# Optimal penalty
-OPT$optPrec	# Regularized precision under optimal penalty
+OPT$optPrec	  # Regularized precision under optimal penalty
+
+## Another example with standardized data
+X <- scale(X, center = TRUE, scale = TRUE)
+OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30,
+                          step = 400, cor = TRUE,
+                          target = default.target(covML(X, cor = TRUE))); OPT
+OPT$optLambda	# Optimal penalty
+OPT$optPrec	  # Regularized precision under optimal penalty
 }
