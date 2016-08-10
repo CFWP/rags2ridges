@@ -55,7 +55,12 @@
           \item Now outputs, for convenience, the vertex coordinates of the plotted graph
       }
       \item \code{ridgePathS} has been sped up by killing redundant inversion
-      \item The \code{covML} function has been amended with an argument that indicates if a correlation matrix (instead of an ML estimate of a covariance matrix) is desired. This offers more flexibility
+      \item The \code{covML} function has been amended with an argument that indicates if a correlation matrix
+      (instead of an ML estimate of a covariance matrix) is desired. This offers more flexibility. One can now get the
+      ML estimate of the covariance matrix, the ML estimate of the covariance matrix on standardized data, as well as
+      the correlation matrix
+      \item The \code{optPenalty.LOOCVauto} function has been amended with an argument that indicates if the
+      evaluation of the LOOCV score should be performed on the correlation scale
     }
   }
 }
