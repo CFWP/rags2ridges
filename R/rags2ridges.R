@@ -1339,7 +1339,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
                                   lambdaInit = (lambdaMin + lambdaMax)/2,
-                                  target = default.target(covML(Y)),
+                                  cor = FALSE, target = default.target(covML(Y)),
                                   type = "Alt") {
   ##############################################################################
   # - Function that determines the optimal value of the penalty parameter by
@@ -1349,6 +1349,8 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
   # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
   # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
   # - lambdaInit > initial value for lambda for starting optimization
+  # - cor        > logical indicating if evaluation of the LOOCV score should be
+  #                performed on the correlation matrix
   # - target     > target (precision terms) for Type I estimators,
   #                default = default.target(covML(Y))
   # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
@@ -1395,15 +1397,18 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
   else if (lambdaMax <= lambdaInit){
     stop("Input (lambdaInit) must be smaller than input (lambdaMax)")
   }
+  else if (class(cor) != "logical"){
+    stop("Input (cor) is of wrong class")
+  }
   else {
     # determine optimal value of ridge penalty parameter
     optLambda <- optim(lambdaInit, .cvl, method = "Brent", lower = lambdaMin,
-                       upper = lambdaMax, Y = Y, target = target,
+                       upper = lambdaMax, Y = Y, cor = cor, target = target,
                        type = type)$par
 
     # Return
     return(list(optLambda = optLambda,
-                optPrec = ridgeP(covML(Y), optLambda,
+                optPrec = ridgeP(covML(Y, cor = cor), optLambda,
                                  type = type, target = target)))
   }
 }
