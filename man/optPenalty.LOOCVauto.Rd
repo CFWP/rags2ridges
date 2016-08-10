@@ -10,7 +10,8 @@ call by employing Brent's method to the calculation of a cross-validated negativ
 \usage{
 optPenalty.LOOCVauto(Y, lambdaMin, lambdaMax,
                      lambdaInit = (lambdaMin + lambdaMax)/2,
-                     target = default.target(covML(Y)), type = "Alt")
+                     cor = FALSE, target = default.target(covML(Y)),
+                     type = "Alt")
 }
 \arguments{
   \item{Y}{
@@ -24,6 +25,9 @@ A \code{numeric} giving the maximum value for the penalty parameter.
 }
   \item{lambdaInit}{
 A \code{numeric} giving the initial (starting) value for the penalty parameter.
+}
+  \item{cor}{
+A \code{logical} indicating if the evaluation of the LOOCV score should be performed on the correlation scale.
 }
   \item{target}{
 A target \code{matrix} (in precision terms) for Type I ridge estimators.
@@ -53,6 +57,12 @@ Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for Finding a Zero 
 \author{
 Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
+\note{
+When \code{cor = TRUE} correlation matrices are used in the computation of the (cross-validated) negative
+log-likelihood score, i.e., the leave-one-out sample covariance matrix is a matrix on the correlation scale.
+When performing evaluation on the correlation scale the data are assumed to be standardized.
+If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
+}
 \seealso{
 \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}}, \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
 \code{\link{optPenalty.LOOCV}}, \cr
@@ -67,7 +77,14 @@ X = matrix(rnorm(n*p), nrow = n, ncol = p)
 colnames(X)[1:25] = letters[1:25]
 
 ## Obtain regularized precision under optimal penalty
-OPT  <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
+OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
 OPT$optLambda # Optimal penalty
-OPT$optPrec # Regularized precision under optimal penalty
+OPT$optPrec   # Regularized precision under optimal penalty
+
+## Another example with standardized data
+Xs <- scale(X, center = TRUE, scale = TRUE)
+OPT <- optPenalty.LOOCVauto(Xs, lambdaMin = .001, lambdaMax = 30 cor = TRUE,
+                            target = default.target(covML(Y, cor = TRUE))); OPT
+OPT$optLambda # Optimal penalty
+OPT$optPrec   # Regularized precision under optimal penalty
 }
