@@ -61,6 +61,8 @@
       the correlation matrix
       \item The \code{optPenalty.LOOCVauto} function has been amended with an argument that indicates if the
       evaluation of the LOOCV score should be performed on the correlation scale
+      \item The \code{optPenalty.LOOCV} function has been amended with an argument that indicates if the
+      evaluation of the LOOCV score should be performed on the correlation scale
       \item The \code{optPenalty.aLOOCV} function has been amended with an argument that indicates if the
       evaluation of the approximate LOOCV score should be performed on the correlation scale
     }
