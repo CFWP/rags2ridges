@@ -13,7 +13,7 @@
 ## Email:	     cf.peeters@vumc.nl
 ##
 ## Version: 2.1
-## Last Update:	08/08/2016
+## Last Update:	10/08/2016
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
