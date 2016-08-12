@@ -37,7 +37,7 @@ Note, that this version is in development and is different from the version at C
 
 When installed, run `news(package = "rags2ridges")` to view the latest notable changes to **rags2ridges**.
 
-For previous versions of **rags2ridges**, visit the old [releases at GitHub](https://github.com/CFWP/rags2ridges/releases) or the [archive at CRAN.](http://cran.r-project.org/src/contrib/Archive/rags2ridges/)
+For previous versions of **rags2ridges**, visit the [archive at CRAN.](http://cran.r-project.org/src/contrib/Archive/rags2ridges/)
 
 
 ## References
