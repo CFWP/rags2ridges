@@ -46,8 +46,7 @@ Relevant publications to **rags2ridges** include (ordered according to year):
 
  1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2016). 
     *"rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data"*. 
-    R package, version 2.1. 
-    URL: https://cran.r-project.org/web/packages/rags2ridges/index.html.
+    R package, version 2.1.
  2. van Wieringen, W.N. & Peeters, C.F.W. (2016).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
     Computational Statistics & Data Analysis, vol. 103: 284-303
