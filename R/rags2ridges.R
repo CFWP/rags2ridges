@@ -2515,7 +2515,7 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
   }
   else if (missing(threshold)){
     stop("Need to specify type of sparsification ('absValue' or 'localFDR' ",
-         "or 'top')")
+         "or 'connected' or 'top')")
   }
   else if (!(threshold %in% c("absValue", "connected", "localFDR", "top"))){
     stop("Input (threshold) should be one of
