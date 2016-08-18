@@ -38,7 +38,7 @@
 ##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
 ## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
-##       Determination".
+##       Determination", arXiv:1608.04123v1 [stat.CO].
 ##
 ################################################################################
 ################################################################################
