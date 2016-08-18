@@ -2459,7 +2459,7 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
   ##############################################################################
   # - Function that sparsifies/determines support of a partial correlation
   #   matrix
-  # - Support can be determined by absolute value thresholding or by local FDRs
+  # - Support can be determined by absolute value thresholding or by local FDR
   #   thresholding
   # - One can also choose to threshold based on the top X of absolute partial
   #   correlations
@@ -2557,7 +2557,6 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
       }
     }
 
-    # Obtain sparsified matrix
     if (threshold == "connected"){
       sumPC <- summary(abs(PC[upper.tri(PC)]))
       maxPC <- as.numeric(sumPC[6]); minPC <- as.numeric(sumPC[1])
