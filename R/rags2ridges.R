@@ -2502,6 +2502,7 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
   # require("base")
   # require("stats")
   # require("fdrtool")
+  # require("igraph")
 
   if (!is.matrix(P)){
     stop("Input (P) should be a matrix")
