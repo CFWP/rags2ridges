@@ -145,7 +145,8 @@ Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
   arXiv:1509.07982v1 [stat.ME].
 
   Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
-  The Condition Number Plot for Regularization Parameter Determination.
+  The Spectral Condition Number Plot for Regularization Parameter Determination,
+  arXiv:1608.04123v1 [stat.CO].
 
   van Wieringen, W.N. & Peeters, C.F.W. (2016).
   Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
