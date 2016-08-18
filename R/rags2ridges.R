@@ -2461,10 +2461,12 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
   #   matrix
   # - Support can be determined by absolute value thresholding or by local FDR
   #   thresholding
-  # - One can also choose to threshold based on the top X of absolute partial
-  #   correlations
   # - Local FDR operates on the nonredundant non-diagonal elements of a partial
   #   correlation matrix
+  # - One can also choose to threshold based on the top X of absolute partial
+  #   correlations
+  # - One can also choose to threshold based on the minimum absolute partial
+  #   correlation for which the resulting graph is connected
   # - Function is to some extent a wrapper around certain 'fdrtool' functions
   # - P           > (possibly shrunken) precision matrix
   # - threshold   > signifies type of thresholding
@@ -2569,8 +2571,9 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
         } else {
           maxPC <- absValueCut
         }
-        if (abs(absValueCut - (maxPC + minPC)/2) < 10^(-10))
-          { absValueCut <- minPC; break }
+        if (abs(absValueCut - (maxPC + minPC)/2) < 10^(-10)){
+          absValueCut <- minPC; break
+        }
       }
       threshold   <- "absValue"
     }
