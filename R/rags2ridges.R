@@ -2517,7 +2517,8 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
          "or 'top')")
   }
   else if (!(threshold %in% c("absValue", "connected", "localFDR", "top"))){
-    stop("Input (threshold) should be one of {'absValue', 'connected', 'localFDR', 'top'}")
+    stop("Input (threshold) should be one of
+         {'absValue', 'connected', 'localFDR', 'top'}")
   }
   else if (!(output %in% c("light", "heavy"))){
     stop("Input (output) should be one of {'light', 'heavy'}")
@@ -2568,7 +2569,8 @@ sparsifyGGM <- function(P, threshold = c("absValue", "connected", "localFDR", "t
         } else {
           maxPC <- absValueCut
         }
-        if (abs(absValueCut - (maxPC + minPC)/2) < 10^(-10)){ absValueCut <- minPC; break }
+        if (abs(absValueCut - (maxPC + minPC)/2) < 10^(-10))
+          { absValueCut <- minPC; break }
       }
       threshold   <- "absValue"
     }
