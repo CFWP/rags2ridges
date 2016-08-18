@@ -44,23 +44,24 @@ Relevant publications to **rags2ridges** include (ordered according to year):
 
  1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2016). 
     *"rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data"*. 
-    R package, version 2.1.
- 2. van Wieringen, W.N. & Peeters, C.F.W. (2016).
+    R package, version 2.1.1
+ 2. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016)
+    *"The Spectral Condition Number Plot for Regularization Parameter Determination"*.
+    Available as [arXiv:1608.04123v1 \[stat.CO\]](http://arxiv.org/abs/1608.04123). 
+ 3. van Wieringen, W.N. & Peeters, C.F.W. (2016).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
     Computational Statistics & Data Analysis, vol. 103: 284-303
     ([doi:10.1016/j.csda.2016.05.012](http://www.sciencedirect.com/science/article/pii/S0167947316301141)).
     Also available as [arXiv:1403.0904v3 \[stat.ME\]](http://arxiv.org/abs/1403.0904).
- 3. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016)
-    *"The Spectral Condition Number Plot for Regularization Parameter Determination"*.
- 4. van Wieringen, W.N. & Peeters, C.F.W. (2015).
+ 4. Bilgrau\*, A.E., Peeters\*, C.F.W., Eriksen, P.S., Boegsted, M., & van Wieringen, W.N. (2015).
+    *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*.
+    Available as [arXiv:1509.07982v1 \[stat.ME\]](http://arxiv.org/abs/1509.07982). 
+ 5. van Wieringen, W.N. & Peeters, C.F.W. (2015).
     *"Application of a New Ridge Estimator of the Inverse Covariance Matrix
     to the Reconstruction of Gene-Gene Interaction Networks"*.
     In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
     `Computational Intelligence Methods for Bioinformatics and Biostatistics'.
     Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179
     ([doi:10.1007/978-3-319-24462-4_15](http://link.springer.com/chapter/10.1007%2F978-3-319-24462-4_15)).
- 5. Bilgrau\*, A.E., Peeters\*, C.F.W., Eriksen, P.S., Boegsted, M., & van Wieringen, W.N. (2015).
-    *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*.
-    Available as [arXiv:1509.07982v1 \[stat.ME\]](http://arxiv.org/abs/1509.07982). 
 
 Please cite the relevant publications if you use **rags2ridges**.
