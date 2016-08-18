@@ -7,8 +7,9 @@ Determine the support of a partial correlation/precision matrix
 Function that determines the support of a partial correlation/precision matrix by thresholding and sparsifies it accordingly.
 }
 \usage{
-sparsify(P, threshold = c("absValue", "localFDR", "top"), absValueCut = 0.25,
-         FDRcut = 0.9, top = 10, output = "heavy", verbose = TRUE)
+sparsify(P, threshold = c("absValue", "connected", "localFDR", "top"),
+         absValueCut = 0.25, FDRcut = 0.9, top = 10,
+         output = "heavy", verbose = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -16,7 +17,7 @@ sparsify(P, threshold = c("absValue", "localFDR", "top"), absValueCut = 0.25,
 (Possibly regularized) precision \code{matrix}.
 }
   \item{threshold}{
-A \code{character} signifying type of sparsification by thresholding. Must be one of: "absValue", "localFDR", "top".
+A \code{character} signifying type of sparsification by thresholding. Must be one of: "absValue", "connected", "localFDR", "top".
 }
   \item{absValueCut}{
 A \code{numeric} giving the cut-off for partial correlation element selection based on absolute value thresholding.
@@ -35,19 +36,21 @@ A \code{logical} indicating if intermediate output should be printed on screen.
 }
 }
 \details{
-The function transforms the possibly regularized input precision matrix to a partial correlation matrix. Subsequently,
-the support of this partial correlation matrix is determined. Support determination is performed either by simple
-thresholding on the absolute values of matrix entries (\code{threshold = "absValue"}) or by usage of local FDR (\code{threshold = "localFDR"}).
-A third option is to retain a prespecified number of matrix entries based on absolute values. For example, one could wish to retain
-those entries representing the ten strongest absolute partial correlations (\code{threshold = "top"}).
-The argument \code{absValueCut} is only used when \code{threshold = "absValue"}. The argument \code{FDRcut} is only used when
-\code{threshold = "localFDR"}. The argument \code{top} is only used when
-\code{threshold = "top"}. The function is to some extent a wrapper around
-certain \href{http://cran.r-project.org/package=fdrtool}{fdrtool} functions when
-\code{threshold = "localFDR"}. In that case a mixture model is fitted to the nonredundant partial correlations by
-\href{http://cran.r-project.org/package=fdrtool}{fdrtool}. The decision to
-retain elements is then based on the argument \code{FDRcut}. Elements with a posterior probability \eqn{\geq} FDRcut (equalling
-1 - local FDR) are retained. See Schaefer and Strimmer (2005) for further details on usage of local FDR in graphical modeling.
+The function transforms the possibly regularized input precision matrix to a partial correlation matrix.
+Subsequently, the support of this partial correlation matrix is determined.
+Support determination is performed either by simple thresholding on the absolute values of matrix entries (\code{threshold = "absValue"}) or by usage of local FDR (\code{threshold = "localFDR"}).
+A third option is to retain a prespecified number of matrix entries based on absolute values.
+For example, one could wish to retain those entries representing the ten strongest absolute partial correlations (\code{threshold = "top"}).
+As a variation on this theme, a fourth option (\code{threshold = "connected"}) retains the top edges such that the resulting graph is connected (this may result in dense graphs in practice).
+The argument \code{absValueCut} is only used when \code{threshold = "absValue"}.
+The argument \code{top} is only used when \code{threshold = "top"}.
+The argument \code{FDRcut} is only used when \code{threshold = "localFDR"}.
+
+The function is to some extent a wrapper around certain \href{http://cran.r-project.org/package=fdrtool}{fdrtool} functions when \code{threshold = "localFDR"}.
+In that case a mixture model is fitted to the nonredundant partial correlations by \href{http://cran.r-project.org/package=fdrtool}{fdrtool}.
+The decision to retain elements is then based on the argument \code{FDRcut}.
+Elements with a posterior probability \eqn{\geq} FDRcut (equalling 1 - local FDR) are retained.
+See Schaefer and Strimmer (2005) for further details on usage of local FDR in graphical modeling.
 }
 \value{
 If the input \code{P} is a standardized precision (or partial correlation) matrix the function returns a sparsified
