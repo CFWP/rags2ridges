@@ -4,6 +4,21 @@
 \title{News for Package \cpkg{rags2ridges}}
 
 
+\section{Changes in version 2.1.1}{
+  \subsection{Documentation:}{
+    \itemize{
+      \item Updated \code{CITATION} file
+      \item Updated \code{README} file
+    }
+  }
+  \subsection{Adjustments:}{
+    \itemize{
+      \item \code{sparsify} now has an additional thresholding option: 'connected'
+    }
+  }
+}
+
+
 \section{Changes in version 2.1}{
   \subsection{Documentation:}{
     \itemize{
