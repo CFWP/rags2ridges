@@ -32,7 +32,7 @@ Function overview \emph{core module}:
 	}
 \item Functions for penalty parameter selection
 	\itemize{
-	\item \code{\link{conditionNumberPlot}}
+	\item \code{\link{CNplot}}
 	\item \code{\link{optPenalty.aLOOCV}}
 	\item \code{\link{optPenalty.LOOCV}}
 	\item \code{\link{optPenalty.LOOCVauto}}
