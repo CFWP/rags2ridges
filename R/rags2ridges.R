@@ -1425,6 +1425,176 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
 
 
 
+.kcvl <- function(lambda, Y, cor, target, type, folds){
+  ##############################################################################
+  # - Function that calculates a cross-validated negative log-likelihood score
+  #   for single penalty value
+  # - lambda > value penalty parameter
+  # - Y      > (raw) Data matrix, variables in columns
+  # - cor    > logical indicating if evaluation of the LOOCV score should be
+  #            performed on the correlation matrix
+  # - target > target (precision terms) for Type I estimators,
+  #            default = default.target(covML(Y))
+  # - type   > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+  # - folds  > cross-validation sample splits
+  ##############################################################################
+
+  cvLL <- 0  
+  for (f in 1:length(folds)){
+    S   <- covML(Y[-folds[[f]], , drop=FALSE], cor = cor)
+    cvLL <- cvLL + .LL(crossprod(Y[folds[[f]], , drop=FALSE]) / length(folds[[f]]), ridgeP(S, lambda, target=target, type=type))
+  }
+  return(cvLL / length(folds))
+}
+
+
+optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
+                                  lambdaInit = (lambdaMin + lambdaMax)/2,
+                                  cor = FALSE, target = default.target(covML(Y)),
+                                  type = "Alt", fold=nrow(Y)) {
+    ##############################################################################
+    # - Function that determines the optimal value of the penalty parameter by
+    #   application of the Brent algorithm to the (leave-one-out) cross-validated
+    #   log-likelihood
+    # - Y          > (raw) Data matrix, variables in columns
+    # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
+    # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
+    # - lambdaInit > initial value for lambda for starting optimization
+    # - cor        > logical indicating if evaluation of the LOOCV score should be
+    #                performed on the correlation matrix
+    # - target     > target (precision terms) for Type I estimators,
+    #                default = default.target(covML(Y))
+    # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+    # - fold       > cross-validation fold
+    ##############################################################################
+
+    # Dependencies
+    # require("base")
+    # require("stats")
+
+    # input checks
+    if (!is.matrix(Y)){ stop("Input (Y) should be a matrix") }
+    if (class(lambdaMin) != "numeric"){ stop("Input (lambdaMin) is of wrong class") }
+    if (length(lambdaMin) != 1){ stop("Input (lambdaMin) must be a scalar") }
+    if (lambdaMin <= 0){ stop("Input (lambdaMin) must be positive") }
+    if (class(lambdaMax) != "numeric"){ stop("Input (lambdaMax) is of wrong class") }
+    if (length(lambdaMax) != 1){ stop("Input (lambdaMax) must be a scalar") }
+    if (lambdaMax <= lambdaMin){ stop("Input (lambdaMax) must be larger than lambdaMin") }
+    if (class(lambdaInit) != "numeric"){ stop("Input (lambdaInit) is of wrong class") }
+    if (length(lambdaInit) != 1){ stop("Input (lambdaInit) must be a scalar") }
+    if (lambdaInit <= lambdaMin){ stop("Input (lambdaInit) must be larger than lambdaMin") }
+    if (lambdaInit > lambdaMax){ stop("Input (lambdaInit) must be smaller than lambdaMax") }    
+    if (class(cor) != "logical"){ stop("Input (cor) is of wrong class") }
+    if (class(fold) != "numeric" & class(fold) != "integer"){ stop("Input (fold) is of wrong class") }
+    if ((fold <=  1) | (fold > nrow(Y))){ stop("Input (fold) out of range") }
+
+    # make k-folds as list
+    fold <- max(min(ceiling(fold), nrow(Y)), 2)
+    fold <- rep(1:fold, ceiling(nrow(Y)/fold))[1:nrow(Y)]
+    shuffle <- sample(1:nrow(Y), nrow(Y))
+    folds <- split(shuffle, as.factor(fold))
+
+    # determine optimal value of ridge penalty parameter
+    optLambda <- optim(lambdaInit, .kcvl, method="Brent", lower=lambdaMin, upper=lambdaMax, Y=Y, cor=cor, target=target, type=type, folds=folds)$par
+
+    # Return
+    return(list(optLambda=optLambda, optPrec=ridgeP(covML(Y, cor=cor), optLambda, type=type, target=target)))
+}
+
+optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type="Alt",
+                             cor=FALSE, target=default.target(covML(Y)),
+                             output="light", graph=TRUE, verbose=TRUE, fold=nrow(Y)) {
+    ##############################################################################
+    # - Function that selects the optimal penalty parameter by leave-one-out
+    #   cross-validation
+    # - Y           > (raw) Data matrix, variables in columns
+    # - lambdaMin   > minimum value penalty parameter (dependent on 'type')
+    # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
+    # - step        > determines the coarseness in searching the grid
+    #                 [lambdaMin, lambdaMax]
+    # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+    # - cor         > logical indicating if evaluation of the LOOCV score should be
+    #                 performed on the correlation matrix
+    # - target      > target (precision terms) for Type I estimators,
+    #                 default = default.target(covML(Y))
+    # - output      > must be one of {"all", "light"}, default = "light"
+    # - graph       > Optional argument for visualization optimal penalty
+    #                 selection, default = TRUE
+    # - verbose     > logical indicating if intermediate output should be printed
+    #                 on screen
+    # - fold       > cross-validation fold  
+    ##############################################################################
+
+    # Dependencies
+    # require("base")
+    # require("stats")
+    # require("graphics")
+    # require("sfsmisc")
+
+    if (class(verbose) != "logical"){ stop("Input (verbose) is of wrong class") }
+    if (verbose){ cat("Perform input checks...", "\n") }
+    if (!is.matrix(Y)){ stop("Input (Y) should be a matrix") }
+    if (class(lambdaMin) != "numeric"){ stop("Input (lambdaMin) is of wrong class") }
+    if (length(lambdaMin) != 1){ stop("Input (lambdaMin) must be a scalar") }
+    if (lambdaMin <= 0){ stop("Input (lambdaMin) must be positive") }
+    if (class(lambdaMax) != "numeric"){ stop("Input (lambdaMax) is of wrong class") }
+    if (length(lambdaMax) != 1){ stop("Input (lambdaMax) must be a scalar") }
+    if (lambdaMax <= lambdaMin){ stop("Input (lambdaMax) must be larger than lambdaMin") }
+    if (class(step) != "numeric"){ stop("Input (step) is of wrong class") }
+    if (!.is.int(step)){ stop("Input (step) should be integer") }
+    if (step <= 0){ stop("Input (step) should be a positive integer") }
+    if (class(cor) != "logical"){ stop("Input (cor) is of wrong class") }
+    if (!(output %in% c("all", "light"))){ stop("Input (output) should be one of {'all', 'light'}") }
+    if (class(graph) != "logical"){ stop("Input (graph) is of wrong class") }
+    if (class(fold) != "numeric" & class(fold) != "integer"){ stop("Input (fold) is of wrong class") }
+    if ((fold <=  1) | (fold > nrow(Y))){ stop("Input (fold) out of range") }
+
+    # make k-folds as list
+    fold <- max(min(ceiling(fold), nrow(Y)), 2)
+    fold <- rep(1:fold, ceiling(nrow(Y)/fold))[1:nrow(Y)]
+    shuffle <- sample(1:nrow(Y), nrow(Y))
+    folds <- split(shuffle, as.factor(fold))
+    
+    # Set preliminaries
+    LLs     <- numeric()
+    lambdas <- lseq(lambdaMin, lambdaMax, length=step)
+
+    # Calculate CV scores
+    if (verbose) {
+        cat("Calculating cross-validated negative log-likelihoods...\n")
+    }
+    for (k in 1:length(lambdas)){
+        LLs <- c(LLs, .kcvl(lambdas[k], Y, cor, target, type, folds))
+        if (verbose){cat(paste("lambda = ", lambdas[k], " done", sep = ""), "\n")}
+    }
+
+    # Visualization
+    optLambda <- min(lambdas[which(LLs == min(LLs))])
+    if (graph){
+        if (type == "Alt"){Main = "Alternative ridge estimator"}
+        if (type == "ArchI"){Main = "Archetypal I ridge estimator"}
+        if (type == "ArchII"){Main = "Archetypal II ridge estimator"}
+        plot(log(lambdas), type = "l", LLs, axes = FALSE, xlab = "ln(penalty value)", ylab = "LOOCV neg. log-likelihood", main = Main)
+        axis(2, ylim = c(min(LLs),max(LLs)), col = "black", lwd = 1)
+        axis(1, col = "black", lwd = 1)
+        par(xpd = FALSE)
+        abline(h = min(LLs), v = log(optLambda), col = "red")
+        legend("topright", legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3),sep=""), paste("Opt. penalty: ", optLambda, sep = "")), cex = .8)
+    }
+
+    # Return
+    S <- covML(Y, cor = cor)
+    if (output == "all"){
+        return(list(optLambda=optLambda, optPrec=ridgeP(S, optLambda, type = type, target = target), lambdas=lambdas, LLs=LLs))
+    }
+    if (output == "light"){
+        return(list(optLambda=optLambda, optPrec=ridgeP(S, optLambda, type = type, target = target)))
+    }
+}
+
+
+
+
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                                 target = default.target(S), norm = "2",
                                 digitLoss = FALSE, rlDist = FALSE,
