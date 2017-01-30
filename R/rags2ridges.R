@@ -12,14 +12,15 @@
 ##             Amsterdam, the Netherlands
 ## Email:	     cf.peeters@vumc.nl
 ##
-## Version: 2.1.1
-## Last Update:	18/08/2016
+## Version: 2.2
+## Last Update:	30/01/2017
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
 ## Code files: rags2ridges.R      >> master file/core module
 ##             rags2ridgesFused.R >> fused module
 ##             rags2ridgesMisc.R  >> miscellaneous module
+##             rags2ridgesDepr.R  >> deprecated function collection
 ##             rags2ridges.cpp    >> C++ work horses
 ##
 ## Publications:
