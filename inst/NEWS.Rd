@@ -4,6 +4,16 @@
 \title{News for Package \cpkg{rags2ridges}}
 
 
+\section{Changes in version 2.2}{
+  \subsection{Notifications:}{
+    \itemize{
+      \item \code{optPenalty.LOOCV} is deprecated. Please use \code{optPenalty.kCV} instead
+      \item \code{optPenalty.LOOCVauto} is deprecated. Please use \code{optPenalty.kCVauto} instead
+    }
+  }
+}
+
+
 \section{Changes in version 2.1.1}{
   \subsection{Documentation:}{
     \itemize{
