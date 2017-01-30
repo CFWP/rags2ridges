@@ -100,7 +100,7 @@ OPT$optPrec	  # Regularized precision under optimal penalty
 ## Another example with standardized data
 X <- scale(X, center = TRUE, scale = TRUE)
 OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
-                         target = default.target(covML(X, cor = TRUE))); OPT
+                       target = default.target(covML(X, cor = TRUE))); OPT
 OPT$optLambda	# Optimal penalty
 OPT$optPrec	  # Regularized precision under optimal penalty
 }
