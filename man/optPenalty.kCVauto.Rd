@@ -42,10 +42,10 @@ A \code{character} indicating the type of ridge estimator to be used. Must be on
 }
 \details{
 The function determines the optimal value of the penalty parameter by application of the Brent algorithm (1971) to the
-K-fold cross-validated negative log-likelihood score (using a regularized ridge estimator for the precision matrix).
+\eqn{K}-fold cross-validated negative log-likelihood score (using a regularized ridge estimator for the precision matrix).
 The search for the optimal value is automatic in the sense that in order to invoke the root-finding abilities of the Brent method,
 only a minimum value and a maximum value for the penalty parameter need to be specified as well as a starting penalty value.
-The value at which the K-fold cross-validated negative log-likelihood score is minimized is deemed optimal.
+The value at which the \eqn{K}-fold cross-validated negative log-likelihood score is minimized is deemed optimal.
 The function employs the Brent algorithm as implemented in the
 \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim} function.
 }
@@ -81,7 +81,7 @@ set.seed(333)
 X = matrix(rnorm(n*p), nrow = n, ncol = p)
 colnames(X)[1:25] = letters[1:25]
 
-## Obtain regularized precision under optimal penalty using k = n
+## Obtain regularized precision under optimal penalty using K = n
 OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
 OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
