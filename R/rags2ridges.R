@@ -349,6 +349,31 @@
 
 
 
+.kcvl <- function(lambda, Y, cor, target, type, folds){
+  ##############################################################################
+  # - Function that calculates a cross-validated negative log-likelihood score
+  #   for single penalty value
+  # - lambda > value penalty parameter
+  # - Y      > (raw) Data matrix, variables in columns
+  # - cor    > logical indicating if evaluation of the LOOCV score should be
+  #            performed on the correlation matrix
+  # - target > target (precision terms) for Type I estimators,
+  #            default = default.target(covML(Y))
+  # - type   > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+  # - folds  > cross-validation sample splits
+  ##############################################################################
+
+  cvLL <- 0
+  for (f in 1:length(folds)){
+    S   <- covML(Y[-folds[[f]], , drop=FALSE], cor = cor)
+    cvLL <- cvLL + .LL(crossprod(Y[folds[[f]], , drop=FALSE]) / length(folds[[f]]),
+                       ridgeP(S, lambda, target=target, type=type))
+  }
+  return(cvLL / length(folds))
+}
+
+
+
 .lambdaNullDist <- function(i, Y, id, lambdaMin, lambdaMax,
                             lambdaInit, target, type){
   ##############################################################################
@@ -1423,30 +1448,6 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
   }
 }
 
-
-
-.kcvl <- function(lambda, Y, cor, target, type, folds){
-  ##############################################################################
-  # - Function that calculates a cross-validated negative log-likelihood score
-  #   for single penalty value
-  # - lambda > value penalty parameter
-  # - Y      > (raw) Data matrix, variables in columns
-  # - cor    > logical indicating if evaluation of the LOOCV score should be
-  #            performed on the correlation matrix
-  # - target > target (precision terms) for Type I estimators,
-  #            default = default.target(covML(Y))
-  # - type   > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - folds  > cross-validation sample splits
-  ##############################################################################
-
-  cvLL <- 0
-  for (f in 1:length(folds)){
-    S   <- covML(Y[-folds[[f]], , drop=FALSE], cor = cor)
-    cvLL <- cvLL + .LL(crossprod(Y[folds[[f]], , drop=FALSE]) / length(folds[[f]]),
-                       ridgeP(S, lambda, target=target, type=type))
-  }
-  return(cvLL / length(folds))
-}
 
 
 optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
