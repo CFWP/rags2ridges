@@ -1362,7 +1362,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
     # - target     > target (precision terms) for Type I estimators,
     #                default = default.target(covML(Y))
     # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-    # - fold       > cross-validation fold
+    # - fold       > cross-validation fold, default gives LOOCV
     ##############################################################################
 
     # Dependencies
@@ -1440,7 +1440,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     #                 selection, default = TRUE
     # - verbose     > logical indicating if intermediate output should be printed
     #                 on screen
-    # - fold       > cross-validation fold
+    # - fold        > cross-validation fold, default gives LOOCV
     ##############################################################################
 
     # Dependencies
