@@ -1267,10 +1267,10 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 
-optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
-                                  lambdaInit = (lambdaMin + lambdaMax)/2,
-                                  cor = FALSE, target = default.target(covML(Y)),
-                                  type = "Alt") {
+optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
+                                 lambdaInit = (lambdaMin + lambdaMax)/2,
+                                 cor = FALSE, target = default.target(covML(Y)),
+                                 type = "Alt") {
   ##############################################################################
   # - Function that determines the optimal value of the penalty parameter by
   #   application of the Brent algorithm to the (leave-one-out) cross-validated
@@ -1345,10 +1345,10 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
 
 
 
-optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
-                                  lambdaInit = (lambdaMin + lambdaMax)/2,
-                                  cor = FALSE, target = default.target(covML(Y)),
-                                  type = "Alt", fold=nrow(Y)) {
+optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
+                               lambdaInit = (lambdaMin + lambdaMax)/2,
+                               cor = FALSE, target = default.target(covML(Y)),
+                               type = "Alt", fold=nrow(Y)) {
     ##############################################################################
     # - Function that determines the optimal value of the penalty parameter by
     #   application of the Brent algorithm to the (leave-one-out) cross-validated
@@ -1416,9 +1416,12 @@ optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
                                  type = type, target = target)))
 }
 
-optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type="Alt",
-                             cor=FALSE, target=default.target(covML(Y)),
-                             output="light", graph=TRUE, verbose=TRUE, fold=nrow(Y)) {
+
+
+optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
+                           cor = FALSE, target = default.target(covML(Y)),
+                           output = "light", graph = TRUE, verbose = TRUE,
+                           fold=nrow(Y)) {
     ##############################################################################
     # - Function that selects the optimal penalty parameter by leave-one-out
     #   cross-validation
