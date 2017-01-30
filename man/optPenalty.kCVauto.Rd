@@ -92,4 +92,9 @@ OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
                           target = default.target(covML(X, cor = TRUE))); OPT
 OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
+
+## Another example using K = 5
+OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, fold = 5); OPT
+OPT$optLambda # Optimal penalty
+OPT$optPrec   # Regularized precision under optimal penalty
 }
