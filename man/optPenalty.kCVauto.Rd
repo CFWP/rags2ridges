@@ -62,7 +62,7 @@ Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \note{
 When \code{cor = TRUE} correlation matrices are used in the computation of the (cross-validated) negative
-log-likelihood score, i.e., the leave-one-out sample covariance matrix is a matrix on the correlation scale.
+log-likelihood score, i.e., the \eqn{K}-fold sample covariance matrix is a matrix on the correlation scale.
 When performing evaluation on the correlation scale the data are assumed to be standardized.
 If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
 
