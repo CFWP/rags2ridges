@@ -1370,20 +1370,34 @@ optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
     # require("stats")
 
     # input checks
-    if (!is.matrix(Y)){ stop("Input (Y) should be a matrix") }
-    if (class(lambdaMin) != "numeric"){ stop("Input (lambdaMin) is of wrong class") }
-    if (length(lambdaMin) != 1){ stop("Input (lambdaMin) must be a scalar") }
-    if (lambdaMin <= 0){ stop("Input (lambdaMin) must be positive") }
-    if (class(lambdaMax) != "numeric"){ stop("Input (lambdaMax) is of wrong class") }
-    if (length(lambdaMax) != 1){ stop("Input (lambdaMax) must be a scalar") }
-    if (lambdaMax <= lambdaMin){ stop("Input (lambdaMax) must be larger than lambdaMin") }
-    if (class(lambdaInit) != "numeric"){ stop("Input (lambdaInit) is of wrong class") }
-    if (length(lambdaInit) != 1){ stop("Input (lambdaInit) must be a scalar") }
-    if (lambdaInit <= lambdaMin){ stop("Input (lambdaInit) must be larger than lambdaMin") }
-    if (lambdaInit > lambdaMax){ stop("Input (lambdaInit) must be smaller than lambdaMax") }
-    if (class(cor) != "logical"){ stop("Input (cor) is of wrong class") }
-    if (class(fold) != "numeric" & class(fold) != "integer"){ stop("Input (fold) is of wrong class") }
-    if ((fold <=  1) | (fold > nrow(Y))){ stop("Input (fold) out of range") }
+    if (!is.matrix(Y))
+      { stop("Input (Y) should be a matrix") }
+    if (class(lambdaMin) != "numeric")
+      { stop("Input (lambdaMin) is of wrong class") }
+    if (length(lambdaMin) != 1)
+      { stop("Input (lambdaMin) must be a scalar") }
+    if (lambdaMin <= 0)
+      { stop("Input (lambdaMin) must be positive") }
+    if (class(lambdaMax) != "numeric")
+      { stop("Input (lambdaMax) is of wrong class") }
+    if (length(lambdaMax) != 1)
+      { stop("Input (lambdaMax) must be a scalar") }
+    if (lambdaMax <= lambdaMin)
+      { stop("Input (lambdaMax) must be larger than lambdaMin") }
+    if (class(lambdaInit) != "numeric")
+      { stop("Input (lambdaInit) is of wrong class") }
+    if (length(lambdaInit) != 1)
+      { stop("Input (lambdaInit) must be a scalar") }
+    if (lambdaInit <= lambdaMin)
+      { stop("Input (lambdaInit) must be larger than lambdaMin") }
+    if (lambdaInit > lambdaMax)
+      { stop("Input (lambdaInit) must be smaller than lambdaMax") }
+    if (class(cor) != "logical")
+      { stop("Input (cor) is of wrong class") }
+    if (class(fold) != "numeric" & class(fold) != "integer")
+      { stop("Input (fold) is of wrong class") }
+    if ((fold <=  1) | (fold > nrow(Y)))
+      { stop("Input (fold) out of range") }
 
     # make k-folds as list
     fold <- max(min(ceiling(fold), nrow(Y)), 2)
@@ -1392,10 +1406,14 @@ optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
     folds <- split(shuffle, as.factor(fold))
 
     # determine optimal value of ridge penalty parameter
-    optLambda <- optim(lambdaInit, .kcvl, method="Brent", lower=lambdaMin, upper=lambdaMax, Y=Y, cor=cor, target=target, type=type, folds=folds)$par
+    optLambda <- optim(lambdaInit, .kcvl, method = "Brent", lower = lambdaMin,
+                       upper = lambdaMax, Y = Y, cor = cor, target = target,
+                       type = type, folds = folds)$par
 
     # Return
-    return(list(optLambda=optLambda, optPrec=ridgeP(covML(Y, cor=cor), optLambda, type=type, target=target)))
+    return(list(optLambda = optLambda,
+                optPrec = ridgeP(covML(Y, cor = cor), optLambda,
+                                 type = type, target = target)))
 }
 
 optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type="Alt",
