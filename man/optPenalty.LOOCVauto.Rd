@@ -4,6 +4,8 @@
 Automatic search for optimal penalty parameter
 }
 \description{
+This function is now deprecated. Please use \code{optPenalty.kCVauto} instead.
+
 Function that performs an 'automatic' search for the optimal penalty parameter for the \code{\link{ridgeP}}
 call by employing Brent's method to the calculation of a cross-validated negative log-likelihood score.
 }

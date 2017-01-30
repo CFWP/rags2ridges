@@ -4,6 +4,8 @@
 Select optimal penalty parameter by leave-one-out cross-validation
 }
 \description{
+This function is now deprecated. Please use \code{optPenalty.kCV} instead.
+
 Function that selects the optimal penalty parameter for the \code{\link{ridgeP}} call
 by usage of leave-one-out cross-validation.
 Its output includes (a.o.) the precision matrix under the optimal value of the penalty parameter.
