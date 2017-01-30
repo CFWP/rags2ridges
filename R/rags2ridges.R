@@ -1449,23 +1449,39 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     # require("graphics")
     # require("sfsmisc")
 
-    if (class(verbose) != "logical"){ stop("Input (verbose) is of wrong class") }
+    if (class(verbose) != "logical")
+      { stop("Input (verbose) is of wrong class") }
     if (verbose){ cat("Perform input checks...", "\n") }
-    if (!is.matrix(Y)){ stop("Input (Y) should be a matrix") }
-    if (class(lambdaMin) != "numeric"){ stop("Input (lambdaMin) is of wrong class") }
-    if (length(lambdaMin) != 1){ stop("Input (lambdaMin) must be a scalar") }
-    if (lambdaMin <= 0){ stop("Input (lambdaMin) must be positive") }
-    if (class(lambdaMax) != "numeric"){ stop("Input (lambdaMax) is of wrong class") }
-    if (length(lambdaMax) != 1){ stop("Input (lambdaMax) must be a scalar") }
-    if (lambdaMax <= lambdaMin){ stop("Input (lambdaMax) must be larger than lambdaMin") }
-    if (class(step) != "numeric"){ stop("Input (step) is of wrong class") }
-    if (!.is.int(step)){ stop("Input (step) should be integer") }
-    if (step <= 0){ stop("Input (step) should be a positive integer") }
-    if (class(cor) != "logical"){ stop("Input (cor) is of wrong class") }
-    if (!(output %in% c("all", "light"))){ stop("Input (output) should be one of {'all', 'light'}") }
-    if (class(graph) != "logical"){ stop("Input (graph) is of wrong class") }
-    if (class(fold) != "numeric" & class(fold) != "integer"){ stop("Input (fold) is of wrong class") }
-    if ((fold <=  1) | (fold > nrow(Y))){ stop("Input (fold) out of range") }
+    if (!is.matrix(Y))
+      { stop("Input (Y) should be a matrix") }
+    if (class(lambdaMin) != "numeric")
+      { stop("Input (lambdaMin) is of wrong class") }
+    if (length(lambdaMin) != 1)
+      { stop("Input (lambdaMin) must be a scalar") }
+    if (lambdaMin <= 0)
+      { stop("Input (lambdaMin) must be positive") }
+    if (class(lambdaMax) != "numeric")
+      { stop("Input (lambdaMax) is of wrong class") }
+    if (length(lambdaMax) != 1)
+      { stop("Input (lambdaMax) must be a scalar") }
+    if (lambdaMax <= lambdaMin)
+      { stop("Input (lambdaMax) must be larger than lambdaMin") }
+    if (class(step) != "numeric")
+      { stop("Input (step) is of wrong class") }
+    if (!.is.int(step))
+      { stop("Input (step) should be integer") }
+    if (step <= 0)
+      { stop("Input (step) should be a positive integer") }
+    if (class(cor) != "logical")
+      { stop("Input (cor) is of wrong class") }
+    if (!(output %in% c("all", "light")))
+      { stop("Input (output) should be one of {'all', 'light'}") }
+    if (class(graph) != "logical")
+      { stop("Input (graph) is of wrong class") }
+    if (class(fold) != "numeric" & class(fold) != "integer")
+      { stop("Input (fold) is of wrong class") }
+    if ((fold <=  1) | (fold > nrow(Y)))
+      { stop("Input (fold) out of range") }
 
     # make k-folds as list
     fold <- max(min(ceiling(fold), nrow(Y)), 2)
@@ -1492,24 +1508,30 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
         if (type == "Alt"){Main = "Alternative ridge estimator"}
         if (type == "ArchI"){Main = "Archetypal I ridge estimator"}
         if (type == "ArchII"){Main = "Archetypal II ridge estimator"}
-        plot(log(lambdas), type = "l", LLs, axes = FALSE, xlab = "ln(penalty value)", ylab = "LOOCV neg. log-likelihood", main = Main)
+        plot(log(lambdas), type = "l", LLs, axes = FALSE,
+             xlab = "ln(penalty value)",
+             ylab = "LOOCV neg. log-likelihood", main = Main)
         axis(2, ylim = c(min(LLs),max(LLs)), col = "black", lwd = 1)
         axis(1, col = "black", lwd = 1)
         par(xpd = FALSE)
         abline(h = min(LLs), v = log(optLambda), col = "red")
-        legend("topright", legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3),sep=""), paste("Opt. penalty: ", optLambda, sep = "")), cex = .8)
+        legend("topright",
+               legend = c(paste("min. LOOCV neg. LL: ", round(min(LLs),3),sep=""),
+                          paste("Opt. penalty: ", optLambda, sep = "")), cex = .8)
     }
 
     # Return
     S <- covML(Y, cor = cor)
     if (output == "all"){
-        return(list(optLambda=optLambda, optPrec=ridgeP(S, optLambda, type = type, target = target), lambdas=lambdas, LLs=LLs))
+        return(list(optLambda = optLambda,
+                    optPrec = ridgeP(S, optLambda, type = type, target = target),
+                    lambdas = lambdas, LLs = LLs))
     }
     if (output == "light"){
-        return(list(optLambda=optLambda, optPrec=ridgeP(S, optLambda, type = type, target = target)))
+        return(list(optLambda = optLambda,
+                    optPrec = ridgeP(S, optLambda, type = type, target = target)))
     }
 }
-
 
 
 
