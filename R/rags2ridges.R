@@ -1439,10 +1439,11 @@ optPenalty.LOOCVauto <- function (Y, lambdaMin, lambdaMax,
   # - folds  > cross-validation sample splits
   ##############################################################################
 
-  cvLL <- 0  
+  cvLL <- 0
   for (f in 1:length(folds)){
     S   <- covML(Y[-folds[[f]], , drop=FALSE], cor = cor)
-    cvLL <- cvLL + .LL(crossprod(Y[folds[[f]], , drop=FALSE]) / length(folds[[f]]), ridgeP(S, lambda, target=target, type=type))
+    cvLL <- cvLL + .LL(crossprod(Y[folds[[f]], , drop=FALSE]) / length(folds[[f]]),
+                       ridgeP(S, lambda, target=target, type=type))
   }
   return(cvLL / length(folds))
 }
@@ -1483,7 +1484,7 @@ optPenalty.kCVauto <- function (Y, lambdaMin, lambdaMax,
     if (class(lambdaInit) != "numeric"){ stop("Input (lambdaInit) is of wrong class") }
     if (length(lambdaInit) != 1){ stop("Input (lambdaInit) must be a scalar") }
     if (lambdaInit <= lambdaMin){ stop("Input (lambdaInit) must be larger than lambdaMin") }
-    if (lambdaInit > lambdaMax){ stop("Input (lambdaInit) must be smaller than lambdaMax") }    
+    if (lambdaInit > lambdaMax){ stop("Input (lambdaInit) must be smaller than lambdaMax") }
     if (class(cor) != "logical"){ stop("Input (cor) is of wrong class") }
     if (class(fold) != "numeric" & class(fold) != "integer"){ stop("Input (fold) is of wrong class") }
     if ((fold <=  1) | (fold > nrow(Y))){ stop("Input (fold) out of range") }
@@ -1522,7 +1523,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type="Alt",
     #                 selection, default = TRUE
     # - verbose     > logical indicating if intermediate output should be printed
     #                 on screen
-    # - fold       > cross-validation fold  
+    # - fold       > cross-validation fold
     ##############################################################################
 
     # Dependencies
@@ -1554,7 +1555,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type="Alt",
     fold <- rep(1:fold, ceiling(nrow(Y)/fold))[1:nrow(Y)]
     shuffle <- sample(1:nrow(Y), nrow(Y))
     folds <- split(shuffle, as.factor(fold))
-    
+
     # Set preliminaries
     LLs     <- numeric()
     lambdas <- lseq(lambdaMin, lambdaMax, length=step)
