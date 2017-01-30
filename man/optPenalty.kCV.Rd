@@ -1,11 +1,11 @@
 \name{optPenalty.kCV}
 \alias{optPenalty.kCV}
 \title{
-Select optimal penalty parameter by K-fold cross-validation
+Select optimal penalty parameter by \eqn{K}-fold cross-validation
 }
 \description{
 Function that selects the optimal penalty parameter for the \code{\link{ridgeP}} call
-by usage of K-fold cross-validation.
+by usage of \eqn{K}-fold cross-validation.
 Its output includes (a.o.) the precision matrix under the optimal value of the penalty parameter.
 }
 \usage{
@@ -53,7 +53,7 @@ A \code{logical} indicating if information on progress should be printed on scre
 The function calculates a cross-validated negative log-likelihood score (using a regularized ridge
 estimator for the precision matrix) for each
 value of the penalty parameter contained in the search grid by way of
-K-fold cross-validation. The value of the penalty parameter
+\eqn{K}-fold cross-validation. The value of the penalty parameter
 that achieves the lowest cross-validated negative log-likelihood score
 is deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must
 be a positive scalar. The maximum allowable value of \code{lambdaMax}
@@ -74,7 +74,7 @@ Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \note{
 When \code{cor = TRUE} correlation matrices are used in the computation of the (cross-validated) negative
-log-likelihood score, i.e., the K-fold sample covariance matrix is a matrix on the correlation scale.
+log-likelihood score, i.e., the \eqn{K}-fold sample covariance matrix is a matrix on the correlation scale.
 When performing evaluation on the correlation scale the data are assumed to be standardized.
 If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
 
@@ -92,7 +92,7 @@ set.seed(333)
 X = matrix(rnorm(n*p), nrow = n, ncol = p)
 colnames(X)[1:25] = letters[1:25]
 
-## Obtain regularized precision under optimal penalty using k = n
+## Obtain regularized precision under optimal penalty using K = n
 OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
 OPT$optLambda	# Optimal penalty
 OPT$optPrec	  # Regularized precision under optimal penalty
