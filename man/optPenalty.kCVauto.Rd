@@ -9,9 +9,10 @@ call by employing Brent's method to the calculation of a cross-validated negativ
 }
 \usage{
 optPenalty.kCVauto(Y, lambdaMin, lambdaMax,
-                     lambdaInit = (lambdaMin + lambdaMax)/2,
-                     cor = FALSE, target = default.target(covML(Y)),
-                     type = "Alt", fold=nrow(Y))
+                   lambdaInit = (lambdaMin + lambdaMax)/2,
+                   fold = nrow(Y), cor = FALSE,
+                   target = default.target(covML(Y)),
+                   type = "Alt")
 }
 \arguments{
   \item{Y}{
@@ -26,6 +27,9 @@ A \code{numeric} giving the maximum value for the penalty parameter.
   \item{lambdaInit}{
 A \code{numeric} giving the initial (starting) value for the penalty parameter.
 }
+  \item{fold}{
+A \code{numeric} or \code{integer} specifying the number of folds to apply in the cross-validation.
+}
   \item{cor}{
 A \code{logical} indicating if the evaluation of the LOOCV score should be performed on the correlation scale.
 }
@@ -34,9 +38,6 @@ A target \code{matrix} (in precision terms) for Type I ridge estimators.
 }
   \item{type}{
 A \code{character} indicating the type of ridge estimator to be used. Must be one of: "Alt", "ArchI", "ArchII".
-}
-  \item{fold}{
-A \code{numeric} or \code{integer} specifying the number of folds to apply in the cross-validation.
 }
 }
 \details{
@@ -64,10 +65,12 @@ When \code{cor = TRUE} correlation matrices are used in the computation of the (
 log-likelihood score, i.e., the leave-one-out sample covariance matrix is a matrix on the correlation scale.
 When performing evaluation on the correlation scale the data are assumed to be standardized.
 If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
+
+Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one performes leave-one-out cross-validation.
 }
 \seealso{
 \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}}, \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
-\code{\link{optPenalty.LOOCV}}, \cr
+\code{\link{optPenalty.kCV}}, \cr
 \code{\link{default.target}}, \code{\link{covML}}
 }
 \examples{
@@ -78,14 +81,14 @@ set.seed(333)
 X = matrix(rnorm(n*p), nrow = n, ncol = p)
 colnames(X)[1:25] = letters[1:25]
 
-## Obtain regularized precision under optimal penalty
-OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
+## Obtain regularized precision under optimal penalty using k = n
+OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
 OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
 
 ## Another example with standardized data
 X <- scale(X, center = TRUE, scale = TRUE)
-OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
+OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
                             target = default.target(covML(X, cor = TRUE))); OPT
 OPT$optLambda # Optimal penalty
 OPT$optPrec   # Regularized precision under optimal penalty
