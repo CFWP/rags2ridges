@@ -1347,8 +1347,9 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
 
 optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
                                lambdaInit = (lambdaMin + lambdaMax)/2,
-                               cor = FALSE, target = default.target(covML(Y)),
-                               type = "Alt", fold=nrow(Y)) {
+                               fold = nrow(Y), cor = FALSE,
+                               target = default.target(covML(Y)),
+                               type = "Alt") {
     ##############################################################################
     # - Function that determines the optimal value of the penalty parameter by
     #   application of the Brent algorithm to the (leave-one-out) cross-validated
@@ -1357,12 +1358,12 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
     # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
     # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
     # - lambdaInit > initial value for lambda for starting optimization
+    # - fold       > cross-validation fold, default gives LOOCV
     # - cor        > logical indicating if evaluation of the LOOCV score should be
     #                performed on the correlation matrix
     # - target     > target (precision terms) for Type I estimators,
     #                default = default.target(covML(Y))
     # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-    # - fold       > cross-validation fold, default gives LOOCV
     ##############################################################################
 
     # Dependencies
@@ -1418,10 +1419,10 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 
 
 
-optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
+optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
                            cor = FALSE, target = default.target(covML(Y)),
-                           output = "light", graph = TRUE, verbose = TRUE,
-                           fold=nrow(Y)) {
+                           type = "Alt", output = "light", graph = TRUE,
+                           verbose = TRUE) {
     ##############################################################################
     # - Function that selects the optimal penalty parameter by leave-one-out
     #   cross-validation
@@ -1430,17 +1431,17 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
     # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
     # - step        > determines the coarseness in searching the grid
     #                 [lambdaMin, lambdaMax]
-    # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
+    # - fold        > cross-validation fold, default gives LOOCV
     # - cor         > logical indicating if evaluation of the LOOCV score should be
     #                 performed on the correlation matrix
     # - target      > target (precision terms) for Type I estimators,
     #                 default = default.target(covML(Y))
+    # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
     # - output      > must be one of {"all", "light"}, default = "light"
     # - graph       > Optional argument for visualization optimal penalty
     #                 selection, default = TRUE
     # - verbose     > logical indicating if intermediate output should be printed
     #                 on screen
-    # - fold        > cross-validation fold, default gives LOOCV
     ##############################################################################
 
     # Dependencies
