@@ -812,3 +812,8 @@ getwd()
 source("./../../fnorm.R")
 */
 
+
+// pull in other functions
+#include "ridgePchordal.h"
+
+
