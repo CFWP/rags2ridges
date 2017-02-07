@@ -3760,6 +3760,56 @@ pruneMatrix <- function(M){
 
 
 
+Union <- function(M1, M2){
+  ##############################################################################
+  # - Function that subsets square matrices to union of features implied
+  #   in edges
+  # - M1 > Sparsified (precision) matrix
+  # - M2 > Sparsified (precision) matrix
+  ##############################################################################
+
+  # Dependencies
+  # require("reshape")
+
+  if (!is.matrix(M1)){
+    stop("M1 should be a matrix")
+  }
+  else if (nrow(M1) != ncol(M1)){
+    stop("M1 should be square matrix")
+  }
+  else if (!is.matrix(M2)){
+    stop("M2 should be a matrix")
+  }
+  else if (nrow(M2) != ncol(M2)){
+    stop("M2 should be square matrix")
+  }
+  else {
+    # Unique features matrix 1
+    AmatM1  <- adjacentMat(M1)
+    Mmelt   <- melt(AmatM1)
+    Mmelt   <- Mmelt[Mmelt$value != 0,]
+    whichM1 <- unique(c(as.character(Mmelt$X1),as.character(Mmelt$X2)))
+
+    # Unique features matrix 2
+    AmatM2  <- adjacentMat(M2)
+    Mmelt   <- melt(AmatM2)
+    Mmelt   <- Mmelt[Mmelt$value != 0,]
+    whichM2 <- unique(c(as.character(Mmelt$X1),as.character(Mmelt$X2)))
+
+    # Union of features present (in terms of implied in edge) in all matrices
+    Union <- union(whichM1, whichM2)
+
+    # Subset matrices
+    M1s <- M1[rownames(M1) %in% Union, colnames(M1) %in% Union]
+    M2s <- M2[rownames(M2) %in% Union, colnames(M2) %in% Union]
+
+    # Return
+    return(list(M1subset = M1s, M2subset = M2s))
+  }
+}
+
+
+
 
 ################################################################################
 ################################################################################
