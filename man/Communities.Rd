@@ -47,7 +47,7 @@ A \code{character} giving the main figure title.
 }
 \details{
 Communities in a network are groups of vertices (modules) that are densely connected within.
-Community search is performed by the Girvan–Newman algorithm (Newman and Girvan, 2004).
+Community search is performed by the Girvan-Newman algorithm (Newman and Girvan, 2004).
 
 When \code{graph = TRUE} the community structure in the graph is visualized.
 The default layout is according to the Fruchterman-Reingold algorithm (1991).
