@@ -2766,7 +2766,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   # - type    > graph type: 'plain' gives plain undirected graph. 'fancy' gives
   #             undirected graph in which dashed lines indicate negative partial
   #             correlations while solid lines indicate positive partial
-  #             correlations, and in which black lines indicate strong edges.
+  #             correlations, and in which grey lines indicate strong edges.
   #             'weighted' gives an undirected graph in which edge thickness
   #             indicates the strenght of the partial correlations. Grey lines
   #             then indicate negative partial correlations while black lines
@@ -2782,7 +2782,8 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   #             the lay argument takes precedence
   # - Vsize   > gives vertex size, default = 15
   # - Vcex    > gives size vertex labels, default = 1
-  # - Vcolor  > gives vertex color, default = "orangered"
+  # - Vcolor  > gives vertex color, default = "orangered", must be character.
+  #             May also be a character vector
   # - VBcolor > gives color of the vertex border, default = "darkred"
   # - VLcolor > gives color of the vertex labels, default = "black"
   # - prune   > logical indicating if vertices of degree 0 should be removed
@@ -2863,8 +2864,9 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (class(Vcolor) != "character"){
     stop("Input (Vcolor) is of wrong class")
   }
-  else if (length(Vcolor) != 1){
-    stop("Length Vcolor must be one")
+  else if (length(Vcolor) != 1 & length(Vcolor) != nrow(M)){
+    stop("Length Vcolor must be either one
+         or equal to row (or column) dimension of M")
   }
   else if (class(VBcolor) != "character"){
     stop("Input (VBcolor) is of wrong class")
@@ -2959,10 +2961,10 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
         Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
         Mmelt <- Mmelt[Mmelt$value != 0,]
         E(GA)$weight <- Mmelt$value
-        E(GA)$color  <- "grey"
+        E(GA)$color  <- "black"
         E(GA)[E(GA)$weight < 0]$style <- "dashed"
         E(GA)[E(GA)$weight > 0]$style <- "solid"
-        E(GA)[abs(E(GA)$weight) > cut]$color <- "black"
+        E(GA)[abs(E(GA)$weight) > cut]$color <- "grey"
         plot(GA, layout = lays, vertex.size = Vsize,
              vertex.label.family = "sans", vertex.label.cex = Vcex,
              vertex.color = Vcolor, vertex.frame.color = VBcolor,
@@ -3032,7 +3034,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
     # Return
     return(coordinates <- lays)
     }
-}
+  }
 
 
 
