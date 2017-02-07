@@ -3995,15 +3995,14 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
              edge.color = E(GA)$color,
              edge.lty = E(GA)$style,
              main = main)
-        }
       }
+    }
 
     # Return
     return(list(membership = membership(Communities),
                 modularityscore = modularity(Communities)))
-
-}
   }
+}
 
 
 
