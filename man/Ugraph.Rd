@@ -37,7 +37,7 @@ A \code{numeric} determining the vertex size.
 A \code{numeric} determining the size of the vertex labels.
 }
   \item{Vcolor}{
-A \code{character} determining the vertex color.
+A \code{character} (scalar or vector) determining the vertex color.
 }
   \item{VBcolor}{
 A \code{character} determining the color of the vertex border.
@@ -81,9 +81,9 @@ The intended use of this function is to visualize a sparsified precision/partial
 When \code{type = "plain"} a plain undirected graph is given representing the conditional (in)dependencies exemplified by the sparsified precision.
 
 When \code{type = "fancy"} a more elaborate graph is given in which dashed lines indicate
-negative partial correlations while solid lines indicate positive partial correlations, and in which black lines indicate strong edges.
+negative partial correlations while solid lines indicate positive partial correlations, and in which grey lines indicate strong edges.
 Strong edges are deemed such by setting \code{cut}.
-If a the absolute value of a precision element \eqn{\geq} \code{cut} the corresponding edge is deemed strong and colored black in the graph.
+If a the absolute value of a precision element \eqn{\geq} \code{cut} the corresponding edge is deemed strong and colored grey in the graph.
 The argument \code{cut} is thus only used when \code{type = "fancy"}.
 
 When \code{type = "weighted"} an undirected graph is given in which edge thickness represents the strength of the partial correlations.
