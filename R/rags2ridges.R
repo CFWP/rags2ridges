@@ -3807,6 +3807,206 @@ Union <- function(M1, M2){
 
 
 
+Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
+                        Vsize = 15, Vcex = 1, Vcolor = "orangered",
+                        VBcolor = "darkred", VLcolor = "black", main = ""){
+  ##############################################################################
+  # - Function that computes and visualizes community-structures
+  # - Function is partly a wrapper around certain 'igraph' functions
+  # - P       > Sparsified precision matrix
+  # - graph   > Logical indicating if also a graph should be returned.
+  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
+  #             are accepted. Default = layout_with_fr.
+  #             Only used when graph = TRUE.
+  # - coords  > matrix of coordinates to determine layout of the graph.
+  #             The row dimension should equal the number of (pruned) vertices.
+  #             The column dimension should equal 2 (for 2D layouts) or
+  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
+  #             according to the coordinates of a previous call to Ugraph.
+  #             If both the the lay and the coords arguments are not NULL,
+  #             the lay argument takes precedence
+  #             Only used when graph = TRUE.
+  # - Vsize   > gives vertex size, default = 15
+  #             Only used when graph = TRUE.
+  # - Vcex    > gives size vertex labels, default = 1
+  #             Only used when graph = TRUE.
+  # - Vcolor  > gives vertex color, default = "orangered", must be character.
+  #             May also be a character vector.
+  #             Only used when graph = TRUE.
+  # - VBcolor > gives color of the vertex border, default = "darkred"
+  #             Only used when graph = TRUE.
+  # - VLcolor > gives color of the vertex labels, default = "black"
+  #             Only used when graph = TRUE.
+  # - main    > character specifying heading figure, default = ""
+  #             Only used when graph = TRUE.
+  #
+  # NOTES
+  # - Communities on the basis of the assumption of undirected graphs
+  # - Will be expanded and bettered
+  ##############################################################################
+
+  # Dependencies
+  # require("base")
+  # require("igraph")
+  # require("reshape")
+
+  if (!is.matrix(P)){
+    stop("Input (P) should be a matrix")
+  }
+  else if (nrow(P) != ncol(P)){
+    stop("Input (P) should be square matrix")
+  }
+  else {
+    # Preliminaries
+    AM <- adjacentMat(P)
+    GA <- graph.adjacency(AM, mode = "undirected")
+
+    # Find communities
+    Communities <- cluster_edge_betweenness(GA, weights = NULL, directed = FALSE)
+
+    # Visualize
+    if(graph){
+      if (!((length(intersect(lay,c("layout_as_star", "layout_as_tree",
+                                    "layout_in_circle", "layout_nicely",
+                                    "layout_with_dh", "layout_with_gem",
+                                    "layout_with_graphopt", "layout_on_grid",
+                                    "layout_with_mds", "layout_components",
+                                    "layout_on_sphere", "layout_randomly",
+                                    "layout_with_fr", "layout_with_kk",
+                                    "layout_with_lgl"))) > 0) | is.null(lay))){
+        stop("lay should be 'NULL' or one of
+             {'layout_as_star', 'layout_as_tree',
+             'layout_in_circle', 'layout_nicely',
+             'layout_with_dh', 'layout_with_gem',
+             'layout_with_graphopt', 'layout_on_grid',
+             'layout_with_mds', 'layout_components',
+             'layout_on_sphere', 'layout_randomly',
+             'layout_with_fr', 'layout_with_kk',
+             'layout_with_lgl'}")
+      }
+      else if (!is.null(coords) & class(coords) != "matrix"){
+        stop("Input (coords) is of wrong class")
+      }
+      else if (is.null(lay) & is.null(coords)){
+        stop("Input (lay) and input (coords) cannot be both NULL")
+      }
+      else if (class(Vsize) != "numeric"){
+        stop("Input (Vsize) is of wrong class")
+      }
+      else if (length(Vsize) != 1){
+        stop("Length Vsize must be one")
+      }
+      else if (Vsize <= 0){
+        stop("Vsize must be positive")
+      }
+      else if (class(Vcex) != "numeric"){
+        stop("Input (Vcex) is of wrong class")
+      }
+      else if (length(Vcex) != 1){
+        stop("Length Vcex must be one")
+      }
+      else if (Vcex <= 0){
+        stop("Vcex must be positive")
+      }
+      else if (class(Vcolor) != "character"){
+        stop("Input (Vcolor) is of wrong class")
+      }
+      else if (length(Vcolor) != 1 & length(Vcolor) != nrow(P)){
+        stop("Length Vcolor must be either one
+             or equal to row (or column) dimension of P")
+      }
+      else if (class(VBcolor) != "character"){
+        stop("Input (VBcolor) is of wrong class")
+      }
+      else if (length(VBcolor) != 1){
+        stop("Length VBcolor must be one")
+      }
+      else if (class(VLcolor) != "character"){
+        stop("Input (VLcolor) is of wrong class")
+      }
+      else if (length(VLcolor) != 1){
+        stop("Length VLcolor must be one")
+      }
+      else if (class(main) != "character"){
+        stop("Input (main) is of wrong class")
+      }
+      else {
+        # Layout specification
+        if(is.null(lay)){
+          if(dim(coords)[1] != length(V(GA))){
+            stop("Row dimension of input (coords) does not match the
+                 number of vertices to be plotted")
+          } else if (dim(coords)[2] > 3){
+            stop("Column dimension of input (coords) exceeds the number
+                 of dimensions that can be visualized")
+          } else {lays = coords}
+          }
+        else{
+          if(lay == "layout_as_star"){
+            lays = igraph::layout_as_star(GA)}
+          if(lay == "layout_as_tree")
+          {lays = igraph::layout_as_tree(GA)}
+          if(lay == "layout_in_circle"){
+            lays = igraph::layout_in_circle(GA)}
+          if(lay == "layout_nicely"){
+            lays = igraph::layout_nicely(GA)}
+          if(lay == "layout_with_dh"){
+            lays = igraph::layout_with_dh(GA)}
+          if(lay == "layout_with_gem"){
+            lays = igraph::layout_with_gem(GA)}
+          if(lay == "layout_with_graphopt"){
+            lays = igraph::layout_with_graphopt(GA)}
+          if(lay == "layout_on_grid"){
+            lays = igraph::layout_on_grid(GA)}
+          if(lay == "layout_with_mds"){
+            lays = igraph::layout_with_mds(GA)}
+          if(lay == "layout_components"){
+            lays = igraph::layout_components(GA)}
+          if(lay == "layout_on_sphere"){
+            lays = igraph::layout_on_sphere(GA)}
+          if(lay == "layout_randomly"){
+            lays = igraph::layout_randomly(GA)}
+          if(lay == "layout_with_fr"){
+            lays = igraph::layout_with_fr(GA)}
+          if(lay == "layout_with_kk"){
+            lays = igraph::layout_with_kk(GA)}
+          if(lay == "layout_with_lgl"){
+            lays = igraph::layout_with_lgl(GA)}
+        }
+
+        # Plot
+        Names <- colnames(P)
+        colnames(P) = rownames(P) <- seq(1, ncol(P), by = 1)
+        Mmelt <- melt(P)
+        Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
+        Mmelt <- Mmelt[Mmelt$value != 0,]
+        E(GA)$weight <- Mmelt$value
+        E(GA)$color  <- "black"
+        E(GA)[E(GA)$weight < 0]$style <- "dashed"
+        E(GA)[E(GA)$weight > 0]$style <- "solid"
+        plot(Communities, GA,
+             layout = lays,
+             vertex.size = Vsize,
+             vertex.label.family = "sans",
+             vertex.label.cex = Vcex,
+             vertex.color = Vcolor,
+             vertex.frame.color = VBcolor,
+             vertex.label.color = VLcolor,
+             edge.color = E(GA)$color,
+             edge.lty = E(GA)$style,
+             main = main)
+        }
+      }
+
+    # Return
+    return(list(membership = membership(Communities),
+                modularityscore = modularity(Communities)))
+
+}
+  }
+
+
+
 
 ################################################################################
 ################################################################################
