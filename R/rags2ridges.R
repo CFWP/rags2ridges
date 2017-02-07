@@ -3085,9 +3085,6 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
   else if (!isSymmetric(sparseP)){
     stop("Input (sparseP) should be a symmetric matrix")
   }
-  else if (!evaluateS(sparseP, verbose = FALSE)$posEigen){
-    stop("Input (sparseP) is expected to be positive definite")
-  }
   else if (class(as.table) != "logical"){
     stop("Input (as.table) is of wrong class")
   }
@@ -3104,7 +3101,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
     # Obtain corresponding sample covariance matrix
     pvars <- 1/diag(sparseP)
-    S     <- solve(sparseP)
+    S     <- sparseP
 
     # Calculate nodes' mutual information
     MI <-
@@ -3136,8 +3133,8 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
     }
     if (!as.table){
       return(list(degree = degree(CIG), betweenness = betweenness(CIG),
-                  closeness = closeness(CIG),
-                  eigenCentrality = evcent(CIG)$vector,
+                  closeness = closeness(CIG, mode = "all"),
+                  eigenCentrality = evcent(CIG, scale = FALSE)$vector,
                   nNeg = nNeg, nPos = nPos, chordal = is.chordal(CIG)$chordal,
                   mutualInfo = MI, variance = diag(S), partialVar = pvars))
     }
