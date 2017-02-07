@@ -3101,7 +3101,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
     # Obtain corresponding sample covariance matrix
     pvars <- 1/diag(sparseP)
-    S     <- sparseP
+    S     <- solve(sparseP)
 
     # Calculate nodes' mutual information
     MI <-
