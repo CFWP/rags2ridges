@@ -31,4 +31,4 @@ S3method(plot, "optPenaltyFusedGrid")
 S3method(print, "optPenaltyFusedGrid")
 
 # Register shared object (to make Rcpp work)
-useDynLib(rags2ridges)
+useDynLib(rags2ridges, .registration=TRUE)
