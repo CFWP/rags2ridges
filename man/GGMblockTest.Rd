@@ -66,7 +66,7 @@ unlikely to become significant),
 the permutation analysis is terminated and a p-value of unity (1) is reported.
 
 When \code{verbose = TRUE} also graphical output is generated: A histogram of the null-distribution. Note that, when
-\code{ncpus} is larger than 1, functionalities from \href{http://cran.r-project.org/package=snowfall}{snowfall}
+\code{ncpus} is larger than 1, functionalities from \href{https://cran.r-project.org/package=snowfall}{snowfall}
 are imported.
 }
 \value{

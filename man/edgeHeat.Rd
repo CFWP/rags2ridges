@@ -36,7 +36,7 @@ A \code{character} giving the main figure title.
 }
 }
 \details{
-This function utilizes \href{http://cran.r-project.org/package=ggplot2}{ggplot2} (Wickham, 2009) to visualize a matrix as a heatmap: a false color plot in which the
+This function utilizes \href{https://cran.r-project.org/package=ggplot2}{ggplot2} (Wickham, 2009) to visualize a matrix as a heatmap: a false color plot in which the
 individual matrix entries are represented by colors. \code{lowColor} determines the color scale for matrix entries in the negative range.
 \code{highColor} determines the color scale for matrix entries in the positive range. For the colors supported
 by the arguments \code{lowColor} and \code{highColor}, see \url{www.stat.columbia.edu/~tzheng/files/Rcolor.pdf}. White entries in the plot

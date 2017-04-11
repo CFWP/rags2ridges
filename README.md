@@ -3,7 +3,7 @@
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN version](http://www.r-pkg.org/badges/version/rags2ridges)](http://cran.r-project.org/package=rags2ridges)
-[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](http://cran.r-project.org/package=rags2ridges/index.html)
+[![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](https://cran.r-project.org/package=rags2ridges/index.html)
 [![Total CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/rags2ridges)](http://www.r-pkg.org/pkg/rags2ridges)
 
 
@@ -17,7 +17,7 @@ The package has a modular setup and features fast and efficient algorithms.
 ## Installation
 
 The released and tested version of **rags2ridges** is available at
-[CRAN](http://cran.r-project.org/package=rags2ridges) (Comprehensive R Archive Network). It can be easily be installed from within R by running
+[CRAN](https://cran.r-project.org/package=rags2ridges) (Comprehensive R Archive Network). It can be easily be installed from within R by running
 
 ```R
 install.packages("rags2ridges")
@@ -35,7 +35,7 @@ Note, that this version is in development and is different from the version at C
 
 When installed, run `news(package = "rags2ridges")` to view the latest notable changes to **rags2ridges**.
 
-For previous versions of **rags2ridges**, visit the [archive at CRAN.](http://cran.r-project.org/src/contrib/Archive/rags2ridges/)
+For previous versions of **rags2ridges**, visit the [archive at CRAN.](https://cran.r-project.org/src/contrib/Archive/rags2ridges/)
 
 
 ## References

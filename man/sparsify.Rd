@@ -46,8 +46,8 @@ The argument \code{absValueCut} is only used when \code{threshold = "absValue"}.
 The argument \code{top} is only used when \code{threshold = "top"}.
 The argument \code{FDRcut} is only used when \code{threshold = "localFDR"}.
 
-The function is to some extent a wrapper around certain \href{http://cran.r-project.org/package=fdrtool}{fdrtool} functions when \code{threshold = "localFDR"}.
-In that case a mixture model is fitted to the nonredundant partial correlations by \href{http://cran.r-project.org/package=fdrtool}{fdrtool}.
+The function is to some extent a wrapper around certain \href{https://cran.r-project.org/package=fdrtool}{fdrtool} functions when \code{threshold = "localFDR"}.
+In that case a mixture model is fitted to the nonredundant partial correlations by \href{https://cran.r-project.org/package=fdrtool}{fdrtool}.
 The decision to retain elements is then based on the argument \code{FDRcut}.
 Elements with a posterior probability \eqn{\geq} FDRcut (equalling 1 - local FDR) are retained.
 See Schaefer and Strimmer (2005) for further details on usage of local FDR in graphical modeling.

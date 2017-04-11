@@ -1,5 +1,5 @@
 \name{NEWS}
-\newcommand{\cpkg}{\href{http://cran.r-project.org/package=#1}{\pkg{#1}}}
+\newcommand{\cpkg}{\href{https://cran.r-project.org/package=#1}{\pkg{#1}}}
 
 \title{News for Package \cpkg{rags2ridges}}
 
