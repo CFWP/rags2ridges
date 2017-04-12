@@ -65,9 +65,9 @@ Cx <- covML(X)
 
 ## Obtain sparsified partial correlation matrix
 Pridge   <- ridgeP(Cx, 10, type = "Alt")
-PCsparse <- sparsify(Pridge , threshold = "localFDR")$sparseParCor
+PCsparse <- sparsify(Pridge , threshold = "top")$sparseParCor
 
 ## Represent the graph and calculate GGM network statistics
 Ugraph(PCsparse, "fancy")
-GGMnetworkStats(PCsparse)
+\dontrun{GGMnetworkStats(PCsparse)}
 }
