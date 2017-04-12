@@ -919,7 +919,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
         P_Alt <- .armaRidgeP(S, target, lambda)
       }
       dimnames(P_Alt) <- dimnames(S)
-      return(P_Alt)
+      return(symm(P_Alt))
     }
 
     # Archetypal I
@@ -935,14 +935,14 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
         stop("Target should always be p.d. for this type of ridge estimator")
       } else {
         P_ArchI <- solve((1-lambda) * S + lambda * solve(target))
-        return(P_ArchI)
+        return(symm(P_ArchI))
       }
     }
 
     # Archetypal II
     if (type == "ArchII"){
       P_ArchII <- solve(S + lambda * diag(nrow(S)))
-      return(P_ArchII)
+      return(symm(P_ArchII))
     }
   }
 }
@@ -2013,7 +2013,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
       PC  <- P
     } else {
       stan = FALSE
-      PC  <- pcor(P)
+      PC  <- symm(pcor(P))
     }
 
     # Number of nonredundant elements
