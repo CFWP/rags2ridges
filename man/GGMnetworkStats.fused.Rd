@@ -42,5 +42,5 @@ PCsparse <- sparsify.fused(Plist , threshold = "absValue", absValueCut = 0.2)
 SPlist <- lapply(PCsparse, "[[", "sparsePrecision") # Get sparse precisions
 
 ## Calculate GGM network statistics in each class
-GGMnetworkStats.fused(SPlist)
+\dontrun{GGMnetworkStats.fused(SPlist)}
 }
