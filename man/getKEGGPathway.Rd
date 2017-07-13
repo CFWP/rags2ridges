@@ -25,7 +25,7 @@ getKEGGPathway(kegg.id)
   \url{http://www.genome.jp/kegg/}
 }
 \note{
-  It is currently nessesary to \code{require("KEGGgraph")} (or
+  It is currently necessary to \code{require("KEGGgraph")} (or
   \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
 }
 \author{
