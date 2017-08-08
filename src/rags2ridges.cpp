@@ -774,7 +774,7 @@ arma::cube armaRWishart(const int n,
   --------------------------------------------------------------------------- */
 
   const int p = sigma.n_cols;
-  const arma::mat L = arma::chol(sigma);
+  const arma::mat L = arma::chol(sigma, "lower");
   arma::cube ans(p, p, n);
   for (int g = 0; g < n; ++g) {
     ans.slice(g) = armaRWishartSingle(L, nu, p);
@@ -797,7 +797,7 @@ arma::cube armaRInvWishart(const int n,
   --------------------------------------------------------------------------- */
 
   const int p = psi.n_cols ;
-  const arma::mat L = arma::chol(inv(psi));
+  const arma::mat L = arma::chol(inv(psi), "lower");
   arma::cube ans(p, p, n);
   for (int g = 0; g < n; ++g) {
     ans.slice(g) = inv(armaRWishartSingle(L, nu, p));
