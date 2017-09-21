@@ -9,11 +9,11 @@
 Core ridge precision estimators
 }
 \description{
-This is the R interface to the \code{C++} implementations of the
-ridge precision estimators. They serves as core functions for many other
-functions.
+This is the \R interface to the \code{C++} implementations of the ridge precision estimators.
+They perform core computations for many other functions.
 }
 \usage{
+# General usage
 .armaRidgeP(S, target, lambda, invert = 2L)
 
 # Arbitrary target estimator
@@ -27,7 +27,7 @@ functions.
   A sample covariance \code{matrix}.
   }
   \item{target}{
-  A \code{numeric} symmetric positive definite target \code{matrix} the same
+  A \code{numeric} symmetric positive definite target \code{matrix} of the same
   size as \code{S}.
   }
   \item{alpha}{
@@ -37,20 +37,20 @@ functions.
   The ridge penalty. A \code{double} of length 1.
   }
   \item{invert}{
-  An \code{integer}. Should the estimate be compute using inversion?
+  An \code{integer}. Should the estimate be computed using inversion?
   Permitted values are \code{0L}, \code{1L}, and \code{2L} meaning "no", "yes",
   and "automatic" (default).
   }
 }
 \details{
   The functions are R-interfaces to low-level \code{C++} implementations
-  of the ridge estimators in the reference below.
-  Cf. Lemma 1, Remark 6, Remark 7, and section 4.1 herein.
+  of the ridge estimators in the reference below
+  (cf. Lemma 1, Remark 6, Remark 7, and section 4.1 therein).
 
   \code{.armaRidgeP} is simply a wrapper (on the C++ side) for
   \code{.armaRidgePAnyTarget} and \code{.armaRidgePScalarTarget} which are
   the estimators for arbitrary and scalar targets, respectively.
-  The \code{invert} argument of the functions indicate that the computation
+  The \code{invert} argument of the functions indicates if the computation
   uses matrix inversion or not.
 
   Essentially, the functions compute
@@ -75,21 +75,22 @@ functions.
     1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
     - 1/2(S - \lambda T)},
   }
-  if \code{invert == 0} using appropriate singular value decompostions.
-  See the R implemetations in the example section below.
+  if \code{invert == 0} using appropriate eigenvalue decompositions.
+  See the \R implementations in the example section below.
 }
 \value{
   Returns a symmetric positive definite \code{matrix} of the same size as
   \code{S}.
 }
 \references{
-  van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse
-  Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 }
 \author{
-  Anders Ellern Bilgrau, \cr
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, and \cr
-  Wessel N. van Wieringen
+  Anders Ellern Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \section{Warning}{
   The functions themselves perform no checks on the input. Correct input should
@@ -119,7 +120,7 @@ rev_eig <- function(evalues, evectors) { # "Reverse" eigen decomposition
 
 # As armaRidgePScalarTarget Inv
 rRidgePScalarTarget <- function(S, a, l, invert = 2) {
-  ED <- eigen(S)
+  ED <- eigen(S, symmetric = TRUE)
   eigvals <- 0.5*(ED$values - l*a)
   sqroot <- sqrt(l + eigvals^2)
 
@@ -148,7 +149,7 @@ rRidgePScalarTarget <- function(S, a, l, invert = 2) {
 
 # As armaRidgePAnyTarget
 rRidgePAnyTarget <- function(S, tgt, l, invert = 2) {
-  ED <- eigen(S - l*tgt)
+  ED <- eigen(S - l*tgt, symmetric = TRUE)
   eigvals <- 0.5*ED$values
   sqroot <- sqrt(l + eigvals^2)
 
@@ -190,7 +191,7 @@ rRidgeP <- function(S, tgt, l, invert = 2) {
 
 # Contrasted to the straight forward implementations:
 sqrtm <- function(X) { # Matrix square root
-  ed <- eigen(X)
+  ed <- eigen(X, symmetric = TRUE)
   rev_eig(sqrt(ed$values), ed$vectors)
 }
 

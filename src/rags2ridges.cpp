@@ -6,6 +6,8 @@
 //using namespace RcppArmadillo;
 //using namespace arma;
 
+// [[Rcpp::interfaces(r, cpp)]]
+
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
@@ -22,9 +24,12 @@ double NLL(const arma::mat S, const arma::mat P) {
   log_det(logdet, sign, P);
   if (sign < 0) {
     Rcpp::warning("Supplied precision matrix is not postive definite.");
+    return arma::datum::inf;
   }
   return -logdet + accu(S % P);
 }
+
+
 
 // [[Rcpp::export(PNLL)]]
 double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
@@ -33,8 +38,10 @@ double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
   return NLL(S, P) + 0.5*lambda*pow(arma::norm(P - T, "fro"), 2.0);
 }
 
+
+
 // [[Rcpp::export(NLL.fused)]]
-double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
+double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
                 const arma::vec ns) {
   /* ---------------------------------------------------------------------------
    Function that computes the value of the (negative) combined log-likelihood
@@ -54,6 +61,8 @@ double LL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   return nll;
 }
 
+
+
 // [[Rcpp::export(PNLL.fused)]]
 double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
                   const arma::vec ns, const Rcpp::List Tlist,
@@ -70,7 +79,7 @@ double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   --------------------------------------------------------------------------- */
 
   const int G = ns.size();
-  double pnll = LL_fused(Slist, Plist, ns);
+  double pnll = NLL_fused(Slist, Plist, ns);
   for (int i = 0; i < G; i++) {
     arma::mat Pi = Plist[i];
     arma::mat Ti = Tlist[i];
@@ -84,6 +93,7 @@ double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   }
   return pnll;
 }
+
 
 
 // [[Rcpp::export(.armaPooledS)]]
@@ -112,6 +122,7 @@ arma::mat armaPooledS(const Rcpp::List & Slist,  // List of covariance matrices
   }
   return rdenum*S0;
 }
+
 
 
 // [[Rcpp::export(.armaPooledP)]]
@@ -144,15 +155,77 @@ arma::mat armaPooledP(const Rcpp::List & Plist,  // List of precision matrices
 
 
 
+// [[Rcpp::export(.armaEigShrink)]]
+arma::vec armaEigShrink(const arma::vec dVec,
+                        const double lambda,
+                        const double cons = 0) {
+  /* ---------------------------------------------------------------------------
+   - Function that shrinks the eigenvalues
+   - Shrinkage is that of the rotation equivariant alternative ridge estimator
+   - Main use is in avoiding expensive matrix square root when choosing a
+     target that leads to a rotation equivariant version of the alternative
+     ridge estimator
+   - dVec   > numeric vector containing the eigenvalues of a matrix S
+   - lambda > penalty parameter
+   - const  > a constant, default = 0
+   --------------------------------------------------------------------------- */
+
+  arma::vec Evector = 0.5 * (dVec - lambda * cons);
+  return sqrt(lambda + pow(Evector, 2.0)) + Evector;
+}
+
+
+
+// [[Rcpp::export(.armaEigShrinkAnyTarget)]]
+arma::vec armaEigShrinkAnyTarget(const arma::mat & S,
+                                 const arma::mat & target,
+                                 const double lambda) {
+  /* ---------------------------------------------------------------------------
+  - Function that shrinks the eigenvalues
+  - Shrinkage is that of the alternative ridge estimator under a general target
+  - Main use is in avoiding expensive Schur-approach to computing the
+    matrix square root
+  - S      > A sample covariance matrix
+  - target > Target matrix of same dimensions as S
+  - lambda > penalty parameter
+  --------------------------------------------------------------------------- */
+
+  arma::vec eigvals;
+  arma::mat eigvecs = S - lambda * target;
+  eig_sym(eigvals, eigvecs, eigvecs, "dc");
+  eigvals = 0.5 * eigvals;
+  arma::vec sqroot = sqrt(lambda + pow(eigvals, 2.0));
+  return (sqroot + eigvals);
+}
+
+
+
+// [[Rcpp::export(.armaEigShrinkArchI)]]
+arma::vec armaEigShrinkArchI(const arma::vec dVec,
+                             const double lambda,
+                             const double cons) {
+  /* ---------------------------------------------------------------------------
+   - Function that shrinks the eigenvalues
+   - Shrinkage is that of the rotation equivariant Archetypal I estimator
+   - dVec   > numeric vector containing the eigenvalues of a matrix S
+   - lambda > penalty parameter
+   - const  > a constant
+   --------------------------------------------------------------------------- */
+
+  arma::vec Evector = (1 - lambda) * dVec + (lambda * (1.0/cons));
+  return Evector;
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
-  REGULAR (NON-FUSED) RIDGE ESTIMATOR
+  TOOLS FOR THE REGULAR (NON-FUSED) RIDGE ESTIMATOR OF THE CORE MODULE
 
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
-
 
 inline arma::mat rev_eig(const arma::vec eigval, const arma::mat eigvec) {
   /* ---------------------------------------------------------------------------
@@ -236,7 +309,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
    - alpha  > The scaling of the identity matrix. Shoud not contain NaNs, Infs,
               or NA.s
    - lambda > The ridge penalty. Can be set to Inf (on the R side)
-   - invert > Should the estimate be compute using inversion?
+   - invert > Should the estimate be computed using inversion?
               0 = "no", 1 = "yes", 2 = "automatic", (default).
   --------------------------------------------------------------------------- */
 
@@ -273,7 +346,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
     return rev_eig(D_inv, eigvecs);  // Proper inversion
   } else {
     arma::vec D_noinv = (sqroot - eigvals)/lambda; // inversion-less diagonal
-    return rev_eig(D_noinv, eigvecs);  // Inversion by proposion
+    return rev_eig(D_noinv, eigvecs);  // Inversion by proposition
   }
 
 }
@@ -316,14 +389,14 @@ arma::mat armaRidgeP(const arma::mat & S,
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
-  FUSED RIDGE ESTIMATOR
+ TOOLS FOR THE FUSED RIDGE ESTIMATOR OF THE FUSED MODULE
 
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // [[Rcpp::export(.armaFusedUpdateI)]]
 arma::mat armaFusedUpdateI(int g0,
@@ -560,7 +633,8 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
                             const arma::mat & lambda,
                             const Rcpp::List & Plist,
                             const int maxit = 100,
-                            const double eps = 1e-5,
+                            const double eps = 1e-7,
+                            const bool relative = true,
                             const bool verbose = false) {
   /* ---------------------------------------------------------------------------
    The fused ridge estimate workhorse function for a given lambda.
@@ -575,7 +649,8 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
    - Plist   > A list of length G of symmetric p.d. matrices that serves as
                initial estimates of the algorithm.
    - maxit   > integer. The maximum number of interations, default is 100.
-   - eps     > numeric. A positive convergence criterion. Default is 1e-5.
+   - eps     > numeric. A positive convergence criterion. Default is 1e-7.
+   - relative > Devide
    - verbose > logical. Should the function print extra info. Defaults to false.
   --------------------------------------------------------------------------- */
 
@@ -591,13 +666,16 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
 
       tmp = Rcpp::as<arma::mat>(Plist_out(g));
       if (lambda_colsum[g] < 1) {
-        // Update I is faster but unstable for very large lambda
+        // Update I is more stable for very large lambda
         Plist_out(g) = armaFusedUpdateI(g, Plist_out, Slist, Tlist, ns, lambda);
       } else {
-        // Update III is slower but more stable for very large lambda
+        // Update III is more stable for very large lambda
         Plist_out(g) = armaFusedUpdateIII(g, Plist_out, Slist, Tlist,ns,lambda);
       }
       diffs(g) = pow(norm(Rcpp::as<arma::mat>(Plist_out(g)) - tmp, "fro"), 2.0);
+      if (relative) {
+        diffs(g) /=  pow(norm(Rcpp::as<arma::mat>(Plist_out(g)), "fro"), 2.0);
+      }
     }
     delta = max(diffs);
 
@@ -618,6 +696,7 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 
@@ -625,7 +704,6 @@ Rcpp::List armaRidgeP_fused(const Rcpp::List & Slist,
 
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
-
 
 // [[Rcpp::export]]
 arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
@@ -635,7 +713,7 @@ arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma) {
    - n     > An integer giving the number of samples to simulate.
    - mu    > A vector giving the population mean.
    - sigma > A matrix giving the population covariance matrix.
-   (Copied taken from package GMCM)
+   NOTE: Copied from package GMCM
   --------------------------------------------------------------------------- */
 
   Rcpp::RNGScope();  // Allows for using set.seed(...) on the R side
@@ -664,11 +742,10 @@ arma::mat armaRWishartSingle(const arma::mat L,
                              const int p) {
   /* ---------------------------------------------------------------------------
     Wishart simulation. Simulate a single Wishart distributed matrix
-    (Taken from package AEBilgrau/correlateR)
     L  > A cholesky decomposition matrix
     nu > The degrees of freedom
     p  > The dimension of the distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   arma::mat A(p, p, arma::fill::randn);
@@ -693,11 +770,11 @@ arma::cube armaRWishart(const int n,
     n     > A integer giving the number of matrices to generate
     sigma > The scale matrix in the Wishart distribution
     nu    > The degrees of freedom in the Wishart distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   const int p = sigma.n_cols;
-  const arma::mat L = arma::chol(sigma);
+  const arma::mat L = arma::chol(sigma, "lower");
   arma::cube ans(p, p, n);
   for (int g = 0; g < n; ++g) {
     ans.slice(g) = armaRWishartSingle(L, nu, p);
@@ -716,11 +793,11 @@ arma::cube armaRInvWishart(const int n,
     n     > A integer giving the number of matrices to generate
     psi   > The scale matrix in the inverse Wishart distribution
     nu    > The degrees of freedom in the inverse Wishart distribution
-    (Copied from package AEBilgrau/correlateR)
+    NOTE: Copied from package AEBilgrau/correlateR
   --------------------------------------------------------------------------- */
 
   const int p = psi.n_cols ;
-  const arma::mat L = arma::chol(inv(psi));
+  const arma::mat L = arma::chol(inv(psi), "lower");
   arma::cube ans(p, p, n);
   for (int g = 0; g < n; ++g) {
     ans.slice(g) = inv(armaRWishartSingle(L, nu, p));
@@ -734,4 +811,9 @@ arma::cube armaRInvWishart(const int n,
 getwd()
 source("./../../fnorm.R")
 */
+
+
+// pull in other functions
+#include "ridgePchordal.h"
+
 

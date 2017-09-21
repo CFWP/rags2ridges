@@ -4,13 +4,16 @@
 Select optimal penalty parameter by leave-one-out cross-validation
 }
 \description{
-Function that selects the optimal penalty parameter for the \code{\link{ridgeS}} call by usage of leave-one-out cross-validation.
+This function is now deprecated. Please use \code{optPenalty.kCV} instead.
+
+Function that selects the optimal penalty parameter for the \code{\link{ridgeP}} call
+by usage of leave-one-out cross-validation.
 Its output includes (a.o.) the precision matrix under the optimal value of the penalty parameter.
 }
 \usage{
-optPenalty.LOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt", 
-target = default.target(covML(Y)), output = "light", graph = TRUE, 
-verbose = TRUE)
+optPenalty.LOOCV(Y, lambdaMin, lambdaMax, step, type = "Alt",
+                 cor = FALSE, target = default.target(covML(Y)),
+                 output = "light", graph = TRUE, verbose = TRUE)
 }
 \arguments{
   \item{Y}{
@@ -28,6 +31,9 @@ An \code{integer} determining the number of steps in moving through the grid [\c
   \item{type}{
 A \code{character} indicating the type of ridge estimator to be used. Must be one of: "Alt", "ArchI", "ArchII".
 }
+  \item{cor}{
+A \code{logical} indicating if the evaluation of the LOOCV score should be performed on the correlation scale.
+}
   \item{target}{
 A target \code{matrix} (in precision terms) for Type I ridge estimators.
 }
@@ -42,26 +48,37 @@ A \code{logical} indicating if information on progress should be printed on scre
 }
 }
 \details{
-The function calculates a cross-validated negative log-likelihood score (using a regularized ridge estimator for the precision matrix) for each 
-value of the penalty parameter contained in the search grid by way of leave-one-out cross-validation. The value of the penalty parameter 
-that achieves the lowest cross-validated negative log-likelihood score is deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must 
-be a positive scalar. The maximum allowable value of \code{lambdaMax} depends on the type of ridge estimator employed. For details on the type of 
-ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeS}}. 
-The ouput consists of an object of class list (see below). When \code{output = "light"} (default) only 
+The function calculates a cross-validated negative log-likelihood score (using a regularized ridge
+estimator for the precision matrix) for each
+value of the penalty parameter contained in the search grid by way of
+leave-one-out cross-validation. The value of the penalty parameter
+that achieves the lowest cross-validated negative log-likelihood score
+is deemed optimal. The penalty parameter must be positive such that \code{lambdaMin} must
+be a positive scalar. The maximum allowable value of \code{lambdaMax}
+depends on the type of ridge estimator employed. For details on the type of
+ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see \code{\link{ridgeP}}.
+The ouput consists of an object of class list (see below). When \code{output = "light"} (default) only
 the \code{optLambda} and \code{optPrec} elements of the list are given.
 }
 \value{
 An object of class list:
 \item{optLambda}{A \code{numeric} giving the optimal value of the penalty parameter.}
-\item{optPrec}{A \code{matrix} representing the precision matrix of the chosen type (see \code{\link{ridgeS}}) under the optimal value of the penalty parameter.}
+\item{optPrec}{A \code{matrix} representing the precision matrix of the chosen type (see \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
 \item{lambdas}{A \code{numeric} vector representing all values of the penalty parameter for which cross-validation was performed; Only given when \code{output = "all"}.}
 \item{LLs}{A \code{numeric} vector representing the mean of cross-validated negative log-likelihoods for each value of the penalty parameter given in \code{lambdas}; Only given when \code{output = "all"}.}
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
+\note{
+When \code{cor = TRUE} correlation matrices are used in the computation of the (cross-validated) negative
+log-likelihood score, i.e., the leave-one-out sample covariance matrix is a matrix on the correlation scale.
+When performing evaluation on the correlation scale the data are assumed to be standardized.
+If \code{cor = TRUE} and one wishes to used the default target specification one may consider using \code{target = default.target(covML(Y, cor = TRUE))}. This gives a default target under the assumption of standardized data.
+}
 \seealso{
-\code{\link{ridgeS}}, \code{\link{optPenalty.aLOOCV}}, \code{\link{default.target}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}}, \code{\link{optPenalty.aLOOCV}}, \cr
+\code{\link{default.target}}, \code{\link{covML}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
@@ -72,7 +89,14 @@ X = matrix(rnorm(n*p), nrow = n, ncol = p)
 colnames(X)[1:25] = letters[1:25]
 
 ## Obtain regularized precision under optimal penalty
-OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT	
+OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
 OPT$optLambda	# Optimal penalty
-OPT$optPrec	# Regularized precision under optimal penalty
+OPT$optPrec	  # Regularized precision under optimal penalty
+
+## Another example with standardized data
+X <- scale(X, center = TRUE, scale = TRUE)
+OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
+                         target = default.target(covML(X, cor = TRUE))); OPT
+OPT$optLambda	# Optimal penalty
+OPT$optPrec	  # Regularized precision under optimal penalty
 }

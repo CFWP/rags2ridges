@@ -1,0 +1,115 @@
+\name{DiffGraph}
+\alias{DiffGraph}
+\title{
+Visualize the differential graph
+}
+\description{
+Function visualizing the differential graph, i.e., the network of edges that are unique for 2 class-specific graphs over the same vertices
+}
+\usage{
+DiffGraph(P1, P2, lay = "layout_with_fr", coords = NULL,
+          Vsize = 15, Vcex = 1, Vcolor = "orangered",
+          VBcolor = "darkred", VLcolor = "black",
+          P1color = "red", P2color = "green", main = "")
+}
+\arguments{
+  \item{P1}{
+Sparsified precision \code{matrix} for class 1.
+}
+  \item{P2}{
+Sparsified precision \code{matrix} for class 2.
+}
+  \item{lay}{
+A \code{character} mimicking a call to \code{\link{igraph}} layout functions.
+Determines the placement of vertices.
+}
+  \item{coords}{
+A \code{matrix} containing coordinates.
+Alternative to the lay-argument for determining the placement of vertices.
+}
+  \item{Vsize}{
+A \code{numeric} determining the vertex size.
+}
+  \item{Vcex}{
+A \code{numeric} determining the size of the vertex labels.
+}
+  \item{Vcolor}{
+A \code{character} (scalar or vector) determining the vertex color.
+}
+  \item{VBcolor}{
+A \code{character} determining the color of the vertex border.
+}
+  \item{VLcolor}{
+A \code{character} determining the color of the vertex labels.
+}
+  \item{P1color}{
+A \code{character} determining the color of edges unique to P1.
+}
+  \item{P2color}{
+A \code{character} determining the color of edges unique to P2.
+}
+  \item{main}{
+A \code{character} giving the main figure title.
+}
+}
+\details{
+Say you have 2 class-specific precision matrices that are estimated over the same variables/features.
+This function visualizes in a single graph the edges that are unique to the respective classes.
+Hence, it gives the differential graph.
+Edges unique to \code{P1} are colored according to \code{P1color}.
+Edges unique to \code{P2} are colored according to \code{P2color}.
+Dashed lines indicate negative precision elements while solid lines indicate positive precision elements.
+
+The default layout is according to the Fruchterman-Reingold algorithm (1991).
+Most layout functions supported by \code{\link{igraph}} are supported (the function is partly a wrapper around certain \code{\link{igraph}} functions).
+The igraph layouts can be invoked by a \code{character} that mimicks a call to a \code{\link{igraph}} layout functions in the \code{lay} argument.
+When using \code{lay = NULL} one can specify the placement of vertices with the \code{coords} argument.
+The row dimension of this matrix should equal the number of vertices.
+The column dimension then should equal 2 (for 2D layouts) or 3 (for 3D layouts).
+The \code{coords} argument can also be viewed as a convenience argument as it enables one, e.g., to layout a graph
+according to the coordinates of a previous call to \code{Ugraph}.
+If both the the lay and the coords arguments are not \code{NULL}, the lay argument takes precedence.
+}
+\value{
+The function returns a graph.
+}
+\references{
+Csardi, G. and Nepusz, T. (2006).
+The igraph software package for complex network research.
+InterJournal, Complex Systems 1695.
+http://igraph.sf.net
+
+Fruchterman, T.M.J., and Reingold, E.M. (1991).
+Graph Drawing by Force-Directed Placement.
+Software: Practice & Experience, 21: 1129-1164.
+}
+\author{
+Carel F.W. Peeters <cf.peeters@vumc.nl>
+}
+\seealso{
+\code{\link{Ugraph}}
+}
+\examples{
+## Obtain some (high-dimensional) data, class 1
+p = 25
+n = 10
+set.seed(333)
+X = matrix(rnorm(n*p), nrow = n, ncol = p)
+colnames(X)[1:25] = letters[1:25]
+
+## Obtain some (high-dimensional) data, class 2
+set.seed(123456)
+X2 = matrix(rnorm(n*p), nrow = n, ncol = p)
+colnames(X2)[1:25] = letters[1:25]
+
+## Obtain regularized precision under optimal penalty, classes 1 and 2
+OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+OPT2 <- optPenalty.LOOCV(X2, lambdaMin = .5, lambdaMax = 30, step = 100)
+
+## Determine support regularized standardized precision under optimal penalty
+PC0  <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
+PC02 <- sparsify(symm(OPT2$optPrec), threshold = "localFDR")$sparseParCor
+
+## Visualize differential graph
+DiffGraph(PC0, PC02)
+}

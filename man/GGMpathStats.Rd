@@ -11,9 +11,10 @@ for each (heuristically) determined path between the endpoints.
 }
 \usage{
 GGMpathStats(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE,
-nrPaths = 2, lay = layout.circle, nodecol = "skyblue", Vsize = 15, Vcex = 0.6,
-VBcolor = "darkblue", VLcolor = "black", all.edges = TRUE, prune = TRUE,
-legend = TRUE, scale = 1, Lcex = 0.8, PTcex = 2, main = "")
+             nrPaths = 2, lay = layout.circle, nodecol = "skyblue", Vsize = 15,
+             Vcex = 0.6, VBcolor = "darkblue", VLcolor = "black",
+             all.edges = TRUE, prune = TRUE, legend = TRUE, scale = 1,
+             Lcex = 0.8, PTcex = 2, main = "")
 }
 \arguments{
   \item{P0}{
@@ -141,7 +142,7 @@ Jones, B., and West, M. (2005). Covariance Decomposition in Undirected Gaussian 
 Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}}
+\code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

@@ -2,10 +2,10 @@
 \alias{pooledS}
 \alias{pooledP}
 \title{
-Compute pooled covariance or precision
+Compute the pooled covariance or precision matrix estimate
 }
 \description{
-Compute the pooled covariance or precision estimate from a \code{list} of covariance matrices or precision matrices.
+Compute the pooled covariance or precision matrix estimate from a \code{list} of covariance matrices or precision matrices.
 }
 \usage{
 pooledS(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
@@ -37,9 +37,9 @@ That is, it inverts all the precision matrices in \code{Plist}, applies
 Similarly, \code{pooledP} returns the pooled precision matrix, i.e. a \code{numeric} matrix with the same size as the elements of \code{Plist}.
 }
 \author{
-Anders Ellern Bilgrau\cr
-Carel Peeters\cr
-Wessel van Wieringen
+Anders Ellern Bilgrau,
+Carel F.W. Peeters <cf.peeters@vumc.nl>,
+Wessel N. van Wieringen
 }
 \examples{
 ns <- c(4, 6, 8)

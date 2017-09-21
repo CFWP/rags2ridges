@@ -1,8 +1,7 @@
 \name{fused.test}
 \alias{fused.test}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Test necessity of fusion
+Test the necessity of fusion
 }
 \description{
 Function for testing the null hypothesis that all population precision
@@ -28,7 +27,7 @@ fused.test(Ylist, Tlist, lambda, n.permutations = 100,
   }
   \item{n.permutations}{
     The number of permutations to approximate the null distribution.
-    Default is 100. Should be increased if sufficent computing power is
+    Default is 100. Should be increased if sufficient computing power is
     available.
   }
   \item{verbose}{
@@ -49,9 +48,14 @@ class labels of the data.
 Returns a \code{list} values containing the observed test statistic and
 the test statistic under the null distribution.
 }
+\references{
+  Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
+  Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
+  arXiv:1509.07982v1 [stat.ME].
+}
 \author{
-Anders Ellern Bilgrau, \cr
-Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+Anders Ellern Bilgrau,
+Carel F.W. Peeters <cf.peeters@vumc.nl>,
 Wessel, N. van Wieringen
 }
 \seealso{

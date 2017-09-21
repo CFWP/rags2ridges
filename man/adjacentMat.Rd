@@ -4,8 +4,7 @@
 Transform real matrix into an adjacency matrix
 }
 \description{
-Function that transforms a real matrix into an adjacency matrix. Intended use: Turn sparsified precision matrix into an adjacency matrix for 
-undirected graphical representation.
+Function that transforms a real matrix into an adjacency matrix. Intended use: Turn sparsified precision matrix into an adjacency matrix for undirected graphical representation.
 }
 \usage{
 adjacentMat(M, diag = FALSE)
@@ -25,7 +24,7 @@ Function returns an adjacency \code{matrix}.
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{covML}}, \code{\link{sparsify}}, \code{\link{edgeHeat}}, \code{\link{Ugraph}}
+\code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}}, \code{\link{edgeHeat}}, \code{\link{Ugraph}}
 }
 \examples{
 ## Obtain some (high-dimensional) data
@@ -37,7 +36,7 @@ colnames(X)[1:25] = letters[1:25]
 Cx <- covML(X)
 
 ## Obtain regularized precision matrix
-P <- ridgeS(Cx, lambda = 10, type = "Alt")
+P <- ridgeP(Cx, lambda = 10, type = "Alt")
 
 ## Obtain sparsified partial correlation matrix
 PC0 <- sparsify(P, threshold = "localFDR", FDRcut = .8)

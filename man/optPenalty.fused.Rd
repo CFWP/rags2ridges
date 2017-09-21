@@ -30,9 +30,8 @@ optPenalty.fused.auto(Ylist, Tlist, lambda,
                       optim.control = list(trace = verbose, maxit = maxit.optimizer),
                           ...)
 optPenalty.fused.grid(Ylist, Tlist,
-                      lambdaMin, lambdaMax, step1 = 20,
-                      lambdaFMin = lambdaMin, lambdaFMax = lambdaMax,
-                      step2 = step1,
+                      lambdas = 10^seq(-5, 5, length.out = 15),
+                      lambdaFs = lambdas,
                       cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
                       k = 10, verbose = TRUE, ...)
 }
@@ -98,27 +97,11 @@ optPenalty.fused.grid(Ylist, Tlist,
     \code{logical}. If \code{TRUE} additional output from the optimizer is
     appended to the output as an attribute.
   }
-  \item{lambdaMin}{
-    A single positive \code{numeric}. Minimum ridge penalty \eqn{lambda}.
+  \item{lambdas}{
+    A \code{numeric} vector of positive ridge penalties.
   }
-  \item{lambdaMax}{
-    A single positive \code{numeric}. Maximum ridge penalty \eqn{lambda}.
-  }
-  \item{step1}{
-    A single non-negative \code{integer}. Number grid-points used between
-    \code{lambdaMin} and \code{lambdaMax}.
-  }
-  \item{lambdaFMin}{
-    A single non-negative \code{numeric}. As for \code{lambdaMin}, but for the
-    fused penalty assuming the complete penalty graph.
-  }
-  \item{lambdaFMax}{
-    A single non-negative \code{numeric}. As for \code{lambdaMax}, but for the
-    fused penalty assuming the complete penalty graph.
-  }
-  \item{step2}{
-    A single non-negative \code{integer}. As for \code{step1}, but for the fused
-    penalty.
+  \item{lambdaFs}{
+    A \code{numeric} vector of non-negative fusion penalties.
   }
   \item{grid}{
     \code{logical.} Should a grid based search be used? Default is \code{FALSE}.
@@ -131,7 +114,7 @@ optPenalty.fused.grid(Ylist, Tlist,
     \code{optPenalty.fused.grid} or \code{optPenalty.fused.auto}
     depending on the value of \code{grid}.
     In \code{optPenalty.fused.grid}, arguments are passed to
-    \code{fusedRidgeS}.
+    \code{ridgeP.fused}.
     In \code{optPenalty.fused.auto}, arguments are passed to the optimizer.
   }
 }
@@ -161,19 +144,20 @@ LOOCV loss.
   loss function}
 }
 \references{
-Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
-(In preparation) "Targeted Fused Ridge Estimation of Multiple Inverse Covariance
-Matrices from High-Dimensional Data Classes"
+Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
+Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
+arXiv:1509.07982v1 [stat.ME].
 }
 \author{
-Anders Ellern Bilgrau \cr
-Carel F.W. Peeters <cf.peeters@vumc.nl> \cr
+Anders Ellern Bilgrau,
+Carel F.W. Peeters <cf.peeters@vumc.nl>,
 Wessel N. van Wieringen
 }
 \seealso{
 See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 }
 \examples{
+\dontrun{
 # Generate some (not so) high-dimensional data witn (not so) many samples
 ns <- c(4, 5, 6)
 Ylist <- createS(n = ns, p = 6, dataset = TRUE)
@@ -182,32 +166,28 @@ Tlist <- default.target.fused(Slist, ns, type = "DIAES")
 
 
 # Grid-based
+lambdas <- 10^seq(-5, 3, length.out = 7)
 a <- optPenalty.fused.grid(Ylist, Tlist,
-                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 10,
-                           lambdaFMin = 1e-5, lambdaFMax = 1e3, step2 = 10,
+                           lambdas = lambdas,
                            cv.method = "LOOCV", maxit = 1000)
 b <- optPenalty.fused.grid(Ylist, Tlist,
-                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           lambdas = lambdas,
                            cv.method = "aLOOCV", maxit = 1000)
 c <- optPenalty.fused.grid(Ylist, Tlist,
-                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           lambdas = lambdas,
                            cv.method = "sLOOCV", maxit = 1000)
 d <- optPenalty.fused.grid(Ylist, Tlist,
-                           lambdaMin = 1e-5, lambdaMax = 1e3, step1 = 15,
+                           lambdas = lambdas,
                            cv.method = "kCV", k = 2, maxit = 1000)
 
 # Numerical optimization (uses the default "optim" optimizer with method "BFGS")
-aa <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "LOOCV",
-                            method = "BFGS")
+aa <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "LOOCV", method = "BFGS")
 print(aa)
-bb <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV",
-                           method = "BFGS")
+bb <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV", method = "BFGS")
 print(bb)
-cc <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "sLOOCV",
-                           method = "BFGS")
+cc <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "sLOOCV", method = "BFGS")
 print(cc)
-dd <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "kCV", k = 3,
-                            method = "BFGS")
+dd <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "kCV", k=3, method="BFGS")
 print(dd)
 
 
@@ -217,7 +197,7 @@ print(dd)
 
 # LOOCV
 # Get minimums and plot
-amin <- log(expand.grid(a$lambda, a$lambdaF))[which.min(a$fcvl), ]
+amin  <- log(expand.grid(a$lambda, a$lambdaF))[which.min(a$fcvl), ]
 aamin <- c(log(aa$lambda[1,1]), log(aa$lambda[1,2]))
 
 # Plot
@@ -298,5 +278,6 @@ init[2,1] <- init[1,2] <- 2.1
 res <- optPenalty.fused(Ylist, Tlist, lambda = lambda, lambda.init = init,
                         cv.method = "aLOOCV", optimizer = "nlm")
 print(res)
+}
 }
 

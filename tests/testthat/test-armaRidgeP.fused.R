@@ -142,12 +142,13 @@ test_that("armaRidgeP.fused agrees with the old R implmentation", {
   }
 
   res_old <- ridgeP.fused.old(S, n, tgt, lambda = lambda[1,1], lambdaF = lambda,
-                              maxit = 1000, eps = 1e-10, verbose = FALSE,)
+                              maxit = 1000, eps = 1e-10, verbose = FALSE)
   res_new <- armaRidgeP.fused(S, n, tgt, lambda, Plist = P,
                               maxit = 1000, eps = 1e-10, verbose = FALSE)
 
-  expect_that(res_new, is_equivalent_to(res_old))
-
+  expect_true(isTRUE(all.equal(res_old, res_new,
+                               check.attributes = FALSE,
+                               tolerance = 1e-4)))
 })
 
 

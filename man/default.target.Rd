@@ -4,9 +4,9 @@
 Generate a (data-driven) default target for usage in ridge-type shrinkage estimation
 }
 \description{
-Function that generates a (data-driven) default target for usage in (type I) ridge shrinkage estimation of the precision matrix (see \code{\link{ridgeS}}).
+Function that generates a (data-driven) default target for usage in (type I) ridge shrinkage estimation of the precision matrix (see \code{\link{ridgeP}}).
 The target that is generated is to be understood in precision terms.
-Most options for target generation result in a target that implies a situation of rotation equivariant estimation (see \code{\link{ridgeS}}).
+Most options for target generation result in a target that implies a situation of rotation equivariant estimation (see \code{\link{ridgeP}}).
 }
 \usage{
 default.target(S, type = "DAIE", fraction = 1e-04, const)
@@ -40,7 +40,9 @@ The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not data-driven in the
 The targets \code{DAIE}, \code{DIAES}, \code{DAPV}, and \code{DEPV} are data-driven in the sense that the input matrix \code{S} provides the information for the diagonal entries.
 The argument \code{fraction} is only used when \code{type = "DAIE"}. The argument \code{const} is only used when \code{type = "DCPV"}.
 All types except \code{DEPV} and \code{Null} lead to rotation equivariant alternative and archetypal Type I ridge estimators.
-The target \code{Null} also leads to a rotation equivariant alternative Type II ridge estimator (see \code{\link{ridgeS}}).
+The target \code{Null} also leads to a rotation equivariant alternative Type II ridge estimator (see \code{\link{ridgeP}}).
+Note that the \code{DIAES}, \code{DAPV}, and \code{DEPV} targets amount to the identity matrix when the sample covariance matrix \code{S} is standardized to be the correlation matrix.
+The same goes, naturally, for the \code{DCPV} target when \code{const} is specified to be 1.
 }
 \value{
 Function returns a target \code{matrix}.
@@ -49,10 +51,13 @@ Function returns a target \code{matrix}.
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \references{
-van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 }
 \seealso{
-\code{\link{ridgeS}}, \code{\link{covML}}
+\code{\link{ridgeP}}, \code{\link{covML}}
 }
 \examples{
 ## Obtain some (high-dimensional) data

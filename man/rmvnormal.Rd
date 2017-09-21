@@ -22,7 +22,7 @@ rmvnormal(n, mu, sigma)
 
 \details{
 The \code{rmvnormal} function is copied from the \code{GMCM}-package.
-It is similarly to \code{rmvnorm} from the \code{mvtnorm}-package.
+It is similar to \code{rmvnorm} from the \code{mvtnorm}-package.
 }
 \author{
   Anders Ellern Bilgrau

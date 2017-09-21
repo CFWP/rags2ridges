@@ -8,10 +8,8 @@ Print and summarize fusion test
 Print and summary functions for the fusion test performed by \code{\link{fused.test}}.
 }
 \usage{
-## S3 method for class 'ptest'
 \method{print}{ptest}(x, digits = 4L, ...)
 
-## S3 method for class 'ptest'
 \method{summary}{ptest}(object, ...)
 }
 \arguments{
@@ -31,9 +29,9 @@ Print and summary functions for the fusion test performed by \code{\link{fused.t
 Invisibly returns the object.
 }
 \references{
-  Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
-  (In preparation) "Targeted Fused Ridge Estimation of Multiple Inverse Covariance
-  Matrices from High-Dimensional Data Classes"
+  Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
+  Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
+  arXiv:1509.07982v1 [stat.ME].
 }
 \author{
   Anders Ellern Bilgrau,

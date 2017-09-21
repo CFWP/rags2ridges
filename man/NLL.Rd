@@ -7,7 +7,7 @@
 Evaulate the (penalized) (fused) likelihood
 }
 \description{
-Functions that evaulates the (penalized) (fused) likelihood.
+Functions that evaulate the (penalized) (fused) likelihood.
 }
 \usage{
 NLL(S, P)

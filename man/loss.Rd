@@ -4,9 +4,9 @@
 Evaluate regularized precision under various loss functions
 }
 \description{
-Function that evaluates an estimated and possibly regularized precision matrix under various loss functions. 
-The loss functions are formulated in precision terms. This function may be used to estimate the risk 
-(vis-a-vis, say, the true precision matrix) of the various ridge estimators employed. 
+Function that evaluates an estimated and possibly regularized precision matrix under various loss functions.
+The loss functions are formulated in precision terms. This function may be used to estimate the risk
+(vis-a-vis, say, the true precision matrix) of the various ridge estimators employed.
 }
 \usage{
 loss(E, T, precision = TRUE, type = c("frobenius", "quadratic"))
@@ -27,8 +27,8 @@ A \code{character} indicating which loss function is to be used. Must be one of:
 }
 \details{
 Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population precision matrix and let
-\eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a generic ridge estimator of the precision matrix under 
-generic regularization parameter \eqn{\lambda} (see also \code{\link{ridgeS}}). The function then
+\eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a generic ridge estimator of the precision matrix under
+generic regularization parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
 considers the following loss functions:
 \enumerate{
   \item Squared Frobenius loss, given by:
@@ -47,8 +47,8 @@ If \code{precision} \code{= FALSE} the argument \code{T} is considered to repres
 This statement is needed so that the loss is properly evaluated over the precision, i.e., depending
 on the value of the \code{logical} argument \code{precision} inversions are employed where needed.
 
-The function can be employed to assess the risk of a certain ridge precision estimator (see also \code{\link{ridgeS}}).
-The risk \eqn{\mathcal{R}_{f}} of the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function \eqn{L_{f}}, 
+The function can be employed to assess the risk of a certain ridge precision estimator (see also \code{\link{ridgeP}}).
+The risk \eqn{\mathcal{R}_{f}} of the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function \eqn{L_{f}},
 with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
 \deqn{
 \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
@@ -61,13 +61,16 @@ which can be approximated by the mean or median of losses over repeated simulati
 Function returns a \code{numeric} representing the loss under the chosen loss function.
 }
 \references{
-Van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
 }
 \seealso{
-\code{\link{covML}}, \code{\link{ridgeS}}
+\code{\link{covML}}, \code{\link{ridgeP}}
 }
 \examples{
 ## Define population covariance
@@ -83,9 +86,9 @@ samples <- X[sample(nrow(X), 10), ]
 Cxx <- covML(samples)
 
 ## Obtain regularized precision
-P <- ridgeS(Cxx, 10, type = "Alt")
+P <- ridgeP(Cxx, 10, type = "Alt")
 
-## Evaluate estimated precision against population 
+## Evaluate estimated precision against population
 ## precision under Frobenius loss
 loss(P, Truecov, precision = FALSE, type = "frobenius")
 }

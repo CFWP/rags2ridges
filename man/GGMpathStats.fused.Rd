@@ -21,10 +21,12 @@ GGMpathStats.fused(sparsePlist, ...)
 A \code{list} of path stats.
 }
 \note{
-The function currently fails if no paths are preset in one of the groups.
+The function currently fails if no paths are present in one of the groups.
 }
 \author{
-Anders Ellern Bilgrau
+  Anders E. Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
+  Wessel N. van Wieringen
 }
 \seealso{
 \code{\link{GGMpathStats}}
@@ -43,5 +45,4 @@ SPlist <- lapply(sparsePlist, "[[", "sparsePrecision")
 
 ## Obtain information on mediating and moderating paths between nodes 14 and 23
 res <- GGMpathStats.fused(SPlist, node1 = 3, node2 = 4, graph = FALSE)
-
 }

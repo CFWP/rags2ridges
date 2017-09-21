@@ -1,11 +1,11 @@
 \name{is.Xlist}
 \alias{is.Xlist}
 \title{
-Test if fused list formats are correctly used
+Test if fused list-formats are correctly used
 }
 \description{
-Function to check if the argument submits to the various \code{list}-formats used by the fused ridge estimator and related function.
-I.e. it tests if generic fused list arguments (such as \code{Slist}, \code{Tlist}, \code{Plist}, \code{Ylist}) are properly formatted
+Function to check if the argument submits to the various \code{list}-formats used by the fused ridge estimator and related functions are correct.
+That is, it tests if generic fused list arguments (such as \code{Slist}, \code{Tlist}, \code{Plist}, \code{Ylist}) are properly formatted.
 }
 \usage{
 is.Xlist(Xlist, Ylist = FALSE, semi = FALSE)
@@ -25,11 +25,14 @@ is.Xlist(Xlist, Ylist = FALSE, semi = FALSE)
   Returns \code{TRUE} if all tests are passed, throws error if not.
 }
 \references{
-Bilgrau, AE; Peeters CFW; Eriksen, PS; Boegsted, M; & van Wieringen, WN
-(in preparation) "Fused Ridge Estimation of Multiple Inverse Covariance
-Matrices from High-Dimensional Data Classes"
+  Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
+  Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
+  arXiv:1509.07982v1 [stat.ME].
 
-Van Wieringen, W.N. and Peeters, C.F.W. (2014). Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. arXiv:1403.0904 [stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).
+  Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data,
+  Computational Statistics & Data Analysis, vol. 103: 284-303.
+  Also available as arXiv:1403.0904v3 [stat.ME].
 }
 \author{
 Anders Bilgrau,

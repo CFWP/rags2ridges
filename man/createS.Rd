@@ -39,7 +39,7 @@ If \code{precision} is \code{TRUE} the population precision matrix is returned.
 This is useful to see what the actual would-be-used precision matrices are.
 The available values of \code{topology} are described below.
 Unless otherwise stated the diagonal entries are always one.
-If \code{m} is 2 or greater block diagonal precision matrix are constructed and used.
+If \code{m} is 2 or greater block diagonal precision matrices are constructed and used.
 \itemize{
   \item \code{"identity"}: uses the identity matrix (\code{diag(p)}) as precision matrix.
   Corresponds to no conditional dependencies.
@@ -86,8 +86,8 @@ If \code{covariance} is \code{TRUE} the \code{p} by \code{p} sample covariances 
 When \code{n} has length 1 the \code{list} structure is dropped and the matrix is returned.
 }
 \author{
-  Anders E. Bilgrau, \cr
-  Carel F.W. Peeters <cf.peeters@vumc.nl>, \cr
+  Anders E. Bilgrau,
+  Carel F.W. Peeters <cf.peeters@vumc.nl>,
   Wessel N. van Wieringen
 }
 \examples{
@@ -133,7 +133,7 @@ createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 1e10)
 # The precision argument can again be used to see the actual realised class
 # precision matrices used when invwishart = TRUE.
 
-# The Plist argumet is used to reuse old precision matrices or
+# The Plist argument is used to reuse old precision matrices or
 # user-generated ones
 P <- createS(n = 1, p = 5, "banded", precision = TRUE)
 lapply(createS(n = c(1e5, 1e5), p = 5, Plist = list(P, P+1)), solve)
