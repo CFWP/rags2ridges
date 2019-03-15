@@ -5,7 +5,7 @@
 }
 \description{
 Simulate data from a p-dimensional (zero-mean) gaussian graphical model (GGM) with a specified (or random) topology and return the sample covariance matrix or matrices.
-Can also return the original simulated data.
+Can also return the original simulated data or underlying precision matrix.
 }
 \usage{
 createS(n, p,
