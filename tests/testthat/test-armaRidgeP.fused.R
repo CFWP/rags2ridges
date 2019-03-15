@@ -1,5 +1,7 @@
 context("Unit test of the .armaRidgeP.fused function")
 
+suppressWarnings(RNGversion("3.5.0"))
+
 armaRidgeP.fused <- rags2ridges:::.armaRidgeP.fused
 armaRidgeP       <- rags2ridges:::.armaRidgeP
 
