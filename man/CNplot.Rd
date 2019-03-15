@@ -73,7 +73,7 @@ may be termed an acceptable (minimal) value.
 The function outputs a graph of the (spectral) matrix condition number over the domain [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the spectral
 condition number is calculated. It is determined by exact calculation using the spectral decomposition. For most purposes this exact calculation is fast enough,
 especially when considering rotation equivariant situations (see \code{\link{ridgeP}}). When exact computation of the spectral condition number
-is deemed too costly one may approximate the computationally friendly L1-condition number. This approximation is accessed through the \link[base]{rcond} function
+is deemed too costly one may approximate the computationally friendly L1-condition number. This approximation is accessed through the \link[base:kappa]{rcond} function
 (Anderson et al. 1999). When \code{Iaids = TRUE} the basic condition number plot is amended/enhanced with two additional plots (over the same domain of the penalty parameter as the basic plot): The approximate loss in digits of accuracy (for the operation of inversion) and an approximation to the second-order derivative of the curvature in the basic plot. These interpretational aids can enhance interpretation of the basic condition number plot and may support choosing a value for the penalty parameter (see Peeters, van de Wiel, & van Wieringen, 2016).
 When \code{vertical = TRUE} a vertical line is added
 at the constant \code{value}. This option can be used to assess if the optimal penalty obtained by, e.g., the routines \code{\link{optPenalty.LOOCV}}
