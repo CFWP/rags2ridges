@@ -4,6 +4,14 @@
 \title{News for Package \cpkg{rags2ridges}}
 
 
+\section{Changes in version 2.2.1}{
+  \subsection{Notifications:}{
+    \itemize{
+      \item Hot fix due to new RNG. No visible user changes.
+    }
+  }
+}
+
 \section{Changes in version 2.2}{
   \subsection{Notifications:}{
     \itemize{
