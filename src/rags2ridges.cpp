@@ -1,13 +1,6 @@
 // We only include RcppArmadillo.h which pulls Rcpp.h in for us
 #include <RcppArmadillo.h>
 
-// To avoid "::" usage uncomment below:
-//using namespace Rcpp;
-//using namespace RcppArmadillo;
-//using namespace arma;
-
-// [[Rcpp::interfaces(r, cpp)]]
-
 ////////////////////////////////////////////////////////////////////////////////
 /* -----------------------------------------------------------------------------
 

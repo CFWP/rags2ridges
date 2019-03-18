@@ -101,7 +101,3 @@ rmvnormal <- function(n, mu, sigma) {
     .Call(`_rags2ridges_armaPenLLreparGradArchII`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 
-# Register entry points for exported C++ functions
-methods::setLoadAction(function(ns) {
-    .Call('_rags2ridges_RcppExport_registerCCallable', PACKAGE = 'rags2ridges')
-})
