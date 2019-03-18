@@ -11,7 +11,7 @@ using namespace Rcpp;
 
 // NLL
 double NLL(const arma::mat S, const arma::mat P);
-static SEXP rags2ridges_NLL_try(SEXP SSEXP, SEXP PSEXP) {
+static SEXP _rags2ridges_NLL_try(SEXP SSEXP, SEXP PSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type S(SSEXP);
@@ -20,11 +20,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_NLL(SEXP SSEXP, SEXP PSEXP) {
+RcppExport SEXP _rags2ridges_NLL(SEXP SSEXP, SEXP PSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_NLL_try(SSEXP, PSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_NLL_try(SSEXP, PSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -42,7 +42,7 @@ RcppExport SEXP rags2ridges_NLL(SEXP SSEXP, SEXP PSEXP) {
 }
 // PNLL
 double PNLL(const arma::mat S, const arma::mat P, const arma::mat T, const double lambda);
-static SEXP rags2ridges_PNLL_try(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_PNLL_try(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat >::type S(SSEXP);
@@ -53,11 +53,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_PNLL(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_PNLL(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_PNLL_try(SSEXP, PSEXP, TSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_PNLL_try(SSEXP, PSEXP, TSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -75,7 +75,7 @@ RcppExport SEXP rags2ridges_PNLL(SEXP SSEXP, SEXP PSEXP, SEXP TSEXP, SEXP lambda
 }
 // NLL_fused
 double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns);
-static SEXP rags2ridges_NLL_fused_try(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
+static SEXP _rags2ridges_NLL_fused_try(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type Slist(SlistSEXP);
@@ -85,11 +85,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_NLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
+RcppExport SEXP _rags2ridges_NLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_NLL_fused_try(SlistSEXP, PlistSEXP, nsSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_NLL_fused_try(SlistSEXP, PlistSEXP, nsSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -107,7 +107,7 @@ RcppExport SEXP rags2ridges_NLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEX
 }
 // PNLL_fused
 double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist, const arma::vec ns, const Rcpp::List Tlist, const arma::mat lambda);
-static SEXP rags2ridges_PNLL_fused_try(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_PNLL_fused_try(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::List >::type Slist(SlistSEXP);
@@ -119,11 +119,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_PNLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_PNLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_PNLL_fused_try(SlistSEXP, PlistSEXP, nsSEXP, TlistSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_PNLL_fused_try(SlistSEXP, PlistSEXP, nsSEXP, TlistSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -141,7 +141,7 @@ RcppExport SEXP rags2ridges_PNLL_fused(SEXP SlistSEXP, SEXP PlistSEXP, SEXP nsSE
 }
 // armaPooledS
 arma::mat armaPooledS(const Rcpp::List& Slist, const Rcpp::NumericVector ns, const int mle);
-static SEXP rags2ridges_armaPooledS_try(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+static SEXP _rags2ridges_armaPooledS_try(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type Slist(SlistSEXP);
@@ -151,11 +151,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaPooledS(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+RcppExport SEXP _rags2ridges_armaPooledS(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaPooledS_try(SlistSEXP, nsSEXP, mleSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaPooledS_try(SlistSEXP, nsSEXP, mleSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -173,7 +173,7 @@ RcppExport SEXP rags2ridges_armaPooledS(SEXP SlistSEXP, SEXP nsSEXP, SEXP mleSEX
 }
 // armaPooledP
 arma::mat armaPooledP(const Rcpp::List& Plist, const Rcpp::NumericVector ns, const int mle);
-static SEXP rags2ridges_armaPooledP_try(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+static SEXP _rags2ridges_armaPooledP_try(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type Plist(PlistSEXP);
@@ -183,11 +183,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaPooledP(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
+RcppExport SEXP _rags2ridges_armaPooledP(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaPooledP_try(PlistSEXP, nsSEXP, mleSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaPooledP_try(PlistSEXP, nsSEXP, mleSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -205,7 +205,7 @@ RcppExport SEXP rags2ridges_armaPooledP(SEXP PlistSEXP, SEXP nsSEXP, SEXP mleSEX
 }
 // armaEigShrink
 arma::vec armaEigShrink(const arma::vec dVec, const double lambda, const double cons);
-static SEXP rags2ridges_armaEigShrink_try(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
+static SEXP _rags2ridges_armaEigShrink_try(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::vec >::type dVec(dVecSEXP);
@@ -215,11 +215,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaEigShrink(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
+RcppExport SEXP _rags2ridges_armaEigShrink(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaEigShrink_try(dVecSEXP, lambdaSEXP, consSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaEigShrink_try(dVecSEXP, lambdaSEXP, consSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -237,7 +237,7 @@ RcppExport SEXP rags2ridges_armaEigShrink(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP c
 }
 // armaEigShrinkAnyTarget
 arma::vec armaEigShrinkAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda);
-static SEXP rags2ridges_armaEigShrinkAnyTarget_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_armaEigShrinkAnyTarget_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
@@ -247,11 +247,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaEigShrinkAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_armaEigShrinkAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaEigShrinkAnyTarget_try(SSEXP, targetSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaEigShrinkAnyTarget_try(SSEXP, targetSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -269,7 +269,7 @@ RcppExport SEXP rags2ridges_armaEigShrinkAnyTarget(SEXP SSEXP, SEXP targetSEXP, 
 }
 // armaEigShrinkArchI
 arma::vec armaEigShrinkArchI(const arma::vec dVec, const double lambda, const double cons);
-static SEXP rags2ridges_armaEigShrinkArchI_try(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
+static SEXP _rags2ridges_armaEigShrinkArchI_try(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::vec >::type dVec(dVecSEXP);
@@ -279,11 +279,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaEigShrinkArchI(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
+RcppExport SEXP _rags2ridges_armaEigShrinkArchI(SEXP dVecSEXP, SEXP lambdaSEXP, SEXP consSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaEigShrinkArchI_try(dVecSEXP, lambdaSEXP, consSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaEigShrinkArchI_try(dVecSEXP, lambdaSEXP, consSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -301,7 +301,7 @@ RcppExport SEXP rags2ridges_armaEigShrinkArchI(SEXP dVecSEXP, SEXP lambdaSEXP, S
 }
 // armaRidgePAnyTarget
 arma::mat armaRidgePAnyTarget(const arma::mat& S, const arma::mat& target, const double lambda, int invert);
-static SEXP rags2ridges_armaRidgePAnyTarget_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+static SEXP _rags2ridges_armaRidgePAnyTarget_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
@@ -312,11 +312,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+RcppExport SEXP _rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRidgePAnyTarget_try(SSEXP, targetSEXP, lambdaSEXP, invertSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRidgePAnyTarget_try(SSEXP, targetSEXP, lambdaSEXP, invertSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -334,7 +334,7 @@ RcppExport SEXP rags2ridges_armaRidgePAnyTarget(SEXP SSEXP, SEXP targetSEXP, SEX
 }
 // armaRidgePScalarTarget
 arma::mat armaRidgePScalarTarget(const arma::mat& S, const double alpha, const double lambda, int invert);
-static SEXP rags2ridges_armaRidgePScalarTarget_try(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+static SEXP _rags2ridges_armaRidgePScalarTarget_try(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
@@ -345,11 +345,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRidgePScalarTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+RcppExport SEXP _rags2ridges_armaRidgePScalarTarget(SEXP SSEXP, SEXP alphaSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRidgePScalarTarget_try(SSEXP, alphaSEXP, lambdaSEXP, invertSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRidgePScalarTarget_try(SSEXP, alphaSEXP, lambdaSEXP, invertSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -367,7 +367,7 @@ RcppExport SEXP rags2ridges_armaRidgePScalarTarget(SEXP SSEXP, SEXP alphaSEXP, S
 }
 // armaRidgeP
 arma::mat armaRidgeP(const arma::mat& S, const arma::mat& target, const double lambda, int invert);
-static SEXP rags2ridges_armaRidgeP_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+static SEXP _rags2ridges_armaRidgeP_try(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const arma::mat& >::type S(SSEXP);
@@ -378,11 +378,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
+RcppExport SEXP _rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaSEXP, SEXP invertSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRidgeP_try(SSEXP, targetSEXP, lambdaSEXP, invertSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRidgeP_try(SSEXP, targetSEXP, lambdaSEXP, invertSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -400,7 +400,7 @@ RcppExport SEXP rags2ridges_armaRidgeP(SEXP SSEXP, SEXP targetSEXP, SEXP lambdaS
 }
 // armaFusedUpdateI
 arma::mat armaFusedUpdateI(int g0, const Rcpp::List& Plist, const Rcpp::List& Slist, const Rcpp::List& Tlist, const arma::vec& ns, const arma::mat& lambda);
-static SEXP rags2ridges_armaFusedUpdateI_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_armaFusedUpdateI_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< int >::type g0(g0SEXP);
@@ -413,11 +413,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaFusedUpdateI(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_armaFusedUpdateI(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaFusedUpdateI_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaFusedUpdateI_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -435,7 +435,7 @@ RcppExport SEXP rags2ridges_armaFusedUpdateI(SEXP g0SEXP, SEXP PlistSEXP, SEXP S
 }
 // armaFusedUpdateII
 arma::mat armaFusedUpdateII(int g0, const Rcpp::List& Plist, const Rcpp::List& Slist, const Rcpp::List& Tlist, const arma::vec ns, const arma::mat lambda);
-static SEXP rags2ridges_armaFusedUpdateII_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_armaFusedUpdateII_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< int >::type g0(g0SEXP);
@@ -448,11 +448,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaFusedUpdateII(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_armaFusedUpdateII(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaFusedUpdateII_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaFusedUpdateII_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -470,7 +470,7 @@ RcppExport SEXP rags2ridges_armaFusedUpdateII(SEXP g0SEXP, SEXP PlistSEXP, SEXP 
 }
 // armaFusedUpdateIII
 arma::mat armaFusedUpdateIII(int g0, const Rcpp::List& Plist, const Rcpp::List& Slist, const Rcpp::List& Tlist, const arma::vec& ns, const arma::mat& lambda);
-static SEXP rags2ridges_armaFusedUpdateIII_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+static SEXP _rags2ridges_armaFusedUpdateIII_try(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< int >::type g0(g0SEXP);
@@ -483,11 +483,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaFusedUpdateIII(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
+RcppExport SEXP _rags2ridges_armaFusedUpdateIII(SEXP g0SEXP, SEXP PlistSEXP, SEXP SlistSEXP, SEXP TlistSEXP, SEXP nsSEXP, SEXP lambdaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaFusedUpdateIII_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaFusedUpdateIII_try(g0SEXP, PlistSEXP, SlistSEXP, TlistSEXP, nsSEXP, lambdaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -505,7 +505,7 @@ RcppExport SEXP rags2ridges_armaFusedUpdateIII(SEXP g0SEXP, SEXP PlistSEXP, SEXP
 }
 // armaRidgeP_fused
 Rcpp::List armaRidgeP_fused(const Rcpp::List& Slist, const arma::vec& ns, const Rcpp::List& Tlist, const arma::mat& lambda, const Rcpp::List& Plist, const int maxit, const double eps, const bool relative, const bool verbose);
-static SEXP rags2ridges_armaRidgeP_fused_try(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP relativeSEXP, SEXP verboseSEXP) {
+static SEXP _rags2ridges_armaRidgeP_fused_try(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP relativeSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const Rcpp::List& >::type Slist(SlistSEXP);
@@ -521,11 +521,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRidgeP_fused(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP relativeSEXP, SEXP verboseSEXP) {
+RcppExport SEXP _rags2ridges_armaRidgeP_fused(SEXP SlistSEXP, SEXP nsSEXP, SEXP TlistSEXP, SEXP lambdaSEXP, SEXP PlistSEXP, SEXP maxitSEXP, SEXP epsSEXP, SEXP relativeSEXP, SEXP verboseSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRidgeP_fused_try(SlistSEXP, nsSEXP, TlistSEXP, lambdaSEXP, PlistSEXP, maxitSEXP, epsSEXP, relativeSEXP, verboseSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRidgeP_fused_try(SlistSEXP, nsSEXP, TlistSEXP, lambdaSEXP, PlistSEXP, maxitSEXP, epsSEXP, relativeSEXP, verboseSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -543,7 +543,7 @@ RcppExport SEXP rags2ridges_armaRidgeP_fused(SEXP SlistSEXP, SEXP nsSEXP, SEXP T
 }
 // rmvnormal
 arma::mat rmvnormal(const int n, arma::rowvec mu, arma::mat sigma);
-static SEXP rags2ridges_rmvnormal_try(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+static SEXP _rags2ridges_rmvnormal_try(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const int >::type n(nSEXP);
@@ -553,11 +553,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_rmvnormal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
+RcppExport SEXP _rags2ridges_rmvnormal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_rmvnormal_try(nSEXP, muSEXP, sigmaSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_rmvnormal_try(nSEXP, muSEXP, sigmaSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -575,7 +575,7 @@ RcppExport SEXP rags2ridges_rmvnormal(SEXP nSEXP, SEXP muSEXP, SEXP sigmaSEXP) {
 }
 // armaRWishart
 arma::cube armaRWishart(const int n, const arma::mat& sigma, const double nu);
-static SEXP rags2ridges_armaRWishart_try(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP) {
+static SEXP _rags2ridges_armaRWishart_try(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const int >::type n(nSEXP);
@@ -585,11 +585,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRWishart(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP) {
+RcppExport SEXP _rags2ridges_armaRWishart(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRWishart_try(nSEXP, sigmaSEXP, nuSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRWishart_try(nSEXP, sigmaSEXP, nuSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -607,7 +607,7 @@ RcppExport SEXP rags2ridges_armaRWishart(SEXP nSEXP, SEXP sigmaSEXP, SEXP nuSEXP
 }
 // armaRInvWishart
 arma::cube armaRInvWishart(const int n, const arma::mat& psi, const double nu);
-static SEXP rags2ridges_armaRInvWishart_try(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEXP) {
+static SEXP _rags2ridges_armaRInvWishart_try(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::traits::input_parameter< const int >::type n(nSEXP);
@@ -617,11 +617,11 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP_RETURN_ERROR
 }
-RcppExport SEXP rags2ridges_armaRInvWishart(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEXP) {
+RcppExport SEXP _rags2ridges_armaRInvWishart(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEXP) {
     SEXP rcpp_result_gen;
     {
         Rcpp::RNGScope rcpp_rngScope_gen;
-        rcpp_result_gen = PROTECT(rags2ridges_armaRInvWishart_try(nSEXP, psiSEXP, nuSEXP));
+        rcpp_result_gen = PROTECT(_rags2ridges_armaRInvWishart_try(nSEXP, psiSEXP, nuSEXP));
     }
     Rboolean rcpp_isInterrupt_gen = Rf_inherits(rcpp_result_gen, "interrupted-error");
     if (rcpp_isInterrupt_gen) {
@@ -639,7 +639,7 @@ RcppExport SEXP rags2ridges_armaRInvWishart(SEXP nSEXP, SEXP psiSEXP, SEXP nuSEX
 }
 // armaRidgePchordalInitWorkhorse
 arma::mat armaRidgePchordalInitWorkhorse(arma::mat S, const double lambda, arma::mat target, std::string type, Rcpp::List Cliques, Rcpp::List Separators);
-RcppExport SEXP rags2ridges_armaRidgePchordalInitWorkhorse(SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP typeSEXP, SEXP CliquesSEXP, SEXP SeparatorsSEXP) {
+RcppExport SEXP _rags2ridges_armaRidgePchordalInitWorkhorse(SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP typeSEXP, SEXP CliquesSEXP, SEXP SeparatorsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -655,7 +655,7 @@ END_RCPP
 }
 // armaPenLLreparPforNLM
 Rcpp::NumericVector armaPenLLreparPforNLM(const arma::vec x, const arma::mat E1, const arma::mat E2, const arma::mat S, const double lambda, const arma::mat target, const arma::uvec nonzerosR, const arma::uvec nonzerosC);
-RcppExport SEXP rags2ridges_armaPenLLreparPforNLM(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
+RcppExport SEXP _rags2ridges_armaPenLLreparPforNLM(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -673,7 +673,7 @@ END_RCPP
 }
 // armaPenLLreparP
 const double armaPenLLreparP(const arma::vec x, const arma::mat E1, const arma::mat E2, const arma::mat S, const double lambda, const arma::mat target, const arma::uvec nonzerosR, const arma::uvec nonzerosC);
-RcppExport SEXP rags2ridges_armaPenLLreparP(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
+RcppExport SEXP _rags2ridges_armaPenLLreparP(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -691,7 +691,7 @@ END_RCPP
 }
 // armaPenLLreparPgrad
 arma::vec armaPenLLreparPgrad(const arma::vec x, const arma::mat E1, const arma::mat E2, const arma::mat S, const double lambda, const arma::mat target, const arma::uvec nonzerosR, const arma::uvec nonzerosC);
-RcppExport SEXP rags2ridges_armaPenLLreparPgrad(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
+RcppExport SEXP _rags2ridges_armaPenLLreparPgrad(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -709,7 +709,7 @@ END_RCPP
 }
 // armaPenLLreparGradArchI
 arma::vec armaPenLLreparGradArchI(const arma::vec x, const arma::mat E1, const arma::mat E2, const arma::mat S, const double lambda, const arma::mat target, const arma::uvec nonzerosR, const arma::uvec nonzerosC);
-RcppExport SEXP rags2ridges_armaPenLLreparGradArchI(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
+RcppExport SEXP _rags2ridges_armaPenLLreparGradArchI(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -727,7 +727,7 @@ END_RCPP
 }
 // armaPenLLreparGradArchII
 arma::vec armaPenLLreparGradArchII(const arma::vec x, const arma::mat E1, const arma::mat E2, const arma::mat S, const double lambda, const arma::mat target, const arma::uvec nonzerosR, const arma::uvec nonzerosC);
-RcppExport SEXP rags2ridges_armaPenLLreparGradArchII(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
+RcppExport SEXP _rags2ridges_armaPenLLreparGradArchII(SEXP xSEXP, SEXP E1SEXP, SEXP E2SEXP, SEXP SSEXP, SEXP lambdaSEXP, SEXP targetSEXP, SEXP nonzerosRSEXP, SEXP nonzerosCSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -745,7 +745,7 @@ END_RCPP
 }
 
 // validate (ensure exported C++ functions exist before calling them)
-static int rags2ridges_RcppExport_validate(const char* sig) { 
+static int _rags2ridges_RcppExport_validate(const char* sig) { 
     static std::set<std::string> signatures;
     if (signatures.empty()) {
         signatures.insert("double(*NLL)(const arma::mat,const arma::mat)");
@@ -772,26 +772,26 @@ static int rags2ridges_RcppExport_validate(const char* sig) {
 }
 
 // registerCCallable (register entry points for exported C++ functions)
-RcppExport SEXP rags2ridges_RcppExport_registerCCallable() { 
-    R_RegisterCCallable("rags2ridges", "rags2ridges_NLL", (DL_FUNC)rags2ridges_NLL_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_PNLL", (DL_FUNC)rags2ridges_PNLL_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_NLL.fused", (DL_FUNC)rags2ridges_NLL_fused_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_PNLL.fused", (DL_FUNC)rags2ridges_PNLL_fused_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaPooledS", (DL_FUNC)rags2ridges_armaPooledS_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaPooledP", (DL_FUNC)rags2ridges_armaPooledP_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaEigShrink", (DL_FUNC)rags2ridges_armaEigShrink_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaEigShrinkAnyTarget", (DL_FUNC)rags2ridges_armaEigShrinkAnyTarget_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaEigShrinkArchI", (DL_FUNC)rags2ridges_armaEigShrinkArchI_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRidgePAnyTarget", (DL_FUNC)rags2ridges_armaRidgePAnyTarget_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRidgePScalarTarget", (DL_FUNC)rags2ridges_armaRidgePScalarTarget_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRidgeP", (DL_FUNC)rags2ridges_armaRidgeP_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaFusedUpdateI", (DL_FUNC)rags2ridges_armaFusedUpdateI_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaFusedUpdateII", (DL_FUNC)rags2ridges_armaFusedUpdateII_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaFusedUpdateIII", (DL_FUNC)rags2ridges_armaFusedUpdateIII_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRidgeP.fused", (DL_FUNC)rags2ridges_armaRidgeP_fused_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_rmvnormal", (DL_FUNC)rags2ridges_rmvnormal_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRWishart", (DL_FUNC)rags2ridges_armaRWishart_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_.armaRInvWishart", (DL_FUNC)rags2ridges_armaRInvWishart_try);
-    R_RegisterCCallable("rags2ridges", "rags2ridges_RcppExport_validate", (DL_FUNC)rags2ridges_RcppExport_validate);
+RcppExport SEXP _rags2ridges_RcppExport_registerCCallable() { 
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_NLL", (DL_FUNC)_rags2ridges_NLL_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_PNLL", (DL_FUNC)_rags2ridges_PNLL_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_NLL.fused", (DL_FUNC)_rags2ridges_NLL_fused_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_PNLL.fused", (DL_FUNC)_rags2ridges_PNLL_fused_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaPooledS", (DL_FUNC)_rags2ridges_armaPooledS_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaPooledP", (DL_FUNC)_rags2ridges_armaPooledP_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaEigShrink", (DL_FUNC)_rags2ridges_armaEigShrink_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaEigShrinkAnyTarget", (DL_FUNC)_rags2ridges_armaEigShrinkAnyTarget_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaEigShrinkArchI", (DL_FUNC)_rags2ridges_armaEigShrinkArchI_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRidgePAnyTarget", (DL_FUNC)_rags2ridges_armaRidgePAnyTarget_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRidgePScalarTarget", (DL_FUNC)_rags2ridges_armaRidgePScalarTarget_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRidgeP", (DL_FUNC)_rags2ridges_armaRidgeP_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaFusedUpdateI", (DL_FUNC)_rags2ridges_armaFusedUpdateI_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaFusedUpdateII", (DL_FUNC)_rags2ridges_armaFusedUpdateII_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaFusedUpdateIII", (DL_FUNC)_rags2ridges_armaFusedUpdateIII_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRidgeP.fused", (DL_FUNC)_rags2ridges_armaRidgeP_fused_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_rmvnormal", (DL_FUNC)_rags2ridges_rmvnormal_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRWishart", (DL_FUNC)_rags2ridges_armaRWishart_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_.armaRInvWishart", (DL_FUNC)_rags2ridges_armaRInvWishart_try);
+    R_RegisterCCallable("rags2ridges", "_rags2ridges_RcppExport_validate", (DL_FUNC)_rags2ridges_RcppExport_validate);
     return R_NilValue;
 }
