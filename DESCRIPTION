@@ -13,5 +13,5 @@ Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool, snowfal
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
-URL: http://www.bigstatistics.nl/carel-fw-peeters
+URL: https://github.com/CFWP/rags2ridges
 Suggests: KEGGgraph, testthat
