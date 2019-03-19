@@ -7,7 +7,8 @@
 \section{Changes in version 2.2.1}{
   \subsection{Notifications:}{
     \itemize{
-      \item Hot fix due to new RNG. No visible user changes.
+      \item Hot fix due to new RNG. No major visible user changes.
+      \item \code{CNplot} function updated
     }
   }
 }
