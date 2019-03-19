@@ -42,9 +42,9 @@ For previous versions of **rags2ridges**, visit the [archive at CRAN.](https://c
 
 Relevant publications to **rags2ridges** include (ordered according to year):
 
- 1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2016). 
+ 1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2019). 
     *"rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data"*. 
-    R package, version 2.1.1
+    R package, version 2.2.1
  2. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016)
     *"The Spectral Condition Number Plot for Regularization Parameter Determination"*.
     Available as [arXiv:1608.04123v1 \[stat.CO\]](http://arxiv.org/abs/1608.04123). 
