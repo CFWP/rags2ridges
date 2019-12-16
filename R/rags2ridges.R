@@ -1473,7 +1473,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (verbose){cat("Calculating spectral condition numbers...", "\n")}
     if (type == "Alt" & all(target == 0)){
       Spectral <- eigs_sym(S, 2, which = "BE",
-                           opts = list(retvec = FALSE, maxitr = 10000))$values
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
       for (k in 1:length(lambdas)){
         Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
         condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
@@ -1482,7 +1482,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                (length(unique(diag(target))) == 1)){
       varPhi   <- unique(diag(target))
       Spectral <- eigs_sym(S, 2, which = "BE",
-                           opts = list(retvec = FALSE, maxitr = 10000))$values
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
       for (k in 1:length(lambdas)){
         Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
         condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
@@ -1497,7 +1497,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                  (length(unique(diag(target))) == 1)){
         varPhi   <- unique(diag(target))
         Spectral <- eigs_sym(S, 2, which = "BE",
-                             opts = list(retvec = FALSE, maxitr = 10000))$values
+                             opts = list(retvec = FALSE, maxitr = 1000000))$values
         for (k in 1:length(lambdas)){
           Eigshrink <- .armaEigShrinkArchI(Spectral, lambdas[k], cons = varPhi)
           condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
@@ -1507,13 +1507,13 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
           for (k in 1:length(lambdas)){
             P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
             Eigs      <- eigs_sym(P, 2, which = "BE",
-                                  opts = list(retvec = FALSE, maxitr = 10000))$values
+                                  opts = list(retvec = FALSE, maxitr = 1000000))$values
             condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
           }
         }
         if (type == "ArchII"){
           Spectral <- eigs_sym(S, 2, which = "BE",
-                               opts = list(retvec = FALSE, maxitr = 10000))$values
+                               opts = list(retvec = FALSE, maxitr = 1000000))$values
           for (k in 1:length(lambdas)){
             Eigs      <- Spectral + lambdas[k]
             condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
