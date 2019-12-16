@@ -291,7 +291,7 @@ ridgePchordal <- function(S,
 	if (lambda <= 0){
 		stop("Input (lambda) is not a positive number.")
 	}
-	if (!is.null(zeros) & as.character(class(zeros)) != "matrix"){
+	if (!is.null(zeros) & !inherits(zeros, "matrix")){
 		stop("Input (zeros) is of wrong class.")
 	}
 	if (!is.null(zeros)){
