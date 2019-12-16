@@ -13,8 +13,8 @@
 ##             Amsterdam, the Netherlands
 ## Email:	     cf.peeters@vumc.nl
 ##
-## Version: 2.2.1
-## Last Update:	16/04/2019
+## Version: 2.2.2
+## Last Update:	16/12/2019
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
@@ -38,9 +38,9 @@
 ##       van Wieringen, W.N. (2015).
 ##       "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from
 ##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
-## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
+## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2019).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
-##       Determination", arXiv:1608.04123v1 [stat.CO].
+##       Evaluation", Computational Statistics.
 ##
 ################################################################################
 ################################################################################
