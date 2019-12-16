@@ -8,8 +8,7 @@ Description: Proper L2-penalized ML estimators for the
   precision matrix as well as supporting functions to employ these estimators
   in a graphical modeling setting.
 Depends: R (>= 2.15.1)
-Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool, snowfall, sfsmisc, utils, grDevices, graphics, gRbase, RBGL, graph,
-    Rcpp, RSpectra
+Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool, snowfall, sfsmisc, utils, grDevices, graphics, gRbase, RBGL, graph, Rcpp, RSpectra
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
