@@ -106,7 +106,7 @@ The legend allows one to specify the kind of variable the vertices represent, su
 The arguments \code{label}, \code{Lcex}, and \code{PTcex} are only used when \code{legend = TRUE}.
 
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by any edge) are removed.
-For the colors supported by the arguments \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and \code{nEcolor} see \url{www.stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+For the colors supported by the arguments \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and \code{nEcolor} see \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
 }
 \value{
 The function returns a graph.
