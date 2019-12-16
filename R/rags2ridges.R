@@ -2837,7 +2837,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){
@@ -3919,7 +3919,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
              'layout_with_fr', 'layout_with_kk',
              'layout_with_lgl'}")
       }
-      else if (!is.null(coords) & class(coords) != "matrix"){
+      else if (!is.null(coords) & !inherits(coords, "matrix")){
         stop("Input (coords) is of wrong class")
       }
       else if (is.null(lay) & is.null(coords)){
@@ -4111,7 +4111,7 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){

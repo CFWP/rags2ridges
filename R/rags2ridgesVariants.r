@@ -547,7 +547,7 @@ optPenaltyPchordal <- function (Y,
 	########################################################################
 
 	# input checks
-	if (as.character(class(Y)) != "matrix"){
+	if (!inherits(Y, "matrix")){
 		stop("Input (Y) is of wrong class.")
 	}
 	if (sum(is.na(Y)) != 0){
