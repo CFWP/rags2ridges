@@ -3,6 +3,14 @@
 
 \title{News for Package \cpkg{rags2ridges}}
 
+\section{Changes in version 2.2.2}{
+  \subsection{Notifications:}{
+    \itemize{
+      \item Hot fix due to class changes in "matrix". No major visible user changes.
+      \item \code{CNplot} function again updated: higher max. iterations for Lanczos method
+    }
+  }
+}
 
 \section{Changes in version 2.2.1}{
   \subsection{Notifications:}{
