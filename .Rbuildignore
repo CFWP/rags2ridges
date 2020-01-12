@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^rags2ridges\.pdf$
 Rprof.out
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

@@ -6,3 +6,5 @@
 *.o
 *.so
 *.dll
+
+docs/*
