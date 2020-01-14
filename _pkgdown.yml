@@ -1,2 +1,23 @@
 destination: docs
 
+template:
+  params:
+    bootswatch: simplex
+
+reference:
+- title: Core ridge functions
+  desc: 'The core functions for graphical ridge regression are:'
+  contents:
+  - ridgeP
+  - ridgeS
+  - createS
+- title: Fused ridge functions
+  desc: 'The core *fused* graphical ridge regression are:'
+  contents:
+  - ends_with("\\.fused")
+  - starts_with("fused\\.")
+  - createS
+- title: All
+  desc: 'All exported functions and datasets:'
+  contents:
+  - matches(".")
