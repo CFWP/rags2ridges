@@ -3,6 +3,14 @@
 
 \title{News for Package \cpkg{rags2ridges}}
 
+\section{Changes in version 2.2.2}{
+  \subsection{Notifications:}{
+    \itemize{
+      \item Improved documentation with new \cpkg{pkgdown} documentation website.
+    }
+  }
+}
+
 
 \section{Changes in version 2.2.1}{
   \subsection{Notifications:}{
