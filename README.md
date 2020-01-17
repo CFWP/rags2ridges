@@ -1,5 +1,4 @@
-![rags2ridges](https://github.com/CFWP/rags2ridges/blob/master/inst/RAGS.png)
-
+<img src="man/figures/RAGS.png" alt="" />
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN version](http://www.r-pkg.org/badges/version/rags2ridges)](https://cran.r-project.org/package=rags2ridges)
