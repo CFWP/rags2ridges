@@ -4,6 +4,9 @@ template:
   params:
     bootswatch: simplex
 
+news:
+- one_page: true
+
 reference:
 - title: Core ridge functions
   desc: 'The core functions for graphical ridge regression are:'
