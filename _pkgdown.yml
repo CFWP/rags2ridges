@@ -12,7 +12,7 @@ reference:
   desc: 'The core functions for graphical ridge regression are:'
   contents:
   - ridgeP
-  - ridgeS
+  - default.target()
   - createS
 - title: Fused ridge functions
   desc: 'The core *fused* graphical ridge regression are:'
@@ -20,6 +20,25 @@ reference:
   - ends_with("\\.fused")
   - starts_with("fused\\.")
   - createS
+- title: Postprocessing
+  desc: 'Post-processing of estimated inverse covariance matrices:'
+  contents:
+  - sparsify
+
+- title: Data
+  desc: 'Datasets shipped with **rags2ridges**:'
+  contents:
+  - ADdata
+- title: Helper & auxiliary functions
+  desc: 'Various helpful functions:'
+  contents:
+  - is.Xlist
+  - isSymmetricPD
+  - isSymmetricPSD
+  - NLL
+  - PNLL
+  - NLL.fused
+  - PNLL.fused
 - title: All
   desc: 'All exported functions and datasets:'
   contents:
