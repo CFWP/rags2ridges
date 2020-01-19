@@ -7,6 +7,13 @@ template:
 news:
 - one_page: true
 
+articles:
+- title: Articles and vignettes
+  desc: 'Introductions, examples, and help'
+  contents:
+  - pkgdown/arxiv
+  - pkgdown/arxiv_fused
+
 reference:
 - title: Core ridge functions
   desc: 'The core functions for graphical ridge regression are:'

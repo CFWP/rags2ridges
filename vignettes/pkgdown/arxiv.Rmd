@@ -1,0 +1,21 @@
+---
+title: Targeted fused ridge estimation
+author: 
+date:
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Targeted fused ridge estimation}
+  %\VignettePackage{rags2ridges}
+pkgdown:
+  as_is: true
+---
+
+If the PDF download does not start automatically, it can also be downloaded at https://arxiv.org/pdf/1509.07982.pdf
+
+
+<object data="https://arxiv.org/pdf/1509.07982.pdf" type="application/pdf" width="800px" height="1000px">
+    <embed src="https://arxiv.org/pdf/1509.07982.pdf">
+        <p>This browser does not support PDFs. Please download the PDF to view it.</p>
+    </embed>
+</object>
+
