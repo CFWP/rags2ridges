@@ -7,22 +7,33 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+**rags2ridges** is an R-package for *fast* and *proper* L2-penalized estimation of precison (and covariance) matrices also called **ridge estimation**. It also features the ability to shrink towards target matrices as well as a *fused* ridge method for simultaneuous estimation of multiple matrices. 
+The package also features additional functions for post-processing the L2-penalized estimates --- useful for feature selection and when doing graphical modelling. The *fused* ridge estimation is useful when dealing with grouped data as when doing meta or integrative analysis.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+This vignette provides a light introduction on how to get started with regular ridge estimation of precision matrices.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
-```
+# Getting started
 
-## Including Plots
 
-You can also embed plots, for example:
+## Package installation
 
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+## Lightweight theoretical primer
+
+
+## Ridge estimation
+
+### Precision matrix
+
+
+### Covariance matrix
+
+
+## Gaussian graphical modeling and post processing
+
+
+# Concluding remarks
+
+
+
