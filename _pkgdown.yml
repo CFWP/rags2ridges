@@ -22,7 +22,7 @@ reference:
   desc: 'The core functions for graphical ridge regression are:'
   contents:
   - ridgeP
-  - default.target()
+  - default.target
   - createS
 - title: Fused ridge functions
   desc: 'The core *fused* graphical ridge regression are:'
@@ -34,7 +34,6 @@ reference:
   desc: 'Post-processing of estimated inverse covariance matrices:'
   contents:
   - sparsify
-
 - title: Data
   desc: 'Datasets shipped with **rags2ridges**:'
   contents:
