@@ -1,17 +1,17 @@
-<img src="man/figures/RAGS.png" alt="" />
 
 [![Project Status: Active - The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active)
 [![CRAN version](http://www.r-pkg.org/badges/version/rags2ridges)](https://cran.r-project.org/package=rags2ridges)
 [![CRAN RStudio mirror downloads](http://cranlogs.r-pkg.org/badges/rags2ridges)](https://cran.r-project.org/package=rags2ridges/index.html)
 [![Total CRAN downloads](http://cranlogs.r-pkg.org/badges/grand-total/rags2ridges)](http://www.r-pkg.org/pkg/rags2ridges)
 
+<img src="man/figures/RAGS.png" alt="" />
 
 **rags2ridges**
 ---------------
 
 The R-package **rags2ridges** performs L2-penalized estimation of precison (and covariance) matrices. 
-The package contains *proper* L2-penalized ML estimators for the precision matrix as well as supporting functions to employ these estimators in a (integrative or meta-analytic) graphical modeling setting. 
-The package has a modular setup and features fast and efficient algorithms.
+The package contains *proper* L2-penalized maximum-likelihood estimators for the precision matrix as well as supporting functions to employ these estimators in a (integrative or meta-analytic) graphical modeling setting. The package has a modular setup and features fast and efficient algorithms.
+
 
 ## Installation
 
@@ -25,16 +25,21 @@ install.packages("rags2ridges")
 If you wish to install the latest version of **rags2ridges** directly from the master branch here at GitHub, run
 
 ```R
-#install.packages("devtools")  # Uncomment if devtools is not installed
-devtools::install_github("CFWP/rags2ridges")
+#install.packages("remotes")  # Uncomment if not installed
+remotes::install_github("CFWP/rags2ridges")
 ```
 
 Note, that this version is in development and is different from the version at CRAN. As such, it may be unstable. Be sure that you have the
 [package development prerequisites](http://www.rstudio.com/ide/docs/packages/prerequisites) if you wish to install the package from the source.
 
-When installed, run `news(package = "rags2ridges")` to view the latest notable changes to **rags2ridges**.
+Visit [CRAN](https://cran.r-project.org/web/packages/rags2ridges/news.html), [the documentation site](./articles/rags2ridges), or run `news(package = "rags2ridges")` after installation to view the latest notable changes to **rags2ridges**. 
 
 For previous versions of **rags2ridges**, visit the [archive at CRAN.](https://cran.r-project.org/src/contrib/Archive/rags2ridges/)
+
+
+## Usage and getting started
+
+The `vignette("rags2ridges")` provides a light introduction to **rags2ridges** and details how to quickly get started.
 
 
 ## References
