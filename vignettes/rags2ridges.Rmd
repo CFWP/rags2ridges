@@ -1,39 +1,165 @@
 ---
 title: "Introduction to rags2ridges"
-output: html_document
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to rags2ridges}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+options(digits = 3)
 ```
 
-**rags2ridges** is an R-package for *fast* and *proper* L2-penalized estimation of precison (and covariance) matrices also called **ridge estimation**. It also features the ability to shrink towards target matrices as well as a *fused* ridge method for simultaneuous estimation of multiple matrices. 
-The package also features additional functions for post-processing the L2-penalized estimates --- useful for feature selection and when doing graphical modelling. The *fused* ridge estimation is useful when dealing with grouped data as when doing meta or integrative analysis.
+**rags2ridges** is an R-package for *fast* and *proper* L2-penalized estimation of precision (and covariance) matrices also called **ridge estimation**. Its L2-penalty features the ability to shrink towards a target matrix, allowing for incorporation of prior knowledge. Likewise, it also features a *fused* L2 ridge penalty allows for simultaneous estimation of multiple matrices. 
+The package also contains additional functions for post-processing the L2-penalized estimates --- useful for feature selection and when doing graphical modelling. The *fused* ridge estimation is useful when dealing with grouped data as when doing meta or integrative analysis.
 
-This vignette provides a light introduction on how to get started with regular ridge estimation of precision matrices.
-
-
-# Getting started
+This vignette provides a light introduction on how to get started with regular ridge estimation of precision matrices and further steps.
 
 
-## Package installation
+## Getting started
+
+### Package installation
+
+The README details how to install the **rags2ridges** package. When installed, the package is loaded as seen below where we also define a function for adding pretty names to a matrix.
+
+```{r load_pkg, message=FALSE}
+library(rags2ridges)
+```
 
 
-## Lightweight theoretical primer
+### Small theoretical primer and package usage
+
+The sample variance-covariance matrix, or simply *covariance matrix*, is well-known and ubiquitous. It is given by
+
+$$
+S = \frac{1}{n - 1}XX^T
+$$
+
+where $X$ is the $n \times p$ data matrix that is zero-centered with each $p$-dimensional observations in the rows. I.e. the column means has been subtracted the columns. The very similar estimate $S = \frac{1}{n}XX^T$ without [Bessel's correction](https://en.wikipedia.org/wiki/Bessel%27s_correction) is the maximum likehood estimate in a multivariate normal model with mean $0$ and covariance $\Sigma$. The likelihood function in this case is given by
+
+$$
+\ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega)
+$$
+
+where $\Omega = \Sigma^{-1}$ is the so-called precision matrix (also sometimes called the *concentration matrix*). It is precisely this $\Omega$ for which we seek an estimate we will denote $P$. Indeed, one can naturally try to use the inverse of $S$ for this:
+
+$$
+P = S^{-1}
+$$
+
+Let's try.
+
+The `createS()` function can easily simulate covariance matrices. But we go a more verbose route for illustration:
+
+```{r createS}
+p <- 6
+n <- 20
+X <- createS(n = n, p = p, dataset = TRUE)
+head(X, n = 4) # Show 4 first of the n rows
+```
+
+Here the columns corresponds to features A, B, C, and so on.
+
+When can then arrive a the MLE using `covML()` which *centers* X (subtracting the column means) and then computes the estimate:
+
+```{r covML}
+S <- covML(X)
+print(S)
+```
+
+Using `cov2cor()` the well-known correlation matrix could be obtained.
+
+By default, `createS()` simulates zero-mean i.i.d. normal variables (corresponding to $\Sigma=\Omega=I$ being the identity matrix), but it has plenty of possibilities for more intricate covariance structures. 
+The `S` matrix could have been obtrained directly had we omitted the `dataset` argument, leaving it to be the default `FALSE`. The `rmvnormal()` function is utilized by `createS()` to generate the normal sample.
+
+We can obtain the precision estimate `P` using `solve()` to invert `S`:
+
+```{r solveS}
+P <- solve(S)
+print(P)
+```
+
+That's it! Everything goes well here only because $n < p$. However, when $p$ is close to $n$, the estimate become unstable and varies wildly and when $p$ exceeds $n$ one can no longer invert $S$ and this strategy fails:
+
+```{r solveS2, error=TRUE}
+p <- 25
+S2 <- createS(n = n, p = p)  # Direct to S
+P2 <- solve(S2)
+```
+
+Note that this is now a $25 \times 25$ precision matrix we are trying to estimate. Datasets where $p > n$ are starting to be common, so what now?
+ 
+To solve the problem, **rags2ridges** adds a so-called ridge penalty to the likelihood above --- this method is also called $L_2$ shrinkage and works by "shrinking" the eigenvalues of $S$ in a particular manner to combat that they "explode" when $p \geq n$. 
+
+The core-problem that **rags2ridges** solves is that
+
+$$
+\ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega) - \frac{\lambda}{2}|| \Omega - T||^2_2
+$$
+where $\lambda > 0$ is the ridge penalty parameter, $T$ is a $p \times p$ known *target* matrix (which we will get back to) and $||\cdot||_2$ is the $L_2$-norm. The maximising solution here is surprisingly on closed form, but it is rather complicated[^1]. Assume for now the target matrix is an all zero matrix and thus out of the equation.
+
+The core function of **rags2ridges** is `ridgeP` which computes this estimate in a fast manner.
+
+```{r ridgeP}
+P2 <- ridgeP(S2, lambda = 1.17)
+print(P2[1:7, 1:7]) # Showing only the 7 first cols and rows
+```
+
+And voilà, we have our estimate. We will now dicuss the penalty parameters and target matrix and how to choose them.
 
 
-## Ridge estimation
 
-### Precision matrix
+### The penalty parameter
+
+The penalty parameter $\lambda$ (`lambda`) shrinks the values of $P$ such toward 0 (when $T = 0$) --- i.e. very larges values of $\lambda$ makes $P$ "small" and more stable whereas smaller values of $\lambda$ makes the $P$ tend toward the (possibly non-existent) $S^{-1}$. So what `lambda` should you choose? One stategy for choosing $\lambda$ is selecting it to be stable yet precise (a bias-variance trade-off). Automatic k-fold cross-validation can be done with `optPenalty.kCVauto()`is well suited for this:
+
+```{r optPenalty.LOOCV}
+Y <- createS(n, p, dataset = TRUE)
+opt <- optPenalty.kCVauto(Y, lambdaMin = 0.001, lambdaMax = 100)
+str(opt)
+```
+
+As seen, the function returns a list with the optimal penalty parameter and corresponding ridge precision estimate. By default, the the functions performs leave-one-out cross validation. See ?optPenalty.kCVauto` for more information.
 
 
-### Covariance matrix
+### The target matrix
 
 
-## Gaussian graphical modeling and post processing
 
 
-# Concluding remarks
+## Graphical ridge estimation? Why not graphical Lasso?
 
+The graphical lasso (gLasso) is equivalent to graphical ridge, why not perform LASSO?
+
+
+
+
+### Gaussian graphical modeling and post processing
+
+> What is so interesting with the precision matrix anyway? I'm always interested in correlations and the correlation matrix. 
+
+As you may know, correlation does not imply causation.
+The precision matrix 
+
+> OK, but what is **graphical** about the graphical ridge estimate?
+
+
+## Concluding remarks
+
+
+
+### References
+
+
+
+[^1]:
+Solution for the graphical ridge problem:
+$$
+P(\lambda) 
+= \Bigg\{ \bigg[ \lambda I_{p\times p} + \frac{1}{4}(S - \lambda T)^{2} \bigg]^{1/2} + \frac{1}{2}(S -\lambda T) \Bigg\}^{-1}
+$$
 
 
