@@ -127,13 +127,16 @@ As seen, the function returns a list with the optimal penalty parameter and corr
 
 ### The target matrix
 
+The target matrix $T$ is a matrix the same size as $P$ which the estimat is "shrunken" toward --- i.e. for large values of $\lambda$ the estimate goes toward $T$. The choice of the target is another subject. While one might first think that the all-zeros $T = [0]$ would be a default it is intuitively not a good target. This is because we'd like an estimate that is positive definite (the matrix-equivalent to at postive number) and the null-matrix is not positive definite.
 
+If one has a very good prior estimate or some other information this might used to contstruct the target. E.g. the function `kegg.target()` utilizes the *Kyoto Encyclopedia of Genes and Genomes* (KEGG) database of gene and gene-networks together with pilot data to construct a target. 
+
+In the absence of such knowledge, the default could be a data-driven diagnal matrix. The function `default.target()` offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries.
 
 
 ## Graphical ridge estimation? Why not graphical Lasso?
 
 The graphical lasso (gLasso) is equivalent to graphical ridge, why not perform LASSO?
-
 
 
 
