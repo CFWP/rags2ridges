@@ -131,23 +131,31 @@ The target matrix $T$ is a matrix the same size as $P$ which the estimat is "shr
 
 If one has a very good prior estimate or some other information this might used to contstruct the target. E.g. the function `kegg.target()` utilizes the *Kyoto Encyclopedia of Genes and Genomes* (KEGG) database of gene and gene-networks together with pilot data to construct a target. 
 
-In the absence of such knowledge, the default could be a data-driven diagnal matrix. The function `default.target()` offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries.
+In the absence of such knowledge, the default could be a data-driven diagnal matrix. The function `default.target()` offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries. See `?default.target` for more choices.
+
+
+### Gaussian graphical modeling and post processing
+
+> What is so interesting with the precision matrix anyway? I'm always interested in correlations and thus the correlation matrix. 
+
+As you may know, correlation does not imply causation. Nor does covariance imply causation. However, precision matrix provides stronger hints at causation. A relatively simple transformation of $P$ maps it to partial correlations---much like how the sample covariance $S$ easily maps to the correlation matrix. More precisely, the $ij$th partial correlation is given by
+
+$$
+\rho_{ij|\text{all others}} = \frac{- p_{ij}}{\sqrt{p_{ii}p_{jj}}}
+$$
+
+where $p_{ij}$ is the $ij$th entry of $P$. 
+
+Partial correlations measure the linear association between two random variables whilst removing the ffect of other random variables; in this case, it is all the remaining variables. This somewhat absolves the issue in "regular" correlations where are often correlated but only indirectly; either by sort of 'transitiviy of correlations' (which does not hold generally and is not[^2] so[^3] simple[^3]) or by common underlying variables.
+
+> OK, but what is **graphical** about the graphical ridge estimate?
+
+In a multivariate normal model, $p_{ij} = p_{ji} = 0$ if and only if $X_i$ and $X_j$ are conditionally independent when condition on all other variables. I.e. $X_i$ and $X_j$ are conditionally independent given all $X_k$ where $k \neq i$ and $k \neq j$ if and when the $ij$th and ${ji}$th elements of $P$ are zero. In real world applications, this means that $P$ is often relatively sparse (lots of zeros). THis also points to the close relationship between $P$ and the partial correlations.
 
 
 ## Graphical ridge estimation? Why not graphical Lasso?
 
 The graphical lasso (gLasso) is equivalent to graphical ridge, why not perform LASSO?
-
-
-
-### Gaussian graphical modeling and post processing
-
-> What is so interesting with the precision matrix anyway? I'm always interested in correlations and the correlation matrix. 
-
-As you may know, correlation does not imply causation.
-The precision matrix 
-
-> OK, but what is **graphical** about the graphical ridge estimate?
 
 
 ## Concluding remarks
@@ -166,3 +174,11 @@ P(\lambda)
 $$
 
 
+[^2]:
+https://stats.stackexchange.com/questions/181376/is-correlation-transitive
+
+[^3]:
+https://emilkirkegaard.dk/en/?p=5796
+
+[^4]:
+https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/
