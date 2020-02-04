@@ -94,7 +94,7 @@ Note that this is now a $25 \times 25$ precision matrix we are trying to estimat
  
 To solve the problem, **rags2ridges** adds a so-called ridge penalty to the likelihood above --- this method is also called $L_2$ shrinkage and works by "shrinking" the eigenvalues of $S$ in a particular manner to combat that they "explode" when $p \geq n$. 
 
-The core-problem that **rags2ridges** solves is that
+The core problem that **rags2ridges** solves is that
 
 $$
 \ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega) - \frac{\lambda}{2}|| \Omega - T||^2_2
