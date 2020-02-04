@@ -168,6 +168,8 @@ At last point to mention here is also that the true underlying graph might not a
 
 > #### How do I select the edges then?
 
+The `sparsify()` functions lets you select the non-zero entries of P corresponding to edges. It supports a handful different approaches ranging from simple thresholding to false discovery rate based selection.
+
 
 ## Concluding remarks
 
