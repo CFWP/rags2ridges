@@ -170,14 +170,20 @@ At last point to mention here is also that the true underlying graph might not a
 
 The `sparsify()` functions lets you select the non-zero entries of P corresponding to edges. It supports a handful different approaches ranging from simple thresholding to false discovery rate based selection.
 
+After edge select `GGMnetworkStats()` can be utilized to get summary statistics of the resulting graph topology.
 
 ## Concluding remarks
+
+The `fullMontyS()` function is a convinience wrapper getting from the data through the penalized estimate to the corresponding conditional independence graph and topology summaries.
+
 
 
 
 ### References
 
+1. van Wieringen, W.N. and Peeters, C.F.W. **(2016)**. *Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data.* Computational Statistics & Data Analysis, vol. 103: 284-303.
 
+2. Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. **(2015)**. *Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.* arXiv:1509.07982v1 [stat.ME].
 
 [^1]:
 Solution for the graphical ridge problem:
