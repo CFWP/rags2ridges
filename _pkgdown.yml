@@ -8,11 +8,11 @@ news:
 - one_page: true
 
 articles:
-- title: Ridge estimation
+- title: Targeted ridge estimation paper
   desc: 'Proper targeted ridge precision matrix estimation'
   contents:
   - pkgdown/arxiv
-- title: Fused ridge estimation
+- title: Targeted fused ridge estimation paper
   desc: 'Targeted fused ridge estimation of multiple precision matrices'
   contents:
   - pkgdown/arxiv_fused

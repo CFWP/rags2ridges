@@ -1,10 +1,8 @@
 ---
-title: Targeted fused ridge estimation
-author: 
-date:
+title: Targeted fused ridge estimation paper
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Targeted fused ridge estimation}
+  %\VignetteIndexEntry{Targeted fused ridge estimation paper}
   %\VignettePackage{rags2ridges}
 pkgdown:
   as_is: true
