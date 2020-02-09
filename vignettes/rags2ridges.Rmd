@@ -38,7 +38,9 @@ $$
 S = \frac{1}{n - 1}XX^T
 $$
 
-where $X$ is the $n \times p$ data matrix that is zero-centered with each $p$-dimensional observations in the rows. I.e. the column means has been subtracted the columns. The very similar estimate $S = \frac{1}{n}XX^T$ without [Bessel's correction](https://en.wikipedia.org/wiki/Bessel%27s_correction) is the maximum likehood estimate in a multivariate normal model with mean $0$ and covariance $\Sigma$. The likelihood function in this case is given by
+where $X$ is the $n \times p$ data matrix that is zero-centered with each $p$-dimensional observations in the rows. I.e. each row of $X$ is an observation and each column is feature. Often high-dimensional data is organised this way (or transposed).
+
+That $X$ is zero-centerd simply means that the column means has been subtracted the columns. The very similar estimate $S = \frac{1}{n}XX^T$ without [Bessel's correction](https://en.wikipedia.org/wiki/Bessel%27s_correction) is the maximum likehood estimate in a multivariate normal model with mean $0$ and covariance $\Sigma$. The likelihood function in this case is given by
 
 $$
 \ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega)
