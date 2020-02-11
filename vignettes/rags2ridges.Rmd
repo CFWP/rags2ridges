@@ -40,7 +40,7 @@ $$
 
 where $X$ is the $n \times p$ data matrix that is zero-centered with each $p$-dimensional observations in the rows. I.e. each row of $X$ is an observation and each column is feature. Often high-dimensional data is organised this way (or transposed).
 
-That $X$ is zero-centerd simply means that the column means has been subtracted the columns. The very similar estimate $S = \frac{1}{n}XX^T$ without [Bessel's correction](https://en.wikipedia.org/wiki/Bessel%27s_correction) is the maximum likehood estimate in a multivariate normal model with mean $0$ and covariance $\Sigma$. The likelihood function in this case is given by
+That $X$ is zero-centered simply means that the column means has been subtracted the columns. The very similar estimate $S = \frac{1}{n}XX^T$ without [Bessel's correction](https://en.wikipedia.org/wiki/Bessel%27s_correction) is the maximum likelihood estimate in a multivariate normal model with mean $0$ and covariance $\Sigma$. The likelihood function in this case is given by
 
 $$
 \ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega)
@@ -75,7 +75,7 @@ print(S)
 Using `cov2cor()` the well-known correlation matrix could be obtained.
 
 By default, `createS()` simulates zero-mean i.i.d. normal variables (corresponding to $\Sigma=\Omega=I$ being the identity matrix), but it has plenty of possibilities for more intricate covariance structures. 
-The `S` matrix could have been obtrained directly had we omitted the `dataset` argument, leaving it to be the default `FALSE`. The `rmvnormal()` function is utilized by `createS()` to generate the normal sample.
+The `S` matrix could have been obtained directly had we omitted the `dataset` argument, leaving it to be the default `FALSE`. The `rmvnormal()` function is utilized by `createS()` to generate the normal sample.
 
 We can obtain the precision estimate `P` using `solve()` to invert `S`:
 
@@ -101,7 +101,7 @@ The core problem that **rags2ridges** solves is that
 $$
 \ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega) - \frac{\lambda}{2}|| \Omega - T||^2_2
 $$
-where $\lambda > 0$ is the ridge penalty parameter, $T$ is a $p \times p$ known *target* matrix (which we will get back to) and $||\cdot||_2$ is the $L_2$-norm. The maximising solution here is surprisingly on closed form, but it is rather complicated[^1]. Assume for now the target matrix is an all zero matrix and thus out of the equation.
+where $\lambda > 0$ is the ridge penalty parameter, $T$ is a $p \times p$ known *target* matrix (which we will get back to) and $||\cdot||_2$ is the $L_2$-norm. The maximizing solution here is surprisingly on closed form, but it is rather complicated[^1]. Assume for now the target matrix is an all zero matrix and thus out of the equation.
 
 The core function of **rags2ridges** is `ridgeP` which computes this estimate in a fast manner.
 
@@ -110,13 +110,13 @@ P2 <- ridgeP(S2, lambda = 1.17)
 print(P2[1:7, 1:7]) # Showing only the 7 first cols and rows
 ```
 
-And voilà, we have our estimate. We will now dicuss the penalty parameters and target matrix and how to choose them.
+And voilà, we have our estimate. We will now discuss the penalty parameters and target matrix and how to choose them.
 
 
 
 ### The penalty parameter
 
-The penalty parameter $\lambda$ (`lambda`) shrinks the values of $P$ such toward 0 (when $T = 0$) --- i.e. very larges values of $\lambda$ makes $P$ "small" and more stable whereas smaller values of $\lambda$ makes the $P$ tend toward the (possibly non-existent) $S^{-1}$. So what `lambda` should you choose? One stategy for choosing $\lambda$ is selecting it to be stable yet precise (a bias-variance trade-off). Automatic k-fold cross-validation can be done with `optPenalty.kCVauto()`is well suited for this:
+The penalty parameter $\lambda$ (`lambda`) shrinks the values of $P$ such toward 0 (when $T = 0$) --- i.e. very larges values of $\lambda$ makes $P$ "small" and more stable whereas smaller values of $\lambda$ makes the $P$ tend toward the (possibly non-existent) $S^{-1}$. So what `lambda` should you choose? One strategy for choosing $\lambda$ is selecting it to be stable yet precise (a bias-variance trade-off). Automatic k-fold cross-validation can be done with `optPenalty.kCVauto()`is well suited for this:
 
 ```{r optPenalty.LOOCV}
 Y <- createS(n, p, dataset = TRUE)
@@ -129,11 +129,11 @@ As seen, the function returns a list with the optimal penalty parameter and corr
 
 ### The target matrix
 
-The target matrix $T$ is a matrix the same size as $P$ which the estimat is "shrunken" toward --- i.e. for large values of $\lambda$ the estimate goes toward $T$. The choice of the target is another subject. While one might first think that the all-zeros $T = [0]$ would be a default it is intuitively not a good target. This is because we'd like an estimate that is positive definite (the matrix-equivalent to at postive number) and the null-matrix is not positive definite.
+The target matrix $T$ is a matrix the same size as $P$ which the estimate is "shrunken" toward --- i.e. for large values of $\lambda$ the estimate goes toward $T$. The choice of the target is another subject. While one might first think that the all-zeros $T = [0]$ would be a default it is intuitively not a good target. This is because we'd like an estimate that is positive definite (the matrix-equivalent to at positive number) and the null-matrix is not positive definite.
 
-If one has a very good prior estimate or some other information this might used to contstruct the target. E.g. the function `kegg.target()` utilizes the *Kyoto Encyclopedia of Genes and Genomes* (KEGG) database of gene and gene-networks together with pilot data to construct a target. 
+If one has a very good prior estimate or some other information this might used to construct the target. E.g. the function `kegg.target()` utilizes the *Kyoto Encyclopedia of Genes and Genomes* (KEGG) database of gene and gene-networks together with pilot data to construct a target. 
 
-In the absence of such knowledge, the default could be a data-driven diagnal matrix. The function `default.target()` offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries. See `?default.target` for more choices.
+In the absence of such knowledge, the default could be a data-driven diagonal matrix. The function `default.target()` offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries. See `?default.target` for more choices.
 
 
 ### Gaussian graphical modeling and post processing
@@ -148,7 +148,7 @@ $$
 
 where $p_{ij}$ is the $ij$th entry of $P$. 
 
-Partial correlations measure the linear association between two random variables whilst removing the ffect of other random variables; in this case, it is all the remaining variables. This somewhat absolves the issue in "regular" correlations where are often correlated but only indirectly; either by sort of 'transitiviy of correlations' (which does not hold generally and is not[^2] so[^3] simple[^3]) or by common underlying variables.
+Partial correlations measure the linear association between two random variables whilst removing the effect of other random variables; in this case, it is all the remaining variables. This somewhat absolves the issue in "regular" correlations where are often correlated but only indirectly; either by sort of 'transitivity of correlations' (which does not hold generally and is not[^2] so[^3] simple[^3]) or by common underlying variables.
 
 > #### OK, but what is **graphical** about the graphical ridge estimate?
 
@@ -159,11 +159,11 @@ The non-zero entries of the a symmetric PD matrix can them be interpreted the ed
 
 > #### Graphical ridge estimation? Why not graphical Lasso?
 
-The graphical lasso (gLasso) is the L1-equivalent to graphical ridge. A nice feature of the L1 penalty automatically induces sparsity and thus also select the edges in the underlying graph. The L2 penalty of *rags2ridges* relies on an extra step that selects the edges after $P$ is estimated. While some may argue this as a drawback (typically due to a lack of percieved simplicy), it is often beneficial to separate the "variable selection" and estimation.
+The graphical lasso (gLasso) is the L1-equivalent to graphical ridge. A nice feature of the L1 penalty automatically induces sparsity and thus also select the edges in the underlying graph. The L2 penalty of *rags2ridges* relies on an extra step that selects the edges after $P$ is estimated. While some may argue this as a drawback (typically due to a lack of perceived simplicity), it is often beneficial to separate the "variable selection" and estimation.
 
 First, a separate post-hoc selection step allows for greater flexibility.
 
-Secondly, when colinearity is present the L1 penalty is "unstable" in the selection between the items. I.e. if 2 covariances are colinear only one of them will typically be selected in a unpredicable way whereas the L2 will put equal weigth on both and "average" their effect. Ultimately, this means that the L2 estimate is typically more stable than the L1.
+Secondly, when co-linearity is present the L1 penalty is "unstable" in the selection between the items. I.e. if 2 covariances are co-linear only one of them will typically be selected in a unpredictable way whereas the L2 will put equal weight on both and "average" their effect. Ultimately, this means that the L2 estimate is typically more stable than the L1.
 
 At last point to mention here is also that the true underlying graph might not always be very sparse (or sparse at all).
 
@@ -176,16 +176,21 @@ After edge select `GGMnetworkStats()` can be utilized to get summary statistics 
 
 ## Concluding remarks
 
-The `fullMontyS()` function is a convinience wrapper getting from the data through the penalized estimate to the corresponding conditional independence graph and topology summaries.
+The `fullMontyS()` function is a convenience wrapper getting from the data through the penalized estimate to the corresponding conditional independence graph and topology summaries.
 
-**rags2ridges** also comes with functionalities for *targeted* and *grouped* (or, *fused*) graphical ridge regression called the fused graphical ridge. See [[2]](https://arxiv.org/abs/1509.07982) below. The functions in this `rags2ridges` module are generally post-fixed with `.fused`.
+For a full introduction to the theoretical properties as well as more context to the problem, see [van Wieringen & Peeters (2016)][1].
+
+**rags2ridges** also comes with functionality for *targeted* and *grouped* (or, *fused*) graphical ridge regression called the fused graphical ridge. See [[2]](https://arxiv.org/abs/1509.07982) below. The functions in this `rags2ridges` module are generally post-fixed with `.fused`.
 
 
 ### References
 
-1. van Wieringen, W.N. and Peeters, C.F.W. **(2016)**. *Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data.* Computational Statistics & Data Analysis, vol. 103: 284-303.
+[1.][1]. van Wieringen, W.N. and Peeters, C.F.W. **(2016)**. [*Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data.*][1] Computational Statistics & Data Analysis, vol. 103: 284-303.
 
-2. Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. **(2015)**. *Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.* arXiv:1509.07982 [stat.ME].
+[2.][2] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. **(2015)**. [*Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.*][2] arXiv:1509.07982 [stat.ME].
+
+[1]: https://www.sciencedirect.com/science/article/pii/S0167947316301141
+[2]: https://arxiv.org/abs/1509.07982
 
 [^1]:
 Solution for the graphical ridge problem:
