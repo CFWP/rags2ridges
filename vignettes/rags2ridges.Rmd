@@ -178,7 +178,7 @@ After edge select `GGMnetworkStats()` can be utilized to get summary statistics 
 
 The `fullMontyS()` function is a convinience wrapper getting from the data through the penalized estimate to the corresponding conditional independence graph and topology summaries.
 
-
+**rags2ridges** also comes with functionalities for *targeted* and *grouped* (or, *fused*) graphical ridge regression called the fused graphical ridge. See [[2]](https://arxiv.org/abs/1509.07982) below. The functions in this `rags2ridges` module are generally post-fixed with `.fused`.
 
 
 ### References
@@ -193,7 +193,6 @@ $$
 P(\lambda) 
 = \Bigg\{ \bigg[ \lambda I_{p\times p} + \frac{1}{4}(S - \lambda T)^{2} \bigg]^{1/2} + \frac{1}{2}(S -\lambda T) \Bigg\}^{-1}
 $$
-
 
 [^2]:
 https://stats.stackexchange.com/questions/181376/is-correlation-transitive
