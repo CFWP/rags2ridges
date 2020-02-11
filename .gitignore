@@ -1,10 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
-
 *.out
 *.o
 *.so
 *.dll
-
 docs/*
+src-i386
