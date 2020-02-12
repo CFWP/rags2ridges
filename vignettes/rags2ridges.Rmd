@@ -148,7 +148,7 @@ $$
 
 where $p_{ij}$ is the $ij$th entry of $P$. 
 
-Partial correlations measure the linear association between two random variables whilst removing the effect of other random variables; in this case, it is all the remaining variables. This somewhat absolves the issue in "regular" correlations where are often correlated but only indirectly; either by sort of 'transitivity of correlations' (which does not hold generally and is not[^2] so[^3] simple[^3]) or by common underlying variables.
+Partial correlations measure the linear association between two random variables whilst removing the effect of other random variables; in this case, it is all the remaining variables. This somewhat absolves the issue in "regular" correlations where are often correlated but only indirectly; either by sort of 'transitivity of correlations' (which does not hold generally and is not[^2] so[^3] simple[^4]) or by common underlying variables.
 
 > #### OK, but what is **graphical** about the graphical ridge estimate?
 
