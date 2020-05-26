@@ -17,7 +17,9 @@ importFrom("graphics", abline, axis, hist, legend, lines,
 importFrom("gRbase", triangulate, rip, is.complete, jTree)
 importFrom("RBGL", is.triangulated)
 importFrom("graph", numEdges)
+importFrom("RSpectra", eigs_sym)
 import("reshape")
+import("Rcpp")
 
 # Exports
 exportPattern("^[[:alpha:]]+")

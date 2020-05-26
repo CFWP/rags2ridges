@@ -121,7 +121,7 @@ The default layout gives a circular placement of the vertices. All layout functi
 \code{\link{igraph}} are supported. The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend = TRUE}.
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by any edge) are removed. For the colors supported
 by the arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
-\url{www.stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+\url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
 }
 \value{
 An object of class list:

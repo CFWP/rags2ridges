@@ -13,8 +13,8 @@
 ##             Amsterdam, the Netherlands
 ## Email:	     cf.peeters@vumc.nl
 ##
-## Version: 2.2
-## Last Update:	13/04/2017
+## Version: 2.2.2
+## Last Update:	16/12/2019
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
@@ -38,9 +38,9 @@
 ##       van Wieringen, W.N. (2015).
 ##       "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from
 ##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
-## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
+## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2019).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
-##       Determination", arXiv:1608.04123v1 [stat.CO].
+##       Evaluation", Computational Statistics.
 ##
 ################################################################################
 ################################################################################
@@ -1330,9 +1330,10 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 
 
 CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
-                   target = default.target(S), norm = "2",
+                   target = default.target(S, type = "DUPV"), norm = "2",
                    Iaids = FALSE, vertical = FALSE, value = 1e-100,
-                   main = "", nOutput = FALSE, verbose = TRUE){
+                   main = "", nOutput = FALSE, verbose = TRUE,
+                   suppressChecks = FALSE){
   #############################################################################
   # - Function that visualizes the spectral condition number against the
   #   regularization parameter
@@ -1376,6 +1377,12 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   #               (lambdas and condition numbers)
   # - verbose   > logical indicating if process information should be printed
   #               on-screen
+  # - suppressChecks > logical indicating if input checks should be
+  #               suppressed. When the variable-dimension is very large, the
+  #               full set of input checks (supplied as a courtesy to the user)
+  #               can take up considerable time. Suppressing these checks
+  #               will speed up the procedure (when the user knows what he or
+  #               she is doing).
   #############################################################################
 
   # Dependencies
@@ -1383,210 +1390,203 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   # require("graphics")
   # require("Hmisc")
   # require("sfsmisc")
+  # require("RSpectra")
 
-  if (class(verbose) != "logical"){
-    stop("Input (verbose) is of wrong class")
+  if (!suppressChecks){
+    if (class(verbose) != "logical"){
+      stop("Input (verbose) is of wrong class")
+    }
+    if (verbose){
+      cat("Perform input checks...", "\n")
+    }
+    if (!is.matrix(S)){
+      stop("S should be a matrix")
+    }
+    else if (class(lambdaMin) != "numeric"){
+      stop("Input (lambdaMin) is of wrong class")
+    }
+    else if (length(lambdaMin) != 1){
+      stop("lambdaMin must be a scalar")
+    }
+    else if (lambdaMin <= 0){
+      stop("lambdaMin must be positive")
+    }
+    else if (class(lambdaMax) != "numeric"){
+      stop("Input (lambdaMax) is of wrong class")
+    }
+    else if (length(lambdaMax) != 1){
+      stop("lambdaMax must be a scalar")
+    }
+    else if (lambdaMax <= lambdaMin){
+      stop("lambdaMax must be larger than lambdaMin")
+    }
+    else if (class(step) != "numeric"){
+      stop("Input (step) is of wrong class")
+    }
+    else if (!.is.int(step)){
+      stop("step should be integer")
+    }
+    else if (step <= 0){
+      stop("step should be a positive integer")
+    }
+    else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
+      stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
+    }
+    else if (dim(target)[1] != dim(S)[1]){
+      stop("S and target should be of the same dimension")
+    }
+    else if (type == "ArchI" & lambdaMax > 1){
+      stop("lambda should be in (0,1] for this type of Ridge estimator")
+    }
+    else if (!(norm %in% c("2", "1"))){
+      stop("norm should be one of {'2', '1'}")
+    }
+    else if (class(Iaids) != "logical"){
+      stop("Input (Iaids) is of wrong class")
+    }
+    else if (class(vertical) != "logical"){
+      stop("Input (vertical) is of wrong class")
+    }
+    else if (vertical & (class(value) != "numeric")){
+      stop("Input (value) is of wrong class")
+    }
+    else if (vertical & (any(value <= 0))){
+      stop("Input (value) must be strictly positive")
+    }
+    else if (vertical & (length(value) != 1)){
+      stop("Input (value) must be a scalar")
+    }
+    else if (class(main) != "character"){
+      stop("Input (main) is of wrong class")
+    }
+    else if (class(nOutput) != "logical"){
+      stop("Input (nOutput) is of wrong class")
+    }
   }
-  if (verbose){
-    cat("Perform input checks...", "\n")
-  }
-  if (!is.matrix(S)){
-    stop("S should be a matrix")
-  }
-  else if (!isSymmetric(S)){
-    stop("S should be a covariance matrix")
-  }
-  else if (class(lambdaMin) != "numeric"){
-    stop("Input (lambdaMin) is of wrong class")
-  }
-  else if (length(lambdaMin) != 1){
-    stop("lambdaMin must be a scalar")
-  }
-  else if (lambdaMin <= 0){
-    stop("lambdaMin must be positive")
-  }
-  else if (class(lambdaMax) != "numeric"){
-    stop("Input (lambdaMax) is of wrong class")
-  }
-  else if (length(lambdaMax) != 1){
-    stop("lambdaMax must be a scalar")
-  }
-  else if (lambdaMax <= lambdaMin){
-    stop("lambdaMax must be larger than lambdaMin")
-  }
-  else if (class(step) != "numeric"){
-    stop("Input (step) is of wrong class")
-  }
-  else if (!.is.int(step)){
-    stop("step should be integer")
-  }
-  else if (step <= 0){
-    stop("step should be a positive integer")
-  }
-  else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
-    stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
-  }
-  else if (!isSymmetric(target)){
-    stop("Shrinkage target should be symmetric")
-  }
-  else if (dim(target)[1] != dim(S)[1]){
-    stop("S and target should be of the same dimension")
-  }
-  else if (type == "Alt" & !all(target == 0) &
-           any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <= 0)){
-    stop("When target is not a null-matrix it should be p.d.")
-  }
-  else if (type == "ArchI" & lambdaMax > 1){
-    stop("lambda should be in (0,1] for this type of Ridge estimator")
-  }
-  else if (type == "ArchI" &
-           any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <= 0)){
-    stop("Target should be p.d.")
-  }
-  else if (!(norm %in% c("2", "1"))){
-    stop("norm should be one of {'2', '1'}")
-  }
-  else if (class(Iaids) != "logical"){
-    stop("Input (Iaids) is of wrong class")
-  }
-  else if (class(vertical) != "logical"){
-    stop("Input (vertical) is of wrong class")
-  }
-  else if (vertical & (class(value) != "numeric")){
-    stop("Input (value) is of wrong class")
-  }
-  else if (vertical & (any(value <= 0))){
-    stop("Input (value) must be strictly positive")
-  }
-  else if (vertical & (length(value) != 1)){
-    stop("Input (value) must be a scalar")
-  }
-  else if (class(main) != "character"){
-    stop("Input (main) is of wrong class")
-  }
-  else if (class(nOutput) != "logical"){
-    stop("Input (nOutput) is of wrong class")
-  }
-  else {
-    # Set preliminaries
-    lambdas <- lseq(lambdaMin, lambdaMax, length = step)
-    condNR  <- numeric()
 
-    if (norm == "2"){
-      # Calculate spectral condition number ridge estimate on lambda grid
-      if (verbose){cat("Calculating spectral condition numbers...", "\n")}
-      if (type == "Alt" & all(target == 0)){
-        Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+  # Set preliminaries
+  lambdas <- lseq(lambdaMin, lambdaMax, length = step)
+  condNR  <- numeric()
+
+  if (norm == "2"){
+    # Calculate spectral condition number ridge estimate on lambda grid
+    if (verbose){cat("Calculating spectral condition numbers...", "\n")}
+    if (type == "Alt" & all(target == 0)){
+      Spectral <- eigs_sym(S, 2, which = "BE",
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
+      for (k in 1:length(lambdas)){
+        Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
+        condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+      }
+    } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
+               (length(unique(diag(target))) == 1)){
+      varPhi   <- unique(diag(target))
+      Spectral <- eigs_sym(S, 2, which = "BE",
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
+      for (k in 1:length(lambdas)){
+        Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
+        condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+      }
+    } else {
+      if (type == "Alt"){
         for (k in 1:length(lambdas)){
-          Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
-          condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+          Eigs      <- .armaEigShrinkAnyTarget(S, target = target, lambdas[k])
+          condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
         }
-      } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
+      } else if (type == "ArchI" & all(target[!diag(nrow(target))] == 0) &
                  (length(unique(diag(target))) == 1)){
         varPhi   <- unique(diag(target))
-        Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+        Spectral <- eigs_sym(S, 2, which = "BE",
+                             opts = list(retvec = FALSE, maxitr = 1000000))$values
         for (k in 1:length(lambdas)){
-          Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
+          Eigshrink <- .armaEigShrinkArchI(Spectral, lambdas[k], cons = varPhi)
           condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
         }
       } else {
-        if (type == "Alt"){
+        if (type == "ArchI"){
           for (k in 1:length(lambdas)){
-            Eigs      <- .armaEigShrinkAnyTarget(S, target = target, lambdas[k])
+            P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+            Eigs      <- eigs_sym(P, 2, which = "BE",
+                                  opts = list(retvec = FALSE, maxitr = 1000000))$values
             condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
           }
-        } else if (type == "ArchI" & all(target[!diag(nrow(target))] == 0) &
-                   (length(unique(diag(target))) == 1)){
-          varPhi   <- unique(diag(target))
-          Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+        }
+        if (type == "ArchII"){
+          Spectral <- eigs_sym(S, 2, which = "BE",
+                               opts = list(retvec = FALSE, maxitr = 1000000))$values
           for (k in 1:length(lambdas)){
-            Eigshrink <- .armaEigShrinkArchI(Spectral, lambdas[k], cons = varPhi)
-            condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
-          }
-        } else {
-          if (type == "ArchI"){
-            for (k in 1:length(lambdas)){
-              P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-              Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
-              condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-            }
-          }
-          if (type == "ArchII"){
-            Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
-            for (k in 1:length(lambdas)){
-              Eigs      <- Spectral + lambdas[k]
-              condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-            }
+            Eigs      <- Spectral + lambdas[k]
+            condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
           }
         }
       }
     }
+  }
 
-    if (norm == "1"){
-      # Calculate approximation to condition number under 1-norm
-      if (verbose){cat("Approximating condition number under 1-norm...", "\n")}
-      if (type == "Alt"){
-        for (k in 1:length(lambdas)){
-          P         <- .armaRidgeP(S, target = target, lambdas[k])
-          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        }
-      }
-      if (type != "Alt"){
-        for (k in 1:length(lambdas)){
-          P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        }
+  if (norm == "1"){
+    # Calculate approximation to condition number under 1-norm
+    if (verbose){cat("Approximating condition number under 1-norm...", "\n")}
+    if (type == "Alt"){
+      for (k in 1:length(lambdas)){
+        P         <- .armaRidgeP(S, target = target, lambdas[k])
+        condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
       }
     }
-
-    if (Iaids) {
-      # Make calculations for interpretational aids
-      if (verbose){cat("Calculating interpretational aids...", "\n")}
-      dLoss   <- floor(log10(condNR))
-      logLamb <- log(lambdas)
-      delta   <- logLamb[2] - logLamb[1]
-      which   <- c(1, length(condNR))
-      Core    <- condNR[-which]
-      up      <- condNR[-c(which[2]-1, which[2])]
-      down    <- condNR[-c(which[1], which[1]+1)]
-      cdapp   <- (down - (2 * Core) + up)/(delta^2)
+    if (type != "Alt"){
+      for (k in 1:length(lambdas)){
+        P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+        condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
+      }
     }
+  }
 
-    # Visualization
-    if (verbose){cat("Plotting...", "\n")}
-    if (norm == "2"){Ylab = "spectral condition number"}
-    if (norm == "1"){Ylab = "condition number under 1-norm"}
-    if (Iaids){par(mfrow=c(1,3))}
-    plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4",
-         xlab = "ln(penalty value)", ylab = Ylab, main = main)
-    axis(2, ylim = c(0,max(condNR)), col = "black", lwd = 1)
+  if (Iaids) {
+    # Make calculations for interpretational aids
+    if (verbose){cat("Calculating interpretational aids...", "\n")}
+    dLoss   <- floor(log10(condNR))
+    logLamb <- log(lambdas)
+    delta   <- logLamb[2] - logLamb[1]
+    which   <- c(1, length(condNR))
+    Core    <- condNR[-which]
+    up      <- condNR[-c(which[2]-1, which[2])]
+    down    <- condNR[-c(which[1], which[1]+1)]
+    cdapp   <- (down - (2 * Core) + up)/(delta^2)
+  }
+
+  # Visualization
+  if (verbose){cat("Plotting...", "\n")}
+  if (norm == "2"){Ylab = "spectral condition number"}
+  if (norm == "1"){Ylab = "condition number under 1-norm"}
+  if (Iaids){par(mfrow=c(1,3))}
+  plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4",
+       xlab = "ln(penalty value)", ylab = Ylab, main = main)
+  axis(2, ylim = c(0,max(condNR)), col = "black", lwd = 1)
+  axis(1, col = "black", lwd = 1)
+  minor.tick(nx = 10, ny = 0, tick.ratio = .4)
+  if (vertical){abline(v = log(value), col = "red")}
+  par(xpd = FALSE)
+  if (Iaids){
+    plot(log(lambdas), dLoss, axes = FALSE, type = "l",
+         col = "green3", xlab = "ln(penalty value)",
+         ylab = "approximate loss in digits of accuracy")
+    axis(2, ylim = c(0,max(dLoss)), col = "black", lwd = 1)
     axis(1, col = "black", lwd = 1)
     minor.tick(nx = 10, ny = 0, tick.ratio = .4)
     if (vertical){abline(v = log(value), col = "red")}
-    par(xpd = FALSE)
-    if (Iaids){
-      plot(log(lambdas), dLoss, axes = FALSE, type = "l",
-           col = "green3", xlab = "ln(penalty value)",
-           ylab = "approximate loss in digits of accuracy")
-      axis(2, ylim = c(0,max(dLoss)), col = "black", lwd = 1)
-      axis(1, col = "black", lwd = 1)
-      minor.tick(nx = 10, ny = 0, tick.ratio = .4)
-      if (vertical){abline(v = log(value), col = "red")}
-      xlimits <- range(log(lambdas))
-      plot(log(lambdas[-which]), cdapp, axes = FALSE, type = "l",
-           col = "orange", xlim = xlimits, xlab = "ln(penalty value)",
-           ylab = "approximation of acceleration")
-      axis(2, ylim = c(0,max(cdapp)), col = "black", lwd = 1)
-      axis(1, col = "black", lwd = 1)
-      minor.tick(nx = 10, ny = 0, tick.ratio = .4)
-      if (vertical){abline(v = log(value), col = "red")}
-      par(mfrow=c(1,1))
-    }
+    xlimits <- range(log(lambdas))
+    plot(log(lambdas[-which]), cdapp, axes = FALSE, type = "l",
+         col = "orange", xlim = xlimits, xlab = "ln(penalty value)",
+         ylab = "approximation of acceleration")
+    axis(2, ylim = c(0,max(cdapp)), col = "black", lwd = 1)
+    axis(1, col = "black", lwd = 1)
+    minor.tick(nx = 10, ny = 0, tick.ratio = .4)
+    if (vertical){abline(v = log(value), col = "red")}
+    par(mfrow=c(1,1))
+  }
 
-    # Possible output
-    if (nOutput){
-      return(list(lambdas = lambdas, conditionNumbers = condNR))
-    }
+  # Possible output
+  if (nOutput){
+    return(list(lambdas = lambdas, conditionNumbers = condNR))
   }
 }
 
@@ -2837,7 +2837,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){
@@ -3656,8 +3656,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 # See R/rags2ridgesMisc.R
 
 
-momentS <- function(Sigma, 
-                    shape, 
+momentS <- function(Sigma,
+                    shape,
                     moment=1){
 
 	########################################################################
@@ -3667,94 +3667,94 @@ momentS <- function(Sigma,
 	# Only those explicitly given in Lesac, Massam (2004) are implemented.
 	#
 	# ARGUMENTS:
-	# -> Sigma	: Positive-definite 'matrix', the scale parameter of 
+	# -> Sigma	: Positive-definite 'matrix', the scale parameter of
 	#                 the Wishart distribution.
-	# -> shape	: A 'numeric', the shape parameter of the Wishart 
+	# -> shape	: A 'numeric', the shape parameter of the Wishart
 	#                 distribution. Should exceed the number of variates.
-	# -> moment	: An 'integer'. Should be in the set 
-	#                 {-4, -3, -2, -1, 0, 1, 2, 3, 4} (only those are 
+	# -> moment	: An 'integer'. Should be in the set
+	#                 {-4, -3, -2, -1, 0, 1, 2, 3, 4} (only those are
 	#                 explicitly specified in Lesac, Massam, 2004).
-	# 
+	#
 	# DEPENDENCIES:
 	# Currently, none.
 	#
 	# NOTES:
    	# ....
-	#     	
+	#
 	########################################################################
 
 	# input checks
-	if (shape < nrow(Sigma) + 1){ 
-		stop("shape parameter should exceed the number of variates") 
+	if (shape < nrow(Sigma) + 1){
+		stop("shape parameter should exceed the number of variates")
 	}
-	if (all(moment != c(-c(4:1), 0:4))){ 
-		stop("moment not implemented") 
+	if (all(moment != c(-c(4:1), 0:4))){
+		stop("moment not implemented")
 	}
 
 	# number of variates
-	p <- nrow(Sigma)	
+	p <- nrow(Sigma)
 
 	# moment, case-wise
-	if (moment==-4){ 
-		Sinv     <- solve(Sigma); 
-		constant <- (shape-p+2) * (shape-p+1) * (shape-p-2) * (shape-p) * 
+	if (moment==-4){
+		Sinv     <- solve(Sigma);
+		constant <- (shape-p+2) * (shape-p+1) * (shape-p-2) * (shape-p) *
 		            (shape-p-7) * (shape-p-5) * (shape-p-3) * (shape-p-1);
 		c1       <- 5 * (shape-p) - 11;
 		c2       <- 5 * (shape-p)^2 - 16*(shape-p) + 11;
 		c3       <- (shape-p)^3 - 4*(shape-p)^2 + 7*(shape-p) - 4;
 		c4       <- 2*(shape-p)^3 - 9*(shape-p)^2  + 24*(shape-p) + 19;
-		c5       <- (shape-p)^4 - 5*(shape-p)^3 + 
+		c5       <- (shape-p)^4 - 5*(shape-p)^3 +
 		            11*(shape-p)^2 - 11*(shape-p) + 4;
-		ESr      <- (c1 * Sinv * (sum(diag(Sinv)))^3  + 
-		             c2 * (Sinv * sum(diag(Sinv)) * sum(Sinv * Sinv) + 
+		ESr      <- (c1 * Sinv * (sum(diag(Sinv)))^3  +
+		             c2 * (Sinv * sum(diag(Sinv)) * sum(Sinv * Sinv) +
 		             Sinv %*% Sinv * (sum(diag(Sinv)))^2) +
-		             c3 * (Sinv * sum(diag(Sinv %*% Sinv %*% Sinv)) + 
-		             3 * Sinv %*% Sinv %*% Sinv * sum(diag(Sinv))) + 
-		             c4 * Sinv %*% Sinv * sum(Sinv * Sinv) + 
-		             c5 * Sinv %*% Sinv %*% Sinv %*% Sinv) / constant 
-	}	
-	if (moment==-3){ 
-		Sinv     <- solve(Sigma); 
-		constant <- ((shape - p) * (shape - p - 1) * (shape - p - 3) * 
+		             c3 * (Sinv * sum(diag(Sinv %*% Sinv %*% Sinv)) +
+		             3 * Sinv %*% Sinv %*% Sinv * sum(diag(Sinv))) +
+		             c4 * Sinv %*% Sinv * sum(Sinv * Sinv) +
+		             c5 * Sinv %*% Sinv %*% Sinv %*% Sinv) / constant
+	}
+	if (moment==-3){
+		Sinv     <- solve(Sigma);
+		constant <- ((shape - p) * (shape - p - 1) * (shape - p - 3) *
 		             (shape - p + 1) * (shape - p - 5))
-		ESr      <- ((2 * (.trace(Sinv))^2 * Sinv + 
-		             (shape - p - 1) * (.trace(Sinv %*% Sinv) * Sinv + 
-		             2 * .trace(Sinv) * Sinv %*% Sinv) + 
+		ESr      <- ((2 * (.trace(Sinv))^2 * Sinv +
+		             (shape - p - 1) * (.trace(Sinv %*% Sinv) * Sinv +
+		             2 * .trace(Sinv) * Sinv %*% Sinv) +
 		             (shape - p - 1)^2 * Sinv %*% Sinv %*% Sinv) / constant)
 	}
-	if (moment==-2){ 
-		Sinv <- solve(Sigma); 
-		ESr  <- (((shape - p - 1) * Sinv %*% Sinv 
-		          + .trace(Sinv) * Sinv) / 
+	if (moment==-2){
+		Sinv <- solve(Sigma);
+		ESr  <- (((shape - p - 1) * Sinv %*% Sinv
+		          + .trace(Sinv) * Sinv) /
 			  ((shape - p) * (shape - p - 1) * (shape - p - 3)))
 	}
-	if (moment==-1){ 
-		ESr <- solve(Sigma) / (shape - p - 1) 
+	if (moment==-1){
+		ESr <- solve(Sigma) / (shape - p - 1)
 	}
-	if (moment==0){ 
-		ESr <- diag(p) 
+	if (moment==0){
+		ESr <- diag(p)
 	}
-	if (moment==1){ 
-		ESr <- shape * Sigma 
+	if (moment==1){
+		ESr <- shape * Sigma
 	}
-	if (moment==2){ 
-		ESr <- (shape * (shape + 1) * Sigma %*% Sigma + 
-			shape * .trace(Sigma) * Sigma) 
+	if (moment==2){
+		ESr <- (shape * (shape + 1) * Sigma %*% Sigma +
+			shape * .trace(Sigma) * Sigma)
 	}
-	if (moment==3){ 
-		ESr <- (shape * (.trace(Sigma))^2 * Sigma + 
-			shape * (shape + 1) * (.trace(Sigma %*% Sigma) * Sigma + 
-			2 * .trace(Sigma) * Sigma %*% Sigma) + 
-			shape * (shape^2 + 3*shape + 4) * Sigma %*% Sigma %*% Sigma) 
+	if (moment==3){
+		ESr <- (shape * (.trace(Sigma))^2 * Sigma +
+			shape * (shape + 1) * (.trace(Sigma %*% Sigma) * Sigma +
+			2 * .trace(Sigma) * Sigma %*% Sigma) +
+			shape * (shape^2 + 3*shape + 4) * Sigma %*% Sigma %*% Sigma)
 	}
-	if (moment==4){ 
-		ESr <- (shape * .trace(Sigma %*% Sigma %*% Sigma) * Sigma + 
-			3 * shape * (shape + 1) * (.trace(Sigma) * .trace(Sigma %*% Sigma) * Sigma + 
-                            (.trace(Sigma))^2 * Sigma %*% Sigma) + 
-                            shape * (shape^2 + 3 * shape + 4) * (3* .trace(Sigma) * Sigma %*% Sigma %*% Sigma + 
-			    .trace(Sigma %*% Sigma %*% Sigma) * Sigma) +                   
-                            shape * (2 * shape^2 + 5 * shape + 5) * .trace(Sigma %*% Sigma) * Sigma %*% Sigma + 
-                            shape * (shape^3 + 6 * shape^2 + 21 * shape + 20) * Sigma %*% Sigma %*% Sigma %*% Sigma) 
+	if (moment==4){
+		ESr <- (shape * .trace(Sigma %*% Sigma %*% Sigma) * Sigma +
+			3 * shape * (shape + 1) * (.trace(Sigma) * .trace(Sigma %*% Sigma) * Sigma +
+                            (.trace(Sigma))^2 * Sigma %*% Sigma) +
+                            shape * (shape^2 + 3 * shape + 4) * (3* .trace(Sigma) * Sigma %*% Sigma %*% Sigma +
+			    .trace(Sigma %*% Sigma %*% Sigma) * Sigma) +
+                            shape * (2 * shape^2 + 5 * shape + 5) * .trace(Sigma %*% Sigma) * Sigma %*% Sigma +
+                            shape * (shape^3 + 6 * shape^2 + 21 * shape + 20) * Sigma %*% Sigma %*% Sigma %*% Sigma)
 	}
 	return(ESr / shape^moment)
 }
@@ -3919,7 +3919,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
              'layout_with_fr', 'layout_with_kk',
              'layout_with_lgl'}")
       }
-      else if (!is.null(coords) & class(coords) != "matrix"){
+      else if (!is.null(coords) & !inherits(coords, "matrix")){
         stop("Input (coords) is of wrong class")
       }
       else if (is.null(lay) & is.null(coords)){
@@ -4111,7 +4111,7 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){

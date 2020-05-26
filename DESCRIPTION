@@ -1,7 +1,7 @@
 Package: rags2ridges
 Type: Package
 Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
-Version: 2.2.1
+Version: 2.2.2
 Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
 Author: Carel F.W. Peeters [cre, aut], Anders Ellern Bilgrau [aut], Wessel N. van Wieringen [aut]
 Description: Proper L2-penalized ML estimators for the
@@ -10,10 +10,10 @@ Description: Proper L2-penalized ML estimators for the
 Depends: R (>= 2.15.1)
 biocViews:
 Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool, 
-    snowfall, sfsmisc, utils, grDevices, graphics, gRbase, RBGL, graph,
-    Rcpp
+  snowfall, sfsmisc, utils, grDevices, graphics, gRbase, RBGL, graph, 
+  Rcpp, RSpectra
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
-URL: http://www.bigstatistics.nl/carel-fw-peeters
+URL: https://github.com/CFWP/rags2ridges
 Suggests: KEGGgraph, testthat
