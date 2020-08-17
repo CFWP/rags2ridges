@@ -47,17 +47,16 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     R package, version 2.2.3
  2. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020)
     *"The Spectral Condition Number Plot for Regularization Parameter Evaluation"*,
-    Computational Statistics, vol. 35: 629-646
+    Computational Statistics, vol. 35:629-646
     ([doi:10.1007/s00180-019-00912-z](https://doi.org/10.1007/s00180-019-00912-z)).
  3. Bilgrau\*, A.E., Peeters\*, C.F.W., Eriksen, P.S., Boegsted, M., & van Wieringen, W.N. (2020).
     *"Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes"*,
-    Journal of Machine Learning Research, vol. 21(26): 1-52
-    [PDF](https://www.jmlr.org/papers/volume21/15-509/15-509.pdf). 
+    Journal of Machine Learning Research, vol. 21(26):1-52
+    ([PDF](https://www.jmlr.org/papers/volume21/15-509/15-509.pdf)).
  4. van Wieringen, W.N. & Peeters, C.F.W. (2016).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
-    Computational Statistics & Data Analysis, vol. 103: 284-303
+    Computational Statistics & Data Analysis, vol. 103:284-303
     ([doi:10.1016/j.csda.2016.05.012](http://www.sciencedirect.com/science/article/pii/S0167947316301141)).
-    Also available as [arXiv:1403.0904v3 \[stat.ME\]](http://arxiv.org/abs/1403.0904).
  5. van Wieringen, W.N. & Peeters, C.F.W. (2015).
     *"Application of a New Ridge Estimator of the Inverse Covariance Matrix
     to the Reconstruction of Gene-Gene Interaction Networks"*.
