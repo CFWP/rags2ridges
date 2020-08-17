@@ -97,7 +97,7 @@ Anderson, E, Bai, Z., ..., Sorenson, D. (1999). LAPACK Users' Guide (3rd ed.). P
 
 Demmel, J.W. (1987). On condition numbers and the distance to the nearest ill-posed problem. Numerische Mathematik, 51: 251--289.
 
-Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016). The spectral condition number plot for regularization parameter determination, arXiv:1608.04123v1 [stat.CO].
+Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020). The spectral condition number plot for regularization parameter evaluation. Computational Statistics, 35: 629--646.
 }
 \author{
 Carel F.W. Peeters <cf.peeters@vumc.nl>

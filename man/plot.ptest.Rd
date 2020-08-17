@@ -30,9 +30,9 @@ Plot a histogram of the null distribution and the observed test statistic in a p
   Invisibly returns \code{x} with extra additions.
 }
 \references{
-  Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2015).
-  Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes,
-  arXiv:1509.07982v1 [stat.ME].
+  Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2020).
+  Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.
+  Journal of Machine Learning Research, 21(26): 1-52.
 }
 \author{
   Anders Ellern Bilgrau,
