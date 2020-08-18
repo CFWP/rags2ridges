@@ -3,6 +3,30 @@
 
 \title{News for Package \cpkg{rags2ridges}}
 
+\section{Changes in version 2.2.3}{
+  \subsection{Documentation:}{
+    \itemize{
+      \item Updated \code{CITATION} file
+      \item Updated \code{README} file
+    }
+  }
+  \subsection{Bug fixes:}{
+    \itemize{
+      \item Fixed bug in \code{GGMpathStats}:
+        \itemize{
+          \item Incorrectly stated before that all igraph layouts were supported.
+          \item Now they indeed are supported.
+      }
+    }
+  }
+  \subsection{Adjustments:}{
+    \itemize{
+      \item Bioconductor dependencies are now automatically installed upon first installation of rags2ridges.
+      \item \code{GGMpathStats} now has additional visualization options: It can handle all layout functions supported by igraph. Moreover, it is now possible to speficy custom coordinates for node-placement.
+    }
+  }
+}
+
 \section{Changes in version 2.2.2}{
   \subsection{Notifications:}{
     \itemize{
