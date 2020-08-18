@@ -3145,9 +3145,9 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
 
 GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
-                         graph = TRUE, nrPaths = 2, lay = layout.circle,
-                         nodecol = "skyblue", Vsize = 15, Vcex = .6,
-                         VBcolor = "darkblue", VLcolor = "black",
+                         graph = TRUE, nrPaths = 2, lay = "layout_in_circle",
+                         coords = NULL, nodecol = "skyblue", Vsize = 15,
+                         Vcex = .6, VBcolor = "darkblue", VLcolor = "black",
                          all.edges = TRUE, prune = TRUE, legend = TRUE,
                          scale = 1, Lcex = .8, PTcex = 2, main = ""){
   ##############################################################################
@@ -3171,9 +3171,17 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
   #                   between the indicated node pair (node1 and node2) to be
   #                   visualized/highlighted;
   #                   only when graph = TRUE
-  # - lay           > determines layout of the graph. All layouts in
-  #                   'layout{igraph}' are accepted. Default = layout.circle,
-  #                    giving circular layout; only when graph = TRUE
+  # - lay           > determines layout of the graph. Most layouts in
+  #                   'layout{igraph}' are accepted. Default =
+  #                   layout_in_circle.
+  # - coords  >       matrix of coordinates to determine layout of the graph.
+  #                   The row dimension should equal the number of (pruned)
+  #                   vertices. The column dimension should equal 2
+  #                   (for 2D layouts) or 3 (for 3D layouts). Enables one,
+  #                   e.g., to layout the graph according to the coordinates
+  #                   of a previous call to Ugraph. If both the the lay and the
+  #                   coords arguments are not NULL, the lay argument takes
+  #                   precedence
   # - nodecol       > gives color of node1 and node2; only when graph = TRUE
   # - Vsize   	    > gives vertex size, default = 15; only when graph = TRUE
   # - Vcex    	    > gives size vertex labels, default = .6; only when
@@ -3379,126 +3387,189 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
         } else if (nrPaths > length(paths)){
           stop("Input (nrPaths) cannot exceed the total number of paths ",
                "discerned")
-        } else if (class(nodecol) != "character"){
-          stop("Input (nodecol) is of wrong class")
-        } else if (length(nodecol) != 1){
-          stop("Length input (nodecol) must be one")
-        } else if (class(Vsize) != "numeric"){
-          stop("Input (Vsize) is of wrong class")
-        } else if (length(Vsize) != 1){
-          stop("Length input (Vsize) must be one")
-        } else if (Vsize <= 0){
-          stop("Input (Vsize) must be strictly positive")
-        } else if (class(Vcex) != "numeric"){
-          stop("Input (Vcex) is of wrong class")
-        } else if (length(Vcex) != 1){
-          stop("Length input (Vcex) must be one")
-        } else if (Vcex <= 0){
-          stop("Input (Vcex) must be strictly positive")
-        } else if (class(VBcolor) != "character"){
-          stop("Input (VBcolor) is of wrong class")
-        } else if (length(VBcolor) != 1){
-          stop("Length input (VBcolor) must be one")
-        } else if (class(VLcolor) != "character"){
-          stop("Input (VLcolor) is of wrong class")
-        } else if (length(VLcolor) != 1){
-          stop("Length input (VLcolor) must be one")
-        } else if (class(all.edges) != "logical"){
-          stop("Input (all.edges) is of wrong class")
-        } else if (class(prune) != "logical"){
-          stop("Input (prune) is of wrong class")
-        } else if (class(legend) != "logical"){
-          stop("Input (legend) is of wrong class")
-        } else if (class(main) != "character"){
-          stop("Input (main) is of wrong class")
-        } else {
-          # Preliminaries
-          AM <- adjacentMat(P0)
-          GA <- graph.adjacency(AM, mode = "undirected")
-          colnames(P0) = rownames(P0) <- seq(1, ncol(P0), by = 1)
-          Mmelt <- melt(P0)
-          Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
-          Mmelt <- Mmelt[Mmelt$value != 0,]
+        } else if (!((length(intersect(lay,c("layout_as_star", "layout_as_tree",
+                                             "layout_in_circle", "layout_nicely",
+                                             "layout_with_dh", "layout_with_gem",
+                                             "layout_with_graphopt", "layout_on_grid",
+                                             "layout_with_mds", "layout_components",
+                                             "layout_on_sphere", "layout_randomly",
+                                             "layout_with_fr", "layout_with_kk",
+                                             "layout_with_lgl"))) > 0) | is.null(lay))){
+          stop("lay should be 'NULL' or one of
+               {'layout_as_star', 'layout_as_tree',
+               'layout_in_circle', 'layout_nicely',
+               'layout_with_dh', 'layout_with_gem',
+               'layout_with_graphopt', 'layout_on_grid',
+               'layout_with_mds', 'layout_components',
+               'layout_on_sphere', 'layout_randomly',
+               'layout_with_fr', 'layout_with_kk',
+               'layout_with_lgl'}")
+        } else if (!is.null(coords) & !inherits(coords, "matrix")){
+          stop("Input (coords) is of wrong class")
+      } else if (is.null(lay) & is.null(coords)){
+        stop("Input (lay) and input (coords) cannot be both NULL")
+      } else if (class(nodecol) != "character"){
+        stop("Input (nodecol) is of wrong class")
+      } else if (length(nodecol) != 1){
+        stop("Length input (nodecol) must be one")
+      } else if (class(Vsize) != "numeric"){
+        stop("Input (Vsize) is of wrong class")
+      } else if (length(Vsize) != 1){
+        stop("Length input (Vsize) must be one")
+      } else if (Vsize <= 0){
+        stop("Input (Vsize) must be strictly positive")
+      } else if (class(Vcex) != "numeric"){
+        stop("Input (Vcex) is of wrong class")
+      } else if (length(Vcex) != 1){
+        stop("Length input (Vcex) must be one")
+      } else if (Vcex <= 0){
+        stop("Input (Vcex) must be strictly positive")
+      } else if (class(VBcolor) != "character"){
+        stop("Input (VBcolor) is of wrong class")
+      } else if (length(VBcolor) != 1){
+        stop("Length input (VBcolor) must be one")
+      } else if (class(VLcolor) != "character"){
+        stop("Input (VLcolor) is of wrong class")
+      } else if (length(VLcolor) != 1){
+        stop("Length input (VLcolor) must be one")
+      } else if (class(all.edges) != "logical"){
+        stop("Input (all.edges) is of wrong class")
+      } else if (class(prune) != "logical"){
+        stop("Input (prune) is of wrong class")
+      } else if (class(legend) != "logical"){
+        stop("Input (legend) is of wrong class")
+      } else if (class(main) != "character"){
+        stop("Input (main) is of wrong class")
+      } else {
+        # Preliminaries
+        AM <- adjacentMat(P0)
+        GA <- graph.adjacency(AM, mode = "undirected")
+        if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
+        colnames(P0) = rownames(P0) <- seq(1, ncol(P0), by = 1)
+        Mmelt <- melt(P0)
+        Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
+        Mmelt <- Mmelt[Mmelt$value != 0,]
 
-          # Determine if path is mediating or moderating and color accordingly
-          for (k in 1:nrPaths){
-            Path <- unlist(paths[k])
-            if (sign(covNo1No2) == sign(pathStats[k,2])){COL = "green"}
-            if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}
-            for (i in 1:(length(Path) - 1)){
-              if (Path[i] > Path[i + 1]){
-                tempX1 <- Path[i]
-                tempX2 <- Path[i + 1]
-              } else {
-                tempX1 <- Path[i + 1]
-                tempX2 <- Path[i]
-              }
-              row <- which(Mmelt$X1 == tempX1 & Mmelt$X2 == tempX2)
-              E(GA)[row]$color <- COL
-            }
+        # Layout specification
+        if(is.null(lay)){
+          if(dim(coords)[1] != length(V(GA))){
+            stop("Row dimension of input (coords) does not match the
+                 number of vertices to be plotted")
+          } else if (dim(coords)[2] > 3){
+            stop("Column dimension of input (coords) exceeds the number
+                 of dimensions that can be visualized")
+          } else {lays = coords}
           }
+        else{
+          if(lay == "layout_as_star"){
+            lays = igraph::layout_as_star(GA)}
+          if(lay == "layout_as_tree")
+          {lays = igraph::layout_as_tree(GA)}
+          if(lay == "layout_in_circle"){
+            lays = igraph::layout_in_circle(GA)}
+          if(lay == "layout_nicely"){
+            lays = igraph::layout_nicely(GA)}
+          if(lay == "layout_with_dh"){
+            lays = igraph::layout_with_dh(GA)}
+          if(lay == "layout_with_gem"){
+            lays = igraph::layout_with_gem(GA)}
+          if(lay == "layout_with_graphopt"){
+            lays = igraph::layout_with_graphopt(GA)}
+          if(lay == "layout_on_grid"){
+            lays = igraph::layout_on_grid(GA)}
+          if(lay == "layout_with_mds"){
+            lays = igraph::layout_with_mds(GA)}
+          if(lay == "layout_components"){
+            lays = igraph::layout_components(GA)}
+          if(lay == "layout_on_sphere"){
+            lays = igraph::layout_on_sphere(GA)}
+          if(lay == "layout_randomly"){
+            lays = igraph::layout_randomly(GA)}
+          if(lay == "layout_with_fr"){
+            lays = igraph::layout_with_fr(GA)}
+          if(lay == "layout_with_kk"){
+            lays = igraph::layout_with_kk(GA)}
+          if(lay == "layout_with_lgl"){
+            lays = igraph::layout_with_lgl(GA)}
+        }
 
-          # Coloring nodes
-          V(GA)$color <- "white"
-          V(GA)$color[node1] <- nodecol
-          V(GA)$color[node2] <- nodecol
-
-          # Produce graph
-          if (all.edges){
-            if (class(scale) != "numeric"){
-              stop("Input (scale) is of wrong class")
-            } else if (length(scale) != 1){
-              stop("Length input (scale) must be one")
-            } else if (scale <= 0){
-              stop("Input (scale) must be strictly positive")
+        # Determine if path is mediating or moderating and color accordingly
+        for (k in 1:nrPaths){
+          Path <- unlist(paths[k])
+          if (sign(covNo1No2) == sign(pathStats[k,2])){COL = "green"}
+          if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}
+          for (i in 1:(length(Path) - 1)){
+            if (Path[i] > Path[i + 1]){
+              tempX1 <- Path[i]
+              tempX2 <- Path[i + 1]
             } else {
-              E(GA)[is.na(E(GA)$color)]$color <- "grey"
-              E(GA)$weight <- 1
-              E(GA)[E(GA)$color == "green"]$weight <- 2
-              E(GA)[E(GA)$color == "red"]$weight   <- 2
-              if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
-              plot(GA, layout = lay, vertex.size = Vsize,
-                   vertex.label.family = "sans", vertex.label.cex = Vcex,
-                   edge.width = scale*abs(E(GA)$weight),
-                   vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
-                   vertex.label.color = VLcolor, main = main)
+              tempX1 <- Path[i + 1]
+              tempX2 <- Path[i]
             }
+            row <- which(Mmelt$X1 == tempX1 & Mmelt$X2 == tempX2)
+            E(GA)[row]$color <- COL
+          }
+        }
+
+        # Coloring nodes
+        V(GA)$color <- "white"
+        V(GA)$color[node1] <- nodecol
+        V(GA)$color[node2] <- nodecol
+
+        # Produce graph
+        if (all.edges){
+          if (class(scale) != "numeric"){
+            stop("Input (scale) is of wrong class")
+          } else if (length(scale) != 1){
+            stop("Length input (scale) must be one")
+          } else if (scale <= 0){
+            stop("Input (scale) must be strictly positive")
           } else {
-            if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
-            plot(GA, layout = lay, vertex.size = Vsize,
+            E(GA)[is.na(E(GA)$color)]$color <- "grey"
+            E(GA)$weight <- 1
+            E(GA)[E(GA)$color == "green"]$weight <- 2
+            E(GA)[E(GA)$color == "red"]$weight   <- 2
+            plot(GA, layout = lays, vertex.size = Vsize,
                  vertex.label.family = "sans", vertex.label.cex = Vcex,
+                 edge.width = scale*abs(E(GA)$weight),
                  vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
                  vertex.label.color = VLcolor, main = main)
           }
+        } else {
+          plot(GA, layout = lays, vertex.size = Vsize,
+               vertex.label.family = "sans", vertex.label.cex = Vcex,
+               vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
+               vertex.label.color = VLcolor, main = main)
+        }
 
-          # Legend
-          if (legend){
-            if (class(Lcex) != "numeric"){
-              stop("Input (Lcex) is of wrong class")
-            } else if (length(Lcex) != 1){
-              stop("Length input (Lcex) must be one")
-            } else if (Lcex <= 0){
-              stop("Input (Lcex) must be strictly positive")
-            } else if (class(PTcex) != "numeric"){
-              stop("Input (PTcex) is of wrong class")
-            } else if (length(PTcex) != 1){
-              stop("Length input (PTcex) must be one")
-            } else if (PTcex <= 0){
-              stop("Input (PTcex) must be strictly positive")
-            } else {
-              legend("bottomright", c("mediating path", "moderating path"),
-                     lty=c(1,1), col = c("green", "red"), cex = Lcex,
-                     pt.cex = PTcex)
-            }
+        # Legend
+        if (legend){
+          if (class(Lcex) != "numeric"){
+            stop("Input (Lcex) is of wrong class")
+          } else if (length(Lcex) != 1){
+            stop("Length input (Lcex) must be one")
+          } else if (Lcex <= 0){
+            stop("Input (Lcex) must be strictly positive")
+          } else if (class(PTcex) != "numeric"){
+            stop("Input (PTcex) is of wrong class")
+          } else if (length(PTcex) != 1){
+            stop("Length input (PTcex) must be one")
+          } else if (PTcex <= 0){
+            stop("Input (PTcex) must be strictly positive")
+          } else {
+            legend("bottomright", c("mediating path", "moderating path"),
+                   lty=c(1,1), col = c("green", "red"), cex = Lcex,
+                   pt.cex = PTcex)
           }
         }
       }
+    }
 
-      # Return
-      Numeric    <- rownames(adjMat)
-      VarName    <- Names
-      identifier <- data.frame(Numeric, VarName)
-      return(list(pathStats = pathStats, paths = paths,
+    # Return
+    Numeric    <- rownames(adjMat)
+    VarName    <- Names
+    identifier <- data.frame(Numeric, VarName)
+    return(list(pathStats = pathStats, paths = paths,
                   Identifier = identifier))
     }
   }
