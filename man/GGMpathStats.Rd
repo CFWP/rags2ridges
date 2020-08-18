@@ -10,11 +10,12 @@ graphical model. The contribution to the observed covariance between the specifi
 for each (heuristically) determined path between the endpoints.
 }
 \usage{
-GGMpathStats(P0, node1, node2, neiExpansions = 2, verbose = TRUE, graph = TRUE,
-             nrPaths = 2, lay = layout.circle, nodecol = "skyblue", Vsize = 15,
-             Vcex = 0.6, VBcolor = "darkblue", VLcolor = "black",
-             all.edges = TRUE, prune = TRUE, legend = TRUE, scale = 1,
-             Lcex = 0.8, PTcex = 2, main = "")
+GGMpathStats(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
+             graph = TRUE, nrPaths = 2, lay = "layout_in_circle",
+             coords = NULL, nodecol = "skyblue", Vsize = 15,
+             Vcex = .6, VBcolor = "darkblue", VLcolor = "black",
+             all.edges = TRUE, prune = TRUE, legend = TRUE,
+             scale = 1, Lcex = .8, PTcex = 2, main = "")
 }
 \arguments{
   \item{P0}{
@@ -43,7 +44,12 @@ A \code{numeric} indicating the number of paths (with the highest contribution t
 between the indicated node pair) to be visualized/highlighted.
 }
   \item{lay}{
-Function call to \code{\link{igraph}} determining the placement of vertices.
+A \code{character} mimicking a call to \code{\link{igraph}} layout functions.
+Determines the placement of vertices.
+}
+  \item{coords}{
+A \code{matrix} containing coordinates.
+Alternative to the lay-argument for determining the placement of vertices.
 }
   \item{nodecol}{
 A \code{character} determining the color of \code{node1} and \code{node2}.
@@ -117,8 +123,17 @@ paths are represented in red. When \code{all.edges = TRUE} the edges other than 
 \code{node1} and {node2} are also visualized (in lightgrey). When \code{all.edges = FALSE} only the mediating and
 moderating paths implied by \code{nrPaths} are visualized.
 
-The default layout gives a circular placement of the vertices. All layout functions supported by
-\code{\link{igraph}} are supported. The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend = TRUE}.
+The default layout gives a circular placement of the vertices. Most layout functions supported by
+\code{\link{igraph}} are supported (the function is partly a wrapper around certain \code{\link{igraph}} functions).
+The igraph layouts can be invoked by a \code{character} that mimicks a call to a \code{\link{igraph}} layout functions in the \code{lay} argument.
+When using \code{lay = NULL} one can specify the placement of vertices with the \code{coords} argument.
+The row dimension of this matrix should equal the number of (pruned) vertices.
+The column dimension then should equal 2 (for 2D layouts) or 3 (for 3D layouts).
+The \code{coords} argument can also be viewed as a convenience argument as it enables one, e.g., to layout a graph
+according to the coordinates of a previous call to \code{Ugraph}.
+If both the the lay and the coords arguments are not \code{NULL}, the lay argument takes precedence
+
+The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend = TRUE}.
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by any edge) are removed. For the colors supported
 by the arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
 \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
