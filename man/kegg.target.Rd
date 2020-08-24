@@ -46,7 +46,7 @@ kegg.target(Y, kegg.id, method = "linreg", organism = "hsa",
   Returns a target \code{matrix} with size depending on the \code{kegg.id}.
 }
 \references{
-  \url{http://www.genome.jp/kegg/}
+  \url{https://www.genome.jp/kegg/}
 }
 \note{
   It is currently nessesary to \code{require("KEGGgraph")} (or
