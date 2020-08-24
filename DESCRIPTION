@@ -4,9 +4,7 @@ Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
 Version: 2.2.3
 Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
 Author: Carel F.W. Peeters [cre, aut], Anders Ellern Bilgrau [aut], Wessel N. van Wieringen [aut]
-Description: Proper L2-penalized maximum likelihood estimators for 
-  precision matrices and supporting functions to employ these estimators
-  in a graphical modeling setting.
+Description: Proper L2-penalized maximum likelihood estimators for precision matrices and supporting functions to employ these estimators in a graphical modeling setting. For details see van Wieringen & Peeters (2016) <doi:10.1016/j.csda.2016.05.012> and associated publications.
 Depends: R (>= 2.15.1)
 biocViews:
 Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool, 
