@@ -22,7 +22,7 @@ getKEGGPathway(kegg.id)
   \item{graph}{The KEGG pathway represented as a \code{graphNEL} object.}
 }
 \references{
-  \url{http://www.genome.jp/kegg/}
+  \url{https://www.genome.jp/kegg/}
 }
 \note{
   It is currently necessary to \code{require("KEGGgraph")} (or
