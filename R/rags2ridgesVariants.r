@@ -50,6 +50,85 @@
 
 
 
+
+
+
+
+
+
+#' Support of the adjacency matrix to cliques and separators.
+#' 
+#' Convert the support of an undirected, chordal graph into a lists of cliques
+#' and separators. When the graph is not chordal, it is triangulated to make it
+#' so. The undirected graph may be specified as an adjacency matrix, or by the
+#' complement of its support as a matrix with the indices of the adjancency
+#' matrix corresponding to absent edges. The function thus caters for the two
+#' different types of output from the
+#' \code{\link[rags2ridges:sparsify]{sparsify}}-function. The function is meant
+#' to preceede the \code{\link{ridgePchordal}}, as it its output directly feeds
+#' into the latter.
+#' 
+#' Essentially, it is a wrapper for the \code{rip}-function from the
+#' \code{gRbase}-package, which takes different input and yields slightly
+#' different output. Its main purpose is to mold the input such that it is
+#' convenient for the \code{ridgePchordal}-function, which provides ridge
+#' maximum likelihood estimation of the precision matrix with known support.
+#' 
+#' @param adjMat Adjacency matrix of an undirected graph.
+#' @param nNodes Positive \code{integer} of length one: number nodes of the
+#' network.
+#' @param zeros A \code{matrix} with indices of entries of the adjacency matrix
+#' that are zero. The matrix comprises two columns, each row corresponding to
+#' an entry of the adjacency matrix.
+#' @param verbose A \code{logical} indicator: should intermediate output be
+#' printed on the screen?
+#' @return A \code{list}-object comprising three slots: 'zeros', 'cliques,
+#' 'separators' and 'addedEdges'. The 'zeros'-slot: a \code{matrix} with
+#' indices of entries of the adjacency matrix that are zero. The matrix
+#' comprises two columns, each row corresponding to an entry of the adjacency
+#' matrix. The first column contains the row indices and the second the column
+#' indices. The specified graph should be undirected and decomposable. If not,
+#' it is symmetrized and triangulated. Hence, it may differ from the input
+#' 'zeros'. The 'cliques'-slot: a \code{list}-object containing the node
+#' indices per clique as obtained from the \code{rip}-function. The
+#' 'separators'-slot: a \code{list}-object containing the node indices per
+#' clique as obtained from the \code{rip}-function. The 'addedEdges'-slot: a
+#' \code{matrix} with indices of edges that have been added in the
+#' triangulation.
+#' @author Wessel N. van Wieringen.
+#' @seealso \code{\link[rags2ridges:sparsify]{sparsify}},
+#' \code{\link{ridgePchordal}}, \code{\link[gRbase:graph-rip]{gRbase::rip}}.
+#' @references Lauritzen, S.L. (2004). \emph{Graphical Models}. Oxford
+#' University Press.
+#' @examples
+#' 
+#' # obtain some (high-dimensional) data
+#' p <- 8
+#' n <- 100
+#' set.seed(333)
+#' Y <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' 
+#' # create sparse precision
+#' P <- covML(Y)
+#' P[1:3, 6:8] <- 0
+#' P[6:8, 1:3] <- 0
+#' 
+#' # draw some data
+#' S <- covML(matrix(rnorm(n*p), nrow = n, ncol = p))
+#' 
+#' # obtain (triangulated) support info
+#' zeros <- which(P==0, arr.ind=TRUE)
+#' supportP <- support4ridgeP(adjMat=adjacentMat(P))
+#' 
+#' # alternative specification of the support
+#' zeros <- which(P==0, arr.ind=TRUE)
+#' supportP <- support4ridgeP(nNodes=p, zeros=zeros)
+#' 
+#' # estimate precision matrix with known (triangulated) support
+#' Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros,
+#' 	cliques=supportP$cliques, separators=supportP$separators)
+#' 
+#' @export support4ridgeP
 support4ridgeP <- function(adjMat=NULL,
                            nNodes=NULL,
                            zeros=NULL,
@@ -203,6 +282,146 @@ support4ridgeP <- function(adjMat=NULL,
 }
 
 
+
+
+
+
+
+
+#' Ridge estimation for high-dimensional precision matrices with known chordal
+#' support
+#' 
+#' Function that calculates various ridge estimators for high-dimensional
+#' precision matrices with known support. This support should form a chordal
+#' graph. If the provided support is not chordal, the function makes it so.
+#' 
+#' Sister function to the \code{\link{ridgeP}}-function, incorporating a
+#' chordal zero structure of the precision matrix.
+#' 
+#' The loss function for \code{type="ArchII"} is: \deqn{ \log(| \mathbf{\Omega}
+#' |) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \lambda \big\{ \log(|
+#' \mathbf{\Omega} |) - \mbox{tr} [ (\mathbf{S} + (1+\lambda) \mathbf{I}_{p
+#' \times p}) \mathbf{\Omega} ] \big\}. } For \code{type="ArchI"} it is: \deqn{
+#' (1-\lambda) \big [ \log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S}
+#' \mathbf{\Omega} ) \big] + \lambda \big[ \log(| \mathbf{\Omega} |) -
+#' \mbox{tr} ( \mathbf{\Omega} ) \big], } which is obtained from: \deqn{ \log(|
+#' \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \nu \big[
+#' \log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{\Omega} ) \big] } by
+#' division of \eqn{(1+\nu)} and writing \eqn{\lambda = \nu / (1 + \nu)}.
+#' 
+#' An explicit expression for the minimizer of the loss functions implied by
+#' the archetypal ridge estimators (\code{type="ArchI"} and
+#' \code{type="ArchII"}) exists. For the simple case in which the graph
+#' decomposes into cliques \eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2} and
+#' separator \eqn{\mathcal{S}} the estimator is:
+#' \deqn{\widehat{\mathbf{\Omega}} = \left( \begin{array}{lll} \,
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
+#' \mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} &
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
+#' \mathcal{S}, \mathcal{S}} & \mathbf{0}_{|\mathcal{C}_1 \setminus
+#' \mathcal{S}| \times |\mathcal{C}_2 \setminus \mathcal{S}|} \\ \,
+#' [\widehat{\mathbf{\Omega}}^{(\mathcal{C}_1)}]_{\mathcal{S}, \mathcal{C}_1
+#' \setminus \mathcal{S}} &
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{S}, \mathcal{S}} +
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{S}} -
+#' \widehat{\mathbf{\Omega}}^{(\mathcal{S})} &
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{C}_2
+#' \setminus \mathcal{S}} \\ \, \mathbf{0}_{|\mathcal{C}_2 \setminus
+#' \mathcal{S}| \times |\mathcal{C}_1 \setminus \mathcal{S}|} &
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
+#' \mathcal{S}, \mathcal{S}} &
+#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
+#' \mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}} \end{array} \right), }
+#' where \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}},
+#' \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}} and
+#' \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{S}})}} are the marginal ridge ML
+#' covariance estimators for cliques \eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2}
+#' and separator \eqn{\mathcal{S}}. The general form of the estimator,
+#' implemented here, is analogous to that provided in Proposition 5.9 of
+#' Lauritzen (2004). The proof that this estimator indeed optimizes the
+#' corresponding loss function is fully analogous to that of Proposition 5.6 of
+#' Lauritzen (2004).
+#' 
+#' In case, \code{type="Alt"} no explicit expression of the maximizer of the
+#' ridge penalized log-likelihood exists. However, an initial estimator
+#' analogous to that for \code{type="ArchI"} and \code{type="ArchII"} can be
+#' defined. In various boundary cases (\eqn{\lambda=0}, \eqn{\lambda=\infty},
+#' and \eqn{\mathcal{S} = \emptyset}) this initial estimator actually optimizes
+#' the loss function. In general, however, it does not. Nevertheless, it
+#' functions as well-educated guess for any Newton-like optimization method:
+#' convergence is usually achieved quickly. The Newton-like procedure optimizes
+#' an unconstrained problem equivalent to that of the penalized log-likelihood
+#' with known zeros for the precision matrix (see Dahl \emph{et al}., 2005 for
+#' details).
+#' 
+#' @param S Sample covariance \code{matrix}.
+#' @param lambda A \code{numeric} representing the value of the penalty
+#' parameter.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param zeros \code{Matrix} with indices of entries of the adjacency matrix
+#' that are zero. The matrix comprises two columns, each row corresponding to
+#' an entry of the adjacency matrix. The first column contains the row indices
+#' and the second the column indices. The specified graph should be undirected
+#' and decomposable. If not, use the \code{\link{support4ridgeP}} to symmetrize
+#' and triangulate. This is done automatically if \code{cliques} and
+#' \code{separators} arguments are empty lists (and the then employed
+#' \code{zeros}-object may differ from the one provided as input).
+#' @param cliques A \code{list}-object containing the node indices per clique
+#' as obtained from the \code{\link{support4ridgeP}}-function.
+#' @param separators A \code{list}-object containing the node indices per
+#' separator as obtained from the \code{\link{support4ridgeP}}-function.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: \code{Alt} (default), \code{ArchI}, \code{ArchII}.
+#' @param optimizer A \code{character} (either \code{nlm} (default) or
+#' \code{optim}) specifying which optimization function should be used:
+#' \code{\link[stats:nlm]{nlm}} (default) or \code{\link[stats:optim]{optim}}?
+#' @param grad A \code{logical} indicator: should, next to the precision matrix
+#' estimate, also the gradient be returned?
+#' @param verbose A \code{logical} indicator: should intermediate output be
+#' printed on the screen?
+#' @param ...  Additional arguments passed on to either
+#' \code{\link[stats:nlm]{nlm}} or \code{\link[stats:optim]{optim}}.
+#' @return If \code{grad=FALSE}, the function returns a regularized precision
+#' \code{matrix} with specified chordal sparsity structure.
+#' 
+#' If \code{grad=TRUE}, a list is returned comprising of \emph{i)} the
+#' estimated precision matrix, and \emph{ii)} the gradients at the initial and
+#' at the optimal (if reached) value. The gradient is returned and it can be
+#' checked whether it is indeed (close to) zero at the optimum.
+#' @author Wessel N. van Wieringen.
+#' @seealso \code{\link[rags2ridges:ridgeP]{ridgeP}}
+#' @references Dahl, J., Roychowdhury, V., Vandenberghe, L. (2005), "Maximum
+#' likelihood estimation of Gaussian graphical models: numerical implementation
+#' and topology selection", Technical report, UCLA, 2005.
+#' 
+#' Lauritzen, S.L. (2004). \emph{Graphical Models}. Oxford University Press.
+#' 
+#' Miok, V., Wilting, S.M., Van Wieringen, W.N. (2016), "Ridge estimation of
+#' the VAR(1) model and its time series chain graph from multivariate
+#' time-course omics data", \emph{Biometrical Journal}, 59(1), 172-191.
+#' @examples
+#' 
+#' # obtain some (high-dimensional) data
+#' p <- 8
+#' n <- 100
+#' set.seed(333)
+#' Y <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' 
+#' # define zero structure  
+#' S <- covML(Y)
+#' S[1:3, 6:8] <- 0
+#' S[6:8, 1:3] <- 0
+#' zeros <- which(S==0, arr.ind=TRUE)
+#' 
+#' # obtain (triangulated) support info 
+#' supportP <- support4ridgeP(nNodes=p, zeros=zeros)
+#' 
+#' # estimate precision matrix with known (triangulated) support
+#' Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros, 
+#' 	cliques=supportP$cliques, separators=supportP$separators)
+#' 
+#' @export ridgePchordal
 ridgePchordal <- function(S,
                           lambda,
                           zeros,
@@ -530,6 +749,89 @@ ridgePchordal <- function(S,
 
 
 
+
+
+
+
+
+
+#' Automatic search for penalty parameter of ridge precision estimator with
+#' known chordal support
+#' 
+#' Automic search for the optimal ridge penalty parameter for the ridge
+#' estimator of the precision matrix with known chordal support. Optimal in the
+#' sense that it yields the maximum cross-validated likelihood. The search
+#' employs the Brent algorithm as implemented in the
+#' \code{\link[stats:optim]{optim}} function.
+#' 
+#' See the function \code{\link[stats:optim]{optim}} for details on the
+#' implementation of the Brent algorithm.
+#' 
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param lambdaInit A \code{numeric} giving the initial value for the penalty
+#' parameter.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param zeros A \code{matrix} with indices of entries of the precision matrix
+#' that are constrained to zero. The matrix comprises two columns, each row
+#' corresponding to an entry of the precision matrix. The first column contains
+#' the row indices and the second the column indices. The specified conditional
+#' independence graph implied by the zero-structure of the precision should be
+#' undirected and decomposable. If not, it is symmetrized and triangulated.
+#' @param cliques A \code{list}-object containing the node indices per clique
+#' as obtained from the \code{\link{support4ridgeP}}-function.
+#' @param separators A \code{list}-object containing the node indices per
+#' separator as obtained from the \code{\link{support4ridgeP}}-function.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: \code{Alt}, \code{ArchI}, \code{ArchII}.
+#' @return A \code{numeric} with the LOOCV optimal choice for the ridge penalty
+#' parameter.
+#' @author Wessel N. van Wieringen.
+#' @seealso \code{\link[rags2ridges:ridgePchordal]{ridgePchordal}},
+#' \code{\link[rags2ridges:ridgeP]{ridgeP}},
+#' \code{\link[rags2ridges:optPenalty.aLOOCV]{optPenalty.aLOOCV}},
+#' \code{\link[rags2ridges:optPenalty.kCV]{optPenalty.kCV}}
+#' @references Miok, V., Wilting, S.M., Van Wieringen, W.N. (2016), "Ridge
+#' estimation of the VAR(1) model and its time series chain graph from
+#' multivariate time-course omics data", \emph{Biometrical Journal}, 59(1),
+#' 172-191.
+#' 
+#' Van Wieringen, W.N. and Peeters, C.F.W. (2016), "Ridge Estimation of Inverse
+#' Covariance Matrices from High-Dimensional Data", \emph{Computational
+#' Statistics and Data Analysis}, 103, 284-303.
+#' @examples
+#' 
+#' # generate data
+#' p <- 8
+#' n <- 100
+#' set.seed(333)
+#' Y <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' 
+#' # define zero structure  
+#' S <- covML(Y)
+#' S[1:3, 6:8] <- 0
+#' S[6:8, 1:3] <- 0
+#' zeros <- which(S==0, arr.ind=TRUE)
+#' 
+#' # obtain (triangulated) support info 
+#' supportP <- support4ridgeP(nNodes=p, zeros=zeros)
+#' 
+#' # determine optimal penalty parameter
+#' \dontrun{
+#' optLambda <- optPenaltyPchordal(Y, 10^(-10), 10, 0.1, zeros=supportP$zeros, 
+#' 	cliques=supportP$cliques, separators=supportP$separators)
+#' }
+#' optLambda <- 0.1
+#' 
+#' # estimate precision matrix with known (triangulated) support
+#' Phat <- ridgePchordal(S, optLambda, zeros=supportP$zeros, 
+#' 	cliques=supportP$cliques, separators=supportP$separators)
+#' 
+#' @export optPenaltyPchordal
 optPenaltyPchordal <- function (Y,
                                 lambdaMin,
                                 lambdaMax,
@@ -618,6 +920,63 @@ optPenaltyPchordal <- function (Y,
 
 
 
+
+
+
+
+
+
+#' Ridge estimation for high-dimensional precision matrices with known sign of
+#' off-diagonal precision elements.
+#' 
+#' Function that calculates the ridge estimators for high-dimensional precision
+#' matrices with known sign of the off-diagonal precision elements.
+#' 
+#' Modified version of the \code{\link{ridgePchordal}}-function, now the ridge
+#' precision matrix estimate has off-diagonal elements equalling zero or of the
+#' specified sign. The estimate is found by solving a constrained estimation
+#' problem. This is done numerically and employs the
+#' \code{\link[stats:nlminb]{nlminb}} and
+#' \code{\link[stats:constrOptim]{constrOptim}} procedure of R. These
+#' procedures are initiated by the ridge ML precision estimate and its
+#' off-diagonal elements with the excluded sign set to (effectively) zero.
+#' 
+#' @param S Sample covariance \code{matrix}.
+#' @param lambda A \code{numeric} representing the value of the penalty
+#' parameter.
+#' @param sign A character indicating the required sign of the off-diagonal
+#' elements of ridge precision estimate. Must be either: "pos" (positive) and
+#' "neg" (negative).
+#' @param target A target \code{matrix} (in precision terms) for the ridge
+#' precision estimator.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param method A \code{character} : which optimization function should be
+#' used: \code{"nlm"} (default) or \code{"optim"} which refer to
+#' \code{\link[stats:nlminb]{nlminb}} or
+#' \code{\link[stats:constrOptim]{constrOptim}}, respectively.
+#' @param verbose \code{Logical} indicator: should intermediate output be
+#' printed on the screen?
+#' @param ...  Additional arguments passed on to either
+#' \code{\link[stats:nlminb]{nlminb}} or
+#' \code{\link[stats:constrOptim]{constrOptim}}.
+#' @return The function returns a regularized precision \code{matrix} with
+#' off-diagonal elements of specified signed or zero.
+#' @author W.N. van Wieringen.
+#' @seealso \code{\link[rags2ridges:ridgeP]{ridgeP}},
+#' \code{\link[rags2ridges:ridgePchordal]{ridgePchordal}}
+#' @examples
+#' 
+#' # obtain some data
+#' p <- 8
+#' n <- 100
+#' set.seed(333)
+#' Y <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' 
+#' # obtain regularized precision matrix with off-diagonal elements of specified signed
+#' ridgePsign(covML(Y), lambda=0.1, sign="pos")
+#' 
+#' @export ridgePsign
 ridgePsign <- function(S,
                        lambda,
                        sign,

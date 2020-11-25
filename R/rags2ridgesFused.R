@@ -14,6 +14,47 @@
 ##
 ##------------------------------------------------------------------------------
 
+
+
+
+
+
+
+#' Test for symmetric positive (semi-)definiteness
+#' 
+#' Function to test if a \code{matrix} is symmetric positive (semi)definite or
+#' not.
+#' 
+#' Tests positive definiteness by Cholesky decomposition.  Tests positive
+#' semi-definiteness by checking if all eigenvalues are larger than
+#' \eqn{-\epsilon|\lambda_1|} where \eqn{\epsilon} is the tolerance and
+#' \eqn{\lambda_1} is the largest eigenvalue.
+#' 
+#' @aliases isSymmetricPD isSymmetricPSD
+#' @param M A square symmetric matrix.
+#' @param tol A numeric giving the tolerance for determining positive
+#' semi-definiteness.
+#' @return Returns a \code{logical} value. Returns \code{TRUE} if the \code{M}
+#' is symmetric positive (semi)definite and \code{FALSE} if not.  If \code{M}
+#' is not even symmetric, the function throws an error.
+#' @author Anders Ellern Bilgrau Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{isSymmetric}}
+#' @examples
+#' 
+#' A <- matrix(rnorm(25), 5, 5)
+#' \dontrun{
+#' isSymmetricPD(A)
+#' }
+#' B <- symm(A)
+#' isSymmetricPD(B)
+#' 
+#' C <- crossprod(B)
+#' isSymmetricPD(C)
+#' 
+#' isSymmetricPSD(C)
+#' 
+#' @export isSymmetricPD
 isSymmetricPD <- function(M) {
   ##############################################################################
   # - Test if matrix is symmetric postive definite
@@ -74,6 +115,46 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
 
 
 
+
+
+
+
+
+
+#' Test if fused list-formats are correctly used
+#' 
+#' Function to check if the argument submits to the various \code{list}-formats
+#' used by the fused ridge estimator and related functions are correct. That
+#' is, it tests if generic fused list arguments (such as \code{Slist},
+#' \code{Tlist}, \code{Plist}, \code{Ylist}) are properly formatted.
+#' 
+#' 
+#' @param Xlist A \code{list} of precision matrices of equal size
+#' (\code{Plist}), sample covariance matrices (\code{Slist}), data matrices
+#' (\code{Ylist})
+#' @param Ylist \code{logical}. Is \code{Xlist} a \code{list} of data matrices
+#' with the same number of columns (\code{Ylist}).
+#' @param semi \code{logical}. Should the matrices in the list be tested to be
+#' positive semi definite or positive definite?
+#' @return Returns \code{TRUE} if all tests are passed, throws error if not.
+#' @author Anders Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N.
+#' van Wieringen
+#' @seealso \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' 
+#' van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation of Inverse
+#' Covariance Matrices from High-Dimensional Data, Computational Statistics &
+#' Data Analysis, vol. 103: 284-303.  Also available as arXiv:1403.0904v3
+#' [stat.ME].
+#' @examples
+#' 
+#' Slist <- createS(n = c(4, 6, 9), p = 10)
+#' is.Xlist(Slist, semi = TRUE)
+#' 
+#' @export is.Xlist
 is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
   ##############################################################################
   # - Test if generic fused list arguments (such as Slist, Tlist, Plist)
@@ -123,6 +204,60 @@ is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
 
 
 
+
+
+
+
+
+
+#' Generate data-driven targets for fused ridge estimation
+#' 
+#' Generates a list of (data-driven) targets to use in fused ridge estimation.
+#' Simply a wrapper for \code{\link{default.target}}.
+#' 
+#' 
+#' @param Slist A \code{list} of length \eqn{K} of \code{numeric} covariance
+#' matrices of the same size for \eqn{K} classes.
+#' @param ns A \code{numeric} vector of sample sizes corresponding to the
+#' entries of \code{Slist}.
+#' @param type A \code{character} giving the choice of target to construct. See
+#' \code{\link{default.target}} for the available options. Default is
+#' \code{"DAIE"}.
+#' @param by A \code{character} vector with the same length as \code{Slist}
+#' specifying which groups should share target.  For each unique entry of
+#' \code{by} a target is constructed.  If omitted, the default is to assign a
+#' unique target to each class.  If not given as a \code{character} coercion
+#' into one is attempted.
+#' @param \dots Arguments passed to \code{\link{default.target}}.
+#' @return A \code{list} of \eqn{K} covariance target matrices of the same
+#' size.
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' N. van Wieringen
+#' @seealso \code{\link{default.target}}
+#' @examples
+#' 
+#' # Make some toy data
+#' ns <- c(3, 4)  # Two classes with sample size 3 and 4
+#' Slist <- createS(ns, p = 3)  # Generate two 3-dimensional covariance matrices
+#' Slist
+#' 
+#' # Different choices:
+#' default.target.fused(Slist, ns)
+#' default.target.fused(Slist, ns, by = seq_along(Slist)) # The same as before
+#' default.target.fused(Slist, ns, type = "Null")
+#' default.target.fused(Slist, ns, type = "DAPV")
+#' default.target.fused(Slist, ns, type = "DAPV", by = rep(1, length(Slist)))
+#' 
+#' 
+#' # Make some (more) toy data
+#' ns <- c(3, 4, 6, 7)  # Two classes with sample size 3 and 4
+#' Slist <- createS(ns, p = 2)  # Generate four 2-dimensional covariance matrices
+#' 
+#' # Use the same target in class 1 and 2, but another in class 3 and 4:
+#' default.target.fused(Slist, ns, by = c("A", "A", "B", "B"))
+#' 
+#' 
+#' @export default.target.fused
 default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
   ##############################################################################
   # - Generate a list of (data-driven) targets to use in fused ridge estimation
@@ -162,6 +297,151 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
 
 
 
+
+
+
+
+
+
+#' Simulate sample covariances or datasets
+#' 
+#' Simulate data from a p-dimensional (zero-mean) gaussian graphical model
+#' (GGM) with a specified (or random) topology and return the sample covariance
+#' matrix or matrices. Can also return the original simulated data or
+#' underlying precision matrix.
+#' 
+#' The data is simulated from a zero-mean \code{p}-dimensional multivariate
+#' gaussian distribution with some precision matrix determined by the argument
+#' \code{topology} which defines the GGM. If \code{precision} is \code{TRUE}
+#' the population precision matrix is returned. This is useful to see what the
+#' actual would-be-used precision matrices are. The available values of
+#' \code{topology} are described below. Unless otherwise stated the diagonal
+#' entries are always one. If \code{m} is 2 or greater block diagonal precision
+#' matrices are constructed and used. \itemize{ \item \code{"identity"}: uses
+#' the identity matrix (\code{diag(p)}) as precision matrix.  Corresponds to no
+#' conditional dependencies.  \item \code{"star"}: simulate from a star
+#' topology. Within each block the first node is selected as the "hub". The
+#' off-diagonal entries \eqn{(1,j)} and \eqn{(j,1)} values taper off with the
+#' value \eqn{1/(j + 1)}.  \item \code{"clique"}: simulate from clique topology
+#' where each block is a complete graph with off-diagonal elements equal to
+#' \code{nonzero}.  \item \code{"complete"}: alias for (and identical to)
+#' \code{"clique"}.  \item \code{"chain"}: simulate from a chain topology where
+#' the precision matrix is a tridiagonal matrix with off-diagonal elements (in
+#' each block) given by argument \code{nonzero}.  \item \code{"banded"}:
+#' precision elements \code{(i,j)} are given by \eqn{1/(|i-j|+1)} if
+#' \eqn{|i-j|} is less than or equal to \code{banded.n} and zero otherwise.
+#' \item \code{"scale-free"}: The non-zero pattern of each block is generated
+#' by a Barabassi random graph. Non-zero off-diagonal values are given by
+#' \code{nonzero}.  Gives are very "hubby" network.  \item \code{"Barabassi"}:
+#' alias for \code{"scale-free"}.  \item \code{"small-world"}: The non-zero
+#' pattern of each block is generated by a 1-dimensional Watts-Strogatz random
+#' graph with \code{banded.n} starting neighbors and \eqn{5\%} probability of
+#' rewiring.  Non-zero off-diagonal values are given by \code{nonzero}. Gives
+#' are very "bandy" network.  \item \code{"Watts-Strogatz"}: alias for
+#' \code{"small-world"} \item \code{"random-graph"}: The non-zero pattern of
+#' each block is generated by a Erdos-Renyi random graph where each edge is
+#' present with probability \eqn{1/p}.  Non-zero off-diagonal values are given
+#' by \code{nonzero}.  \item \code{"Erdos-Renyi"}: alias for
+#' \code{"random-graph"} } When \code{n} has length greater than 1, the
+#' datasets are generated i.i.d. given the topology and number of blocks.
+#' 
+#' Arguments \code{invwishart} and \code{nu} allows for introducing class
+#' homogeneity. Large values of \code{nu} imply high class homogeneity.
+#' \code{nu} must be greater than \code{p + 1}. More precisely, if
+#' \code{invwishart == TRUE} then the constructed precision matrix is used as
+#' the scale parameter in an inverse Wishart distribution with \code{nu}
+#' degrees of freedom. Each class covariance is distributed according to this
+#' inverse Wishart and independent.
+#' 
+#' @param n A \code{numeric} vector giving number of samples. If the length is
+#' larger than 1, the covariance matrices are returned as a list.
+#' @param p A \code{numeric} of length 1 giving the dimension of the
+#' samples/covariance.
+#' @param topology character. The topology to use for the simulations. See the
+#' details.
+#' @param dataset A \code{logical} value specifying whether the sample
+#' covariance or the simulated data itself should be returned.
+#' @param precision A \code{logical} value. If \code{TRUE} the constructed
+#' precision matrix is returned.
+#' @param nonzero A \code{numeric} of length 1 giving the value of the nonzero
+#' entries used in some topologies.
+#' @param m A \code{integer} giving the number of blocks (i.e. conditionally
+#' independent components) to create. If \code{m} is greater than 1, then the
+#' given \code{topology} is used on \code{m} blocks of approximately equal
+#' size.
+#' @param banded.n A \code{integer} of length one giving the number of bands.
+#' Only used if \code{topology} is one of \code{"banded"},
+#' \code{"small-world"}, or \code{"Watts-Strogatz"}.
+#' @param invwishart \code{logical}. If \code{TRUE} the constructed precision
+#' matrix is used as the scale matrix of an inverse Wishart distribution and
+#' class covariance matrices are drawn from this distribution.
+#' @param nu \code{numeric} greater than \code{p + 1} giving the degrees of
+#' freedom in the inverse Wishart distribution.  A large \code{nu} implies high
+#' class homogeneity.  A small \code{nu} near \code{p + 1} implies high class
+#' heterogeneity.
+#' @param Plist An optional \code{list} of \code{numeric} matrices giving the
+#' precision matrices to simulate from. Useful when random matrices have
+#' already been generated by setting \code{precision = TRUE}.
+#' @return The returned type is dependent on \code{n} and \code{covariance}.
+#' The function generally returns a \code{list} of \code{numeric} matrices with
+#' the same length as \code{n}. If \code{covariance} is \code{FALSE} the
+#' simulated datasets with size \code{n[i]} by \code{p} are given in the
+#' \code{i} entry of the output. If \code{covariance} is \code{TRUE} the
+#' \code{p} by \code{p} sample covariances of the datasets are given. When
+#' \code{n} has length 1 the \code{list} structure is dropped and the matrix is
+#' returned.
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' N. van Wieringen
+#' @examples
+#' 
+#' ## Generate some simple sample covariance matrices
+#' createS(n = 10, p = 3)
+#' createS(n = c(3, 4, 5), p = 3)
+#' createS(n = c(32, 55), p = 7)
+#' 
+#' ## Generate some datasets and not sample covariance matrices
+#' createS(c(3, 4), p = 6, dataset = TRUE)
+#' 
+#' ## Generate sample covariance matrices from other topologies:
+#' A <- createS(2000, p = 4, topology = "star")
+#' round(solve(A), 3)
+#' B <- createS(2000, p = 4, topology = "banded", banded.n = 2)
+#' round(solve(B), 3)
+#' C <- createS(2000, p = 4, topology = "clique")  # The complete graph (as m = 1)
+#' round(solve(C), 3)
+#' D <- createS(2000, p = 4, topology = "chain")
+#' round(solve(D), 3)
+#' 
+#' ## Generate smaple covariance matrices from block topologies:
+#' C3 <- createS(2000, p = 10, topology = "clique", m = 3)
+#' round(solve(C3), 1)
+#' C5 <- createS(2000, p = 10, topology = "clique", m = 5)
+#' round(solve(C5), 1)
+#' 
+#' ## Can also return the precision matrix to see what happens
+#' ## m = 2 blocks, each "banded" with 4 off-diagonal bands
+#' round(createS(1, 12, "banded", m = 2, banded.n = 4, precision = TRUE), 2)
+#' 
+#' ## Simulation using graph-games
+#' round(createS(1, 10, "small-world", precision = TRUE), 2)
+#' round(createS(1, 5, "scale-free", precision = TRUE), 2)
+#' round(createS(1, 5, "random-graph", precision = TRUE), 2)
+#' 
+#' ## Simulation using inverse Wishart distributed class covariance
+#' ## Low class homogeneity
+#' createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 10)
+#' ## Extremely high class homogeneity
+#' createS(n = c(10,10), p = 5, "banded", invwishart = TRUE, nu = 1e10)
+#' 
+#' # The precision argument can again be used to see the actual realised class
+#' # precision matrices used when invwishart = TRUE.
+#' 
+#' # The Plist argument is used to reuse old precision matrices or
+#' # user-generated ones
+#' P <- createS(n = 1, p = 5, "banded", precision = TRUE)
+#' lapply(createS(n = c(1e5, 1e5), p = 5, Plist = list(P, P+1)), solve)
+#' 
+#' @export createS
 createS <- function(n, p,
                     topology = "identity",
                     dataset = FALSE,
@@ -373,6 +653,44 @@ createS <- function(n, p,
 
 
 
+
+
+
+
+
+
+#' Download KEGG pathway
+#' 
+#' Download information and graph object of a given pathway from the Kyoto
+#' Encyclopedia of Genes and Genomes (KEGG) database.
+#' 
+#' Usage of this function requires an internet connection.  The igraph objects
+#' can be obtained with \code{igraph::igraph.from.graphNEL}.  The moral graph
+#' can be obtained with \code{gRbase::moralize}. To obtain the adjacency
+#' matrix, use \code{gRbase::as.adjMAT} or \code{igraph::get.adjacency}
+#' 
+#' @param kegg.id A \code{character} giving the KEGG ID, e.g.
+#' \code{"map04210"}, \code{"map04064"}, \code{"map04115"}. Can be prefixed
+#' with \code{"path:"}.
+#' @return Returns a \code{list} with entries: \item{df}{A \code{data.frame}
+#' description of the KEGG pathway.} \item{graph}{The KEGG pathway represented
+#' as a \code{graphNEL} object.}
+#' @note It is currently necessary to \code{require("KEGGgraph")} (or
+#' \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{kegg.target}}
+#' @references \url{https://www.genome.jp/kegg/}
+#' @keywords internal
+#' @examples
+#' 
+#' \dontrun{
+#' if (require("KEGGgraph")) {
+#'   getKEGGPathway("map04064")
+#' }
+#' }
+#' 
+#' @export getKEGGPathway
 getKEGGPathway <- function(kegg.id) {
   ##############################################################################
   # - Download information and graph object of a given kegg pathway.
@@ -438,6 +756,58 @@ getKEGGPathway <- function(kegg.id) {
 
 
 
+
+
+
+
+
+
+#' Construct target matrix from KEGG
+#' 
+#' Construct a target matrix by combining topology information from the Kyoto
+#' Encyclopedia of Genes and Genomes (KEGG) database and pilot data.
+#' 
+#' The function estimates the precision matrix based on the topology given by
+#' the KEGG database.  Requires a connection to the internet.
+#' 
+#' @param Y The complete observation matrix of observations with variables in
+#' columns. The column names should be on the form e.g.  \code{"hsa:3988"}
+#' ("\code{<organism>:<Entrez id>}"). It can however also be just the Entrez id
+#' with or without the post-fixed \code{"_at"} and then the specified
+#' \code{organism} will be assumed.
+#' @param kegg.id A \code{character} giving the KEGG ID, e.g.
+#' \code{"map04210"}, \code{"map04064"}, or \code{"map04115"}.
+#' @param method The method for estimating the non-zero entries moralized graph
+#' of the KEGG topology.  Currently, only \code{"linreg"} is implemented.
+#' @param organism A \code{character} giving the organism, the default is
+#' \code{"hsa"} (homo-sapiens).
+#' @param graph A \code{graphNEL} object specifying the topology of the
+#' pathway.  Can be used to avoid repeatedly downloading the information.
+#' @return Returns a target \code{matrix} with size depending on the
+#' \code{kegg.id}.
+#' @note It is currently nessesary to \code{require("KEGGgraph")} (or
+#' \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{getKEGGPathway}}, \code{\link{default.target}}, and
+#' \code{\link{default.target.fused}}
+#' @references \url{https://www.genome.jp/kegg/}
+#' @examples
+#' 
+#' \dontrun{
+#' if (require("KEGGgraph")) {
+#' kegg.g <- getKEGGPathway("map04115")$graph
+#' 
+#' # Create some toy data with the correct names
+#' Y <- createS(n = 10, p = numNodes(kegg.g), dataset = TRUE)
+#' colnames(Y) <- nodes(kegg.g)
+#' 
+#' T <- kegg.target(Y, "map04115")
+#' print(T[1:10, 1:10])
+#' }
+#' }
+#' 
+#' @export kegg.target
 kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
                         graph = getKEGGPathway(kegg.id)$graph) {
   ##############################################################################
@@ -568,6 +938,64 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
 
 
 
+
+
+
+
+
+
+#' Compute the pooled covariance or precision matrix estimate
+#' 
+#' Compute the pooled covariance or precision matrix estimate from a
+#' \code{list} of covariance matrices or precision matrices.
+#' 
+#' When \code{mle} is \code{FALSE} the given covariance/precision matrices is
+#' assumed to have been computed using the denominator \code{ns[i] - 1}. Hence,
+#' the sum of all \code{ns} minus \eqn{G} is used a the denominator of the
+#' pooled estimate. Conversely, when \code{mle} is \code{TRUE} the total sum of
+#' the sample sizes \code{ns} is used as the denominator in the pooled
+#' estimate.
+#' 
+#' The function \code{pooledP} is equivalent to a wrapper for \code{pooledS}.
+#' That is, it inverts all the precision matrices in \code{Plist}, applies
+#' \code{pooledS}, and inverts the resulting matrix.
+#' 
+#' @aliases pooledS pooledP
+#' @param Slist A \code{list} of length \eqn{G} of \code{numeric} covariance
+#' matrices of the same size.
+#' @param ns A \code{numeric} vector for length \eqn{G} giving the sample sizes
+#' in the corresponding entries of \code{Slist}
+#' @param mle \code{logical}. If \code{TRUE}, the (biased) MLE is given. If
+#' \code{FALSE}, the biased corrected estimate is given. Default is
+#' \code{TRUE}.
+#' @param subset \code{logical} vector of the same length as \code{Slist}
+#' giving the classes to pool. Default is all classes.
+#' @param Plist A \code{list} of length \eqn{G} of invertible \code{numeric}
+#' precision matrices of the same size.
+#' @return \code{pooledS} returns the pooled covariance matrix, that is a
+#' \code{numeric} matrix with the same size as the elements of \code{Slist}.
+#' Similarly, \code{pooledP} returns the pooled precision matrix, i.e. a
+#' \code{numeric} matrix with the same size as the elements of \code{Plist}.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @examples
+#' 
+#' ns <- c(4, 6, 8)
+#' Slist <- createS(ns, p = 6)
+#' 
+#' pooledS(Slist, ns)
+#' pooledS(Slist, ns, mle = FALSE)
+#' 
+#' # Pool the first two classes only, leave out the remaning
+#' pooledS(Slist, ns, subset = c(TRUE, TRUE, FALSE))
+#' pooledS(Slist, ns, subset = ns > 5) # Pool studies with sample size > 5
+#' 
+#' # Pooled precision matrices
+#' ns <- c(7, 8, 9)
+#' Plist <- lapply(createS(ns, p = 6), solve)
+#' pooledS(Plist, ns)
+#' 
+#' @export pooledS
 pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled covariance estimate
@@ -648,6 +1076,53 @@ pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
 
 
 
+
+
+
+
+
+
+#' Fused Kullback-Leibler divergence for sets of distributions
+#' 
+#' Function calculating the Kullback-Leibler divergence between two sets of
+#' multivariate normal distributions. In other words, it calculates a weigthed
+#' mean of Kullback-Leibler divergences between multiple paired normal
+#' distributions.
+#' 
+#' 
+#' @param MtestList A \code{list} of mean vectors of the approximating
+#' multivariate normal distribution for each class. Assumed to be zero vectors
+#' if not supplied.
+#' @param MrefList A \code{list} of mean vectors of the reference multivariate
+#' normal distribution for each class. Assumed to be zero vectors if not
+#' supplied.
+#' @param StestList A \code{list} of covariance matrices of the approximating
+#' multivariate normal distribtuion for each class. Usually a \code{list} of
+#' sample covariance matrices.
+#' @param SrefList A \code{list} of covariance matrices of the references
+#' multivariate normal distribtuion for each class. Usually a \code{list} of
+#' the population or reference covariance matrices.
+#' @param ns a \code{numeric} of the same length as the previous arguments
+#' giving the sample sizes. Used as weights in the weighted mean.
+#' @param symmetric a \code{logical} indicating if original symmetric version
+#' of KL divergence should be calculated.
+#' @return Function returns a \code{numeric} representing the (optionally
+#' symmetric) fused Kullback-Leibler divergence.
+#' @author Anders Ellern Bilgrau, Wessel N. van Wieringen, Carel F.W. Peeters
+#' <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{KLdiv}}
+#' @examples
+#' 
+#' # Create some toy data
+#' n <- c(40, 60, 80)
+#' p <- 10
+#' Stest <- replicate(length(n), diag(p), simplify = FALSE)
+#' Sref <- createS(n, p = p)
+#' 
+#' KLdiv.fused(StestList = Stest, SrefList = Sref, ns = n, symmetric = FALSE)
+#' KLdiv.fused(StestList = Stest, SrefList = Sref, ns = n, symmetric = TRUE)
+#' 
+#' @export KLdiv.fused
 KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
                         symmetric = FALSE) {
   ##############################################################################
@@ -782,6 +1257,115 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 
 
 
+
+
+
+
+
+
+#' Fused ridge estimation
+#' 
+#' Performs fused ridge estimation of multiple precision matrices in cases
+#' where multiple classes of data is present for given a penalty matrix.
+#' 
+#' Performs a coordinate ascent to find the maximum likelihood of the fused
+#' likelihood problem for a given ridge penalty \eqn{lambda} and fused penalty
+#' matrix \eqn{Lambda_f}.
+#' 
+#' @param Slist A \code{list} of length \eqn{G} of covariance matrices, i.e.
+#' square, symmetric \code{numeric} matrices of the same size.  The \eqn{g}th
+#' matrix should correspond to the \eqn{g}th class.
+#' @param ns A \code{numeric} vector of sample sizes on which the matrices in
+#' \code{Slist} are based.  I.e. \code{ns[g]} correspond to \code{Slist[[g]]}.
+#' @param Tlist A \code{list} of length \eqn{G} of \code{numeric} p.d. target
+#' matrices corresponding to the matrices in \code{Slist}.  If not supplied,
+#' the default is given by \code{\link{default.target}}.
+#' @param lambda The \eqn{G} by \eqn{G} penalty matrix.  That is, a symmetric,
+#' non-negative \code{numeric} \code{matrix} of size \eqn{G} times \eqn{G}
+#' giving the class- and pair-specific penalties.  The diagonal entries are the
+#' class specific ridge penalties.  I.e. \code{lambda[i, i]} is the ridge
+#' penalty for class \eqn{i}.  The off-diagonal entries are the pair-specific
+#' fusion penalties.  I.e. \code{lambda[i, j]} is the fusion penalty applied on
+#' the pair of classes \eqn{i} and \eqn{j}.
+#' 
+#' Alternatively, can be supplied as a \code{numeric} of length 1 or 2.  If a
+#' single number, a diagonal penalty with lambda in the diagonal is used If
+#' supplied as a \code{numeric} vector of two numbers, the first is used as a
+#' common ridge penalty and the second as a common fusion penalty.
+#' @param Plist An optional \code{list} of initial precision matrices for the
+#' fused ridge algorithm the same size as \code{Slist}.  Can be omitted.
+#' Default is the nonfused ridge precision estimate using the pooled covariance
+#' matrix corresponding to setting all fusion penalties to zero.
+#' @param maxit A single \code{integer} giving the maximum number of allowed
+#' iterations.  Can be set to \code{Inf}.  If \code{maxit} is hit, a warning is
+#' given.
+#' @param relative \code{logical} indicating if the convergence criterion
+#' should be on a relative scale.
+#' @param verbose \code{logical}. Set to \code{TRUE} for extra output.
+#' @param eps A single positive \code{numeric} giving the convergence
+#' threshold.
+#' @return Returns a \code{list} as \code{Slist} with precision estimates of
+#' the corresponding classes.
+#' @note For extreme fusion penalties in \code{lambda} the algorithm is quite
+#' sensitive to the initial values given in \code{Plist}.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{default.penalty}} \cr \code{\link{ridgeP}} for the
+#' regular ridge estimate
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#' # Create some (not at all high-dimensional) data on three classes
+#' p <- 5  # Dimension
+#' ns <- c(4, 6, 8)  # Sample sizes (K = 3 classes)
+#' Slist <- createS(ns, p = p)
+#' str(Slist, max.level = 2)  # The structure of Slist
+#' 
+#' #
+#' # Estimate the precisions (using the complete penalty graph)
+#' #
+#' 
+#' res1 <- ridgeP.fused(Slist, ns, lambda = c(1.3, 2.1))
+#' print(res1)
+#' 
+#' # The same using the penalty matrix (the diagnal is ignored)
+#' mylambda  <- matrix(c(1.3, 2.1, 2.1,
+#'                       2.1, 1.3, 2.1,
+#'                       2.1, 2.1, 1.3), 3, 3, byrow = TRUE)
+#' res2 <- ridgeP.fused(Slist, ns, lambda = mylambda)
+#' stopifnot(all.equal(res1, res2))
+#' 
+#' 
+#' 
+#' #
+#' # Estimate the precisions (using a non-complete penalty graph)
+#' #
+#' 
+#' # Say we only want to shrink pairs (1,2) and (2,3) and not (1,3)
+#' mylambda[1,3] <- mylambda[3,1] <- 0
+#' print(mylambda)
+#' res3 <- ridgeP.fused(Slist, ns, lambda = mylambda)
+#' # which similar to, but not the same as res1 and res2.
+#' 
+#' 
+#' #
+#' # Using other custom target matrices
+#' #
+#' 
+#' # Construct a custom target list
+#' myTlist <- list(diag(p), matrix(1, p, p), matrix(0, p, p))
+#' res4 <- ridgeP.fused(Slist, ns, Tlist = myTlist, lambda = c(1.3, 2.1))
+#' print(res4)
+#' 
+#' # Alternative, see ?default.target.fused
+#' myTlist2 <- default.target.fused(Slist, ns, type = "Null")  # For the null target
+#' res5 <- ridgeP.fused(Slist, ns, Tlist = myTlist2, lambda = c(1.3, 2.1))
+#' print(res5)
+#' 
+#' @export ridgeP.fused
 ridgeP.fused <- function(Slist,
                          ns,
                          Tlist = default.target.fused(Slist, ns),
@@ -1313,6 +1897,41 @@ optPenalty.fused.grid <-
 
 
 
+
+
+
+
+
+
+#' Print and plot functions for fused grid-based cross-validation
+#' 
+#' Print and plot functions for the output from
+#' \code{\link{optPenalty.fused.grid}} which performs a grid based
+#' cross-validation (CV) search to find optimal penalty parameters. Currently,
+#' only the complete penalty graph is supported.
+#' 
+#' 
+#' @aliases print.optPenaltyFusedGrid plot.optPenaltyFusedGrid
+#' @param x A \code{optPenaltyFusedGrid}-object print or plot.  Usually the
+#' output of \cr \code{\link{optPenalty.fused.grid}}.
+#' @param add.text A \code{logical} value controlling if the text should be
+#' added to the plot.
+#' @param add.contour A \code{logical} value controlling if the contour lines
+#' should be added to the plot.
+#' @param col A \code{character} vector of colours used in the image plot.
+#' @param \dots Arguments passed on.  In \code{print.optPenaltyFusedGrid} the
+#' arguments are passed to \code{print.matrix}.  In
+#' \code{plot.optPenaltyFusedGrid} are passed to the standard \code{plot}
+#' function.
+#' @return Invisibly returns the object (\code{x}).
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{optPenalty.fused.grid}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @export print.optPenaltyFusedGrid
 print.optPenaltyFusedGrid <- function(x, ...) {
   with(x, print(fcvl))
   return(invisible(x))
@@ -1512,6 +2131,221 @@ optPenalty.fused.auto <-
 
 
 
+
+
+
+
+
+
+#' Identify optimal ridge and fused ridge penalties
+#' 
+#' Functions to find the optimal ridge and fusion penalty parameters via
+#' leave-one-out cross validation. The functions support leave-one-out
+#' cross-validation (LOOCV), \eqn{k}-fold CV, and two forms of approximate
+#' LOOCV. Depending on the used function, general numerical optimization or a
+#' grid-based search is used.
+#' 
+#' \code{optPenalty.fused.auto} serves a utilizes \code{\link{optim}} for
+#' identifying the optimal fused parameters and works for general classes of
+#' penalty graphs.
+#' 
+#' \code{optPenalty.fused.grid} gives a grid-based evaluation of the
+#' (approximate) LOOCV loss.
+#' 
+#' @aliases optPenalty.fused optPenalty.fused.auto optPenalty.fused.grid
+#' @param Ylist A \code{list} of \eqn{G} matrices of data with \eqn{n_g}
+#' samples in the rows and \eqn{p} variables in the columns corresponding to
+#' \eqn{G} classes of data.
+#' @param Tlist A \code{list} of \eqn{G} of p.d. class target matrices of size
+#' \eqn{p} times \eqn{p}.
+#' @param lambda A symmetric \code{character} \code{matrix} encoding the class
+#' of penalty matrices to cross-validate over.  The diagonal elements
+#' correspond to the class-specific ridge penalties whereas the off-diagonal
+#' elements correspond to the fusion penalties.  The unique elements of lambda
+#' specify the penalties to determine by the method specified by
+#' \code{cv.method}.  The penalties can be fixed if they are coercible to
+#' numeric values, such as e.g. \code{"0"}, \code{"2.71"} or \code{"3.14"}.
+#' Fusion between pairs can be "left out"" using either of \code{""},
+#' \code{NA}, \code{"NA"}, or \code{"0"}.  See \code{\link{default.penalty}}
+#' for help on the construction hereof and more details.  Unused and can be
+#' omitted if \code{grid == TRUE}.
+#' @param cv.method \code{character} giving the cross-validation (CV) to use.
+#' The allowed values are \code{"LOOCV"}, \code{"aLOOCV"}, \code{"sLOOCV"},
+#' \code{"kCV"} for leave-one-out cross validation (LOOCV), appproximate LOOCV,
+#' special LOOCV, and k-fold CV, respectively.
+#' @param k \code{integer} giving the number of approximately equally sized
+#' parts each class is partioned into for \eqn{k}-fold CV.  Only use if
+#' \code{cv.method} is \code{"kCV"}.
+#' @param verbose \code{logical}. If \code{TRUE}, progress information is
+#' printed to the console.
+#' @param lambda.init A \code{numeric} penalty \code{matrix} of initial values
+#' passed to the optimizer. If omitted, the function selects a starting values
+#' using a common ridge penaltiy (determined by 1D optimization) and all fusion
+#' penalties to zero.
+#' @param maxit.ridgeP.fused A \code{integer} giving the maximum number of
+#' iterations allowed for each fused ridge fit.
+#' @param optimizer \code{character}. Either \code{"optim"} or \code{"nlm"}
+#' determining which optimizer to use.
+#' @param maxit.optimizer A \code{integer} giving the maximum number of
+#' iterations allowed in the optimization procedure.
+#' @param debug \code{logical}. If \code{TRUE} additional output from the
+#' optimizer is appended to the output as an attribute.
+#' @param lambdas A \code{numeric} vector of positive ridge penalties.
+#' @param lambdaFs A \code{numeric} vector of non-negative fusion penalties.
+#' @param grid \code{logical.} Should a grid based search be used? Default is
+#' \code{FALSE}.
+#' @param optim.control A \code{list} of control arguments for
+#' \code{\link{optim}}.
+#' @param \dots For \code{optPenalty.fused}, arguments are passed to
+#' \code{optPenalty.fused.grid} or \code{optPenalty.fused.auto} depending on
+#' the value of \code{grid}.  In \code{optPenalty.fused.grid}, arguments are
+#' passed to \code{ridgeP.fused}.  In \code{optPenalty.fused.auto}, arguments
+#' are passed to the optimizer.
+#' @return \code{optPenalty.fused.auto} returns a \code{list}:\cr
+#' \item{Plist}{A \code{list} of the precision estimates for the optimal
+#' parameters.} \item{lambda}{The estimated optimal fused penalty matrix.}
+#' \item{lambda.unique}{The unique entries of the \code{lambda}.  A more
+#' concise overview of \code{lambda}} \item{value}{The value of the loss
+#' function in the estimated optimum.}
+#' 
+#' \code{optPenalty.fused.LOOCV} returns a \code{list}:\cr \item{ridge}{A
+#' \code{numeric} vector of grid values for the ridge penalty}
+#' \item{fusion}{The \code{numeric} vector of grid values for the fusion
+#' penalty} \item{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
+#' loss function}
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#' \dontrun{
+#' # Generate some (not so) high-dimensional data witn (not so) many samples
+#' ns <- c(4, 5, 6)
+#' Ylist <- createS(n = ns, p = 6, dataset = TRUE)
+#' Slist <- lapply(Ylist, covML)
+#' Tlist <- default.target.fused(Slist, ns, type = "DIAES")
+#' 
+#' 
+#' # Grid-based
+#' lambdas <- 10^seq(-5, 3, length.out = 7)
+#' a <- optPenalty.fused.grid(Ylist, Tlist,
+#'                            lambdas = lambdas,
+#'                            cv.method = "LOOCV", maxit = 1000)
+#' b <- optPenalty.fused.grid(Ylist, Tlist,
+#'                            lambdas = lambdas,
+#'                            cv.method = "aLOOCV", maxit = 1000)
+#' c <- optPenalty.fused.grid(Ylist, Tlist,
+#'                            lambdas = lambdas,
+#'                            cv.method = "sLOOCV", maxit = 1000)
+#' d <- optPenalty.fused.grid(Ylist, Tlist,
+#'                            lambdas = lambdas,
+#'                            cv.method = "kCV", k = 2, maxit = 1000)
+#' 
+#' # Numerical optimization (uses the default "optim" optimizer with method "BFGS")
+#' aa <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "LOOCV", method = "BFGS")
+#' print(aa)
+#' bb <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV", method = "BFGS")
+#' print(bb)
+#' cc <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "sLOOCV", method = "BFGS")
+#' print(cc)
+#' dd <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "kCV", k=3, method="BFGS")
+#' print(dd)
+#' 
+#' 
+#' #
+#' # Plot the results
+#' #
+#' 
+#' # LOOCV
+#' # Get minimums and plot
+#' amin  <- log(expand.grid(a$lambda, a$lambdaF))[which.min(a$fcvl), ]
+#' aamin <- c(log(aa$lambda[1,1]), log(aa$lambda[1,2]))
+#' 
+#' # Plot
+#' filled.contour(log(a$lambda), log(a$lambdaF), log(a$fcvl), color = heat.colors,
+#'                plot.axes = {points(amin[1], amin[2], pch = 16);
+#'                             points(aamin[1], aamin[2], pch = 16, col = "purple");
+#'                             axis(1); axis(2)},
+#'                xlab = "lambda", ylab = "lambdaF", main = "LOOCV")
+#' 
+#' # Approximate LOOCV
+#' # Get minimums and plot
+#' bmin <- log(expand.grid(b$lambda, b$lambdaF))[which.min(b$fcvl), ]
+#' bbmin <- c(log(bb$lambda[1,1]), log(unique(bb$lambda[1,2])))
+#' 
+#' filled.contour(log(b$lambda), log(b$lambdaF), log(b$fcvl), color = heat.colors,
+#'                plot.axes = {points(bmin[1], bmin[2], pch = 16);
+#'                             points(bbmin[1], bbmin[2], pch = 16, col ="purple");
+#'                             axis(1); axis(2)},
+#'                xlab = "lambda", ylab = "lambdaF", main = "Approximate LOOCV")
+#' 
+#' 
+#' #
+#' # Arbitrary penalty graphs
+#' #
+#' 
+#' # Generate some new high-dimensional data and a 2 by 2 factorial design
+#' ns <- c(6, 5, 3, 2)
+#' df <- expand.grid(Factor1 = LETTERS[1:2], Factor2 = letters[3:4])
+#' Ylist <- createS(n = ns, p = 4, dataset = TRUE)
+#' Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
+#' 
+#' # Construct penalty matrix
+#' lambda <- default.penalty(df, type = "CartesianUnequal")
+#' 
+#' # Find optimal parameters,
+#' # Using optim with method "Nelder-Mead" with "special" LOOCV
+#' ans1 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+#'                          cv.method = "sLOOCV", verbose = FALSE)
+#' print(ans1$lambda.unique)
+#' 
+#' # By approximate LOOCV using optim with method "BFGS"
+#' ans2 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+#'                          cv.method = "aLOOCV", verbose = FALSE,
+#'                          method = "BFGS")
+#' print(ans2$lambda.unique)
+#' 
+#' # By LOOCV using nlm
+#' lambda.init <- matrix(1, 4, 4)
+#' lambda.init[cbind(1:4,4:1)] <- 0
+#' ans3 <- optPenalty.fused(Ylist, Tlist, lambda = lambda,
+#'                          lambda.init = lambda.init,
+#'                          cv.method = "LOOCV", verbose = FALSE,
+#'                          optimizer = "nlm")
+#' print(ans3$lambda.unique)
+#' 
+#' # Quite different results!
+#' 
+#' 
+#' #
+#' # Arbitrary penalty graphs with fixed penalties!
+#' #
+#' 
+#' # Generate some new high-dimensional data and a 2 by 2 factorial design
+#' ns <- c(6, 5, 5, 5)
+#' df <- expand.grid(DS = LETTERS[1:2], ER = letters[3:4])
+#' Ylist <- createS(n = ns, p = 4, dataset = TRUE)
+#' Tlist <- lapply(lapply(Ylist, covML), default.target, type = "Null")
+#' 
+#' lambda <- default.penalty(df, type = "Tensor")
+#' print(lambda)  # Say we want to penalize the pair (1,2) with strength 2.1;
+#' lambda[2,1] <- lambda[1,2] <- 2.1
+#' print(lambda)
+#' 
+#' # Specifiying starting values is also possible:
+#' init <- diag(length(ns))
+#' init[2,1] <- init[1,2] <- 2.1
+#' 
+#' res <- optPenalty.fused(Ylist, Tlist, lambda = lambda, lambda.init = init,
+#'                         cv.method = "aLOOCV", optimizer = "nlm")
+#' print(res)
+#' }
+#' 
+#' @export optPenalty.fused
 optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
                              cv.method = c("LOOCV", "aLOOCV", "sLOOCV", "kCV"),
                              k = 10, grid = FALSE, ...) {
@@ -1660,6 +2494,80 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 
 
 
+
+
+
+
+
+
+#' Construct commonly used penalty matrices
+#' 
+#' Function that constructs default or commonly use penalty matrices according
+#' to a (factorial) study design.  The constructed penalty matrix can be used
+#' directly in \code{\link{optPenalty.fused.auto}} or serve as basis for
+#' modification.
+#' 
+#' The \code{type} gives a number of common choices for the penalty matrix:
+#' \itemize{ \item \code{'Complete'} is the complete penalty graph with equal
+#' penalties.  \item \code{'CartesianEqual'} corresponds to a penalizing along
+#' each "direction" of factors with a common penalty. The choice is named
+#' Cartesian as it is the Cartesian graph product of the complete penalty
+#' graphs for the individual factors.  \item \code{'CartesianUnequal'}
+#' corresponds to a penalizing each direction of factors with individual
+#' penalties.  \item \code{'TensorProd'} correspond to penalizing the
+#' "diagonals" only.  It is equivalent to the graph tensor products of the
+#' complete graphs for each individual factor.  }
+#' 
+#' @param G A \code{numeric} giving the number of classes. Can also be a
+#' \code{list} of length \code{G} such as the usual argument \code{Slist} from
+#' other \pkg{rags2ridges} functions.  Can be omitted if \code{df} is given.
+#' @param df A \code{data.frame} with \code{G} rows and factors in the columns.
+#' Note, the columns has to be of type \code{factor}.  Can be omitted when
+#' \code{G} is given and \code{type == "Complete"}.  The factors can be
+#' ordered.
+#' @param type A character giving the type of fused penalty graph to construct.
+#' Should be \code{'Complete'} (default), \code{'CartesianEqual'}, or
+#' \code{'CartesianUnequal'} or \code{'TensorProd'} or an unique abbreviation
+#' hereof. See details.
+#' @return Returns a \code{G} by \code{G} character matrix which specify the
+#' class of penalty graphs to be used.  The output is suitable as input for the
+#' penalty matrix used in \code{\link{optPenalty.fused.auto}}.
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' N. van Wieringen
+#' @seealso \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}},
+#' \code{\link{default.target}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#'   # Handling one-way designs
+#'   default.penalty(2)
+#'   default.penalty(4)
+#'   Slist <- vector("list", 6)
+#'   default.penalty(Slist)   # The function uses only the length of the list
+#'   df0 <- expand.grid(Factor = c("lvl1", "lvl2"))
+#'   default.penalty(df0)
+#' 
+#'   # A more elaborate example
+#'   df1 <- expand.grid(DS = c("DS1", "DS2", "DS3"), ER = c("ER+", "ER-"))
+#' 
+#'   # Usage (various interface demonstrations)
+#'   default.penalty(6, df1, type = "Complete")
+#'   default.penalty(6, type = "CartesianEqual")  # GIVES WARNING
+#'   default.penalty(6, df1, type = "CartesianEqual")
+#'   default.penalty(Slist, df1, type = "CartesianEqual")
+#'   default.penalty(6, df1, type = "CartesianUnequal")
+#'   default.penalty(df1)
+#' 
+#'   # A 2 by 2 by 2 design
+#'   df2 <- expand.grid(A = c("A1", "A2"), B = c("B1", "B2"), C = c("C1", "C3"))
+#'   default.penalty(df2)
+#'   default.penalty(df2, type = "CartesianEqual")
+#'   default.penalty(df2, type = "CartesianUnequal")
+#' 
+#' @export default.penalty
 default.penalty <- function(G, df,
                             type = c("Complete", "CartesianEqual",
                                      "CartesianUnequal", "TensorProd")) {
@@ -1808,6 +2716,71 @@ default.penalty <- function(G, df,
 
 
 
+
+
+
+
+
+
+#' Test the necessity of fusion
+#' 
+#' Function for testing the null hypothesis that all population precision
+#' matrices are equal and thus the necessity for the fusion penalty. Note, the
+#' test performed is conditional on the supplied penalties and targets.
+#' 
+#' The function computes the observed score statistic \eqn{U_obs} using the
+#' fused ridge estimator on the given data. Next, the score statistic is
+#' computed a number of times (given by \code{n.permutations}) under the
+#' null-hypothesis by effectively permuting the class labels of the data.
+#' 
+#' @param Ylist A \code{list} of length \eqn{G} of observations matrices for
+#' each class.  Variables are assumed to correspond to the columns.
+#' @param Tlist A \code{list} of target matrices for each class. Should be same
+#' length as \code{Ylist}-
+#' @param lambda A non-negative, symmetric \eqn{G} by \eqn{G} \code{matrix}
+#' giving the ridge and fusion penalties.
+#' @param n.permutations The number of permutations to approximate the null
+#' distribution.  Default is 100. Should be increased if sufficient computing
+#' power is available.
+#' @param verbose Print out extra progress information
+#' @param \dots Arguments passed to \code{\link{ridgeP.fused}}.
+#' @return Returns a \code{list} values containing the observed test statistic
+#' and the test statistic under the null distribution.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel, N. van Wieringen
+#' @seealso \code{\link{ridgeP.fused}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#' ns <- c(10, 5, 23)
+#' Ylist <- createS(ns, p = 15, topology = "banded", dataset = TRUE)
+#' 
+#' # Use the identity target matrix for each class
+#' Tlist <- replicate(length(ns), diag(15), simplify = FALSE)
+#' 
+#' # Do the test
+#' lm <- matrix(10, 3, 3)
+#' diag(lm) <- 1
+#' ft <- fused.test(Ylist, Tlist, lambda = lm,
+#'                  n.permutations = 500)
+#' print(ft)
+#' 
+#' # Summary spits out a bit more information
+#' summary(ft)
+#' 
+#' # The returned object can alo be plotted via
+#' hist(ft)
+#' # or via the alias
+#' plot(ft)
+#' 
+#' # Customization and parameters work a usual:
+#' hist(ft, col = "steelblue", main = "Null distribution", add.extra = FALSE,
+#'      xlab = "Score statistic", freq = FALSE)
+#' 
+#' @export fused.test
 fused.test <- function(Ylist, Tlist, lambda,
                        n.permutations = 100, verbose = FALSE, ...) {
   ##############################################################################
@@ -1875,6 +2848,47 @@ fused.test <- function(Ylist, Tlist, lambda,
 
 
 
+
+
+
+
+
+
+#' Print and summarize fusion test
+#' 
+#' Print and summary functions for the fusion test performed by
+#' \code{\link{fused.test}}.
+#' 
+#' 
+#' @aliases print.ptest summary.ptest
+#' @param x,object The object to print or summarize. Usually the output of
+#' \code{\link{fused.test}}.
+#' @param digits An \code{integer} controlling the number of printed digits.
+#' @param \dots Arguments passed on.  In \code{summary.ptest} the arguments are
+#' passed to \code{print.ptest}.  In \code{print.ptest} are passed to the
+#' standard \code{summary} function.
+#' @return Invisibly returns the object.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{fused.test}}, \code{\link{hist.ptest}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#' ns <- c(10, 5, 23)
+#' Ylist <- createS(ns, p = 15, topology = "banded", dataset = TRUE)
+#' 
+#' # Use the identity target matrix for each class
+#' Tlist <- replicate(length(ns), diag(15), simplify = FALSE)
+#' 
+#' # Do the test
+#' lam <- matrix(10, 3, 3)
+#' diag(lam) <- 1
+#' ft <- fused.test(Ylist, Tlist, lambda = lam, n.permutations = 500)
+#' 
+#' @export print.ptest
 print.ptest <- function(x, digits = 4L, ...) {
   ##############################################################################
   # - Print function for ptest objects
@@ -1952,6 +2966,51 @@ hist.ptest <- function(x, add.extra = TRUE, ...) {
 
 
 
+
+
+
+
+
+
+#' Plot the results of a fusion test
+#' 
+#' Plot a histogram of the null distribution and the observed test statistic in
+#' a permutation type "fusion test".
+#' 
+#' \code{plot.ptest} is simply a wrapper for \code{hist.ptest}.
+#' 
+#' @aliases plot.ptest hist.ptest
+#' @param x A \code{ptest} object (a list). Usually the output of
+#' \code{\link{fused.test}}.
+#' @param add.extra A logical. Add extra information to the plot.
+#' @param \dots Arguments passed to \code{plot}.
+#' @return Invisibly returns \code{x} with extra additions.
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' Wessel N. van Wieringen
+#' @seealso \code{\link{fused.test}}, \code{\link{print.ptest}}
+#' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
+#' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+#' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
+#' Machine Learning Research, 21(26): 1-52.
+#' @examples
+#' 
+#' ns <- c(10, 5, 23)
+#' Ylist <- createS(ns, p = 15, topology = "banded", dataset = TRUE)
+#' 
+#' # Use the identity target matrix for each class
+#' Tlist <- replicate(length(ns), diag(15), simplify = FALSE)
+#' 
+#' # Do the test
+#' lam <- matrix(10, 3, 3)
+#' diag(lam) <- 1
+#' ft <- fused.test(Ylist, Tlist, lambda = lam, n.permutations = 500)
+#' 
+#' # The returned object can alo be plotted via
+#' hist(ft)
+#' # or via the alias
+#' plot(ft)
+#' 
+#' @export plot.ptest
 plot.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
   # - Alias for plot.ptest
@@ -1969,6 +3028,46 @@ plot.ptest <- function(x, add.extra = TRUE, ...) {
 ##
 ##------------------------------------------------------------------------------
 
+
+
+
+
+
+
+#' Determine support of multiple partial correlation/precision matrices
+#' 
+#' A simple wrapper for \code{\link{sparsify}} which determines the support of
+#' a \code{list} of partial correlation/precision matrix by various methods and
+#' returns the sparsified matrices.
+#' 
+#' See \code{\link{sparsify}} for details.
+#' 
+#' @param Plist A \code{list} of \code{numeric} precision matrices.
+#' @param \dots Arguments passed to \code{\link{sparsify}}.
+#' @return A \code{list} of the same length as \code{Plist} with the output
+#' from \code{\link{sparsify}}.
+#' @author Anders Ellern Bilgrau, Wessel N. van Wierigen, Carel F.W. Peeters
+#' <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{sparsify}}
+#' @examples
+#' 
+#' ns <- c(10, 11)
+#' Ylist <- createS(ns, p = 16, dataset = TRUE)
+#' Slist <- lapply(Ylist, covML)
+#' Tlist <- default.target.fused(Slist, ns)
+#' 
+#' # Obtain regularized precision under optimal penalty
+#' opt <- optPenalty.fused.auto(Ylist, Tlist, cv.method = "aLOOCV",
+#'                             maxit.ridgeP.fused = 1500)
+#' # Use the optimal penalties
+#' Plist <- ridgeP.fused(Slist, ns, lambda = opt$lambda, maxit = 1000)
+#' 
+#' # Determine support regularized (standardized) precision under optimal penalty
+#' res <- sparsify.fused(Plist, threshold = "top", verbose = FALSE)
+#' round(res[[1]]$sparsePrecision, 1)
+#' round(res[[2]]$sparsePrecision, 1)
+#' 
+#' @export sparsify.fused
 sparsify.fused <- function(Plist, ...) {
   ##############################################################################
   # - Simple wrapper for sparsify. See help(sparsify).
@@ -1981,6 +3080,44 @@ sparsify.fused <- function(Plist, ...) {
 
 
 
+
+
+
+
+
+
+#' Gaussian graphical model network statistics
+#' 
+#' Compute various network statistics from a \code{list} sparse precision
+#' matrices. The sparse precision matrix is taken to represent the conditional
+#' independence graph of a Gaussian graphical model. This function is a simple
+#' wrapper for \code{\link{GGMnetworkStats}}.
+#' 
+#' For details on the columns see \code{\link{GGMnetworkStats}}.
+#' 
+#' @param Plist A \code{list} of sparse precision/partial correlation matrix.
+#' @return A \code{data.frame} of the various network statistics for each
+#' class. The names of \code{Plist} is prefixed to column-names.
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' N. van Wieringen
+#' @seealso \code{\link{GGMnetworkStats}}
+#' @examples
+#' 
+#' ## Create some "high-dimensional" data
+#' set.seed(1)
+#' p <- 10
+#' ns <- c(5, 6)
+#' Slist <- createS(ns, p)
+#' 
+#' ## Obtain sparsified partial correlation matrix
+#' Plist    <- ridgeP.fused(Slist, ns, lambda = c(5.2, 1.3), verbose = FALSE)
+#' PCsparse <- sparsify.fused(Plist , threshold = "absValue", absValueCut = 0.2)
+#' SPlist <- lapply(PCsparse, "[[", "sparsePrecision") # Get sparse precisions
+#' 
+#' ## Calculate GGM network statistics in each class
+#' \dontrun{GGMnetworkStats.fused(SPlist)}
+#' 
+#' @export GGMnetworkStats.fused
 GGMnetworkStats.fused <- function(Plist) {
   ##############################################################################
   # - Simple wrapper for GGMnetworkStats. See help(GGMnetworkStats).
@@ -1996,6 +3133,42 @@ GGMnetworkStats.fused <- function(Plist) {
 
 
 
+
+
+
+
+
+
+#' Fused gaussian graphical model node pair path statistics
+#' 
+#' A simple wrapper for \code{\link{GGMpathStats}}.
+#' 
+#' 
+#' @param sparsePlist A \code{list} of sparsified precision matrices.
+#' @param \dots Arguments passed to \code{\link{GGMpathStats}}.
+#' @return A \code{list} of path stats.
+#' @note The function currently fails if no paths are present in one of the
+#' groups.
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' N. van Wieringen
+#' @seealso \code{\link{GGMpathStats}}
+#' @examples
+#' 
+#' ## Obtain some (high-dimensional) data
+#' set.seed(1)
+#' ns <- c(10, 11)
+#' Slist <- createS(ns, p = 7, topology = "banded")
+#' Tlist <- default.target.fused(Slist, ns)
+#' 
+#' ## Obtain regularized precision and sparsify
+#' Plist <- ridgeP.fused(Slist, ns, Tlist, lambda = c(1, 1.6))
+#' sparsePlist <- sparsify.fused(Plist, threshold = "absValue", absValueCut = 0.20)
+#' SPlist <- lapply(sparsePlist, "[[", "sparsePrecision")
+#' 
+#' ## Obtain information on mediating and moderating paths between nodes 14 and 23
+#' res <- GGMpathStats.fused(SPlist, node1 = 3, node2 = 4, graph = FALSE)
+#' 
+#' @export GGMpathStats.fused
 GGMpathStats.fused <- function(sparsePlist, ...) {
   ##############################################################################
   # - A wrapper for GGMpathStats in the fused case. See GMMpathStats.
