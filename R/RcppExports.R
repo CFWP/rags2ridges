@@ -5,7 +5,6 @@
 #'
 #' Functions that evaulate the (penalized) (fused) likelihood.
 #'
-#'
 #' @aliases NLL PNLL NLL.fused PNLL.fused
 #' @param S,Slist A (list of) positive semi definite sample covariance
 #' matrices.
@@ -269,8 +268,6 @@ PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
 #' equal <- function(x, y) {isTRUE(all.equal(x, y))}
 #' stopifnot(equal(A, B) & equal(A, C) & equal(A, D) & equal(A, E))
 #' stopifnot(equal(C, CR) & equal(D, DR))
-#'
-#'
 .armaRidgeP <- function(S, target, lambda, invert = 2L) {
     .Call(`_rags2ridges_armaRidgeP`, S, target, lambda, invert)
 }

@@ -13,7 +13,6 @@
 //'
 //' Functions that evaulate the (penalized) (fused) likelihood.
 //'
-//'
 //' @aliases NLL PNLL NLL.fused PNLL.fused
 //' @param S,Slist A (list of) positive semi definite sample covariance
 //' matrices.
@@ -375,7 +374,6 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 }
 
 
-
 //' Core ridge precision estimators
 //'
 //' This is the interface to the \code{C++} implementations of the ridge
@@ -570,8 +568,6 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 //' equal <- function(x, y) {isTRUE(all.equal(x, y))}
 //' stopifnot(equal(A, B) & equal(A, C) & equal(A, D) & equal(A, E))
 //' stopifnot(equal(C, CR) & equal(D, DR))
-//'
-//'
 // [[Rcpp::export(.armaRidgeP)]]
 arma::mat armaRidgeP(const arma::mat & S,
                      const arma::mat & target,

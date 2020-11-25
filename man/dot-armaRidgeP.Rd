@@ -171,8 +171,6 @@ l <- 1.21
 equal <- function(x, y) {isTRUE(all.equal(x, y))}
 stopifnot(equal(A, B) & equal(A, C) & equal(A, D) & equal(A, E))
 stopifnot(equal(C, CR) & equal(D, DR))
-
-
 }
 \references{
 van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation
