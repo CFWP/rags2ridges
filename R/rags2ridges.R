@@ -1926,7 +1926,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #' value at which the \eqn{K}-fold cross-validated negative log-likelihood
 #' score is minimized is deemed optimal. The function employs the Brent
 #' algorithm as implemented in the
-#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.htmloptim}
+#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim}
 #' function.
 #'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
@@ -2111,7 +2111,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' calculation is fast enough, especially when considering rotation equivariant
 #' situations (see \code{\link{ridgeP}}). For such situations the amenities for
 #' fast eigenvalue calculation as provided by
-#' \href{https://CRAN.R-project.org/package=RSpectraRSpectra} are used
+#' \href{https://CRAN.R-project.org/package=RSpectra}{RSpectra} are used
 #' internally. When exact computation of the spectral condition number is
 #' deemed too costly one may approximate the computationally friendly
 #' L1-condition number. This approximation is accessed through the
@@ -2709,7 +2709,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' When \code{verbose = TRUE} also graphical output is generated: A histogram
 #' of the null-distribution. Note that, when \code{ncpus} is larger than 1,
 #' functionalities from
-#' \href{https://cran.r-project.org/package=snowfallsnowfall} are imported.
+#' \href{https://cran.r-project.org/package=snowfall}{snowfall} are imported.
 #'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param id A \code{numeric} vector acting as an indicator variable for two
@@ -3041,10 +3041,10 @@ GGMmutualInfo <- function(S, split1){
 #' "localFDR"}.
 #'
 #' The function is to some extent a wrapper around certain
-#' \href{https://cran.r-project.org/package=fdrtoolfdrtool} functions when
+#' \href{https://cran.r-project.org/package=fdrtool}{fdrtool} functions when
 #' \code{threshold = "localFDR"}. In that case a mixture model is fitted to the
 #' nonredundant partial correlations by
-#' \href{https://cran.r-project.org/package=fdrtoolfdrtool}. The decision to
+#' \href{https://cran.r-project.org/package=fdrtool}{fdrtool}. The decision to
 #' retain elements is then based on the argument \code{FDRcut}. Elements with a
 #' posterior probability \eqn{\geq} FDRcut (equalling 1 - local FDR) are
 #' retained. See Schaefer and Strimmer (2005) for further details on usage of
@@ -4119,7 +4119,7 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' techniques.
 #'
 #' This function utilizes
-#' \href{https://cran.r-project.org/package=ggplot2ggplot2} (Wickham, 2009) to
+#' \href{https://cran.r-project.org/package=ggplot2}{ggplot2} (Wickham, 2009) to
 #' visualize a matrix as a heatmap: a false color plot in which the individual
 #' matrix entries are represented by colors. \code{lowColor} determines the
 #' color scale for matrix entries in the negative range. \code{highColor}

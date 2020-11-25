@@ -113,7 +113,7 @@ calculation using the spectral decomposition. For most purposes this exact
 calculation is fast enough, especially when considering rotation equivariant
 situations (see \code{\link{ridgeP}}). For such situations the amenities for
 fast eigenvalue calculation as provided by
-\href{https://CRAN.R-project.org/package=RSpectraRSpectra} are used
+\href{https://CRAN.R-project.org/package=RSpectra}{RSpectra} are used
 internally. When exact computation of the spectral condition number is
 deemed too costly one may approximate the computationally friendly
 L1-condition number. This approximation is accessed through the

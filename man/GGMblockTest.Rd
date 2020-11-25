@@ -94,7 +94,7 @@ a p-value of unity (1) is reported.
 When \code{verbose = TRUE} also graphical output is generated: A histogram
 of the null-distribution. Note that, when \code{ncpus} is larger than 1,
 functionalities from
-\href{https://cran.r-project.org/package=snowfallsnowfall} are imported.
+\href{https://cran.r-project.org/package=snowfall}{snowfall} are imported.
 }
 \examples{
 

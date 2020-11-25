@@ -61,7 +61,7 @@ parameter need to be specified as well as a starting penalty value. The
 value at which the \eqn{K}-fold cross-validated negative log-likelihood
 score is minimized is deemed optimal. The function employs the Brent
 algorithm as implemented in the
-\href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.htmloptim}
+\href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim}
 function.
 }
 \note{

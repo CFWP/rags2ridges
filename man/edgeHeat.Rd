@@ -43,7 +43,7 @@ techniques.
 }
 \details{
 This function utilizes
-\href{https://cran.r-project.org/package=ggplot2ggplot2} (Wickham, 2009) to
+\href{https://cran.r-project.org/package=ggplot2}{ggplot2} (Wickham, 2009) to
 visualize a matrix as a heatmap: a false color plot in which the individual
 matrix entries are represented by colors. \code{lowColor} determines the
 color scale for matrix entries in the negative range. \code{highColor}

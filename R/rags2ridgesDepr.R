@@ -711,7 +711,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' value at which the (leave-one-out) cross-validated negative log-likelihood
 #' score is minimized is deemed optimal. The function employs the Brent
 #' algorithm as implemented in the
-#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.htmloptim}
+#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim}
 #' function.
 #'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
