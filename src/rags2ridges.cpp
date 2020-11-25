@@ -52,8 +52,8 @@ double NLL(const arma::mat S, const arma::mat P) {
 }
 
 
-
-// [[Rcpp::export(PNLL)]]
+//' @export
+// [[Rcpp::export]]
 double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
             const double lambda) {
   /* The penalized negative loglikelihood */
@@ -61,7 +61,7 @@ double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
 }
 
 
-
+//' @export
 // [[Rcpp::export(NLL.fused)]]
 double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
                 const arma::vec ns) {
@@ -84,7 +84,7 @@ double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
 }
 
 
-
+//' @export
 // [[Rcpp::export(PNLL.fused)]]
 double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
                   const arma::vec ns, const Rcpp::List Tlist,

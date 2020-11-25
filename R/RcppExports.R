@@ -34,14 +34,17 @@ NLL <- function(S, P) {
     .Call('_rags2ridges_NLL', PACKAGE = 'rags2ridges', S, P)
 }
 
+#' @export
 PNLL <- function(S, P, T, lambda) {
     .Call('_rags2ridges_PNLL', PACKAGE = 'rags2ridges', S, P, T, lambda)
 }
 
+#' @export
 NLL.fused <- function(Slist, Plist, ns) {
     .Call('_rags2ridges_NLL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns)
 }
 
+#' @export
 PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
     .Call('_rags2ridges_PNLL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns, Tlist, lambda)
 }
