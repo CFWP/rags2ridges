@@ -141,17 +141,17 @@ n <- 100
 set.seed(333)
 Y <- matrix(rnorm(n*p), nrow = n, ncol = p)
 
-# define zero structure  
+# define zero structure
 S <- covML(Y)
 S[1:3, 6:8] <- 0
 S[6:8, 1:3] <- 0
 zeros <- which(S==0, arr.ind=TRUE)
 
-# obtain (triangulated) support info 
+# obtain (triangulated) support info
 supportP <- support4ridgeP(nNodes=p, zeros=zeros)
 
 # estimate precision matrix with known (triangulated) support
-Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros, 
+Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros,
 	cliques=supportP$cliques, separators=supportP$separators)
 
 }

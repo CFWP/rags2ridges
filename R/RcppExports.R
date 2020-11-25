@@ -31,47 +31,47 @@
 #'
 #' @export NLL
 NLL <- function(S, P) {
-    .Call(`_rags2ridges_NLL`, S, P)
+    .Call('_rags2ridges_NLL', PACKAGE = 'rags2ridges', S, P)
 }
 
 PNLL <- function(S, P, T, lambda) {
-    .Call(`_rags2ridges_PNLL`, S, P, T, lambda)
+    .Call('_rags2ridges_PNLL', PACKAGE = 'rags2ridges', S, P, T, lambda)
 }
 
 NLL.fused <- function(Slist, Plist, ns) {
-    .Call(`_rags2ridges_NLL_fused`, Slist, Plist, ns)
+    .Call('_rags2ridges_NLL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns)
 }
 
 PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
-    .Call(`_rags2ridges_PNLL_fused`, Slist, Plist, ns, Tlist, lambda)
+    .Call('_rags2ridges_PNLL_fused', PACKAGE = 'rags2ridges', Slist, Plist, ns, Tlist, lambda)
 }
 
 .armaPooledS <- function(Slist, ns, mle = 0L) {
-    .Call(`_rags2ridges_armaPooledS`, Slist, ns, mle)
+    .Call('_rags2ridges_armaPooledS', PACKAGE = 'rags2ridges', Slist, ns, mle)
 }
 
 .armaPooledP <- function(Plist, ns, mle = 0L) {
-    .Call(`_rags2ridges_armaPooledP`, Plist, ns, mle)
+    .Call('_rags2ridges_armaPooledP', PACKAGE = 'rags2ridges', Plist, ns, mle)
 }
 
 .armaEigShrink <- function(dVec, lambda, cons = 0) {
-    .Call(`_rags2ridges_armaEigShrink`, dVec, lambda, cons)
+    .Call('_rags2ridges_armaEigShrink', PACKAGE = 'rags2ridges', dVec, lambda, cons)
 }
 
 .armaEigShrinkAnyTarget <- function(S, target, lambda) {
-    .Call(`_rags2ridges_armaEigShrinkAnyTarget`, S, target, lambda)
+    .Call('_rags2ridges_armaEigShrinkAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda)
 }
 
 .armaEigShrinkArchI <- function(dVec, lambda, cons) {
-    .Call(`_rags2ridges_armaEigShrinkArchI`, dVec, lambda, cons)
+    .Call('_rags2ridges_armaEigShrinkArchI', PACKAGE = 'rags2ridges', dVec, lambda, cons)
 }
 
 .armaRidgePAnyTarget <- function(S, target, lambda, invert = 2L) {
-    .Call(`_rags2ridges_armaRidgePAnyTarget`, S, target, lambda, invert)
+    .Call('_rags2ridges_armaRidgePAnyTarget', PACKAGE = 'rags2ridges', S, target, lambda, invert)
 }
 
 .armaRidgePScalarTarget <- function(S, alpha, lambda, invert = 2L) {
-    .Call(`_rags2ridges_armaRidgePScalarTarget`, S, alpha, lambda, invert)
+    .Call('_rags2ridges_armaRidgePScalarTarget', PACKAGE = 'rags2ridges', S, alpha, lambda, invert)
 }
 
 #' Core ridge precision estimators
@@ -269,23 +269,23 @@ PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
 #' stopifnot(equal(A, B) & equal(A, C) & equal(A, D) & equal(A, E))
 #' stopifnot(equal(C, CR) & equal(D, DR))
 .armaRidgeP <- function(S, target, lambda, invert = 2L) {
-    .Call(`_rags2ridges_armaRidgeP`, S, target, lambda, invert)
+    .Call('_rags2ridges_armaRidgeP', PACKAGE = 'rags2ridges', S, target, lambda, invert)
 }
 
 .armaFusedUpdateI <- function(g0, Plist, Slist, Tlist, ns, lambda) {
-    .Call(`_rags2ridges_armaFusedUpdateI`, g0, Plist, Slist, Tlist, ns, lambda)
+    .Call('_rags2ridges_armaFusedUpdateI', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda)
 }
 
 .armaFusedUpdateII <- function(g0, Plist, Slist, Tlist, ns, lambda) {
-    .Call(`_rags2ridges_armaFusedUpdateII`, g0, Plist, Slist, Tlist, ns, lambda)
+    .Call('_rags2ridges_armaFusedUpdateII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda)
 }
 
 .armaFusedUpdateIII <- function(g0, Plist, Slist, Tlist, ns, lambda) {
-    .Call(`_rags2ridges_armaFusedUpdateIII`, g0, Plist, Slist, Tlist, ns, lambda)
+    .Call('_rags2ridges_armaFusedUpdateIII', PACKAGE = 'rags2ridges', g0, Plist, Slist, Tlist, ns, lambda)
 }
 
 .armaRidgeP.fused <- function(Slist, ns, Tlist, lambda, Plist, maxit = 100L, eps = 1e-7, relative = TRUE, verbose = FALSE) {
-    .Call(`_rags2ridges_armaRidgeP_fused`, Slist, ns, Tlist, lambda, Plist, maxit, eps, relative, verbose)
+    .Call('_rags2ridges_armaRidgeP_fused', PACKAGE = 'rags2ridges', Slist, ns, Tlist, lambda, Plist, maxit, eps, relative, verbose)
 }
 
 #' Multivariate Gaussian simulation
@@ -311,38 +311,38 @@ PNLL.fused <- function(Slist, Plist, ns, Tlist, lambda) {
 #'
 #' @export rmvnormal
 rmvnormal <- function(n, mu, sigma) {
-    .Call(`_rags2ridges_rmvnormal`, n, mu, sigma)
+    .Call('_rags2ridges_rmvnormal', PACKAGE = 'rags2ridges', n, mu, sigma)
 }
 
 .armaRWishart <- function(n, sigma, nu) {
-    .Call(`_rags2ridges_armaRWishart`, n, sigma, nu)
+    .Call('_rags2ridges_armaRWishart', PACKAGE = 'rags2ridges', n, sigma, nu)
 }
 
 .armaRInvWishart <- function(n, psi, nu) {
-    .Call(`_rags2ridges_armaRInvWishart`, n, psi, nu)
+    .Call('_rags2ridges_armaRInvWishart', PACKAGE = 'rags2ridges', n, psi, nu)
 }
 
 .armaRidgePchordalInit <- function(S, lambda, target, type, Cliques, Separators) {
-    .Call(`_rags2ridges_armaRidgePchordalInitWorkhorse`, S, lambda, target, type, Cliques, Separators)
+    .Call('_rags2ridges_armaRidgePchordalInitWorkhorse', PACKAGE = 'rags2ridges', S, lambda, target, type, Cliques, Separators)
 }
 
 .armaPenLLreparPforNLM <- function(x, E1, E2, S, lambda, target, nonzerosR, nonzerosC) {
-    .Call(`_rags2ridges_armaPenLLreparPforNLM`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
+    .Call('_rags2ridges_armaPenLLreparPforNLM', PACKAGE = 'rags2ridges', x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 
 .armaPenLLreparP <- function(x, E1, E2, S, lambda, target, nonzerosR, nonzerosC) {
-    .Call(`_rags2ridges_armaPenLLreparP`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
+    .Call('_rags2ridges_armaPenLLreparP', PACKAGE = 'rags2ridges', x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 
 .armaPenLLreparPgrad <- function(x, E1, E2, S, lambda, target, nonzerosR, nonzerosC) {
-    .Call(`_rags2ridges_armaPenLLreparPgrad`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
+    .Call('_rags2ridges_armaPenLLreparPgrad', PACKAGE = 'rags2ridges', x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 
 .armaPenLLreparGradArchI <- function(x, E1, E2, S, lambda, target, nonzerosR, nonzerosC) {
-    .Call(`_rags2ridges_armaPenLLreparGradArchI`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
+    .Call('_rags2ridges_armaPenLLreparGradArchI', PACKAGE = 'rags2ridges', x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 
 .armaPenLLreparGradArchII <- function(x, E1, E2, S, lambda, target, nonzerosR, nonzerosC) {
-    .Call(`_rags2ridges_armaPenLLreparGradArchII`, x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
+    .Call('_rags2ridges_armaPenLLreparGradArchII', PACKAGE = 'rags2ridges', x, E1, E2, S, lambda, target, nonzerosR, nonzerosC)
 }
 

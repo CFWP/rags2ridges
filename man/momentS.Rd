@@ -34,8 +34,8 @@ latter is equal to the number of summands in the sample covariance estimate.
 # create scale parameter
 Sigma <- matrix(c(1, 0.5, 0, 0.5, 1, 0, 0, 0, 1), byrow=TRUE, ncol=3)
 
-# evaluate expectation of the square of a sample covariance matrix 
-# that is assumed to Wishart-distributed random variable with the 
+# evaluate expectation of the square of a sample covariance matrix
+# that is assumed to Wishart-distributed random variable with the
 # above scale parameter Sigma and shape parameter equal to 40.
 momentS(Sigma, 40, 2)
 

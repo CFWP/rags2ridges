@@ -16,11 +16,11 @@
 
 
 #' Visualize the spectral condition number against the regularization parameter
-#' 
+#'
 #' This function is now deprecated. Please use \code{CNplot} instead.
-#' 
+#'
 #' See \code{CNplot}.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -57,7 +57,7 @@
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @seealso \code{\link{CNplot}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -65,10 +65,10 @@
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Assess spectral condition number across grid of penalty parameter
 #' conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
-#' 
+#'
 #' @export conditionNumberPlot
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                                 target = default.target(S), norm = "2",
@@ -330,11 +330,11 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 #' Ridge estimation for high-dimensional precision matrices
-#' 
+#'
 #' This function is now deprecated. Please use \code{ridgeP} instead.
-#' 
+#'
 #' See \code{ridgeP}.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambda A \code{numeric} representing the value of the penalty
 #' parameter.
@@ -346,7 +346,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -354,10 +354,10 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' ridgeS(Cx, lambda = 10, type = "Alt")
-#' 
+#'
 #' @export ridgeS
 ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
@@ -473,14 +473,14 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 
 #' Select optimal penalty parameter by leave-one-out cross-validation
-#' 
+#'
 #' This function is now deprecated. Please use \code{optPenalty.kCV} instead.
-#' 
+#'
 #' Function that selects the optimal penalty parameter for the
 #' \code{\link{ridgeP}} call by usage of leave-one-out cross-validation. Its
 #' output includes (a.o.) the precision matrix under the optimal value of the
 #' penalty parameter.
-#' 
+#'
 #' The function calculates a cross-validated negative log-likelihood score
 #' (using a regularized ridge estimator for the precision matrix) for each
 #' value of the penalty parameter contained in the search grid by way of
@@ -493,7 +493,7 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' \code{\link{ridgeP}}. The ouput consists of an object of class list (see
 #' below). When \code{output = "light"} (default) only the \code{optLambda} and
 #' \code{optPrec} elements of the list are given.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -536,26 +536,26 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
 #' \code{\link{covML}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example with standardized data
 #' X <- scale(X, center = TRUE, scale = TRUE)
 #' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
 #'                          target = default.target(covML(X, cor = TRUE))); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' @export optPenalty.LOOCV
 optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
                              cor = FALSE, target = default.target(covML(Y)),
@@ -693,14 +693,14 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 #' Automatic search for optimal penalty parameter
-#' 
+#'
 #' This function is now deprecated. Please use \code{optPenalty.kCVauto}
 #' instead.
-#' 
+#'
 #' Function that performs an 'automatic' search for the optimal penalty
 #' parameter for the \code{\link{ridgeP}} call by employing Brent's method to
 #' the calculation of a cross-validated negative log-likelihood score.
-#' 
+#'
 #' The function determines the optimal value of the penalty parameter by
 #' application of the Brent algorithm (1971) to the (leave-one-out)
 #' cross-validated negative log-likelihood score (using a regularized ridge
@@ -713,7 +713,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' algorithm as implemented in the
 #' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.htmloptim}
 #' function.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -747,26 +747,27 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' @references Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for
 #' Finding a Zero of a Function. Computer Journal 14: 422-425.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
 #' OPT$optLambda # Optimal penalty
 #' OPT$optPrec   # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example with standardized data
 #' X <- scale(X, center = TRUE, scale = TRUE)
 #' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
 #'                             target = default.target(covML(X, cor = TRUE))); OPT
 #' OPT$optLambda # Optimal penalty
 #' OPT$optPrec   # Regularized precision under optimal penalty
-#' 
+#'
+#' @importFrom stats optim
 #' @export optPenalty.LOOCVauto
 optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
                                  lambdaInit = (lambdaMin + lambdaMax)/2,
@@ -786,10 +787,6 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   #                default = default.target(covML(Y))
   # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
   ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
 
   # input checks
   if (!is.matrix(Y)){

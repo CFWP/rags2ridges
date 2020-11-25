@@ -436,36 +436,36 @@
 
 
 #' Symmetrize matrix
-#' 
+#'
 #' Function that symmetrizes matrices.
-#' 
+#'
 #' Large objects that are symmetric sometimes fail to be recognized as such by
 #' R due to rounding under machine precision. This function symmetrizes for
 #' computational purposes matrices that are symmetric in numeric ideality.
-#' 
+#'
 #' @param M (In numeric ideality symmetric) square \code{matrix}.
 #' @return A symmetric \code{matrix}.
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCV(X, 10, 30, 10, target = diag(diag(1/covML(X))))
-#' 
+#'
 #' ## Check symmetry
 #' ## OPT$optPrec is symmetric by definition
 #' ## But is not recognized as such due to rounding peculiarities
 #' isSymmetric(OPT$optPrec)
-#' 
+#'
 #' ## Symmetrize
 #' symm(OPT$optPrec)
-#' 
+#'
 #' @export symm
 symm <- function(M){
   ##############################################################################
@@ -502,12 +502,12 @@ symm <- function(M){
 
 
 #' Transform real matrix into an adjacency matrix
-#' 
+#'
 #' Function that transforms a real matrix into an adjacency matrix. Intended
 #' use: Turn sparsified precision matrix into an adjacency matrix for
 #' undirected graphical representation.
-#' 
-#' 
+#'
+#'
 #' @param M (Possibly sparsified precision) \code{matrix}.
 #' @param diag A \code{logical} indicating if the diagonal elements should be
 #' retained.
@@ -516,7 +516,7 @@ symm <- function(M){
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}},
 #' \code{\link{edgeHeat}}, \code{\link{Ugraph}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -524,16 +524,16 @@ symm <- function(M){
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' P <- ridgeP(Cx, lambda = 10, type = "Alt")
-#' 
+#'
 #' ## Obtain sparsified partial correlation matrix
 #' PC0 <- sparsify(P, threshold = "localFDR", FDRcut = .8)
-#' 
+#'
 #' ## Obtain adjacency matrix
 #' adjacentMat(PC0$sparsePrecision)
-#' 
+#'
 #' @export adjacentMat
 adjacentMat <- function(M, diag = FALSE){
   ##############################################################################
@@ -577,16 +577,16 @@ adjacentMat <- function(M, diag = FALSE){
 
 
 #' Maximum likelihood estimation of the covariance matrix
-#' 
+#'
 #' Function that gives the maximum likelihood estimate of the covariance
 #' matrix.
-#' 
+#'
 #' The function gives the maximum likelihood (ML) estimate of the covariance
 #' matrix. The input matrix \code{Y} assumes that the variables are represented
 #' by the columns. Note that when the input data is standardized, the ML
 #' covariance matrix of the scaled data is computed. If a correlation matrix is
 #' desired, use \code{cor = TRUE}.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param cor A \code{logical} indicating if the correlation matrix should be
 #' returned
@@ -596,20 +596,20 @@ adjacentMat <- function(M, diag = FALSE){
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain ML estimate covariance matrix
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain correlation matrix
 #' Cx <- covML(X, cor = TRUE)
-#' 
+#'
 #' @export covML
 covML <- function(Y, cor = FALSE){
   ##############################################################################
@@ -652,19 +652,19 @@ covML <- function(Y, cor = FALSE){
 
 #' Maximum likelihood estimation of the covariance matrix with assumptions on
 #' its structure
-#' 
+#'
 #' Function that performs maximum likelihood estimation of the covariance
 #' matrix, with various types of assumptions on its structure.
-#' 
+#'
 #' The function gives the maximum likelihood estimate of the covariance matrix.
 #' The input matrix \code{Y} assumes that the variables are represented by the
 #' columns.
-#' 
+#'
 #' When simultaneously \code{covMat=NULL}, \code{corMat=NULL},
 #' \code{corType="none"} and \code{varType="none"} the \code{covML}-function is
 #' invoked and the regular maximum likelihood estimate of the covariance matrix
 #' is returned.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param covMat A positive-definite covariance \code{matrix}. When specified,
 #' the to-be-estimated covariance matrix is assumed to be proportional to the
@@ -685,17 +685,18 @@ covML <- function(Y, cor = FALSE){
 #' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @seealso \code{\link{covML}}
 #' @examples
-#' 
+#'
 #' ## Obtain some data
 #' p = 10
 #' n = 100
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:10] = letters[1:10]
-#' 
+#'
 #' ## Obtain maximum likelihood estimate covariance matrix
 #' Cx <- covMLknown(X, corType="equi", varType="common")
-#' 
+#'
+#' @importFrom stats optim
 #' @export covMLknown
 covMLknown <- function(Y, covMat = NULL, corMat = NULL,
                        corType = "none", varType = "none", nInit = 100){
@@ -723,10 +724,6 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
   # - Future version should a.o. also allow a first order autoregressive
   #   correlation assumption.
   ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
 
   # center data
   Ys <- scale(Y, center = TRUE, scale = FALSE)
@@ -815,12 +812,12 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 
 
 #' Evaluate numerical properties square matrix
-#' 
+#'
 #' Function that evaluates various numerical properties of a square input
 #' matrix. The intended use is to evaluate the various numerical properties of
 #' what is assumed to be a covariance matrix. Another use is to evaluate the
 #' various numerical properties of a (regularized) precision matrix.
-#' 
+#'
 #' The function evaluates various numerical properties of a covariance or
 #' precision input matrix. The function assesses if the input matrix is
 #' symmetric, if all its eigenvalues are real, if all its eigenvalues are
@@ -828,7 +825,7 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 #' the function calculates the trace, the determinant, and the spectral
 #' condition number of the input matrix. See, e.g., Harville (1997) for more
 #' details on the mentioned (numerical) matrix properties.
-#' 
+#'
 #' @param S Covariance or (regularized) precision \code{matrix}.
 #' @param verbose A \code{logical} indicating if output should be printed on
 #' screen.
@@ -845,7 +842,7 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 #' @references Harville, D.A.(1997). Matrix algebra from a statistician's
 #' perspective. New York: Springer-Verlag.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -853,16 +850,16 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Evaluate numerical properties covariance matrix
 #' ## Obtain, e.g., value trace
 #' Seval <- evaluateS(Cx); Seval
 #' Seval$trace
-#' 
+#'
 #' ## Evaluate numerical properties precision matrix after regularization
 #' P <- ridgeP(Cx, lambda = 10, type = 'Alt')
 #' Peval <- evaluateS(P); Peval
-#' 
+#'
 #' @export evaluateS
 evaluateS <- function(S, verbose = TRUE){
   ##############################################################################
@@ -937,16 +934,16 @@ evaluateS <- function(S, verbose = TRUE){
 
 
 #' Compute partial correlation matrix or standardized precision matrix
-#' 
+#'
 #' Function computing the partial correlation matrix or standardized precision
 #' matrix from an input precision matrix.
-#' 
+#'
 #' The function assumes that the input \code{matrix} is a precision matrix. If
 #' \code{pc = FALSE} the standardized precision matrix, rather than the partial
 #' correlation matrix, is given as the output value. The standardized precision
 #' matrix is equal to the partial correlation matrix up to the sign of
 #' off-diagonal entries.
-#' 
+#'
 #' @param P (Possibly regularized) precision \code{matrix}.
 #' @param pc A \code{logical} indicating if the partial correlation matrix
 #' should be computed.
@@ -955,7 +952,7 @@ evaluateS <- function(S, verbose = TRUE){
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -963,13 +960,14 @@ evaluateS <- function(S, verbose = TRUE){
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' P <- ridgeP(Cx, lambda = 10, type = "Alt")
-#' 
+#'
 #' ## Obtain partial correlation matrix
 #' pcor(P)
-#' 
+#'
+#' @importFrom stats cov2cor
 #' @export pcor
 pcor <- function(P, pc = TRUE){
   ##############################################################################
@@ -980,10 +978,6 @@ pcor <- function(P, pc = TRUE){
   # - pc > logical indicating if the partial correlation matrix should be
   #        computed
   ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
 
   if (!is.matrix(P)){
     stop("P should be a matrix")
@@ -1018,14 +1012,14 @@ pcor <- function(P, pc = TRUE){
 
 #' Generate a (data-driven) default target for usage in ridge-type shrinkage
 #' estimation
-#' 
+#'
 #' Function that generates a (data-driven) default target for usage in (type I)
 #' ridge shrinkage estimation of the precision matrix (see
 #' \code{\link{ridgeP}}). The target that is generated is to be understood in
 #' precision terms. Most options for target generation result in a target that
 #' implies a situation of rotation equivariant estimation (see
 #' \code{\link{ridgeP}}).
-#' 
+#'
 #' The function can generate the following default target matrices: \itemize{
 #' \item \code{DAIE}: Diagonal matrix with average of inverse nonzero
 #' eigenvalues of S as entries; \item \code{DIAES}: Diagonal matrix with
@@ -1051,7 +1045,7 @@ pcor <- function(P, pc = TRUE){
 #' matrix \code{S} is standardized to be the correlation matrix. The same goes,
 #' naturally, for the \code{DCPV} target when \code{const} is specified to be
 #' 1.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param type A \code{character} determining the type of default target. Must
 #' be one of: "DAIE", "DIAES", "DUPV", "DAPV", "DCPV", "DEPV", "Null".
@@ -1066,7 +1060,7 @@ pcor <- function(P, pc = TRUE){
 #' Statistics & Data Analysis, vol. 103: 284-303.  Also available as
 #' arXiv:1403.0904v3 [stat.ME].
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -1074,10 +1068,10 @@ pcor <- function(P, pc = TRUE){
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain default diagonal target matrix
 #' default.target(Cx)
-#' 
+#'
 #' @export default.target
 default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   ##############################################################################
@@ -1215,10 +1209,10 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 
 
 #' Ridge estimation for high-dimensional precision matrices
-#' 
+#'
 #' Function that calculates various Ridge estimators for high-dimensional
 #' precision matrices.
-#' 
+#'
 #' The function can calculate various ridge estimators for high-dimensional
 #' precision matrices. Current (well-known) ridge estimators can be roughly
 #' divided in two archetypes. The first archetypal form employs a convex
@@ -1249,7 +1243,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' \frac{1}{2}\mathbf{S}\right\}^{-1}.} These alternative estimators were shown
 #' to be superior to the archetypes in terms of risk under various loss
 #' functions (van Wieringen and Peeters, 2015).
-#' 
+#'
 #' The \code{lambda} parameter in \code{ridgeP} generically indicates the
 #' penalty parameter. It must be chosen in accordance with the type of ridge
 #' estimator employed. The domains for the penalty parameter in the archetypal
@@ -1263,7 +1257,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' \code{target} matrix is p.d. one obtains the alternative Type I estimator;
 #' when \code{type = "Alt"} and the \code{target} matrix is specified to be the
 #' null-matrix one obtains the alternative Type II estimator.
-#' 
+#'
 #' The Type I estimators thus employ target shrinkage. The default target for
 #' both the archetype and alternative is \code{default.target(S)}. When
 #' \code{target} is not the null-matrix it is expected to be p.d. for the
@@ -1276,7 +1270,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' alternative ridge estimator is rotation equivariant. Its analytic
 #' computation is then particularly speedy as the (relatively) expensive matrix
 #' square root can then be circumvented.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambda A \code{numeric} representing the value of the penalty
 #' parameter.
@@ -1291,7 +1285,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' of Inverse Covariance Matrices from High-Dimensional Data, Computational
 #' Statistics & Data Analysis, vol. 103: 284-303. Also available as
 #' arXiv:1403.0904v3 [stat.ME].
-#' 
+#'
 #' van Wieringen, W.N. & Peeters, C.F.W. (2015). Application of a New Ridge
 #' Estimator of the Inverse Covariance Matrix to the Reconstruction of
 #' Gene-Gene Interaction Networks. In: di Serio, C., Lio, P., Nonis, A., and
@@ -1299,7 +1293,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
 #' 8623. Springer, pp. 170-179.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -1307,10 +1301,10 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' ridgeP(Cx, lambda = 10, type = "Alt")
-#' 
+#'
 #' @export ridgeP
 ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
@@ -1407,12 +1401,12 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 #' Select optimal penalty parameter by approximate leave-one-out
 #' cross-validation
-#' 
+#'
 #' Function that selects the optimal penalty parameter for the
 #' \code{\link{ridgeP}} call by usage of approximate leave-one-out
 #' cross-validation. Its output includes (a.o.) the precision matrix under the
 #' optimal value of the penalty parameter.
-#' 
+#'
 #' The function calculates an approximate leave-one-out cross-validated
 #' (aLOOCV) negative log-likelihood score (using a regularized ridge estimator
 #' for the precision matrix) for each value of the penalty parameter contained
@@ -1426,7 +1420,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' depends on only 1 eigendecomposition and 1 matrix inversion, making the
 #' determination of the optimal penalty value particularly efficient (see van
 #' Wieringen and Peeters, 2015).
-#' 
+#'
 #' The value of the penalty parameter that achieves the lowest aLOOCV negative
 #' log-likelihood score is deemed optimal. The penalty parameter must be
 #' positive such that \code{lambdaMin} must be a positive scalar. The maximum
@@ -1435,7 +1429,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' "Alt", "ArchI", "ArchII") see \code{\link{ridgeP}}. The ouput consists of an
 #' object of class list (see below). When \code{output = "light"} (default)
 #' only the \code{optLambda} and \code{optPrec} elements of the list are given.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -1480,29 +1474,29 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' @references Lian, H. (2011). Shrinkage tuning parameter selection in
 #' precision matrices estimation. Journal of Statistical Planning and
 #' Inference, 141: 2839-2848.
-#' 
+#'
 #' van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation of Inverse
 #' Covariance Matrices from High-Dimensional Data, Computational Statistics &
 #' Data Analysis, vol. 103: 284-303. Also available as arXiv:1403.0904v3
 #' [stat.ME].
-#' 
+#'
 #' Vujacic, I., Abbruzzo, A., and Wit, E.C. (2014). A computationally fast
 #' alternative to cross-validation in penalized Gaussian graphical models.
 #' arXiv: 1309.6216v2 [stat.ME].
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30, step = 400); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example with standardized data
 #' X <- scale(X, center = TRUE, scale = TRUE)
 #' OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30,
@@ -1510,7 +1504,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #'                           target = default.target(covML(X, cor = TRUE))); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' @export optPenalty.aLOOCV
 optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
                               cor = FALSE, target = default.target(covML(Y)),
@@ -1701,12 +1695,12 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 #' Select optimal penalty parameter by \eqn{K}-fold cross-validation
-#' 
+#'
 #' Function that selects the optimal penalty parameter for the
 #' \code{\link{ridgeP}} call by usage of \eqn{K}-fold cross-validation. Its
 #' output includes (a.o.) the precision matrix under the optimal value of the
 #' penalty parameter.
-#' 
+#'
 #' The function calculates a cross-validated negative log-likelihood score
 #' (using a regularized ridge estimator for the precision matrix) for each
 #' value of the penalty parameter contained in the search grid by way of
@@ -1719,7 +1713,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' \code{\link{ridgeP}}. The ouput consists of an object of class list (see
 #' below). When \code{output = "light"} (default) only the \code{optLambda} and
 #' \code{optPrec} elements of the list are given.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -1759,7 +1753,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' default target specification one may consider using \code{target =
 #' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
 #' assumption of standardized data.
-#' 
+#'
 #' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
 #' performes leave-one-out cross-validation.
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
@@ -1767,31 +1761,31 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
 #' \code{\link{covML}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty using K = n
 #' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example with standardized data
 #' X <- scale(X, center = TRUE, scale = TRUE)
 #' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
 #'                        target = default.target(covML(X, cor = TRUE))); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example using K = 5
 #' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, fold = 5); OPT
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
-#' 
+#'
 #' @export optPenalty.kCV
 optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
                            cor = FALSE, target = default.target(covML(Y)),
@@ -1917,11 +1911,11 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 
 
 #' Automatic search for optimal penalty parameter
-#' 
+#'
 #' Function that performs an 'automatic' search for the optimal penalty
 #' parameter for the \code{\link{ridgeP}} call by employing Brent's method to
 #' the calculation of a cross-validated negative log-likelihood score.
-#' 
+#'
 #' The function determines the optimal value of the penalty parameter by
 #' application of the Brent algorithm (1971) to the \eqn{K}-fold
 #' cross-validated negative log-likelihood score (using a regularized ridge
@@ -1934,7 +1928,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #' algorithm as implemented in the
 #' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.htmloptim}
 #' function.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -1962,7 +1956,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #' default target specification one may consider using \code{target =
 #' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
 #' assumption of standardized data.
-#' 
+#'
 #' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
 #' performes leave-one-out cross-validation.
 #' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
@@ -1973,31 +1967,32 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #' @references Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for
 #' Finding a Zero of a Function. Computer Journal 14: 422-425.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty using K = n
 #' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
 #' OPT$optLambda # Optimal penalty
 #' OPT$optPrec   # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example with standardized data
 #' X <- scale(X, center = TRUE, scale = TRUE)
 #' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
 #'                           target = default.target(covML(X, cor = TRUE))); OPT
 #' OPT$optLambda # Optimal penalty
 #' OPT$optPrec   # Regularized precision under optimal penalty
-#' 
+#'
 #' ## Another example using K = 5
 #' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, fold = 5); OPT
 #' OPT$optLambda # Optimal penalty
 #' OPT$optPrec   # Regularized precision under optimal penalty
-#' 
+#'
+#' @importFrom stats optim
 #' @export optPenalty.kCVauto
 optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
                                lambdaInit = (lambdaMin + lambdaMax)/2,
@@ -2019,10 +2014,6 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
     #                default = default.target(covML(Y))
     # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
     ##############################################################################
-
-    # Dependencies
-    # require("base")
-    # require("stats")
 
     # input checks
     if (!is.matrix(Y))
@@ -2080,12 +2071,12 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 
 
 #' Visualize the spectral condition number against the regularization parameter
-#' 
+#'
 #' Function that visualizes the spectral condition number of the regularized
 #' precision matrix against the domain of the regularization parameter. The
 #' function can be used to heuristically determine an acceptable (minimal)
 #' value for the penalty parameter.
-#' 
+#'
 #' Under certain target choices the proposed ridge estimators (see
 #' \code{\link{ridgeP}}) are rotation equivariant, i.e., the eigenvectors of
 #' \eqn{\mathbf{S}} are left intact. Such rotation equivariant situations help
@@ -2112,7 +2103,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' (minimal) value of the penalty parameter: The value of the penalty parameter
 #' for which the spectral condition number starts to stabilize may be termed an
 #' acceptable (minimal) value.
-#' 
+#'
 #' The function outputs a graph of the (spectral) matrix condition number over
 #' the domain [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the
 #' spectral condition number is calculated. It is determined by exact
@@ -2125,7 +2116,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' deemed too costly one may approximate the computationally friendly
 #' L1-condition number. This approximation is accessed through the
 #' \link[base:kappa]{rcond} function (Anderson et al. 1999).
-#' 
+#'
 #' When \code{Iaids = TRUE} the basic condition number plot is amended/enhanced
 #' with two additional plots (over the same domain of the penalty parameter as
 #' the basic plot): The approximate loss in digits of accuracy (for the
@@ -2138,7 +2129,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' obtained by, e.g., the routines \code{\link{optPenalty.LOOCV}} or
 #' \code{\link{optPenalty.aLOOCV}}, has led to a precision estimate that is
 #' well-conditioned.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -2187,15 +2178,15 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' @references Anderson, E, Bai, Z., ..., Sorenson, D. (1999). LAPACK Users'
 #' Guide (3rd ed.). Philadelphia, PA, USA: Society for Industrial and Applied
 #' Mathematics.
-#' 
+#'
 #' Demmel, J.W. (1987). On condition numbers and the distance to the nearest
 #' ill-posed problem. Numerische Mathematik, 51: 251--289.
-#' 
+#'
 #' Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020). The
 #' spectral condition number plot for regularization parameter evaluation.
 #' Computational Statistics, 35: 629--646.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -2203,13 +2194,13 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Assess spectral condition number across grid of penalty parameter
 #' CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
-#' 
+#'
 #' ## Include interpretational aids
 #' CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
-#' 
+#'
 #' @export CNplot
 CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                    target = default.target(S, type = "DUPV"), norm = "2",
@@ -2491,12 +2482,12 @@ if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 
 #' Generate the distribution of the penalty parameter under the null hypothesis
 #' of block-independence
-#' 
+#'
 #' Function that serves as a precursor function to the block-independence test
 #' (see \code{\link{GGMblockTest}}). It generates an empirical distribution of
 #' the penalty parameter under the null hypothesis of block independence (in
 #' the regularized precision matrix).
-#' 
+#'
 #' This function can be viewed as a precursor to the function for the
 #' block-independence test (see \code{\link{GGMblockTest}}). The mentioned test
 #' evaluates the null hypothesis of block-independence against the alternative
@@ -2514,7 +2505,7 @@ if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 #' \code{\link{optPenalty.LOOCVauto}}). The resulting optimal penalty
 #' parameters are returned. An estimate of the location (such as the median) is
 #' recommended for use in the block-independence test.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param id A \code{numeric} vector acting as an indicator variable for two
 #' blocks of the precision matrix. The blocks should be coded as \code{0} and
@@ -2539,7 +2530,7 @@ if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
 #' \code{\link{default.target}}, \code{\link{GGMblockTest}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 15
 #' n = 10
@@ -2547,13 +2538,13 @@ if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:15] = letters[1:15]
 #' id <- c(rep(0, 10), rep(1, 5))
-#' 
+#'
 #' ## Generate null distribution of the penalty parameter
 #' lambda0dist <- GGMblockNullPenalty(X, id, 5, 0.001, 10)
-#' 
+#'
 #' ## Location of null distribution
 #' lambdaNull <- median(lambda0dist)
-#' 
+#'
 #' @export GGMblockNullPenalty
 GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
                                 lambdaInit = (lambdaMin+lambdaMax)/2,
@@ -2679,13 +2670,13 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 
 
 #' Test for block-indepedence
-#' 
+#'
 #' Function performing a test that evaluates the null hypothesis of
 #' block-independence against the alternative of block-dependence (presence of
 #' non-zero elements in the off-diagonal block) in the precision matrix using
 #' high-dimensional data. The mentioned test is a permutation-based test (see
 #' details).
-#' 
+#'
 #' The function performs a permutation test for the null hypothesis of
 #' block-independence against the alternative of block-dependence (presence of
 #' non-zero elements in the off-diagonal block) in the precision matrix using
@@ -2696,7 +2687,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' \eqn{\hat{\mathbf{\Sigma}}_a}, \eqn{\hat{\mathbf{\Sigma}}_b},
 #' \eqn{\hat{\mathbf{\Sigma}}} are the estimates of the covariance matrix in
 #' the sub- and whole group(s), respectively.
-#' 
+#'
 #' To accommodate the high-dimensionality the parameters of interest are
 #' estimated in a penalized manner (ridge-type penalization, see
 #' \code{\link{ridgeP}}). Penalization involves a degree of freedom (the
@@ -2708,18 +2699,18 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' set represents the null hypothesis. Many permuted data sets are generated.
 #' For each permutation the test statistic is calculated. The observed test
 #' statistic is compared to the null distribution from the permutations.
-#' 
+#'
 #' The function implements an efficient permutation resampling algorithm (see
 #' van Wieringen et al., 2008, for details.): If the probability of a p-value
 #' being below \code{lowCiThres} is smaller than 0.001 (read: the test is
 #' unlikely to become significant), the permutation analysis is terminated and
 #' a p-value of unity (1) is reported.
-#' 
+#'
 #' When \code{verbose = TRUE} also graphical output is generated: A histogram
 #' of the null-distribution. Note that, when \code{ncpus} is larger than 1,
 #' functionalities from
 #' \href{https://cran.r-project.org/package=snowfallsnowfall} are imported.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param id A \code{numeric} vector acting as an indicator variable for two
 #' blocks of the precision matrix. The blocks should be coded as \code{0} and
@@ -2751,12 +2742,12 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' \code{\link{default.target}}, \code{\link{GGMblockNullPenalty}}
 #' @references Anderson, T.W. (2003). An Introduction to Multivariate
 #' Statistical Analysis, 3rd Edition. John Wiley.
-#' 
+#'
 #' van Wieringen, W.N., van de Wiel, M.A., and van der Vaart, A.W. (2008). A
 #' Test for Partial Differential Expression. Journal of the American
 #' Statistical Association 103: 1039-1049.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 15
 #' n = 10
@@ -2764,16 +2755,16 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:15] = letters[1:15]
 #' id <- c(rep(0, 10), rep(1, 5))
-#' 
+#'
 #' ## Generate null distribution of the penalty parameter
 #' lambda0dist <- GGMblockNullPenalty(X, id, 5, 0.001, 10)
-#' 
+#'
 #' ## Location of null distribution
 #' lambdaNull <- median(lambda0dist)
-#' 
+#'
 #' ## Perform test
 #' testRes <- GGMblockTest(X, id, nPerm = 100, lambdaNull)
-#' 
+#'
 #' @export GGMblockTest
 GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
                           target = default.target(covML(Y)), type = "Alt",
@@ -2957,11 +2948,11 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 
 #' Mutual information between two sets of variates within a multivariate normal
 #' distribution
-#' 
+#'
 #' Function computing the mutual information between two exhaustive and
 #' mutually exclusive splits of a set of multivariate normal random variables.
-#' 
-#' 
+#'
+#'
 #' @param S A positive-definite covariance \code{matrix}.
 #' @param split1 A \code{numeric}, indicating the variates (by column number)
 #' forming the first split. The second split is automatically formed from its
@@ -2973,13 +2964,13 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 #' @references Cover, T.M., Thomas, J.A. (2012), Elements of information
 #' theory.
 #' @examples
-#' 
+#'
 #' # create a covariance matrix
 #' Sigma <- covML(matrix(rnorm(100), ncol=5))
-#' 
+#'
 #' # impulse response analysis
 #' GGMmutualInfo(Sigma, c(1,2))
-#' 
+#'
 #' @export GGMmutualInfo
 GGMmutualInfo <- function(S, split1){
   ##############################################################################
@@ -3029,10 +3020,10 @@ GGMmutualInfo <- function(S, split1){
 
 
 #' Determine the support of a partial correlation/precision matrix
-#' 
+#'
 #' Function that determines the support of a partial correlation/precision
 #' matrix by thresholding and sparsifies it accordingly.
-#' 
+#'
 #' The function transforms the possibly regularized input precision matrix to a
 #' partial correlation matrix. Subsequently, the support of this partial
 #' correlation matrix is determined. Support determination is performed either
@@ -3048,7 +3039,7 @@ GGMmutualInfo <- function(S, split1){
 #' "absValue"}. The argument \code{top} is only used when \code{threshold =
 #' "top"}. The argument \code{FDRcut} is only used when \code{threshold =
 #' "localFDR"}.
-#' 
+#'
 #' The function is to some extent a wrapper around certain
 #' \href{https://cran.r-project.org/package=fdrtoolfdrtool} functions when
 #' \code{threshold = "localFDR"}. In that case a mixture model is fitted to the
@@ -3058,7 +3049,7 @@ GGMmutualInfo <- function(S, split1){
 #' posterior probability \eqn{\geq} FDRcut (equalling 1 - local FDR) are
 #' retained. See Schaefer and Strimmer (2005) for further details on usage of
 #' local FDR in graphical modeling.
-#' 
+#'
 #' @param P (Possibly regularized) precision \code{matrix}.
 #' @param threshold A \code{character} signifying type of sparsification by
 #' thresholding. Must be one of: "absValue", "connected", "localFDR", "top".
@@ -3080,7 +3071,7 @@ GGMmutualInfo <- function(S, split1){
 #' \item{sparseParCor}{A \code{matrix} representing the sparsified partial
 #' correlation matrix.} \item{sparsePrecision}{A \code{matrix} representing the
 #' sparsified precision matrix.}
-#' 
+#'
 #' When \code{output = "light"}, only the (matrix) positions of the zero and
 #' non-zero elements are returned in an object of class \code{list}:
 #' \item{zeros}{A \code{matrix} representing the row and column positions of
@@ -3093,20 +3084,20 @@ GGMmutualInfo <- function(S, split1){
 #' large-scale covariance estimation and implications for functional genomics.
 #' Statistical Applications in Genetics and Molecular Biology, 4:32.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
-#' 
+#'
 #' ## Determine support regularized (standardized) precision under optimal penalty
 #' sparsify(OPT$optPrec, threshold = "localFDR")
-#' 
+#'
 #' @export sparsify
 sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"),
                      absValueCut = .25, FDRcut = .9, top = 10,
@@ -3316,12 +3307,12 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 
 
 #' Evaluate regularized precision under various loss functions
-#' 
+#'
 #' Function that evaluates an estimated and possibly regularized precision
 #' matrix under various loss functions. The loss functions are formulated in
 #' precision terms. This function may be used to estimate the risk (vis-a-vis,
 #' say, the true precision matrix) of the various ridge estimators employed.
-#' 
+#'
 #' Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population
 #' precision matrix and let \eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a
 #' generic ridge estimator of the precision matrix under generic regularization
@@ -3339,7 +3330,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' evaluated over the precision, i.e., depending on the value of the
 #' \code{logical} argument \code{precision} inversions are employed where
 #' needed.
-#' 
+#'
 #' The function can be employed to assess the risk of a certain ridge precision
 #' estimator (see also \code{\link{ridgeP}}). The risk \eqn{\mathcal{R}_{f}} of
 #' the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function
@@ -3348,7 +3339,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' \mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}]\}, }
 #' which can be approximated by the mean or median of losses over repeated
 #' simulation runs.
-#' 
+#'
 #' @param E Estimated (possibly regularized) precision \code{matrix}.
 #' @param T True (population) covariance or precision \code{matrix}.
 #' @param precision A \code{logical} indicating if T is a precision matrix.
@@ -3363,7 +3354,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' Statistics & Data Analysis, vol. 103: 284-303.  Also available as
 #' arXiv:1403.0904v3 [stat.ME].
 #' @examples
-#' 
+#'
 #' ## Define population covariance
 #' set.seed(333)
 #' p = 25
@@ -3371,18 +3362,18 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Truecov <- covML(X)
-#' 
+#'
 #' ## Obtain sample
 #' samples <- X[sample(nrow(X), 10), ]
 #' Cxx <- covML(samples)
-#' 
+#'
 #' ## Obtain regularized precision
 #' P <- ridgeP(Cxx, 10, type = "Alt")
-#' 
+#'
 #' ## Evaluate estimated precision against population
 #' ## precision under Frobenius loss
 #' loss(P, Truecov, precision = FALSE, type = "frobenius")
-#' 
+#'
 #' @export loss
 loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
   ##############################################################################
@@ -3444,10 +3435,10 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 
 
 #' Kullback-Leibler divergence between two multivariate normal distributions
-#' 
+#'
 #' Function calculating the Kullback-Leibler divergence between two
 #' multivariate normal distributions.
-#' 
+#'
 #' The Kullback-Leibler (KL) information (Kullback and Leibler, 1951; also
 #' known as relative entropy) is a measure of divergence between two
 #' probability distributions. Typically, one distribution is taken to represent
@@ -3470,7 +3461,7 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' the symmetric KL divergence (also referred to as Jeffreys information),
 #' given as \deqn{ \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p})
 #' + \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \| \mathcal{N}^{0}_{p}). }
-#' 
+#'
 #' @param Mtest A \code{numeric} mean vector for the approximating multivariate
 #' normal distribution.
 #' @param Mref A \code{numeric} mean vector for the true/reference multivariate
@@ -3488,7 +3479,7 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' @references Kullback, S. and Leibler, R.A. (1951). On Information and
 #' Sufficiency. Annals of Mathematical Statistics 22: 79-86.
 #' @examples
-#' 
+#'
 #' ## Define population
 #' set.seed(333)
 #' p = 25
@@ -3497,19 +3488,19 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' colnames(X)[1:25] = letters[1:25]
 #' Cov0  <- covML(X)
 #' mean0 <- colMeans(X)
-#' 
+#'
 #' ## Obtain sample from population
 #' samples <- X[sample(nrow(X), 10),]
 #' Cov1  <- covML(samples)
 #' mean1 <- colMeans(samples)
-#' 
+#'
 #' ## Regularize singular Cov1
 #' P <- ridgeP(Cov1, 10)
 #' CovR <- solve(P)
-#' 
+#'
 #' ## Obtain KL divergence
 #' KLdiv(mean1, mean0, CovR, Cov0)
-#' 
+#'
 #' @export KLdiv
 KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
   ##############################################################################
@@ -3583,10 +3574,10 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 
 
 #' Visual inspection of the fit of a regularized precision matrix
-#' 
+#'
 #' Function aiding the visual inspection of the fit of an estimated (possibly
 #' regularized) precision matrix vis-a-vis the sample covariance matrix.
-#' 
+#'
 #' The function outputs various visualizations to aid the visual inspection of
 #' an estimated and possibly regularized precision matrix vis-a-vis the sample
 #' covariance matrix. The inverse of the estimated precision matrix \code{P} is
@@ -3598,14 +3589,14 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 #' estimated and observed correlations. In case the observed covariance matrix
 #' \code{S} is non-singular also a QQ-plot an a heatmap are generated for the
 #' estimated and observed partial correlations.
-#' 
+#'
 #' The function generates files with extension \code{fileType} under default
 #' output names. These files are stored in the directory \code{dir} (default is
 #' the working directory). To avoid overwriting of files when working in a
 #' single directory one may employ the argument \code{nameExt}. By using
 #' \code{nameExt} the default output names are extended with a character of
 #' choice.
-#' 
+#'
 #' @param Phat (Regularized) estimate of the precision \code{matrix}.
 #' @param S Sample covariance \code{matrix}
 #' @param diag A \code{logical} determining if the diagonal elements should be
@@ -3619,7 +3610,7 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 #' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' ## Obtain some (high-dimensional) data
 #' p = 25
@@ -3628,13 +3619,14 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' P <- ridgeP(Cx, lambda = 10, type = 'Alt')
-#' 
+#'
 #' ## Evaluate visually fit of regularized precision matrix vis-a-vis sample covariance
 #' evaluateSfit(P, Cx, diag = FALSE, fileType = "pdf", nameExt = "test")}
-#' 
+#'
+#' @importFrom stats cov2cor qqplot
 #' @export evaluateSfit
 evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
                          dir = getwd()){
@@ -3836,11 +3828,11 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 
 
 #' Visualize the regularization path
-#' 
+#'
 #' Function that visualizes the regularization paths of the nonredundant
 #' elements of a regularized precision matrix against the (range of the)
 #' penalty parameter.
-#' 
+#'
 #' The function visualizes the regularization path of the individual elements
 #' of a regularized precision matrix against the penalty parameter. The range
 #' of the penalty parameter is given by [\code{lambdaMin},\code{lambdaMax}].
@@ -3849,7 +3841,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' the type of ridge estimator employed. For details on the type of ridge
 #' estimator one may use (one of: "Alt", "ArchI", "ArchII") see
 #' \code{\link{ridgeP}}.
-#' 
+#'
 #' Regularization paths may be visualized for (partial) correlations,
 #' covariances and precision elements. The type of element for which a
 #' visualization of the regularization paths is desired can be indicated by the
@@ -3858,7 +3850,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' whereabouts the optimal penalty obtained by, e.g., the routines
 #' \code{\link{optPenalty.LOOCV}} or \code{\link{optPenalty.aLOOCV}}, finds
 #' itself along the regularization path.
-#' 
+#'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -3886,7 +3878,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{default.target}}
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -3894,10 +3886,11 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Visualize regularization paths
 #' ridgePathS(Cx, .001, 50, 200, plotType = "pcor")
-#' 
+#'
+#' @importFrom stats cov2cor
 #' @export ridgePathS
 ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
                         target = default.target(S), plotType = "pcor",
@@ -4119,12 +4112,12 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 
 
 #' Visualize (precision) matrix as a heatmap
-#' 
+#'
 #' Function that visualizes a (precision) matrix as a heatmap. May be used to
 #' assess visually the elements of a single (possibly sparsified precision)
 #' matrix. May also be used in assessing the performance of edge selection
 #' techniques.
-#' 
+#'
 #' This function utilizes
 #' \href{https://cran.r-project.org/package=ggplot2ggplot2} (Wickham, 2009) to
 #' visualize a matrix as a heatmap: a false color plot in which the individual
@@ -4138,13 +4131,13 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' (heatmapping) the off-diagonal elements only. To achieve this, set
 #' \code{diag = FALSE}. Naturally, the \code{diag} argument is only used when
 #' the input matrix \code{M} is a square matrix.
-#' 
+#'
 #' The intended use of the function is to visualize a, possibly sparsified,
 #' precision matrix as a heatmap. The function may also be used, in a graphical
 #' modeling setting, to assess the performance of edge selection techniques.
 #' However, the function is quite general, in the sense that it can represent
 #' any \code{matrix} as a heatmap.
-#' 
+#'
 #' @param M (Possibly sparsified precision) \code{matrix}.
 #' @param lowColor A \code{character} that determines the color scale in the
 #' negative range.
@@ -4163,7 +4156,7 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' @references Wickham, H. (2009). ggplot2: elegant graphics for data analysis.
 #' New York: Springer.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -4171,16 +4164,16 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain regularized precision matrix
 #' P <- ridgeP(Cx, lambda = 10, type = "Alt")
-#' 
+#'
 #' ## Obtain sparsified partial correlation matrix
 #' PC0 <- sparsify(P, threshold = "localFDR", FDRcut = .8)$sparseParCor
-#' 
+#'
 #' ## Visualize sparsified partial correlation matrix as heatmap
 #' edgeHeat(PC0)
-#' 
+#'
 #' @export edgeHeat
 edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
                      diag = TRUE, legend = TRUE, main = ""){
@@ -4279,18 +4272,16 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 
 
 
-
-
 #' Visualize undirected graph
-#' 
+#'
 #' Function that visualizes the sparsified precision matrix as an undirected
 #' graph.
-#' 
+#'
 #' The intended use of this function is to visualize a sparsified
 #' precision/partial correlation matrix as an undirected graph. When \code{type
 #' = "plain"} a plain undirected graph is given representing the conditional
 #' (in)dependencies exemplified by the sparsified precision.
-#' 
+#'
 #' When \code{type = "fancy"} a more elaborate graph is given in which dashed
 #' lines indicate negative partial correlations while solid lines indicate
 #' positive partial correlations, and in which grey lines indicate strong
@@ -4298,7 +4289,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' value of a precision element \eqn{\geq} \code{cut} the corresponding edge is
 #' deemed strong and colored grey in the graph. The argument \code{cut} is thus
 #' only used when \code{type = "fancy"}.
-#' 
+#'
 #' When \code{type = "weighted"} an undirected graph is given in which edge
 #' thickness represents the strength of the partial correlations. The
 #' \code{nEcolor} colored edges then represent negative partial correlations
@@ -4306,7 +4297,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' (Relative) edge thickness in this type of graph can be set by the argument
 #' \code{scale}. The arguments \code{scale}, \code{nEcolor}, and \code{pEcolor}
 #' are thus only used when \code{type = "weighted"}.
-#' 
+#'
 #' The default layout gives a circular placement of the vertices. Most layout
 #' functions supported by \code{\link{igraph}} are supported (the function is
 #' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
@@ -4320,16 +4311,16 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' according to the coordinates of a previous call to \code{Ugraph}. If both
 #' the the lay and the coords arguments are not \code{NULL}, the lay argument
 #' takes precedence
-#' 
+#'
 #' The legend allows one to specify the kind of variable the vertices
 #' represent, such as, e.g., mRNA transcripts. The arguments \code{label},
 #' \code{Lcex}, and \code{PTcex} are only used when \code{legend = TRUE}.
-#' 
+#'
 #' If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by
 #' any edge) are removed. For the colors supported by the arguments
 #' \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and
 #' \code{nEcolor} see \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
-#' 
+#'
 #' @param M (Possibly sparsified) precision \code{matrix}
 #' @param type A \code{character} indicating the type of graph to be produced.
 #' Must be one of: "plain", "fancy", "weighted".
@@ -4371,12 +4362,12 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
 #' for complex network research. InterJournal, Complex Systems 1695.
 #' http://igraph.sf.net
-#' 
+#'
 #' van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation of Inverse
 #' Covariance Matrices from High-Dimensional Data, Computational Statistics &
 #' Data Analysis, vol. 103: 284-303. Also available as arXiv:1403.0904v3
 #' [stat.ME].
-#' 
+#'
 #' van Wieringen, W.N. & Peeters, C.F.W. (2015). Application of a New Ridge
 #' Estimator of the Inverse Covariance Matrix to the Reconstruction of
 #' Gene-Gene Interaction Networks. In: di Serio, C., Lio, P., Nonis, A., and
@@ -4384,35 +4375,35 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
 #' 8623. Springer, pp. 170-179.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
-#' 
+#'
 #' ## Determine support regularized standardized precision under optimal penalty
 #' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
-#' 
+#'
 #' ## Obtain graphical representation
 #' Ugraph(PC0, type = "fancy", cut = 0.07)
-#' 
+#'
 #' ## Obtain graphical representation with Fruchterman-Reingold layout
 #' Ugraph(PC0, type = "fancy", lay = "layout_with_fr", cut = 0.07)
-#' 
+#'
 #' ## Add pruning
 #' Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
 #'        cut = 0.07, prune = TRUE)
-#' 
+#'
 #' ## Obtain graph and its coordinates
 #' Coordinates <- Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
 #'                       cut = 0.07, prune = TRUE)
 #' Coordinates
-#' 
+#'
 #' @export Ugraph
 Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                    lay = "layout_in_circle", coords = NULL, Vsize = 15,
@@ -4715,11 +4706,11 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 
 
 #' Gaussian graphical model network statistics
-#' 
+#'
 #' Function that calculates various network statistics from a sparse precision
 #' matrix. The sparse precision matrix is taken to represent the conditional
 #' indepence graph of a Gaussian graphical model.
-#' 
+#'
 #' The function calculates various network statistics from a sparse matrix. The
 #' input matrix \code{P} is assumed to be a sparse precision or partial
 #' correlation matrix. The sparse matrix is taken to represent a conditional
@@ -4728,7 +4719,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' node in the graph represents a Gaussian variable, and each undirected edge
 #' represents conditional dependence in the sense of a nonzero corresponding
 #' precision entry.
-#' 
+#'
 #' The function calculates various measures of centrality: node degree,
 #' betweenness centrality, closeness centrality, and eigenvalue centrality. It
 #' also calculates the number of positive and the number of negative edges for
@@ -4736,7 +4727,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' other variates), the variance, and the partial variance is represented. It
 #' is also indicated if the graph is chordal (i.e., triangulated). For more
 #' information on network measures, consult, e.g., Newman (2010).
-#' 
+#'
 #' @param sparseP Sparse precision/partial correlation \code{matrix}.
 #' @param as.table A \code{logical} indicating if the output should be in
 #' tabular format.
@@ -4763,7 +4754,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' @references Newman, M.E.J. (2010). "Networks: an introduction", Oxford
 #' University Press.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
@@ -4771,15 +4762,15 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
 #' Cx <- covML(X)
-#' 
+#'
 #' ## Obtain sparsified partial correlation matrix
 #' Pridge   <- ridgeP(Cx, 10, type = "Alt")
 #' PCsparse <- sparsify(Pridge , threshold = "top")$sparseParCor
-#' 
+#'
 #' ## Represent the graph and calculate GGM network statistics
 #' Ugraph(PCsparse, "fancy")
 #' \dontrun{GGMnetworkStats(PCsparse)}
-#' 
+#'
 #' @export GGMnetworkStats
 GGMnetworkStats <- function(sparseP, as.table = FALSE){
   ##############################################################################
@@ -4886,14 +4877,14 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
 
 #' Gaussian graphical model node pair path statistics
-#' 
+#'
 #' Function that calculates, for a specified node pair representing endpoints,
 #' path statistics from a sparse precision matrix. The sparse precision matrix
 #' is taken to represent the conditional independence graph of a Gaussian
 #' graphical model. The contribution to the observed covariance between the
 #' specified endpoints is calculated for each (heuristically) determined path
 #' between the endpoints.
-#' 
+#'
 #' The conditional independence graph (as implied by the sparse precision
 #' matrix) is undirected. In undirected graphs origin and destination are
 #' interchangeable and are both referred to as 'endpoints' of a path. The
@@ -4914,7 +4905,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' and \code{node2}-neighborhood are expanded by including their neighbors
 #' (still excluding the endpoints) and shortest paths are again searched as
 #' described above.
-#' 
+#'
 #' The contribution of a particular path to the observed covariance between the
 #' specified node pair is calculated in accordance with Theorem 1 of Jones and
 #' West (2005). As in Jones and West (2005), paths whose weights have an
@@ -4922,7 +4913,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' referred to as 'moderating paths' while paths whose weights have the same
 #' sign as the marginal covariance are referred to as 'mediating' paths. Such
 #' paths are visualized when \code{graph = TRUE}.
-#' 
+#'
 #' All arguments following the \code{graph} argument are only (potentially)
 #' used when \code{graph = TRUE}. When \code{graph = TRUE} the conditional
 #' independence graph is returned with the paths highlighted that have the
@@ -4934,7 +4925,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' \code{node1} and node2 are also visualized (in lightgrey). When
 #' \code{all.edges = FALSE} only the mediating and moderating paths implied by
 #' \code{nrPaths} are visualized.
-#' 
+#'
 #' The default layout gives a circular placement of the vertices. Most layout
 #' functions supported by \code{\link{igraph}} are supported (the function is
 #' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
@@ -4948,13 +4939,13 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' according to the coordinates of a previous call to \code{Ugraph}. If both
 #' the the lay and the coords arguments are not \code{NULL}, the lay argument
 #' takes precedence
-#' 
+#'
 #' The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend =
 #' TRUE}. If \code{prune = TRUE} the vertices of degree 0 (vertices not
 #' implicated by any edge) are removed. For the colors supported by the
 #' arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
 #' \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
-#' 
+#'
 #' @param P0 Sparse (possibly standardized) precision matrix.
 #' @param node1 A \code{numeric} specifying an endpoint. The numeric should
 #' correspond to a row/column of the precision matrix and as such represents
@@ -5013,28 +5004,28 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' \code{\link{sparsify}}
 #' @references Eppstein, D. (1998). Finding the k Shortest Paths. SIAM Journal
 #' on computing 28: 652-673.
-#' 
+#'
 #' Jones, B., and West, M. (2005). Covariance Decomposition in Undirected
 #' Gaussian Graphical Models. Biometrika 92: 779-786.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p <- 25
 #' n <- 10
 #' set.seed(333)
 #' X <- matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X) <- letters[1:p]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .5, lambdaMax = 30)
-#' 
+#'
 #' ## Determine support regularized standardized precision under optimal penalty
 #' PC0 <- sparsify(OPT$optPrec, threshold = "localFDR")$sparseParCor
-#' 
+#'
 #' ## Obtain information on mediating and moderating paths between nodes 14 and 23
 #' pathStats <- GGMpathStats(PC0, 14, 23, verbose = TRUE, prune = FALSE)
 #' pathStats
-#' 
+#'
 #' @export GGMpathStats
 GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
                          graph = TRUE, nrPaths = 2, lay = "layout_in_circle",
@@ -5483,13 +5474,13 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 
 
 #' Wrapper function
-#' 
+#'
 #' Function that forms a wrapper around certain \code{rags2ridges}
 #' functionalities. More specifically, it (automatically) invokes
 #' functionalities to get from high-dimensional data to a penalized precision
 #' estimate, to the corresponding conditional independence graph and topology
 #' summaries.
-#' 
+#'
 #' The wrapper always uses the alternative ridge precision estimator (see
 #' \code{\link{ridgeP}}) with \code{target} as the target matrix. The optimal
 #' value for the penalty parameter is determined by employing Brent's method to
@@ -5501,7 +5492,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 #' visualization as well as the calculation of network statistics (see
 #' \code{\link{GGMnetworkStats}}) is based on the standardization of the
 #' regularized and sparsified precision matrix to a partial correlation matrix.
-#' 
+#'
 #' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
 #' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
 #' parameter.
@@ -5536,7 +5527,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 #' \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}},
 #' \code{\link{Ugraph}}, \code{\link{GGMnetworkStats}}
 #' @examples
-#' 
+#'
 #' \dontrun{
 #' ## Obtain some (high-dimensional) data
 #' p = 25
@@ -5544,10 +5535,10 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Employ the wrapper function
 #' theWorks <- fullMontyS(X, lambdaMin = .5, lambdaMax = 30)}
-#' 
+#'
 #' @export fullMontyS
 fullMontyS <- function(Y, lambdaMin, lambdaMax,
                        target = default.target(covML(Y)), dir = getwd(),
@@ -5700,14 +5691,14 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
 
 #' Moments of the sample covariance matrix.
-#' 
+#'
 #' Calculates the moments of the sample covariance matrix. It assumes that the
 #' summands (the outer products of the samples' random data vector) that
 #' constitute the sample covariance matrix follow a Wishart-distribution with
 #' scale parameter \eqn{\mathbf{\Sigma}} and shape parameter \eqn{\nu}. The
 #' latter is equal to the number of summands in the sample covariance estimate.
-#' 
-#' 
+#'
+#'
 #' @param Sigma Positive-definite \code{matrix}, the scale parameter
 #' \eqn{\mathbf{\Sigma}} of the Wishart distribution.
 #' @param shape A \code{numeric}, the shape parameter \eqn{\nu} of the Wishart
@@ -5723,15 +5714,15 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 #' Wishart distribution", \emph{Scandinavian Journal of Statistics}, 31(2),
 #' 295-318.
 #' @examples
-#' 
+#'
 #' # create scale parameter
 #' Sigma <- matrix(c(1, 0.5, 0, 0.5, 1, 0, 0, 0, 1), byrow=TRUE, ncol=3)
-#' 
-#' # evaluate expectation of the square of a sample covariance matrix 
-#' # that is assumed to Wishart-distributed random variable with the 
+#'
+#' # evaluate expectation of the square of a sample covariance matrix
+#' # that is assumed to Wishart-distributed random variable with the
 #' # above scale parameter Sigma and shape parameter equal to 40.
 #' momentS(Sigma, 40, 2)
-#' 
+#'
 #' @export momentS
 momentS <- function(Sigma,
                     shape,
@@ -5845,33 +5836,33 @@ momentS <- function(Sigma,
 
 
 #' Prune square matrix to those variables having nonzero entries
-#' 
+#'
 #' Convenience function that prunes a square matrix to those variables
 #' (features) having nonzero row (column) entries (i.e., to features implied in
 #' graphical connections).
-#' 
-#' 
+#'
+#'
 #' @param M (Possibly sparsified) square \code{matrix}.
 #' @return A pruned \code{matrix}.
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
-#' 
+#'
 #' ## Determine support regularized standardized precision under optimal penalty
 #' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
-#' 
+#'
 #' ## Prune sparsified partial correlation matrix
 #' PC0P <- pruneMatrix(PC0)
-#' 
+#'
 #' @export pruneMatrix
 pruneMatrix <- function(M){
   ##############################################################################
@@ -5908,20 +5899,18 @@ pruneMatrix <- function(M){
 
 
 
-
-
 #' Subset 2 square matrices to union of variables having nonzero entries
-#' 
+#'
 #' Convenience function that subsets 2 square matrices (over the same features)
 #' to the union of features that have nonzero row (column) entries (i.e.,
 #' features implied in graphical connections).
-#' 
+#'
 #' Say you have 2 class-specific precision matrices that are estimated over the
 #' same variables/features. For various reasons (such as, e.g., the desire to
 #' visualize pruned class-specific networks in the same coordinates) one may
 #' want to prune these matrices to those features that are implied in graphical
 #' connections in at least 1 class.
-#' 
+#'
 #' @param M1 (Possibly sparsified) square \code{matrix}.
 #' @param M2 (Possibly sparsified) square \code{matrix} over the same features
 #' as \code{M1}.
@@ -5930,34 +5919,34 @@ pruneMatrix <- function(M){
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @seealso \code{\link{Ugraph}}
 #' @examples
-#' 
+#'
 #' ## Invoke data
 #' data(ADdata)
-#' 
+#'
 #' ## Subset
 #' ADclass1 <- ADmetabolites[, sampleInfo$ApoEClass == "Class 1"]
 #' ADclass2 <- ADmetabolites[, sampleInfo$ApoEClass == "Class 2"]
-#' 
+#'
 #' ## Transpose data
 #' ADclass1 <- t(ADclass1)
 #' ADclass2 <- t(ADclass2)
-#' 
+#'
 #' ## Correlations for subsets
 #' rAD1 <- cor(ADclass1)
 #' rAD2 <- cor(ADclass2)
-#' 
+#'
 #' ## Simple precision estimates
 #' P1 <- ridgeP(rAD1, 2)
 #' P2 <- ridgeP(rAD2, 2)
 #' Plist = list(P1 = P1, P2 = P2)
-#' 
+#'
 #' ## Threshold matrices
 #' Mats <- sparsify.fused(Plist, threshold = "top", top = 20)
-#' 
+#'
 #' ## Prune sparsified partial correlation matrices
 #' ## To union of features implied by edge
 #' MatsPrune <- Union(Mats$P1$sparseParCor, Mats$P2$sparseParCor)
-#' 
+#'
 #' @export Union
 Union <- function(M1, M2){
   ##############################################################################
@@ -6016,13 +6005,13 @@ Union <- function(M1, M2){
 
 
 #' Search and visualize community-structures
-#' 
+#'
 #' Function that searches for and visualizes community-structures in graphs.
-#' 
+#'
 #' Communities in a network are groups of vertices (modules) that are densely
 #' connected within. Community search is performed by the Girvan-Newman
 #' algorithm (Newman and Girvan, 2004).
-#' 
+#'
 #' When \code{graph = TRUE} the community structure in the graph is visualized.
 #' The default layout is according to the Fruchterman-Reingold algorithm
 #' (1991). Most layout functions supported by \code{\link{igraph}} are
@@ -6038,7 +6027,7 @@ Union <- function(M1, M2){
 #' previous call to \code{Ugraph}. If both the the lay and the coords arguments
 #' are not \code{NULL}, the lay argument takes precedence. Communities are
 #' indicated by color markings.
-#' 
+#'
 #' @param P Sparsified precision \code{matrix}
 #' @param graph A \code{logical} indicating if the results should be
 #' visualized.
@@ -6059,37 +6048,37 @@ Union <- function(M1, M2){
 #' indicating, for each vertex, community membership.}
 #' \item{modularityscore}{\code{numeric} scalar indicating the modularity value
 #' of the community structure.}
-#' 
+#'
 #' When \code{graph = TRUE} the function also returns a graph.
 #' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
 #' @seealso \code{\link{Ugraph}}
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
 #' for complex network research. InterJournal, Complex Systems 1695.
 #' http://igraph.sf.net
-#' 
+#'
 #' Fruchterman, T.M.J., and Reingold, E.M. (1991). Graph Drawing by
 #' Force-Directed Placement. Software: Practice & Experience, 21: 1129-1164.
-#' 
+#'
 #' Newman, M. and Girvan, M. (2004). Finding and evaluating community structure
 #' in networks. Physical Review E, 69: 026113.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty
 #' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
-#' 
+#'
 #' ## Determine support regularized standardized precision under optimal penalty
 #' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
-#' 
+#'
 #' ## Search and visualize communities
 #' Commy <- Communities(PC0)
-#' 
+#'
 #' @export Communities
 Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
                         Vsize = 15, Vcex = 1, Vcolor = "orangered",
@@ -6297,10 +6286,10 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 
 
 #' Visualize the differential graph
-#' 
+#'
 #' Function visualizing the differential graph, i.e., the network of edges that
 #' are unique for 2 class-specific graphs over the same vertices
-#' 
+#'
 #' Say you have 2 class-specific precision matrices that are estimated over the
 #' same variables/features. This function visualizes in a single graph the
 #' edges that are unique to the respective classes. Hence, it gives the
@@ -6308,7 +6297,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' \code{P1color}. Edges unique to \code{P2} are colored according to
 #' \code{P2color}. Dashed lines indicate negative precision elements while
 #' solid lines indicate positive precision elements.
-#' 
+#'
 #' The default layout is according to the Fruchterman-Reingold algorithm
 #' (1991). Most layout functions supported by \code{\link{igraph}} are
 #' supported (the function is partly a wrapper around certain
@@ -6322,7 +6311,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' enables one, e.g., to layout a graph according to the coordinates of a
 #' previous call to \code{Ugraph}. If both the the lay and the coords arguments
 #' are not \code{NULL}, the lay argument takes precedence.
-#' 
+#'
 #' @param P1 Sparsified precision \code{matrix} for class 1.
 #' @param P2 Sparsified precision \code{matrix} for class 2.
 #' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
@@ -6348,34 +6337,34 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
 #' for complex network research. InterJournal, Complex Systems 1695.
 #' http://igraph.sf.net
-#' 
+#'
 #' Fruchterman, T.M.J., and Reingold, E.M. (1991). Graph Drawing by
 #' Force-Directed Placement. Software: Practice & Experience, 21: 1129-1164.
 #' @examples
-#' 
+#'
 #' ## Obtain some (high-dimensional) data, class 1
 #' p = 25
 #' n = 10
 #' set.seed(333)
 #' X = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain some (high-dimensional) data, class 2
 #' set.seed(123456)
 #' X2 = matrix(rnorm(n*p), nrow = n, ncol = p)
 #' colnames(X2)[1:25] = letters[1:25]
-#' 
+#'
 #' ## Obtain regularized precision under optimal penalty, classes 1 and 2
 #' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
 #' OPT2 <- optPenalty.LOOCV(X2, lambdaMin = .5, lambdaMax = 30, step = 100)
-#' 
+#'
 #' ## Determine support regularized standardized precision under optimal penalty
 #' PC0  <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
 #' PC02 <- sparsify(symm(OPT2$optPrec), threshold = "localFDR")$sparseParCor
-#' 
+#'
 #' ## Visualize differential graph
 #' DiffGraph(PC0, PC02)
-#' 
+#'
 #' @export DiffGraph
 DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
                       Vsize = 15, Vcex = 1, Vcolor = "orangered",
