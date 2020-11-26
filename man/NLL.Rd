@@ -8,6 +8,12 @@
 \title{Evaulate the (penalized) (fused) likelihood}
 \usage{
 NLL(S, P)
+
+PNLL(S, P, T, lambda)
+
+NLL.fused(Slist, Plist, ns)
+
+PNLL.fused(Slist, Plist, ns, Tlist, lambda)
 }
 \arguments{
 \item{S, Slist}{A (list of) positive semi definite sample covariance
@@ -17,10 +23,10 @@ matrices.}
 
 \item{T, Tlist}{A (list of) positive definite target matrices.}
 
-\item{ns}{A \code{numeric} of sample sizes.}
-
 \item{lambda}{A \code{numeric} penalty parameter. For the \code{.fused}
 functions, this is a penalty \code{matrix}.}
+
+\item{ns}{A \code{numeric} of sample sizes.}
 }
 \value{
 A single number.

@@ -6,6 +6,8 @@
 \title{Print and summarize fusion test}
 \usage{
 \method{print}{ptest}(x, digits = 4L, ...)
+
+\method{summary}{ptest}(object, ...)
 }
 \arguments{
 \item{x, object}{The object to print or summarize. Usually the output of

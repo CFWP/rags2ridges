@@ -37,8 +37,8 @@
 //' NLL.fused(Slist, Plist, ns)
 //' PNLL.fused(Slist, Plist, ns, Tlist, lambda = diag(2))
 //'
-//' @export NLL
-// [[Rcpp::export(NLL)]]
+//' @export
+// [[Rcpp::export]]
 double NLL(const arma::mat S, const arma::mat P) {
   /* The negative loglikelihood */
   double logdet;
@@ -52,6 +52,7 @@ double NLL(const arma::mat S, const arma::mat P) {
 }
 
 
+//' @rdname NLL
 //' @export
 // [[Rcpp::export]]
 double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
@@ -60,7 +61,7 @@ double PNLL(const arma::mat S, const arma::mat P, const arma::mat T,
   return NLL(S, P) + 0.5*lambda*pow(arma::norm(P - T, "fro"), 2.0);
 }
 
-
+//' @rdname NLL
 //' @export
 // [[Rcpp::export(NLL.fused)]]
 double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
@@ -83,7 +84,7 @@ double NLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,
   return nll;
 }
 
-
+//' @rdname NLL
 //' @export
 // [[Rcpp::export(PNLL.fused)]]
 double PNLL_fused(const Rcpp::List Slist, const Rcpp::List Plist,

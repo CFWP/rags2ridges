@@ -8,16 +8,6 @@
 ################################################################################
 ################################################################################
 
-##------------------------------------------------------------------------------
-##
-## (Hidden) Support functions
-##
-##------------------------------------------------------------------------------
-
-
-
-
-
 
 
 #' Test for symmetric positive (semi-)definiteness
@@ -54,7 +44,7 @@
 #'
 #' isSymmetricPSD(C)
 #'
-#' @export isSymmetricPD
+#' @export
 isSymmetricPD <- function(M) {
   ##############################################################################
   # - Test if matrix is symmetric postive definite
@@ -81,19 +71,20 @@ isSymmetricPD <- function(M) {
 
 }
 
-
-
+#' @rdname isSymmetricPD
+#' @details While \code{isSymmetricPSD} returns \code{TRUE} if the matrix is
+#' symmetric positive definite and \code{FASLE} if not. In practice, it tests if
+#' all eigenvalues are larger than -tol*|l| where l is the largest eigenvalue.
+#' More
+#' \href{http://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
+#' @export
 isSymmetricPSD <- function(M, tol = 1e-4) {
   ##############################################################################
-  # - Test if matrix is symmetric postive semi-definite
+  # -
   # - M > A numeric matrix
   #
   # NOTES:
-  # - Returns TRUE if the matrix is symmetric positive definite and FALSE if not
-  # - In practice, it tests if all eigenvalues are larger than -tol*|l| where
-  #   l is the largest eigenvalue.
-  # - See http://scicomp.stackexchange.com/questions/12979/
-  #          testing-if-a-matrix-is-positive-semi-definite
+
   ##############################################################################
 
   nm <- deparse(substitute(M))
@@ -1035,7 +1026,8 @@ pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
 }
 
 
-
+#' @rdname pooledS
+#' @export
 pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled precision estimate
@@ -1810,7 +1802,7 @@ ridgeP.fused <- function(Slist,
 }
 
 
-
+#' @export
 optPenalty.fused.grid <-
   function(Ylist, Tlist,
            lambdas = 10^seq(-5, 5, length.out = 15),
@@ -1938,7 +1930,8 @@ print.optPenaltyFusedGrid <- function(x, ...) {
 }
 
 
-
+#' @rdname print.optPenaltyFusedGrid
+#' @export
 plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
                                      col = rainbow(100, end = 0.8), ...) {
   with(x, {
@@ -1956,8 +1949,9 @@ plot.optPenaltyFusedGrid <- function(x, add.text = TRUE, add.contour = TRUE,
   return(invisible(x))
 }
 
-
+#' @rdname optPenalty.fused
 #' @importFrom stats optim
+#' @export
 optPenalty.fused.auto <-
   function(Ylist,
            Tlist,
@@ -2913,7 +2907,7 @@ print.ptest <- function(x, digits = 4L, ...) {
 }
 
 
-#' @describeIn print.ptest
+#' @rdname print.ptest
 #' @export
 summary.ptest <- function(object, ...) {
   ##############################################################################
@@ -2930,7 +2924,7 @@ summary.ptest <- function(object, ...) {
 }
 
 
-#' @describeIn plot.ptest
+#' @rdname plot.ptest
 #' @export
 hist.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################

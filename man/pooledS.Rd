@@ -6,6 +6,8 @@
 \title{Compute the pooled covariance or precision matrix estimate}
 \usage{
 pooledS(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
+
+pooledP(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE)
 }
 \arguments{
 \item{Slist}{A \code{list} of length \eqn{G} of \code{numeric} covariance

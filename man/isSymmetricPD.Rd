@@ -6,6 +6,8 @@
 \title{Test for symmetric positive (semi-)definiteness}
 \usage{
 isSymmetricPD(M)
+
+isSymmetricPSD(M, tol = 1e-04)
 }
 \arguments{
 \item{M}{A square symmetric matrix.}
@@ -27,6 +29,12 @@ Tests positive definiteness by Cholesky decomposition.  Tests positive
 semi-definiteness by checking if all eigenvalues are larger than
 \eqn{-\epsilon|\lambda_1|} where \eqn{\epsilon} is the tolerance and
 \eqn{\lambda_1} is the largest eigenvalue.
+
+While \code{isSymmetricPSD} returns \code{TRUE} if the matrix is
+symmetric positive definite and \code{FASLE} if not. In practice, it tests if
+all eigenvalues are larger than -tol*|l| where l is the largest eigenvalue.
+More
+\href{http://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
 }
 \examples{
 

@@ -6,6 +6,14 @@
 \title{Print and plot functions for fused grid-based cross-validation}
 \usage{
 \method{print}{optPenaltyFusedGrid}(x, ...)
+
+\method{plot}{optPenaltyFusedGrid}(
+  x,
+  add.text = TRUE,
+  add.contour = TRUE,
+  col = rainbow(100, end = 0.8),
+  ...
+)
 }
 \arguments{
 \item{x}{A \code{optPenaltyFusedGrid}-object print or plot.  Usually the
