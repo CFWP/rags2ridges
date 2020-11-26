@@ -1213,47 +1213,57 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' Function that calculates various Ridge estimators for high-dimensional
 #' precision matrices.
 #'
+#' @details
 #' The function can calculate various ridge estimators for high-dimensional
 #' precision matrices. Current (well-known) ridge estimators can be roughly
 #' divided in two archetypes. The first archetypal form employs a convex
 #' combination of \eqn{\mathbf{S}} and a positive definite (p.d.) target matrix
-#' \eqn{\mathbf{T}}:
-#' \eqn{\hat{\mathbf{\Omega}}^{\mathrm{I}}(\lambda_{\mathrm{I}}) =
-#' [(1-\lambda_{\mathrm{I}}) \mathbf{S} + \lambda_{\mathrm{I}}
-#' \mathbf{T}]^{-1}}, with \eqn{\lambda_{\mathrm{I}} \in (0,1]}. A common
-#' target choice is for \eqn{\mathbf{T}} to be diagonal with
-#' \eqn{(\mathbf{T})_{jj} = (\mathbf{S})_{jj}} for \eqn{j=1, \ldots, p}. The
-#' second archetypal form can be given as
-#' \eqn{\hat{\mathbf{\Omega}}^{\mathrm{II}}(\lambda_{\mathrm{II}}) =
-#' (\mathbf{S} + \lambda_{\mathrm{II}} \mathbf{I}_{p})^{-1}} with
-#' \eqn{\lambda_{\mathrm{II}} \in (0, \infty)}. Viewed from a penalized
+#'   \eqn{\mathbf{T}}:
+#'   \eqn{\hat{\mathbf{\Omega}}^{\mathrm{I}}(\lambda_{\mathrm{I}})
+#'   = [(1-\lambda_{\mathrm{I}}) \mathbf{S} + \lambda_{\mathrm{I}}\mathbf{T}]^{-1}},
+#' with \eqn{\lambda_{\mathrm{I}} \in (0,1]}.
+#' A common target choice is for \eqn{\mathbf{T}} to be diagonal with
+#'   \eqn{(\mathbf{T})_{jj} = (\mathbf{S})_{jj}} for \eqn{j=1, \ldots, p}.
+#' The second archetypal form can be given as
+#'   \eqn{\hat{\mathbf{\Omega}}^{\mathrm{II}}(\lambda_{\mathrm{II}})
+#'    = (\mathbf{S} + \lambda_{\mathrm{II}} \mathbf{I}_{p})^{-1}}
+#' with \eqn{\lambda_{\mathrm{II}} \in (0, \infty)}. Viewed from a penalized
 #' estimation perspective, the two archetypes utilize penalties that do not
 #' coincide with the matrix-analogue of the common ridge penalty. van Wieringen
 #' and Peeters (2015) derive analytic expressions for alternative Type I and
 #' Type II ridge precision estimators based on a proper L2-penalty. Their
 #' alternative Type I estimator (target shrinkage) takes the form
-#' \deqn{\hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) =
-#' \left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
-#' \lambda_{a}\mathbf{T})^{2}\right]^{1/2} + \frac{1}{2}(\mathbf{S} -
-#' \lambda_{a}\mathbf{T})\right\}^{-1},} while their alternative Type II
-#' estimator can be given as a special case of the former:
-#' \deqn{\hat{\mathbf{\Omega}}^{\mathrm{II}a}(\lambda_{a}) =
-#' \left\{\left[\lambda_{a}\mathbf{I}_{p} +
-#' \frac{1}{4}\mathbf{S}^{2}\right]^{1/2} +
-#' \frac{1}{2}\mathbf{S}\right\}^{-1}.} These alternative estimators were shown
-#' to be superior to the archetypes in terms of risk under various loss
-#' functions (van Wieringen and Peeters, 2015).
+#'   \deqn{
+#'     \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a})
+#'     = \left\{
+#'         \left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+#'               \lambda_{a}\mathbf{T})^{2}\right]^{1/2} +
+#'         \frac{1}{2}(\mathbf{S} - \lambda_{a}\mathbf{T})
+#'       \right\}^{-1},
+#'   }
+#' while their alternative Type II estimator can be given as a special case of
+#' the former:
+#'   \deqn{
+#'     \hat{\mathbf{\Omega}}^{\mathrm{II}a}(\lambda_{a}) =
+#'     \left\{
+#'       \left[\lambda_{a}\mathbf{I}_{p} +
+#'               \frac{1}{4}\mathbf{S}^{2}\right]^{1/2} +
+#'       \frac{1}{2}\mathbf{S}
+#'     \right\}^{-1}.
+#'   }
+#' These alternative estimators were shown to be superior to the archetypes in
+#' terms of risk under various loss functions (van Wieringen and Peeters, 2015).
 #'
 #' The \code{lambda} parameter in \code{ridgeP} generically indicates the
 #' penalty parameter. It must be chosen in accordance with the type of ridge
 #' estimator employed. The domains for the penalty parameter in the archetypal
 #' estimators are given above. The domain for \code{lambda} in the alternative
-#' estimators is \eqn{(0, \infty)}. The \code{type} parameter specifies the
-#' type of ridge estimator. Specifying \code{type = "ArchI"} leads to usage of
-#' the archetypal I estimator while specifying \code{type = "ArchII"} leads to
-#' usage of the archetypal II estimator. In the latter situation the argument
-#' \code{target} remains unused. Specifying \code{type = "Alt"} enables usage
-#' of the alternative ridge estimators: when \code{type = "Alt"} and the
+#' estimators is \eqn{(0, \infty)}. The \code{type} parameter specifies the type
+#' of ridge estimator. Specifying \code{type = "ArchI"} leads to usage of the
+#' archetypal I estimator while specifying \code{type = "ArchII"} leads to usage
+#' of the archetypal II estimator. In the latter situation the argument
+#' \code{target} remains unused. Specifying \code{type = "Alt"} enables usage of
+#' the alternative ridge estimators: when \code{type = "Alt"} and the
 #' \code{target} matrix is p.d. one obtains the alternative Type I estimator;
 #' when \code{type = "Alt"} and the \code{target} matrix is specified to be the
 #' null-matrix one obtains the alternative Type II estimator.
@@ -1267,9 +1277,9 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' with \eqn{\mu \in (0,\infty)}. The archetypal Type II estimator is rotation
 #' equivariant by definition. When the target is of the form
 #' \eqn{\varphi\mathbf{I}_{p}} with \eqn{\varphi \in [0,\infty)}, then the
-#' alternative ridge estimator is rotation equivariant. Its analytic
-#' computation is then particularly speedy as the (relatively) expensive matrix
-#' square root can then be circumvented.
+#' alternative ridge estimator is rotation equivariant. Its analytic computation
+#' is then particularly speedy as the (relatively) expensive matrix square root
+#' can then be circumvented.
 #'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambda A \code{numeric} representing the value of the penalty
@@ -2681,12 +2691,18 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' block-independence against the alternative of block-dependence (presence of
 #' non-zero elements in the off-diagonal block) in the precision matrix using
 #' high-dimensional data. In the low-dimensional setting the common test
-#' statistic under multivariate normality (cf. Anderson, 2003) is: \deqn{ \log(
-#' \| \hat{\mathbf{\Sigma}}_a \| ) + \log( \| \hat{\mathbf{\Sigma}}_b \| ) -
-#' \log( \| \hat{\mathbf{\Sigma}} \| ), } where the
-#' \eqn{\hat{\mathbf{\Sigma}}_a}, \eqn{\hat{\mathbf{\Sigma}}_b},
-#' \eqn{\hat{\mathbf{\Sigma}}} are the estimates of the covariance matrix in
-#' the sub- and whole group(s), respectively.
+#' statistic under multivariate normality (cf. Anderson, 2003) is:
+#' \deqn{
+#'   \log( \| \hat{\mathbf{\Sigma}}_a \| ) +
+#'   \log( \| \hat{\mathbf{\Sigma}}_b \| ) -
+#'   \log( \| \hat{\mathbf{\Sigma}}   \| ),
+#' }
+#' where the
+#' \eqn{\hat{\mathbf{\Sigma}}_a},
+#' \eqn{\hat{\mathbf{\Sigma}}_b},
+#' \eqn{\hat{\mathbf{\Sigma}}}
+#' are the estimates of the covariance matrix in the sub- and whole group(s),
+#' respectively.
 #'
 #' To accommodate the high-dimensionality the parameters of interest are
 #' estimated in a penalized manner (ridge-type penalization, see
@@ -3301,11 +3317,6 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 ##------------------------------------------------------------------------------
 
 
-
-
-
-
-
 #' Evaluate regularized precision under various loss functions
 #'
 #' Function that evaluates an estimated and possibly regularized precision
@@ -3313,32 +3324,36 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' precision terms. This function may be used to estimate the risk (vis-a-vis,
 #' say, the true precision matrix) of the various ridge estimators employed.
 #'
-#' Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population
-#' precision matrix and let \eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a
-#' generic ridge estimator of the precision matrix under generic regularization
-#' parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
-#' considers the following loss functions: \enumerate{ \item Squared Frobenius
-#' loss, given by: \deqn{ L_{F}[\hat{\mathbf{\Omega}}(\lambda),
-#' \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda) -
-#' \mathbf{\Omega}\|_{F}^{2}; } \item Quadratic loss, given by: \deqn{
-#' L_{Q}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] =
-#' \|\hat{\mathbf{\Omega}}(\lambda) \mathbf{\Omega}^{-1} -
-#' \mathbf{I}_{p}\|_{F}^{2}.  } } The argument \code{T} is considered to be the
-#' true precision matrix when \code{precision = TRUE}. If \code{precision}
-#' \code{= FALSE} the argument \code{T} is considered to represent the true
-#' covariance matrix. This statement is needed so that the loss is properly
-#' evaluated over the precision, i.e., depending on the value of the
-#' \code{logical} argument \code{precision} inversions are employed where
-#' needed.
+#' Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population precision matrix and let
+#' \eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a generic ridge estimator of the precision matrix under
+#' generic regularization parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
+#' considers the following loss functions:
+#'   \enumerate{
+#'     \item Squared Frobenius loss, given by:
+#'       \deqn{
+#'         L_{F}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda) -
+#'           \mathbf{\Omega}\|_{F}^{2};
+#'       }
+#'     \item Quadratic loss, given by:
+#'       \deqn{
+#'         L_{Q}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda)
+#'         \mathbf{\Omega}^{-1} - \mathbf{I}_{p}\|_{F}^{2}.
+#'       }
+#'   }
+#' The argument \code{T} is considered to be the true precision matrix when \code{precision = TRUE}.
+#' If \code{precision} \code{= FALSE} the argument \code{T} is considered to represent the true covariance matrix.
+#' This statement is needed so that the loss is properly evaluated over the precision, i.e., depending
+#' on the value of the \code{logical} argument \code{precision} inversions are employed where needed.
 #'
-#' The function can be employed to assess the risk of a certain ridge precision
-#' estimator (see also \code{\link{ridgeP}}). The risk \eqn{\mathcal{R}_{f}} of
-#' the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function
-#' \eqn{L_{f}}, with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
-#' \deqn{ \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
-#' \mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}]\}, }
-#' which can be approximated by the mean or median of losses over repeated
-#' simulation runs.
+#' The function can be employed to assess the risk of a certain ridge precision estimator (see also \code{\link{ridgeP}}).
+#' The risk \eqn{\mathcal{R}_{f}} of the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function \eqn{L_{f}},
+#' with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
+#'   \deqn{
+#'     \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
+#'       \mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda),
+#'                          \mathbf{\Omega}]\},
+#'   }
+#' which can be approximated by the mean or median of losses over repeated simulation runs.
 #'
 #' @param E Estimated (possibly regularized) precision \code{matrix}.
 #' @param T True (population) covariance or precision \code{matrix}.
@@ -3439,28 +3454,34 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' Function calculating the Kullback-Leibler divergence between two
 #' multivariate normal distributions.
 #'
-#' The Kullback-Leibler (KL) information (Kullback and Leibler, 1951; also
-#' known as relative entropy) is a measure of divergence between two
-#' probability distributions. Typically, one distribution is taken to represent
-#' the `true' distribution and functions as the reference distribution while
-#' the other is taken to be an approximation of the true distribution. The
-#' criterion then measures the loss of information in approximating the
-#' reference distribution. The KL divergence between two \eqn{p}-dimensional
-#' multivariate normal distributions
-#' \eqn{\mathcal{N}^{0}_{p}(\boldsymbol{\mu}_{0}, \mathbf{\Sigma}_{0})} and
-#' \eqn{\mathcal{N}^{1}_{p}(\boldsymbol{\mu}_{1}, \mathbf{\Sigma}_{1})} is
-#' given as \deqn{ \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p})
-#' = \frac{1}{2}\left\{\mathrm{tr}(\mathbf{\Omega}_{1}\mathbf{\Sigma}_{0}) +
-#' (\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0})^{\mathrm{T}}
-#' \mathbf{\Omega}_{1}(\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0}) - p -
-#' \ln|\mathbf{\Sigma}_{0}| + \ln|\mathbf{\Sigma}_{1}| \right\}, } where
-#' \eqn{\mathbf{\Omega} = \mathbf{\Sigma}^{-1}}. The KL divergence is not a
-#' proper metric as \eqn{\mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \|
+#' @details
+#' The Kullback-Leibler (KL) information (Kullback and Leibler, 1951; also known
+#' as relative entropy) is a measure of divergence between two probability
+#' distributions. Typically, one distribution is taken to represent the `true'
+#' distribution and functions as the reference distribution while the other is
+#' taken to be an approximation of the true distribution. The criterion then
+#' measures the loss of information in approximating the reference distribution.
+#' The KL divergence between two \eqn{p}-dimensional multivariate normal
+#' distributions
+#'   \eqn{\mathcal{N}^{0}_{p}(\boldsymbol{\mu}_{0}, \mathbf{\Sigma}_{0})} and \eqn{\mathcal{N}^{1}_{p}(\boldsymbol{\mu}_{1}, \mathbf{\Sigma}_{1})}
+#' is given as
+#'   \deqn{
+#'     \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p}) =
+#'      \frac{1}{2}\left\{\mathrm{tr}(\mathbf{\Omega}_{1}\mathbf{\Sigma}_{0})
+#'      + (\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0})^{\mathrm{T}}
+#'      \mathbf{\Omega}_{1}(\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0}) - p
+#'      - \ln|\mathbf{\Sigma}_{0}| + \ln|\mathbf{\Sigma}_{1}| \right\},
+#'   }
+#' where \eqn{\mathbf{\Omega} = \mathbf{\Sigma}^{-1}}. The KL divergence is not
+#' a proper metric as \eqn{\mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \|
 #' \mathcal{N}^{1}_{p}) \neq \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \|
 #' \mathcal{N}^{0}_{p})}. When \code{symmetric = TRUE} the function calculates
-#' the symmetric KL divergence (also referred to as Jeffreys information),
-#' given as \deqn{ \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p})
-#' + \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \| \mathcal{N}^{0}_{p}). }
+#' the symmetric KL divergence (also referred to as Jeffreys information), given
+#' as
+#'   \deqn{
+#'     \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p}) +
+#'     \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \| \mathcal{N}^{0}_{p}).
+#'   }
 #'
 #' @param Mtest A \code{numeric} mean vector for the approximating multivariate
 #' normal distribution.

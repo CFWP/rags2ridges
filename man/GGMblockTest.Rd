@@ -66,12 +66,18 @@ The function performs a permutation test for the null hypothesis of
 block-independence against the alternative of block-dependence (presence of
 non-zero elements in the off-diagonal block) in the precision matrix using
 high-dimensional data. In the low-dimensional setting the common test
-statistic under multivariate normality (cf. Anderson, 2003) is: \deqn{ \log(
-\| \hat{\mathbf{\Sigma}}_a \| ) + \log( \| \hat{\mathbf{\Sigma}}_b \| ) -
-\log( \| \hat{\mathbf{\Sigma}} \| ), } where the
-\eqn{\hat{\mathbf{\Sigma}}_a}, \eqn{\hat{\mathbf{\Sigma}}_b},
-\eqn{\hat{\mathbf{\Sigma}}} are the estimates of the covariance matrix in
-the sub- and whole group(s), respectively.
+statistic under multivariate normality (cf. Anderson, 2003) is:
+\deqn{
+  \log( \| \hat{\mathbf{\Sigma}}_a \| ) +
+  \log( \| \hat{\mathbf{\Sigma}}_b \| ) -
+  \log( \| \hat{\mathbf{\Sigma}}   \| ),
+}
+where the
+\eqn{\hat{\mathbf{\Sigma}}_a},
+\eqn{\hat{\mathbf{\Sigma}}_b},
+\eqn{\hat{\mathbf{\Sigma}}}
+are the estimates of the covariance matrix in the sub- and whole group(s),
+respectively.
 
 To accommodate the high-dimensionality the parameters of interest are
 estimated in a penalized manner (ridge-type penalization, see

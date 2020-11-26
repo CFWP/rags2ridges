@@ -291,47 +291,56 @@ support4ridgeP <- function(adjMat=NULL,
 #' Ridge estimation for high-dimensional precision matrices with known chordal
 #' support
 #'
-#' Function that calculates various ridge estimators for high-dimensional
+#' Calculates various ridge estimators for high-dimensional
 #' precision matrices with known support. This support should form a chordal
 #' graph. If the provided support is not chordal, the function makes it so.
 #'
-#' Sister function to the \code{\link{ridgeP}}-function, incorporating a
-#' chordal zero structure of the precision matrix.
+#' @details
+#' Sister function to the \code{\link{ridgeP}}-function, incorporating a chordal
+#' zero structure of the precision matrix.
 #'
-#' The loss function for \code{type="ArchII"} is: \deqn{ \log(| \mathbf{\Omega}
-#' |) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \lambda \big\{ \log(|
-#' \mathbf{\Omega} |) - \mbox{tr} [ (\mathbf{S} + (1+\lambda) \mathbf{I}_{p
-#' \times p}) \mathbf{\Omega} ] \big\}. } For \code{type="ArchI"} it is: \deqn{
-#' (1-\lambda) \big [ \log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S}
-#' \mathbf{\Omega} ) \big] + \lambda \big[ \log(| \mathbf{\Omega} |) -
-#' \mbox{tr} ( \mathbf{\Omega} ) \big], } which is obtained from: \deqn{ \log(|
-#' \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \nu \big[
-#' \log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{\Omega} ) \big] } by
-#' division of \eqn{(1+\nu)} and writing \eqn{\lambda = \nu / (1 + \nu)}.
+#' The loss function for \code{type="ArchII"} is:
+#'   \deqn{
+#'     \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) +
+#'     \lambda
+#'     \big\{
+#'       \log(| \mathbf{\Omega} |) -
+#'       \mbox{tr}[ (\mathbf{S} + (1+\lambda) \mathbf{I}_{p \times p})
+#'       \mathbf{\Omega} ]
+#'     \big\}.
+#'   }
+#' For \code{type="ArchI"} it is:
+#'   \deqn{
+#'     (1-\lambda)
+#'     \big[ \log(| \mathbf{\Omega} |) -
+#'           \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) \big] +
+#'     \lambda \big[ \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{\Omega} )
+#'     \big],
+#'   }
+#' which is obtained from:
+#'   \deqn{
+#'     \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) +
+#'     \nu \big[ \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{\Omega} ) \big]
+#'   }
+#' by division of \eqn{(1+\nu)} and writing \eqn{\lambda = \nu / (1 + \nu)}.
 #'
-#' An explicit expression for the minimizer of the loss functions implied by
-#' the archetypal ridge estimators (\code{type="ArchI"} and
-#' \code{type="ArchII"}) exists. For the simple case in which the graph
-#' decomposes into cliques \eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2} and
-#' separator \eqn{\mathcal{S}} the estimator is:
-#' \deqn{\widehat{\mathbf{\Omega}} = \left( \begin{array}{lll} \,
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
-#' \mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} &
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
-#' \mathcal{S}, \mathcal{S}} & \mathbf{0}_{|\mathcal{C}_1 \setminus
-#' \mathcal{S}| \times |\mathcal{C}_2 \setminus \mathcal{S}|} \\ \,
-#' [\widehat{\mathbf{\Omega}}^{(\mathcal{C}_1)}]_{\mathcal{S}, \mathcal{C}_1
-#' \setminus \mathcal{S}} &
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{S}, \mathcal{S}} +
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{S}} -
-#' \widehat{\mathbf{\Omega}}^{(\mathcal{S})} &
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{C}_2
-#' \setminus \mathcal{S}} \\ \, \mathbf{0}_{|\mathcal{C}_2 \setminus
-#' \mathcal{S}| \times |\mathcal{C}_1 \setminus \mathcal{S}|} &
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
-#' \mathcal{S}, \mathcal{S}} &
-#' [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
-#' \mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}} \end{array} \right), }
+#' An explicit expression for the minimizer of the loss functions implied by the
+#' archetypal ridge estimators (\code{type="ArchI"} and \code{type="ArchII"})
+#' exists. For the simple case in which the graph decomposes into cliques
+#' \eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2} and separator \eqn{\mathcal{S}} the
+#' estimator is:
+#'   \deqn{
+#'     \widehat{\mathbf{\Omega}}  =
+#'     \left(
+#'       \begin{array}{lll}
+#'       \, [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus \mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus \mathcal{S}, \mathcal{S}} & \mathbf{0}_{|\mathcal{C}_1 \setminus \mathcal{S}| \times |\mathcal{C}_2 \setminus \mathcal{S}|}
+#'       \\
+#'       \, [\widehat{\mathbf{\Omega}}^{(\mathcal{C}_1)}]_{\mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{S}, \mathcal{S}} + [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{S}} - \widehat{\mathbf{\Omega}}^{(\mathcal{S})} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}}
+#'       \\
+#'       \, \mathbf{0}_{|\mathcal{C}_2 \setminus \mathcal{S}| \times |\mathcal{C}_1 \setminus \mathcal{S}|} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus \mathcal{S}, \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus \mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}}
+#'       \end{array}
+#'       \right),
+#'   }
 #' where \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}},
 #' \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}} and
 #' \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{S}})}} are the marginal ridge ML
@@ -400,8 +409,8 @@ support4ridgeP <- function(adjMat=NULL,
 #' Miok, V., Wilting, S.M., Van Wieringen, W.N. (2016), "Ridge estimation of
 #' the VAR(1) model and its time series chain graph from multivariate
 #' time-course omics data", \emph{Biometrical Journal}, 59(1), 172-191.
-#' @examples
 #'
+#' @examples
 #' # obtain some (high-dimensional) data
 #' p <- 8
 #' n <- 100
@@ -421,81 +430,28 @@ support4ridgeP <- function(adjMat=NULL,
 #' Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros,
 #' 	cliques=supportP$cliques, separators=supportP$separators)
 #'
-#' @importFrom stats optim
+#' @importFrom stats nlm optim
+#' @importFrom igraph graph.adjacency igraph.to.graphNEL
+#' @importFrom gRbase triangulate
+#' @importFrom RBGL is.triangulated
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 ridgePchordal <- function(S,
                           lambda,
                           zeros,
-                          cliques=list(),
-                          separators=list(),
-                          target=default.target(S),
-                          type="Alt",
-                          optimizer="nlm",
-                          grad=FALSE,
-                          verbose=TRUE,
+                          cliques = list(),
+                          separators = list(),
+                          target = default.target(S),
+                          type = "Alt",
+                          optimizer = "nlm",
+                          grad = FALSE,
+                          verbose = TRUE,
                           ...){
 
-	########################################################################
-	#
-	# DESCRIPTION:
-	# Ridge estimation of the precision matrix with known zeros.
-	# Nonzeros should form a chordal graph. If not chordal, the function
-	# makes it so.
-	#
-	# ARGUMENTS:
-	# -> S          	: Sample covariance matrix.
-	# -> lambda     	: A numeric representing the value of the
-	#                         penalty parameter.
-	# -> target     	: A target matrix (in precision terms) for
-	#                         Type I ridge estimators.
-	# -> zeros	        : A matrix with indices of entries of the
-	#                         precision matrix that are constrained to
-	#                         zero. The matrix comprises two columns, each
-	#                         row corresponding to an entry of the adjacency
-	#                         matrix. The first column contains the row
-	#                         indices and the second the column indices. The
-	#                         specified graph should be undirected and
-	#                         decomposable. If not, it is symmetrized and
-	#                         triangulated. Hence, it may differ from the
-	#                         input 'zeros'.
-	# -> cliques            : A 'list'-object containing the node indices
-	#                         per clique as obtained from the
-	#                         'support4ridgeP'-function.
-	# -> separators         : A 'list'-object containing the node indices
-	#                         per separator as obtained from the
-	#                         'support4ridgeP'-function.
-	# -> type       	: A character indicating the type of ridge
-	#                         estimator to be used. Must be one of:
-	#                         "Alt", "ArchI", "ArchII".
-	# -> optimizer     	: Which optimization function should be
-	#                         used: "optim" or "nlm"?
-	# -> grad       	: Logical indicator: should, next to the
-	#                         precision matrix estimate, also the
-	#                         gradient be returned?
-	# -> verbose    	: Logical indicator: should intermediate
-	#                         output be printed on the screen?
-	# -> ...        	: Additional arguments passed on to either
-	#                         "optim" or "nlm".
-	#
-	# DEPENDENCIES:
-	# require("igraph")          # functions from package : graph.adjancency,
-	#                                                       igraph.to.graphNEL
-	# require("gRbase")          # functions from package : triangulate
-	# require("RGBL")            # functions from package : is.triangulated
-	# require("rags2ridges")     # functions from package : adjacentMat,
-	#                                                       default.target
-	# require("stats")           # functions from package : nlm, optim
-	# require("utils")           # functions from package : txtProgressBar,
-	#                                                       setTxtProgressBar,
-	#                                                       Sys.sleep
-	#
-	# NOTES:
-	# 1) Currently, uses the full inverse instead of the partial inverse.
+	# TODO: Currently, uses the full inverse instead of the partial inverse.
 	#    To be fixed in the far future.
-	#
-	########################################################################
 
-   	# input checks
+	# Input checks
 	if (!is.matrix(S)){
 		stop("S should be a matrix")
 	}
@@ -624,7 +580,7 @@ ridgePchordal <- function(S,
 		for (subG in unique(components)){
 			if (verbose){
 				utils::setTxtProgressBar(pBar, subG);
-				Sys.sleep(10^(-10))
+			  Sys.sleep(10^(-10))
 			}
 
 			# construct component data

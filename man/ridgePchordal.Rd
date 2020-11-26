@@ -69,48 +69,56 @@ at the optimal (if reached) value. The gradient is returned and it can be
 checked whether it is indeed (close to) zero at the optimum.
 }
 \description{
-Function that calculates various ridge estimators for high-dimensional
+Calculates various ridge estimators for high-dimensional
 precision matrices with known support. This support should form a chordal
 graph. If the provided support is not chordal, the function makes it so.
 }
 \details{
-Sister function to the \code{\link{ridgeP}}-function, incorporating a
-chordal zero structure of the precision matrix.
+Sister function to the \code{\link{ridgeP}}-function, incorporating a chordal
+zero structure of the precision matrix.
 
-The loss function for \code{type="ArchII"} is: \deqn{ \log(| \mathbf{\Omega}
-|) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \lambda \big\{ \log(|
-\mathbf{\Omega} |) - \mbox{tr} [ (\mathbf{S} + (1+\lambda) \mathbf{I}_{p
-\times p}) \mathbf{\Omega} ] \big\}. } For \code{type="ArchI"} it is: \deqn{
-(1-\lambda) \big [ \log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S}
-\mathbf{\Omega} ) \big] + \lambda \big[ \log(| \mathbf{\Omega} |) -
-\mbox{tr} ( \mathbf{\Omega} ) \big], } which is obtained from: \deqn{ \log(|
-\mathbf{\Omega} |) - \mbox{tr} ( \mathbf{S} \mathbf{\Omega} ) + \nu \big[
-\log(| \mathbf{\Omega} |) - \mbox{tr} ( \mathbf{\Omega} ) \big] } by
-division of \eqn{(1+\nu)} and writing \eqn{\lambda = \nu / (1 + \nu)}.
+The loss function for \code{type="ArchII"} is:
+  \deqn{
+    \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) +
+    \lambda
+    \big\{
+      \log(| \mathbf{\Omega} |) -
+      \mbox{tr}[ (\mathbf{S} + (1+\lambda) \mathbf{I}_{p \times p})
+      \mathbf{\Omega} ]
+    \big\}.
+  }
+For \code{type="ArchI"} it is:
+  \deqn{
+    (1-\lambda)
+    \big[ \log(| \mathbf{\Omega} |) -
+          \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) \big] +
+    \lambda \big[ \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{\Omega} )
+    \big],
+  }
+which is obtained from:
+  \deqn{
+    \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{S} \mathbf{\Omega} ) +
+    \nu \big[ \log(| \mathbf{\Omega} |) - \mbox{tr}( \mathbf{\Omega} ) \big]
+  }
+by division of \eqn{(1+\nu)} and writing \eqn{\lambda = \nu / (1 + \nu)}.
 
-An explicit expression for the minimizer of the loss functions implied by
-the archetypal ridge estimators (\code{type="ArchI"} and
-\code{type="ArchII"}) exists. For the simple case in which the graph
-decomposes into cliques \eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2} and
-separator \eqn{\mathcal{S}} the estimator is:
-\deqn{\widehat{\mathbf{\Omega}} = \left( \begin{array}{lll} \,
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
-\mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} &
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus
-\mathcal{S}, \mathcal{S}} & \mathbf{0}_{|\mathcal{C}_1 \setminus
-\mathcal{S}| \times |\mathcal{C}_2 \setminus \mathcal{S}|} \\ \,
-[\widehat{\mathbf{\Omega}}^{(\mathcal{C}_1)}]_{\mathcal{S}, \mathcal{C}_1
-\setminus \mathcal{S}} &
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{S}, \mathcal{S}} +
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{S}} -
-\widehat{\mathbf{\Omega}}^{(\mathcal{S})} &
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{C}_2
-\setminus \mathcal{S}} \\ \, \mathbf{0}_{|\mathcal{C}_2 \setminus
-\mathcal{S}| \times |\mathcal{C}_1 \setminus \mathcal{S}|} &
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
-\mathcal{S}, \mathcal{S}} &
-[\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus
-\mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}} \end{array} \right), }
+An explicit expression for the minimizer of the loss functions implied by the
+archetypal ridge estimators (\code{type="ArchI"} and \code{type="ArchII"})
+exists. For the simple case in which the graph decomposes into cliques
+\eqn{\mathcal{C}_1}, \eqn{\mathcal{C}_2} and separator \eqn{\mathcal{S}} the
+estimator is:
+  \deqn{
+    \widehat{\mathbf{\Omega}}  =
+    \left(
+      \begin{array}{lll}
+      \, [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus \mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{C}_1 \setminus \mathcal{S}, \mathcal{S}} & \mathbf{0}_{|\mathcal{C}_1 \setminus \mathcal{S}| \times |\mathcal{C}_2 \setminus \mathcal{S}|}
+      \\
+      \, [\widehat{\mathbf{\Omega}}^{(\mathcal{C}_1)}]_{\mathcal{S}, \mathcal{C}_1 \setminus \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}]_{\mathcal{S}, \mathcal{S}} + [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{S}} - \widehat{\mathbf{\Omega}}^{(\mathcal{S})} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}}
+      \\
+      \, \mathbf{0}_{|\mathcal{C}_2 \setminus \mathcal{S}| \times |\mathcal{C}_1 \setminus \mathcal{S}|} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus \mathcal{S}, \mathcal{S}} & [\widehat{\mathbf{\Omega}}^{({\mathcal{C}_2})}]_{\mathcal{C}_2 \setminus \mathcal{S}, \mathcal{C}_2 \setminus \mathcal{S}}
+      \end{array}
+      \right),
+  }
 where \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}},
 \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{C}_1})}} and
 \eqn{\widehat{\mathbf{\Omega}}^{({\mathcal{S}})}} are the marginal ridge ML
@@ -134,7 +142,6 @@ with known zeros for the precision matrix (see Dahl \emph{et al}., 2005 for
 details).
 }
 \examples{
-
 # obtain some (high-dimensional) data
 p <- 8
 n <- 100

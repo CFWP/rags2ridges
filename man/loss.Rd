@@ -27,32 +27,36 @@ precision terms. This function may be used to estimate the risk (vis-a-vis,
 say, the true precision matrix) of the various ridge estimators employed.
 }
 \details{
-Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population
-precision matrix and let \eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a
-generic ridge estimator of the precision matrix under generic regularization
-parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
-considers the following loss functions: \enumerate{ \item Squared Frobenius
-loss, given by: \deqn{ L_{F}[\hat{\mathbf{\Omega}}(\lambda),
-\mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda) -
-\mathbf{\Omega}\|_{F}^{2}; } \item Quadratic loss, given by: \deqn{
-L_{Q}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] =
-\|\hat{\mathbf{\Omega}}(\lambda) \mathbf{\Omega}^{-1} -
-\mathbf{I}_{p}\|_{F}^{2}.  } } The argument \code{T} is considered to be the
-true precision matrix when \code{precision = TRUE}. If \code{precision}
-\code{= FALSE} the argument \code{T} is considered to represent the true
-covariance matrix. This statement is needed so that the loss is properly
-evaluated over the precision, i.e., depending on the value of the
-\code{logical} argument \code{precision} inversions are employed where
-needed.
+Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population precision matrix and let
+\eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a generic ridge estimator of the precision matrix under
+generic regularization parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
+considers the following loss functions:
+  \enumerate{
+    \item Squared Frobenius loss, given by:
+      \deqn{
+        L_{F}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda) -
+          \mathbf{\Omega}\|_{F}^{2};
+      }
+    \item Quadratic loss, given by:
+      \deqn{
+        L_{Q}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda)
+        \mathbf{\Omega}^{-1} - \mathbf{I}_{p}\|_{F}^{2}.
+      }
+  }
+The argument \code{T} is considered to be the true precision matrix when \code{precision = TRUE}.
+If \code{precision} \code{= FALSE} the argument \code{T} is considered to represent the true covariance matrix.
+This statement is needed so that the loss is properly evaluated over the precision, i.e., depending
+on the value of the \code{logical} argument \code{precision} inversions are employed where needed.
 
-The function can be employed to assess the risk of a certain ridge precision
-estimator (see also \code{\link{ridgeP}}). The risk \eqn{\mathcal{R}_{f}} of
-the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function
-\eqn{L_{f}}, with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
-\deqn{ \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
-\mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}]\}, }
-which can be approximated by the mean or median of losses over repeated
-simulation runs.
+The function can be employed to assess the risk of a certain ridge precision estimator (see also \code{\link{ridgeP}}).
+The risk \eqn{\mathcal{R}_{f}} of the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function \eqn{L_{f}},
+with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
+  \deqn{
+    \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
+      \mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda),
+                         \mathbf{\Omega}]\},
+  }
+which can be approximated by the mean or median of losses over repeated simulation runs.
 }
 \examples{
 
