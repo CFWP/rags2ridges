@@ -586,7 +586,7 @@ ridgePchordal <- function(S,
 		for (subG in unique(components)){
 			if (verbose){
 				utils::setTxtProgressBar(pBar, subG);
-			  Sys.sleep(10^(-10))
+			  Sys.sleep(10^(-10))  # TODO: WHY?
 			}
 
 			# construct component data
