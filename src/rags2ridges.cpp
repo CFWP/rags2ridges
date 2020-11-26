@@ -9,9 +9,9 @@
 ----------------------------------------------------------------------------- */
 ////////////////////////////////////////////////////////////////////////////////
 
-//' Evaulate the (penalized) (fused) likelihood
+//' Evaluate the (penalized) (fused) likelihood
 //'
-//' Functions that evaulate the (penalized) (fused) likelihood.
+//' Functions that evaluate the (penalized) (fused) likelihood.
 //'
 //' @aliases NLL PNLL NLL.fused PNLL.fused
 //' @param S,Slist A (list of) positive semi definite sample covariance

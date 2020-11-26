@@ -5,7 +5,7 @@
 \alias{PNLL}
 \alias{NLL.fused}
 \alias{PNLL.fused}
-\title{Evaulate the (penalized) (fused) likelihood}
+\title{Evaluate the (penalized) (fused) likelihood}
 \usage{
 NLL(S, P)
 
@@ -32,7 +32,7 @@ functions, this is a penalty \code{matrix}.}
 A single number.
 }
 \description{
-Functions that evaulate the (penalized) (fused) likelihood.
+Functions that evaluate the (penalized) (fused) likelihood.
 }
 \examples{
 
