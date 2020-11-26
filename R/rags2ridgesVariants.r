@@ -365,42 +365,48 @@ support4ridgeP <- function(adjMat=NULL,
 #'
 #' @param S Sample covariance \code{matrix}.
 #' @param lambda A \code{numeric} representing the value of the penalty
-#' parameter.
+#'   parameter.
 #' @param target A target \code{matrix} (in precision terms) for Type I ridge
-#' estimators.
+#'   estimators.
 #' @param zeros \code{Matrix} with indices of entries of the adjacency matrix
-#' that are zero. The matrix comprises two columns, each row corresponding to
-#' an entry of the adjacency matrix. The first column contains the row indices
-#' and the second the column indices. The specified graph should be undirected
-#' and decomposable. If not, use the \code{\link{support4ridgeP}} to symmetrize
-#' and triangulate. This is done automatically if \code{cliques} and
-#' \code{separators} arguments are empty lists (and the then employed
-#' \code{zeros}-object may differ from the one provided as input).
-#' @param cliques A \code{list}-object containing the node indices per clique
-#' as obtained from the \code{\link{support4ridgeP}}-function.
+#'   that are zero. The matrix comprises two columns, each row corresponding to
+#'   an entry of the adjacency matrix. The first column contains the row indices
+#'   and the second the column indices. The specified graph should be undirected
+#'   and decomposable. If not, use the \code{\link{support4ridgeP}} to
+#'   symmetrize and triangulate. This is done automatically if \code{cliques}
+#'   and \code{separators} arguments are empty lists (and the then employed
+#'   \code{zeros}-object may differ from the one provided as input).
+#' @param cliques A \code{list}-object containing the node indices per clique as
+#'   obtained from the \code{\link{support4ridgeP}}-function.
 #' @param separators A \code{list}-object containing the node indices per
-#' separator as obtained from the \code{\link{support4ridgeP}}-function.
+#'   separator as obtained from the \code{\link{support4ridgeP}}-function.
 #' @param type A \code{character} indicating the type of ridge estimator to be
-#' used. Must be one of: \code{Alt} (default), \code{ArchI}, \code{ArchII}.
+#'   used. Must be one of: \code{Alt} (default), \code{ArchI}, \code{ArchII}.
 #' @param optimizer A \code{character} (either \code{nlm} (default) or
-#' \code{optim}) specifying which optimization function should be used:
-#' \code{\link[stats:nlm]{nlm}} (default) or \code{\link[stats:optim]{optim}}?
+#'   \code{optim}) specifying which optimization function should be used:
+#'   \code{\link[stats:nlm]{nlm}} (default) or \code{\link[stats:optim]{optim}}?
 #' @param grad A \code{logical} indicator: should, next to the precision matrix
-#' estimate, also the gradient be returned?
+#'   estimate, also the gradient be returned?
 #' @param verbose A \code{logical} indicator: should intermediate output be
-#' printed on the screen?
+#'   printed on the screen?
 #' @param ...  Additional arguments passed on to either
-#' \code{\link[stats:nlm]{nlm}} or \code{\link[stats:optim]{optim}}.
-#' @return If \code{grad=FALSE}, the function returns a regularized precision
+#'   \code{\link[stats:nlm]{nlm}} or \code{\link[stats:optim]{optim}}.
+#'
+#' @return
+#' If \code{grad=FALSE}, the function returns a regularized precision
 #' \code{matrix} with specified chordal sparsity structure.
 #'
 #' If \code{grad=TRUE}, a list is returned comprising of \emph{i)} the
 #' estimated precision matrix, and \emph{ii)} the gradients at the initial and
 #' at the optimal (if reached) value. The gradient is returned and it can be
 #' checked whether it is indeed (close to) zero at the optimum.
+#'
 #' @author Wessel N. van Wieringen.
+#'
 #' @seealso \code{\link[rags2ridges:ridgeP]{ridgeP}}
-#' @references Dahl, J., Roychowdhury, V., Vandenberghe, L. (2005), "Maximum
+#'
+#' @references
+#' Dahl, J., Roychowdhury, V., Vandenberghe, L. (2005), "Maximum
 #' likelihood estimation of Gaussian graphical models: numerical implementation
 #' and topology selection", Technical report, UCLA, 2005.
 #'
