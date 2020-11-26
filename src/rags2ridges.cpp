@@ -382,42 +382,40 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 //' functions.
 //'
 //' @details
-//' The functions are R-interfaces to low-level \code{C++} implementations of
-//' the ridge estimators in the reference below (cf. Lemma 1, Remark 6, Remark
-//' 7, and section 4.1 therein).
+//' The functions are R-interfaces to low-level \code{C++} implementations
+//' of the ridge estimators in the reference below
+//' (cf. Lemma 1, Remark 6, Remark 7, and section 4.1 therein).
 //'
 //' \code{.armaRidgeP} is simply a wrapper (on the C++ side) for
-//' \code{.armaRidgePAnyTarget} and \code{.armaRidgePScalarTarget} which are the
-//' estimators for arbitrary and scalar targets, respectively.  The
-//' \code{invert} argument of the functions indicates if the computation uses
-//' matrix inversion or not.
+//' \code{.armaRidgePAnyTarget} and \code{.armaRidgePScalarTarget} which are
+//' the estimators for arbitrary and scalar targets, respectively.
+//' The \code{invert} argument of the functions indicates if the computation
+//' uses matrix inversion or not.
 //'
-//' Essentially, the functions compute \deqn{ }{% \Omega(\lambda) = {[\lambda I
-//' + 1/4(S - \lambda T)^2 ]^{1/2} + 1/2(S - \lambda T)}^{-1}, }\deqn{
-//' \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) = }{% \Omega(\lambda) =
-//' {[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} + 1/2(S - \lambda T)}^{-1},
-//' }\deqn{ \left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
-//' }{% \Omega(\lambda) = {[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} + 1/2(S -
-//' \lambda T)}^{-1}, }\deqn{ \lambda_{a}\mathbf{T})^{2}\right]^{1/2} +
-//' \frac{1}{2}(\mathbf{S} - }{% \Omega(\lambda) = {[\lambda I + 1/4(S - \lambda
-//' T)^2 ]^{1/2} + 1/2(S - \lambda T)}^{-1}, }\deqn{
-//' \lambda_{a}\mathbf{T})\right\}^{-1}, }{% \Omega(\lambda) = {[\lambda I +
-//' 1/4(S - \lambda T)^2 ]^{1/2} + 1/2(S - \lambda T)}^{-1}, }\deqn{ }{%
-//' \Omega(\lambda) = {[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} + 1/2(S -
-//' \lambda T)}^{-1}, } if \code{invert == 1} or \deqn{ }{% \Omega(\lambda) =
-//' 1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} - 1/2(S - \lambda T)}, }\deqn{
-//' \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) = }{% \Omega(\lambda) =
-//' 1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} - 1/2(S - \lambda T)}, }\deqn{
-//' \frac{1}{\lambda}\left\{\left[\lambda_{a}\mathbf{I}_{p} +
-//' \frac{1}{4}(\mathbf{S} - }{% \Omega(\lambda) = 1/{[\lambda I + 1/4(S -
-//' \lambda T)^2 ]^{1/2} - 1/2(S - \lambda T)}, }\deqn{
-//' \lambda_{a}\mathbf{T})^{2}\right]^{1/2} - \frac{1}{2}(\mathbf{S} - }{%
-//' \Omega(\lambda) = 1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} - 1/2(S -
-//' \lambda T)}, }\deqn{ \lambda_{a}\mathbf{T})\right\} }{% \Omega(\lambda) =
-//' 1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} - 1/2(S - \lambda T)}, }\deqn{
-//' }{% \Omega(\lambda) = 1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2} - 1/2(S -
-//' \lambda T)}, } if \code{invert == 0} using appropriate eigenvalue
-//' decompositions.  See the implementations in the example section below.
+//' Essentially, the functions compute
+//'     \deqn{
+//'       \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) =
+//'         \left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+//'         \lambda_{a}\mathbf{T})^{2}\right]^{1/2} + \frac{1}{2}(\mathbf{S} -
+//'         \lambda_{a}\mathbf{T})\right\}^{-1},
+//'     }{%
+//'       \Omega(\lambda) =
+//'       \{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
+//'         + 1/2(S - \lambda T)\}^{-1},
+//'     }
+//' if \code{invert == 1} or
+//'     \deqn{
+//'       \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a}) =
+//'         \frac{1}{\lambda}\left\{\left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+//'                  \lambda_{a}\mathbf{T})^{2}\right]^{1/2} - \frac{1}{2}(\mathbf{S} -
+//'         \lambda_{a}\mathbf{T})\right\}
+//'     }{%
+//'       \Omega(\lambda) =
+//'       1/{[\lambda I + 1/4(S - \lambda T)^2 ]^{1/2}
+//'         - 1/2(S - \lambda T)},
+//'     }
+//' if \code{invert == 0} using appropriate eigenvalue decompositions.
+//' See the \R implementations in the example section below.
 //'
 //' @aliases .armaRidgeP .armaRidgePAnyTarget .armaRidgePScalarTarget armaRidgeP
 //' armaRidgePAnyTarget armaRidgePScalarTarget
