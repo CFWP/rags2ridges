@@ -128,7 +128,7 @@
 #' Phat <- ridgePchordal(S, 0.1, zeros=supportP$zeros,
 #' 	cliques=supportP$cliques, separators=supportP$separators)
 #'
-#' @export support4ridgeP
+#' @export
 support4ridgeP <- function(adjMat=NULL,
                            nNodes=NULL,
                            zeros=NULL,
@@ -422,7 +422,7 @@ support4ridgeP <- function(adjMat=NULL,
 #' 	cliques=supportP$cliques, separators=supportP$separators)
 #'
 #' @importFrom stats optim
-#' @export ridgePchordal
+#' @export
 ridgePchordal <- function(S,
                           lambda,
                           zeros,
@@ -833,7 +833,7 @@ ridgePchordal <- function(S,
 #' 	cliques=supportP$cliques, separators=supportP$separators)
 #'
 #' @importFrom stats optim
-#' @export optPenaltyPchordal
+#' @export
 optPenaltyPchordal <- function (Y,
                                 lambdaMin,
                                 lambdaMax,
@@ -979,7 +979,7 @@ optPenaltyPchordal <- function (Y,
 #' ridgePsign(covML(Y), lambda=0.1, sign="pos")
 #'
 #' @importFrom stats constrOptim
-#' @export ridgePsign
+#' @export
 ridgePsign <- function(S,
                        lambda,
                        sign,

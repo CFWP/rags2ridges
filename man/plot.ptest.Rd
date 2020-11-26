@@ -2,7 +2,6 @@
 % Please edit documentation in R/rags2ridgesFused.R
 \name{plot.ptest}
 \alias{plot.ptest}
-\alias{hist.ptest}
 \title{Plot the results of a fusion test}
 \usage{
 \method{plot}{ptest}(x, add.extra = TRUE, ...)
@@ -42,7 +41,6 @@ ft <- fused.test(Ylist, Tlist, lambda = lam, n.permutations = 500)
 hist(ft)
 # or via the alias
 plot(ft)
-
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and

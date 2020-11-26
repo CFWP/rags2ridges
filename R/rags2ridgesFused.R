@@ -441,7 +441,7 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
 #' P <- createS(n = 1, p = 5, "banded", precision = TRUE)
 #' lapply(createS(n = c(1e5, 1e5), p = 5, Plist = list(P, P+1)), solve)
 #'
-#' @export createS
+#' @export
 createS <- function(n, p,
                     topology = "identity",
                     dataset = FALSE,
@@ -690,7 +690,7 @@ createS <- function(n, p,
 #' }
 #' }
 #'
-#' @export getKEGGPathway
+#' @export
 getKEGGPathway <- function(kegg.id) {
   ##############################################################################
   # - Download information and graph object of a given kegg pathway.
@@ -995,7 +995,7 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
 #' Plist <- lapply(createS(ns, p = 6), solve)
 #' pooledS(Plist, ns)
 #'
-#' @export pooledS
+#' @export
 pooledS <- function(Slist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
   ##############################################################################
   # - Computes the pooled covariance estimate
@@ -1931,7 +1931,7 @@ optPenalty.fused.grid <-
 #' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
 #' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
 #' Machine Learning Research, 21(26): 1-52.
-#' @export print.optPenaltyFusedGrid
+#' @export
 print.optPenaltyFusedGrid <- function(x, ...) {
   with(x, print(fcvl))
   return(invisible(x))
@@ -2780,7 +2780,7 @@ default.penalty <- function(G, df,
 #' hist(ft, col = "steelblue", main = "Null distribution", add.extra = FALSE,
 #'      xlab = "Score statistic", freq = FALSE)
 #'
-#' @export fused.test
+#' @export
 fused.test <- function(Ylist, Tlist, lambda,
                        n.permutations = 100, verbose = FALSE, ...) {
   ##############################################################################
@@ -2888,7 +2888,7 @@ fused.test <- function(Ylist, Tlist, lambda,
 #' diag(lam) <- 1
 #' ft <- fused.test(Ylist, Tlist, lambda = lam, n.permutations = 500)
 #'
-#' @export print.ptest
+#' @export
 print.ptest <- function(x, digits = 4L, ...) {
   ##############################################################################
   # - Print function for ptest objects
@@ -2913,7 +2913,8 @@ print.ptest <- function(x, digits = 4L, ...) {
 }
 
 
-
+#' @describeIn print.ptest
+#' @export
 summary.ptest <- function(object, ...) {
   ##############################################################################
   # - Summary function for ptest objects
@@ -2929,7 +2930,8 @@ summary.ptest <- function(object, ...) {
 }
 
 
-
+#' @describeIn plot.ptest
+#' @export
 hist.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
   # - Plot function for ptest objects as a histogram
@@ -2979,7 +2981,6 @@ hist.ptest <- function(x, add.extra = TRUE, ...) {
 #'
 #' \code{plot.ptest} is simply a wrapper for \code{hist.ptest}.
 #'
-#' @aliases plot.ptest hist.ptest
 #' @param x A \code{ptest} object (a list). Usually the output of
 #' \code{\link{fused.test}}.
 #' @param add.extra A logical. Add extra information to the plot.
@@ -3009,8 +3010,7 @@ hist.ptest <- function(x, add.extra = TRUE, ...) {
 #' hist(ft)
 #' # or via the alias
 #' plot(ft)
-#'
-#' @export plot.ptest
+#' @export
 plot.ptest <- function(x, add.extra = TRUE, ...) {
   ##############################################################################
   # - Alias for plot.ptest
