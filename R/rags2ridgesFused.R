@@ -1802,6 +1802,7 @@ ridgeP.fused <- function(Slist,
 }
 
 
+#' @rdname optPenalty.fused
 #' @export
 optPenalty.fused.grid <-
   function(Ylist, Tlist,

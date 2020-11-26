@@ -381,6 +381,7 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 //' precision estimators. They perform core computations for many other
 //' functions.
 //'
+//' @details
 //' The functions are R-interfaces to low-level \code{C++} implementations of
 //' the ridge estimators in the reference below (cf. Lemma 1, Remark 6, Remark
 //' 7, and section 4.1 therein).
