@@ -23,7 +23,6 @@ wrapper for \code{\link{GGMnetworkStats}}.
 For details on the columns see \code{\link{GGMnetworkStats}}.
 }
 \examples{
-
 ## Create some "high-dimensional" data
 set.seed(1)
 p <- 10

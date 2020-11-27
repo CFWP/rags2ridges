@@ -27,7 +27,6 @@ Print and summary functions for the fusion test performed by
 \code{\link{fused.test}}.
 }
 \examples{
-
 ns <- c(10, 5, 23)
 Ylist <- createS(ns, p = 15, topology = "banded", dataset = TRUE)
 
@@ -42,14 +41,14 @@ ft <- fused.test(Ylist, Tlist, lambda = lam, n.permutations = 500)
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
-van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
-Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
-Machine Learning Research, 21(26): 1-52.
+  van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+  Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal
+  of Machine Learning Research, 21(26): 1-52.
 }
 \seealso{
 \code{\link{fused.test}}, \code{\link{hist.ptest}}
 }
 \author{
 Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }

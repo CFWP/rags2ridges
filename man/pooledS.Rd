@@ -16,8 +16,8 @@ matrices of the same size.}
 \item{ns}{A \code{numeric} vector for length \eqn{G} giving the sample sizes
 in the corresponding entries of \code{Slist}}
 
-\item{subset}{\code{logical} vector of the same length as \code{Slist}
-giving the classes to pool. Default is all classes.}
+\item{subset}{\code{logical} vector of the same length as \code{Slist} giving
+the classes to pool. Default is all classes.}
 
 \item{mle}{\code{logical}. If \code{TRUE}, the (biased) MLE is given. If
 \code{FALSE}, the biased corrected estimate is given. Default is
@@ -28,28 +28,26 @@ precision matrices of the same size.}
 }
 \value{
 \code{pooledS} returns the pooled covariance matrix, that is a
-\code{numeric} matrix with the same size as the elements of \code{Slist}.
-Similarly, \code{pooledP} returns the pooled precision matrix, i.e. a
-\code{numeric} matrix with the same size as the elements of \code{Plist}.
+  \code{numeric} matrix with the same size as the elements of \code{Slist}.
+  Similarly, \code{pooledP} returns the pooled precision matrix, i.e. a
+  \code{numeric} matrix with the same size as the elements of \code{Plist}.
 }
 \description{
-Compute the pooled covariance or precision matrix estimate from a
-\code{list} of covariance matrices or precision matrices.
+Compute the pooled covariance or precision matrix estimate from a \code{list}
+of covariance matrices or precision matrices.
 }
 \details{
 When \code{mle} is \code{FALSE} the given covariance/precision matrices is
 assumed to have been computed using the denominator \code{ns[i] - 1}. Hence,
 the sum of all \code{ns} minus \eqn{G} is used a the denominator of the
 pooled estimate. Conversely, when \code{mle} is \code{TRUE} the total sum of
-the sample sizes \code{ns} is used as the denominator in the pooled
-estimate.
+the sample sizes \code{ns} is used as the denominator in the pooled estimate.
 
 The function \code{pooledP} is equivalent to a wrapper for \code{pooledS}.
 That is, it inverts all the precision matrices in \code{Plist}, applies
 \code{pooledS}, and inverts the resulting matrix.
 }
 \examples{
-
 ns <- c(4, 6, 8)
 Slist <- createS(ns, p = 6)
 
@@ -68,5 +66,5 @@ pooledS(Plist, ns)
 }
 \author{
 Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }

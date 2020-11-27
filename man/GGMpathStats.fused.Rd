@@ -19,10 +19,9 @@ A simple wrapper for \code{\link{GGMpathStats}}.
 }
 \note{
 The function currently fails if no paths are present in one of the
-groups.
+  groups.
 }
 \examples{
-
 ## Obtain some (high-dimensional) data
 set.seed(1)
 ns <- c(10, 11)
@@ -43,5 +42,5 @@ res <- GGMpathStats.fused(SPlist, node1 = 3, node2 = 4, graph = FALSE)
 }
 \author{
 Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
-N. van Wieringen
+  N. van Wieringen
 }

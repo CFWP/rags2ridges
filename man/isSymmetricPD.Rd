@@ -17,8 +17,8 @@ semi-definiteness.}
 }
 \value{
 Returns a \code{logical} value. Returns \code{TRUE} if the \code{M}
-is symmetric positive (semi)definite and \code{FALSE} if not.  If \code{M}
-is not even symmetric, the function throws an error.
+  is symmetric positive (semi)definite and \code{FALSE} if not.  If \code{M}
+  is not even symmetric, the function throws an error.
 }
 \description{
 Function to test if a \code{matrix} is symmetric positive (semi)definite or
@@ -31,13 +31,12 @@ semi-definiteness by checking if all eigenvalues are larger than
 \eqn{\lambda_1} is the largest eigenvalue.
 
 While \code{isSymmetricPSD} returns \code{TRUE} if the matrix is
-symmetric positive definite and \code{FASLE} if not. In practice, it tests if
-all eigenvalues are larger than -tol*|l| where l is the largest eigenvalue.
-More
-\href{http://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
+  symmetric positive definite and \code{FASLE} if not. In practice, it tests
+  if all eigenvalues are larger than -tol*|l| where l is the largest
+  eigenvalue. More
+  \href{http://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
 }
 \examples{
-
 A <- matrix(rnorm(25), 5, 5)
 \dontrun{
 isSymmetricPD(A)
@@ -56,5 +55,5 @@ isSymmetricPSD(C)
 }
 \author{
 Anders Ellern Bilgrau Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }

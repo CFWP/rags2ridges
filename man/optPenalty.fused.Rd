@@ -44,9 +44,9 @@ optPenalty.fused(
 )
 }
 \arguments{
-\item{Ylist}{A \code{list} of \eqn{G} matrices of data with \eqn{n_g}
-samples in the rows and \eqn{p} variables in the columns corresponding to
-\eqn{G} classes of data.}
+\item{Ylist}{A \code{list} of \eqn{G} matrices of data with \eqn{n_g} samples
+in the rows and \eqn{p} variables in the columns corresponding to \eqn{G}
+classes of data.}
 
 \item{Tlist}{A \code{list} of \eqn{G} of p.d. class target matrices of size
 \eqn{p} times \eqn{p}.}
@@ -57,8 +57,8 @@ samples in the rows and \eqn{p} variables in the columns corresponding to
 
 \item{cv.method}{\code{character} giving the cross-validation (CV) to use.
 The allowed values are \code{"LOOCV"}, \code{"aLOOCV"}, \code{"sLOOCV"},
-\code{"kCV"} for leave-one-out cross validation (LOOCV), appproximate LOOCV,
-special LOOCV, and k-fold CV, respectively.}
+\code{"kCV"} for leave-one-out cross validation (LOOCV), appproximate
+LOOCV, special LOOCV, and k-fold CV, respectively.}
 
 \item{k}{\code{integer} giving the number of approximately equally sized
 parts each class is partioned into for \eqn{k}-fold CV.  Only use if
@@ -87,8 +87,8 @@ omitted if \code{grid == TRUE}.}
 
 \item{lambda.init}{A \code{numeric} penalty \code{matrix} of initial values
 passed to the optimizer. If omitted, the function selects a starting values
-using a common ridge penaltiy (determined by 1D optimization) and all fusion
-penalties to zero.}
+using a common ridge penaltiy (determined by 1D optimization) and all
+fusion penalties to zero.}
 
 \item{maxit.ridgeP.fused}{A \code{integer} giving the maximum number of
 iterations allowed for each fused ridge fit.}
@@ -109,18 +109,18 @@ optimizer is appended to the output as an attribute.}
 \code{FALSE}.}
 }
 \value{
-\code{optPenalty.fused.auto} returns a \code{list}:\cr
-\item{Plist}{A \code{list} of the precision estimates for the optimal
-parameters.} \item{lambda}{The estimated optimal fused penalty matrix.}
-\item{lambda.unique}{The unique entries of the \code{lambda}.  A more
-concise overview of \code{lambda}} \item{value}{The value of the loss
-function in the estimated optimum.}
+\code{optPenalty.fused.auto} returns a \code{list}:\cr \item{Plist}{A
+  \code{list} of the precision estimates for the optimal parameters.}
+  \item{lambda}{The estimated optimal fused penalty matrix.}
+  \item{lambda.unique}{The unique entries of the \code{lambda}.  A more
+  concise overview of \code{lambda}} \item{value}{The value of the loss
+  function in the estimated optimum.}
 
-\code{optPenalty.fused.LOOCV} returns a \code{list}:\cr \item{ridge}{A
-\code{numeric} vector of grid values for the ridge penalty}
-\item{fusion}{The \code{numeric} vector of grid values for the fusion
-penalty} \item{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
-loss function}
+  \code{optPenalty.fused.LOOCV} returns a \code{list}:\cr \item{ridge}{A
+  \code{numeric} vector of grid values for the ridge penalty}
+  \item{fusion}{The \code{numeric} vector of grid values for the fusion
+  penalty} \item{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
+  loss function}
 }
 \description{
 Functions to find the optimal ridge and fusion penalty parameters via
@@ -138,7 +138,6 @@ penalty graphs.
 (approximate) LOOCV loss.
 }
 \examples{
-
 \dontrun{
 # Generate some (not so) high-dimensional data witn (not so) many samples
 ns <- c(4, 5, 6)
@@ -265,14 +264,14 @@ print(res)
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
-van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
-Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
-Machine Learning Research, 21(26): 1-52.
+  van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+  Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal
+  of Machine Learning Research, 21(26): 1-52.
 }
 \seealso{
 See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
 }
 \author{
 Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }

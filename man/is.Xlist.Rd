@@ -27,26 +27,24 @@ is, it tests if generic fused list arguments (such as \code{Slist},
 \code{Tlist}, \code{Plist}, \code{Ylist}) are properly formatted.
 }
 \examples{
-
 Slist <- createS(n = c(4, 6, 9), p = 10)
 is.Xlist(Slist, semi = TRUE)
-
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
-van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
-Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
-Machine Learning Research, 21(26): 1-52.
+  van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+  Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal
+  of Machine Learning Research, 21(26): 1-52.
 
-van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation of Inverse
-Covariance Matrices from High-Dimensional Data, Computational Statistics &
-Data Analysis, vol. 103: 284-303.  Also available as arXiv:1403.0904v3
-[stat.ME].
+  van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation of Inverse
+  Covariance Matrices from High-Dimensional Data, Computational Statistics &
+  Data Analysis, vol. 103: 284-303.  Also available as arXiv:1403.0904v3
+  [stat.ME].
 }
 \seealso{
 \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}}
 }
 \author{
 Anders Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N.
-van Wieringen
+  van Wieringen
 }

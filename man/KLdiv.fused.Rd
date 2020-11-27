@@ -26,12 +26,12 @@ the population or reference covariance matrices.}
 \item{ns}{a \code{numeric} of the same length as the previous arguments
 giving the sample sizes. Used as weights in the weighted mean.}
 
-\item{symmetric}{a \code{logical} indicating if original symmetric version
-of KL divergence should be calculated.}
+\item{symmetric}{a \code{logical} indicating if original symmetric version of
+KL divergence should be calculated.}
 }
 \value{
 Function returns a \code{numeric} representing the (optionally
-symmetric) fused Kullback-Leibler divergence.
+  symmetric) fused Kullback-Leibler divergence.
 }
 \description{
 Function calculating the Kullback-Leibler divergence between two sets of
@@ -40,7 +40,6 @@ mean of Kullback-Leibler divergences between multiple paired normal
 distributions.
 }
 \examples{
-
 # Create some toy data
 n <- c(40, 60, 80)
 p <- 10
@@ -56,5 +55,5 @@ KLdiv.fused(StestList = Stest, SrefList = Sref, ns = n, symmetric = TRUE)
 }
 \author{
 Anders Ellern Bilgrau, Wessel N. van Wieringen, Carel F.W. Peeters
-<cf.peeters@vumc.nl>
+  <cf.peeters@vumc.nl>
 }

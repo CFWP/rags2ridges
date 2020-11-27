@@ -12,19 +12,15 @@ sparsify.fused(Plist, ...)
 \item{\dots}{Arguments passed to \code{\link{sparsify}}.}
 }
 \value{
-A \code{list} of the same length as \code{Plist} with the output
-from \code{\link{sparsify}}.
+A \code{list} of the same length as \code{Plist} with the output from
+  \code{\link{sparsify}}.
 }
 \description{
 A simple wrapper for \code{\link{sparsify}} which determines the support of
 a \code{list} of partial correlation/precision matrix by various methods and
 returns the sparsified matrices.
 }
-\details{
-See \code{\link{sparsify}} for details.
-}
 \examples{
-
 ns <- c(10, 11)
 Ylist <- createS(ns, p = 16, dataset = TRUE)
 Slist <- lapply(Ylist, covML)
@@ -47,5 +43,5 @@ round(res[[2]]$sparsePrecision, 1)
 }
 \author{
 Anders Ellern Bilgrau, Wessel N. van Wierigen, Carel F.W. Peeters
-<cf.peeters@vumc.nl>
+  <cf.peeters@vumc.nl>
 }

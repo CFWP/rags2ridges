@@ -29,13 +29,13 @@ parameter.}
 that are zero. The matrix comprises two columns, each row corresponding to
 an entry of the adjacency matrix. The first column contains the row indices
 and the second the column indices. The specified graph should be undirected
-and decomposable. If not, use the \code{\link{support4ridgeP}} to symmetrize
-and triangulate. This is done automatically if \code{cliques} and
-\code{separators} arguments are empty lists (and the then employed
+and decomposable. If not, use the \code{\link{support4ridgeP}} to
+symmetrize and triangulate. This is done automatically if \code{cliques}
+and \code{separators} arguments are empty lists (and the then employed
 \code{zeros}-object may differ from the one provided as input).}
 
-\item{cliques}{A \code{list}-object containing the node indices per clique
-as obtained from the \code{\link{support4ridgeP}}-function.}
+\item{cliques}{A \code{list}-object containing the node indices per clique as
+obtained from the \code{\link{support4ridgeP}}-function.}
 
 \item{separators}{A \code{list}-object containing the node indices per
 separator as obtained from the \code{\link{support4ridgeP}}-function.}

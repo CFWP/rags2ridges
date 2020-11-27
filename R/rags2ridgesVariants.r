@@ -940,55 +940,18 @@ optPenaltyPchordal <- function (Y,
 #' # obtain regularized precision matrix with off-diagonal elements of specified signed
 #' ridgePsign(covML(Y), lambda=0.1, sign="pos")
 #'
-#' @importFrom stats constrOptim
+#' @importFrom stats constrOptim nlminb
 #' @export
 ridgePsign <- function(S,
                        lambda,
                        sign,
-                       target=default.target(S),
-                       type="Alt",
-                       method="nlm",
-                       verbose=TRUE,
+                       target = default.target(S),
+                       type = "Alt",
+                       method = "nlm",
+                       verbose = TRUE,
                        ...){
 
-	########################################################################
-	#
-	# DESCRIPTION:
-	# Ridge estimation of the precision matrix with known sign of its
-	# off-diagonal elements.
-	#
-	# ARGUMENTS:
-	# -> S          : Sample covariance matrix.
-	# -> lambda     : A numeric representing the value of the penalty
-	#                 parameter.
-	# -> target     : A target matrix (in precision terms) for Type I
-	#                 ridge estimators.
-	# -> sign       : A character indicating the required sign of the
-	#                 off-diagonal elements of ridge precision estimate.
-	#                 Must be either: "pos" (positive) and "neg" (negative).
-	# -> type       : A character indicating the type of ridge estimator to
-	#                 be used. Must be one of: "Alt", "ArchI", "ArchII".
-	# -> method     : Which optimization function should be used:
-	#                 "optim" (constrOptim) or "nlm" (nlminb)?
-	# -> grad       : Logical indicator: should, next to the precision
-	#                 matrix estimate, also the gradient be returned?
-	# -> verbose    : Logical indicator: should intermediate output be
-	#                 printed on the screen?
-	# -> ...        : Additional arguments passed on to either "optim"
-	#                 or "nlm".
-	#
-	# DEPENDENCIES:
-	# require("rags2ridges")     # functions from package : ridgeP,
-	#                                                       default.target
-	# require("stats")           # functions from package : nlminb,
-	#                                                       constrOptim
-	#
-	# NOTES:
-	# ...
-	#
-	########################################################################
-
-   	# input checks
+  # Input checks
 	if (!is.matrix(S)){
 		stop("S should be a matrix")
 	}

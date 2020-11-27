@@ -43,14 +43,14 @@ only the complete penalty graph is supported.
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
-van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
-Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
-Machine Learning Research, 21(26): 1-52.
+  van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+  Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal
+  of Machine Learning Research, 21(26): 1-52.
 }
 \seealso{
 \code{\link{optPenalty.fused.grid}}
 }
 \author{
 Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }

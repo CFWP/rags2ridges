@@ -26,15 +26,13 @@ into one is attempted.}
 \item{\dots}{Arguments passed to \code{\link{default.target}}.}
 }
 \value{
-A \code{list} of \eqn{K} covariance target matrices of the same
-size.
+A \code{list} of \eqn{K} covariance target matrices of the same size.
 }
 \description{
 Generates a list of (data-driven) targets to use in fused ridge estimation.
 Simply a wrapper for \code{\link{default.target}}.
 }
 \examples{
-
 # Make some toy data
 ns <- c(3, 4)  # Two classes with sample size 3 and 4
 Slist <- createS(ns, p = 3)  # Generate two 3-dimensional covariance matrices
@@ -55,12 +53,11 @@ Slist <- createS(ns, p = 2)  # Generate four 2-dimensional covariance matrices
 # Use the same target in class 1 and 2, but another in class 3 and 4:
 default.target.fused(Slist, ns, by = c("A", "A", "B", "B"))
 
-
 }
 \seealso{
 \code{\link{default.target}}
 }
 \author{
 Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
-N. van Wieringen
+  N. van Wieringen
 }

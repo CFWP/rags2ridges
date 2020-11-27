@@ -43,24 +43,23 @@ common ridge penalty and the second as a common fusion penalty.}
 
 \item{Plist}{An optional \code{list} of initial precision matrices for the
 fused ridge algorithm the same size as \code{Slist}.  Can be omitted.
-Default is the nonfused ridge precision estimate using the pooled covariance
-matrix corresponding to setting all fusion penalties to zero.}
+Default is the nonfused ridge precision estimate using the pooled
+covariance matrix corresponding to setting all fusion penalties to zero.}
 
 \item{maxit}{A single \code{integer} giving the maximum number of allowed
-iterations.  Can be set to \code{Inf}.  If \code{maxit} is hit, a warning is
-given.}
+iterations.  Can be set to \code{Inf}.  If \code{maxit} is hit, a warning
+is given.}
 
 \item{verbose}{\code{logical}. Set to \code{TRUE} for extra output.}
 
-\item{relative}{\code{logical} indicating if the convergence criterion
-should be on a relative scale.}
+\item{relative}{\code{logical} indicating if the convergence criterion should
+be on a relative scale.}
 
-\item{eps}{A single positive \code{numeric} giving the convergence
-threshold.}
+\item{eps}{A single positive \code{numeric} giving the convergence threshold.}
 }
 \value{
-Returns a \code{list} as \code{Slist} with precision estimates of
-the corresponding classes.
+Returns a \code{list} as \code{Slist} with precision estimates of the
+  corresponding classes.
 }
 \description{
 Performs fused ridge estimation of multiple precision matrices in cases
@@ -73,10 +72,9 @@ matrix \eqn{Lambda_f}.
 }
 \note{
 For extreme fusion penalties in \code{lambda} the algorithm is quite
-sensitive to the initial values given in \code{Plist}.
+  sensitive to the initial values given in \code{Plist}.
 }
 \examples{
-
 # Create some (not at all high-dimensional) data on three classes
 p <- 5  # Dimension
 ns <- c(4, 6, 8)  # Sample sizes (K = 3 classes)
@@ -96,7 +94,6 @@ mylambda  <- matrix(c(1.3, 2.1, 2.1,
                       2.1, 2.1, 1.3), 3, 3, byrow = TRUE)
 res2 <- ridgeP.fused(Slist, ns, lambda = mylambda)
 stopifnot(all.equal(res1, res2))
-
 
 
 #
@@ -127,15 +124,15 @@ print(res5)
 }
 \references{
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
-van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
-Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of
-Machine Learning Research, 21(26): 1-52.
+  van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
+  Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal
+  of Machine Learning Research, 21(26): 1-52.
 }
 \seealso{
 \code{\link{default.penalty}} \cr \code{\link{ridgeP}} for the
-regular ridge estimate
+  regular ridge estimate
 }
 \author{
 Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
-Wessel N. van Wieringen
+  Wessel N. van Wieringen
 }
