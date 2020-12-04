@@ -93,7 +93,6 @@ PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
 
 ## Search and visualize communities
 Commy <- Communities(PC0)
-
 }
 \references{
 Csardi, G. and Nepusz, T. (2006). The igraph software package

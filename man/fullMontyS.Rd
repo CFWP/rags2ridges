@@ -91,7 +91,6 @@ colnames(X)[1:25] = letters[1:25]
 
 ## Employ the wrapper function
 theWorks <- fullMontyS(X, lambdaMin = .5, lambdaMax = 30)}
-
 }
 \seealso{
 \code{\link{ridgeP}}, \code{\link{conditionNumberPlot}},

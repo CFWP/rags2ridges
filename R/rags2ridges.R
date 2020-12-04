@@ -468,16 +468,6 @@
 #'
 #' @export symm
 symm <- function(M){
-  ##############################################################################
-  # - Large objects that are symmetric sometimes fail to be recognized as such
-  #   by R due to rounding under machine precision. This function symmetrizes
-  #   for computational purposes matrices that are symmetric in numeric ideality
-  # - M > symmetric (in numeric ideality) square matrix
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (!is.matrix(M)){
     stop("M should be a matrix")
   }
@@ -487,17 +477,9 @@ symm <- function(M){
   else {
     # Symmetrize
     Msym <- (M + t(M))/2
-
-    # Return
     return(Msym)
   }
 }
-
-
-
-
-
-
 
 
 
@@ -534,19 +516,8 @@ symm <- function(M){
 #' ## Obtain adjacency matrix
 #' adjacentMat(PC0$sparsePrecision)
 #'
-#' @export adjacentMat
+#' @export
 adjacentMat <- function(M, diag = FALSE){
-  ##############################################################################
-  # - Function that transforms a real matrix into an adjacency matrix
-  # - Intended use: Turn sparsified precision matrix into an adjacency matrix
-  #   for undirected graph
-  # - M    > (sparsified precision) matrix
-  # - diag > logical indicating if the diagonal elements should be retained
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (!is.matrix(M)){
     stop("M should be a matrix")
   }
@@ -563,16 +534,9 @@ adjacentMat <- function(M, diag = FALSE){
       diag(AM) <- 1
     }
 
-    # Return
     return(AM)
   }
 }
-
-
-
-
-
-
 
 
 
@@ -610,18 +574,9 @@ adjacentMat <- function(M, diag = FALSE){
 #' ## Obtain correlation matrix
 #' Cx <- covML(X, cor = TRUE)
 #'
+#' @importFrom stats cor
 #' @export covML
 covML <- function(Y, cor = FALSE){
-  ##############################################################################
-  # - function that gives the maximum likelihood estimate of the covariance
-  # - Y   > (raw) data matrix, assumed to have variables in columns
-  # - cor > logical indicating if the correlation matrix should be returned
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
-
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
@@ -641,12 +596,6 @@ covML <- function(Y, cor = FALSE){
     return(Sml)
   }
 }
-
-
-
-
-
-
 
 
 
@@ -697,33 +646,12 @@ covML <- function(Y, cor = FALSE){
 #' Cx <- covMLknown(X, corType="equi", varType="common")
 #'
 #' @importFrom stats optim
-#' @export covMLknown
+#' @export
 covMLknown <- function(Y, covMat = NULL, corMat = NULL,
                        corType = "none", varType = "none", nInit = 100){
-  ##############################################################################
-  # - Maximum likelihood estimation of the covariance matrix, with various
-  #   types of assumptions on the structure of this matrix.
-  # - Y	      > (raw) data matrix, assumed to have variables in columns
-  # - covMat  > A positive-definite covariance 'matrix'. When specified, the
-  #             to-be-estimated covariance matrix is assumed to be proportional
-  #             to the specified covariance matrix. Hence, only a constant needs
-  #             to be estimated
-  # - corMat  > A positive-definite correlation 'matrix'. When specified, the
-  #             to-be-estimated covariance matrix is assumed to have this
-  #             correlation structure. Hence, only the variances need to
-  #		          be estimated.
-  # - corType > character that is either "none" (no structure on the correlation
-  #             among variate assumed) or "equi" (variates are equi-correlated).
-  # - varType	> character that is either "none" (no structure on the marginal
-  #             variances of the variates assumed) or "common" (variates have
-  #             equal marginal variances).
-  # - nInit   > Maximum number of iterations for likelihood maximization
-  #             when corType='equi'.
-  #
-  # NOTES:
-  # - Future version should a.o. also allow a first order autoregressive
+
+  # TODO: Future version should a.o. also allow a first order autoregressive
   #   correlation assumption.
-  ##############################################################################
 
   # center data
   Ys <- scale(Y, center = TRUE, scale = FALSE)
@@ -744,8 +672,10 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
       a1 <- sum(diag(Sml))
       a2 <- (ncol(Ys)-1) * a1 - sum(Sml)
       p <- nrow(Sml)
-      minLoglikEqui <- function(rho, p, a1, a2){
-        (p-1) * log(1-rho) +  log((p-1) * rho + 1) + ((1-rho) * ((p-1) * rho + 1))^(-1) * (a1 + a2 * rho) }
+      minLoglikEqui <- function(rho, p, a1, a2) {
+        (p-1) * log(1-rho) +  log((p-1) * rho + 1) +
+          ((1-rho) * ((p-1) * rho + 1))^(-1) * (a1 + a2 * rho)
+      }
       rho <- optim(par=0.1, fn=minLoglikEqui, method="Brent", lower=-1/(p-1)
                    + .Machine$double.eps, upper=1-.Machine$double.eps, p=ncol(Ys),
                    a1=a1, a2=a2)$par
@@ -805,12 +735,6 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 
 
 
-
-
-
-
-
-
 #' Evaluate numerical properties square matrix
 #'
 #' Function that evaluates various numerical properties of a square input
@@ -860,23 +784,9 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 #' P <- ridgeP(Cx, lambda = 10, type = 'Alt')
 #' Peval <- evaluateS(P); Peval
 #'
+#' @importFrom stats cov2cor
 #' @export evaluateS
 evaluateS <- function(S, verbose = TRUE){
-  ##############################################################################
-  # - Function evualuating various properties of an input matrix
-  # - Intended use is to evaluate the various properties of what is assumed to
-  #   be a covariance matrix
-  # - Another use is to evaluate the various properties of a (regularized)
-  #   precision matrix
-  # - S       > sample covariance/correlation matrix or (regularized) precision
-  #             matrix
-  # - verbose > logical indicating if output should be printed on screen
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
-
   if (!is.matrix(S)){
     stop("S should be a matrix")
   }
@@ -970,15 +880,6 @@ evaluateS <- function(S, verbose = TRUE){
 #' @importFrom stats cov2cor
 #' @export pcor
 pcor <- function(P, pc = TRUE){
-  ##############################################################################
-  # - Function computing partial correlation/standardized precision matrix from
-  #   a precision matrix
-  # - P  > precision matrix (possibly regularized inverse of covariance or
-  #        correlation matrix)
-  # - pc > logical indicating if the partial correlation matrix should be
-  #        computed
-  ##############################################################################
-
   if (!is.matrix(P)){
     stop("P should be a matrix")
   }
@@ -1004,12 +905,6 @@ pcor <- function(P, pc = TRUE){
 
 
 
-
-
-
-
-
-
 #' Generate a (data-driven) default target for usage in ridge-type shrinkage
 #' estimation
 #'
@@ -1020,17 +915,24 @@ pcor <- function(P, pc = TRUE){
 #' implies a situation of rotation equivariant estimation (see
 #' \code{\link{ridgeP}}).
 #'
-#' The function can generate the following default target matrices: \itemize{
+#' The function can generate the following default target matrices:
+#' \itemize{
 #' \item \code{DAIE}: Diagonal matrix with average of inverse nonzero
-#' eigenvalues of S as entries; \item \code{DIAES}: Diagonal matrix with
-#' inverse of average of eigenvalues of S as entries; \item \code{DUPV}:
+#' eigenvalues of S as entries;
+#' \item \code{DIAES}: Diagonal matrix with
+#' inverse of average of eigenvalues of S as entries;
+#' \item \code{DUPV}:
 #' Diagonal matrix with unit partial variance as entries (identity matrix);
 #' \item \code{DAPV}: Diagonal matrix with average of inverse variances of
-#' \code{S} as entries; \item \code{DCPV}: Diagonal matrix with constant
+#' \code{S} as entries;
+#' \item \code{DCPV}: Diagonal matrix with constant
 #' partial variance as entries. Allows one to use other constant than DAIE,
-#' DIAES, DUPV, DAPV, and in a sense Null; \item \code{DEPV}: Diagonal matrix
-#' with the inverse variances of \code{S} as entries; \item \code{Null}: Null
-#' matrix. } The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not
+#' DIAES, DUPV, DAPV, and in a sense Null;
+#' \item \code{DEPV}: Diagonal matrix
+#' with the inverse variances of \code{S} as entries;
+#' \item \code{Null}: Null matrix.
+#' }
+#' The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not
 #' data-driven in the sense that the input matrix \code{S} only provides
 #' information on the size of the desired target. The targets \code{DAIE},
 #' \code{DIAES}, \code{DAPV}, and \code{DEPV} are data-driven in the sense that
@@ -1072,21 +974,9 @@ pcor <- function(P, pc = TRUE){
 #' ## Obtain default diagonal target matrix
 #' default.target(Cx)
 #'
-#' @export default.target
+#' @export
 default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   ##############################################################################
-  # - Function that generates a (data-driven) default target for usage in
-  #   ridge-type shrinkage estimation
-  # - The target that is generated is to be understood in precision terms
-  # - See function 'ridgeS'
-  # S        > sample covariance/correlation matrix
-  # type     > character determining the type of default target;
-  #            default = "DAIE" (see notes below)
-  # fraction > fraction of largest eigenvalue below which an eigenvalue is
-  #            considered zero. Only when type = "DAIE".
-  # const    > numeric constant that represents the partial variance.
-  #            Only when type = "DCPV"
-  #
   # Notes:
   # - The van Wieringen-Peeters type I estimator and the archetypal I estimator
   #   utilize a p.d. target
@@ -1110,9 +1000,6 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   #   archetype I ridge estimators
   # - Null also leads to a rotation equivariant alternative Type II estimator
   ##############################################################################
-
-  # Dependencies
-  # require("base")
 
   if (!is.matrix(S)){
     stop("Input (S) should be a matrix")
@@ -1187,13 +1074,10 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
       target <- matrix(0, ncol(S), nrow(S))
     }
 
-    # Return
-    colnames(target) = rownames(target) <- rownames(S)
+    colnames(target) <- rownames(target) <- rownames(S)
     return(target)
   }
 }
-
-
 
 
 ##------------------------------------------------------------------------------
@@ -1201,10 +1085,6 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 ## Function for Ridge Estimation of the Precision matrix
 ##
 ##------------------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -1315,22 +1195,9 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' ## Obtain regularized precision matrix
 #' ridgeP(Cx, lambda = 10, type = "Alt")
 #'
-#' @export ridgeP
+#' @export
 ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
-  # - Function that calculates ridge estimators of a precision matrix
-  # - Version that uses the RcppArmadillo implementation
-  # - S       > sample covariance matrix
-  # - lambda  > penalty parameter (choose in accordance with type of Ridge
-  #             estimator)
-  # - type    > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - Alt     > van Wieringen-Peeters alternative ridge estimator of a precision
-  #             matrix
-  # - ArchI   > Archetypal I ridge estimator of a precision matrix
-  # - ArchII  > Archetypal II ridge estimator of a precision matrix
-  # - target  > target (precision terms) for Type I estimators,
-  #             default = default.target(S)
-  #
   # - NOTES:
   # - When type = "Alt" and target is p.d., one obtains the
   #   van Wieringen-Peeters type I estimator
@@ -1402,11 +1269,6 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 ## Functions for Penalty Parameter selection
 ##
 ##------------------------------------------------------------------------------
-
-
-
-
-
 
 
 #' Select optimal penalty parameter by approximate leave-one-out
@@ -1515,29 +1377,10 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
 #'
-#' @export optPenalty.aLOOCV
+#' @export
 optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
                               cor = FALSE, target = default.target(covML(Y)),
                               output = "light", graph = TRUE, verbose = TRUE) {
-  ##############################################################################
-  # - Function that selects the optimal penalty parameter by approximate
-  #   leave-one-out cross-validation
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
-  # - step        > determines the coarseness in searching the grid
-  #                 [lambdaMin, lambdaMax]
-  # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - cor         > logical indicating if evaluation of the LOOCV score should be
-  #                 performed on the correlation matrix
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - output      > must be one of {"all", "light"}, default = "light"
-  # - graph       > Optional argument for visualization optimal penalty
-  #                 selection, default = TRUE
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -1796,31 +1639,11 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' OPT$optLambda	# Optimal penalty
 #' OPT$optPrec	  # Regularized precision under optimal penalty
 #'
-#' @export optPenalty.kCV
+#' @export
 optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
                            cor = FALSE, target = default.target(covML(Y)),
                            type = "Alt", output = "light", graph = TRUE,
                            verbose = TRUE) {
-  ##############################################################################
-  # - Function that selects the optimal penalty parameter by leave-one-out
-  #   cross-validation
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
-  # - step        > determines the coarseness in searching the grid
-  #                 [lambdaMin, lambdaMax]
-  # - fold        > cross-validation fold, default gives LOOCV
-  # - cor         > logical indicating if evaluation of the LOOCV score should be
-  #                 performed on the correlation matrix
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - output      > must be one of {"all", "light"}, default = "light"
-  # - graph       > Optional argument for visualization optimal penalty
-  #                 selection, default = TRUE
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -2003,28 +1826,12 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #' OPT$optPrec   # Regularized precision under optimal penalty
 #'
 #' @importFrom stats optim
-#' @export optPenalty.kCVauto
+#' @export
 optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
                                lambdaInit = (lambdaMin + lambdaMax)/2,
                                fold = nrow(Y), cor = FALSE,
                                target = default.target(covML(Y)),
                                type = "Alt") {
-    ##############################################################################
-    # - Function that determines the optimal value of the penalty parameter by
-    #   application of the Brent algorithm to the (leave-one-out) cross-validated
-    #   log-likelihood
-    # - Y          > (raw) Data matrix, variables in columns
-    # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
-    # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
-    # - lambdaInit > initial value for lambda for starting optimization
-    # - fold       > cross-validation fold, default gives LOOCV
-    # - cor        > logical indicating if evaluation of the LOOCV score should be
-    #                performed on the correlation matrix
-    # - target     > target (precision terms) for Type I estimators,
-    #                default = default.target(covML(Y))
-    # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-    ##############################################################################
-
     # input checks
     if (!is.matrix(Y))
       { stop("Input (Y) should be a matrix") }
@@ -2071,11 +1878,6 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
                 optPrec = ridgeP(covML(Y, cor = cor), optLambda,
                                  type = type, target = target)))
 }
-
-
-
-
-
 
 
 
@@ -2211,63 +2013,12 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' ## Include interpretational aids
 #' CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
 #'
-#' @export CNplot
+#' @export
 CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                    target = default.target(S, type = "DUPV"), norm = "2",
                    Iaids = FALSE, vertical = FALSE, value = 1e-100,
                    main = "", nOutput = FALSE, verbose = TRUE,
                    suppressChecks = FALSE){
-  #############################################################################
-  # - Function that visualizes the spectral condition number against the
-  #   regularization parameter
-  # - Can be used to heuristically determine the (minimal) value of the
-  #   penalty parameter
-  # - The ridge estimators operate by shrinking the eigenvalues
-  # - This is especially the case when targets are used that lead to
-  #   rotation equivariant estimators
-  # - Maximum shrinkage (under rotation equivariance) implies that all
-  #   eigenvalues will be equal
-  # - Ratio of maximum and minimum eigenvalue of P can then function
-  #   as a heuristic
-  # - It's point of stabilization can give an acceptable value for the penalty
-  # - The ratio boils down to the (spectral) condition number of a matrix
-  # - S         > sample covariance/correlation matrix
-  # - lambdaMin > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid
-  #               [lambdaMin, lambdaMax]. The steps on the grid are equidistant
-  #               on the log scale
-  # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators,
-  #               default = default.target(S)
-  # - norm      > indicates the norm under which the condition number is to be
-  #               estimated. Default is the L2-norm. The L1-norm can be (cheaply)
-  #               approximated
-  # - Iaids     > logical indicating if interpretational aids should also be
-  #               visualized. The aids are the approximate loss in digits of
-  #               accuracy and an approximation of the acceleration along the
-  #               curve. Default = FALSE
-  # - vertical  > optional argument for visualization vertical line in graph
-  #               output, default = FALSE. Can be used to indicate the value of,
-  #               e.g., the optimal penalty as indicated by some routine. Can
-  #               be used to assess if this optimal penalty will lead to a
-  #               well-conditioned estimate
-  # - value     > indicates constant on which to base vertical line when
-  #               vertical = TRUE. Default is a very small value
-  # - main      > logical indicating if plot should contain type of estimator
-  #               as main title
-  # - nOutput   > logical indicating if numeric output should be given
-  #               (lambdas and condition numbers)
-  # - verbose   > logical indicating if process information should be printed
-  #               on-screen
-  # - suppressChecks > logical indicating if input checks should be
-  #               suppressed. When the variable-dimension is very large, the
-  #               full set of input checks (supplied as a courtesy to the user)
-  #               can take up considerable time. Suppressing these checks
-  #               will speed up the procedure (when the user knows what he or
-  #               she is doing).
-  #############################################################################
-
   # Dependencies
   # require("base")
   # require("graphics")
@@ -2485,11 +2236,6 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 
 
-
-
-
-
-
 #' Generate the distribution of the penalty parameter under the null hypothesis
 #' of block-independence
 #'
@@ -2674,11 +2420,6 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 
 
 
-
-
-
-
-
 #' Test for block-indepedence
 #'
 #' Function performing a test that evaluates the null hypothesis of
@@ -2781,7 +2522,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' ## Perform test
 #' testRes <- GGMblockTest(X, id, nPerm = 100, lambdaNull)
 #'
-#' @export GGMblockTest
+#' @export
 GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
                           target = default.target(covML(Y)), type = "Alt",
                           lowCiThres = 0.1, ncpus = 1, verbose = TRUE) {
@@ -2873,8 +2614,8 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   }
   else {
     # Observed test statistics
-    S     <- solve(ridgeP(covML(Y), lambda = lambda,
-                          target = target, type = type))
+    S <- solve(ridgeP(covML(Y), lambda = lambda,
+                      target = target, type = type))
     llObs <- log(det(S[id == 0, id == 0, drop = FALSE])) +
       log(det(S[id == 1, id == 1, drop = FALSE])) - log(det(S))
 
@@ -2990,13 +2731,6 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 #' @export GGMmutualInfo
 GGMmutualInfo <- function(S, split1){
   ##############################################################################
-  # - Function that calculates the mutual information between two exhaustive and
-  #   mutually exclusive splits of normal p-variate random variable.
-  # - S      > Sample Covariance matrix.
-  # - split1 > A numeric indicating the variates (by column number) forming the
-  #            first split. The second split is automatically formed from its
-  #            complement.
-  #
   # NOTES:
   # - No dependencies at current
   ##############################################################################
@@ -3028,10 +2762,6 @@ GGMmutualInfo <- function(S, split1){
 ## Test for Vanishing Partial Correlations
 ##
 ##------------------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -3114,37 +2844,11 @@ GGMmutualInfo <- function(S, split1){
 #' ## Determine support regularized (standardized) precision under optimal penalty
 #' sparsify(OPT$optPrec, threshold = "localFDR")
 #'
-#' @export sparsify
+#' @export
 sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"),
                      absValueCut = .25, FDRcut = .9, top = 10,
                      output = "heavy", verbose = TRUE){
   ##############################################################################
-  # - Function that sparsifies/determines support of a partial correlation
-  #   matrix
-  # - Support can be determined by absolute value thresholding or by local FDR
-  #   thresholding
-  # - Local FDR operates on the nonredundant non-diagonal elements of a partial
-  #   correlation matrix
-  # - One can also choose to threshold based on the top X of absolute partial
-  #   correlations
-  # - One can also choose to threshold based on the minimum absolute partial
-  #   correlation for which the resulting graph is connected
-  # - Function is to some extent a wrapper around certain 'fdrtool' functions
-  # - P           > (possibly shrunken) precision matrix
-  # - threshold   > signifies type of thresholding
-  # - absValueCut > cut-off for partial correlation elements selection based on
-  #                 absolute value thresholding.
-  #                 Only when threshold = 'absValue'. Default = .25
-  # - FDRcut      > cut-off for partial correlation element selection based on
-  #                 local FDR thresholding
-  #                 Only when threshold = 'localFDR'. Default = .9
-  # - top         > partial correlation element selection based on retainment
-  #                 'top' number of absolute partial correlation.
-  #                 Only when threshold = 'top'. Default = 10
-  # - output      > must be one of {"heavy", "light"}, default = "heavy"
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen. Only when threshold = 'localFDR'. Default = TRUE.
-  #
   # NOTES:
   # - Input (P) may be the partial correlation matrix or the standardized
   #   precision matrix. These are identical up to the signs of off-diagonal
@@ -3389,15 +3093,8 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' ## precision under Frobenius loss
 #' loss(P, Truecov, precision = FALSE, type = "frobenius")
 #'
-#' @export loss
+#' @export
 loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
-  ##############################################################################
-  # - Function evualuating various loss functions on the precision
-  # - E         > Estimated (possibly regularized) precision matrix
-  # - T         > True (population) covariance or precision matrix
-  # - precision > Logical indicating if T is a precision matrix (when TRUE)
-  # - type      > character indicating which loss function is to be used
-  ##############################################################################
 
   if (!is.matrix(E)){
     stop("Input (E) is of wrong class")
@@ -3440,12 +3137,6 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
     return(loss)
   }
 }
-
-
-
-
-
-
 
 
 
@@ -3522,22 +3213,8 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' ## Obtain KL divergence
 #' KLdiv(mean1, mean0, CovR, Cov0)
 #'
-#' @export KLdiv
+#' @export
 KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
-  ##############################################################################
-  # - Function that calculates the Kullback-Leibler divergence between two
-  #   normal distributions
-  # - Mtest     > mean vector approximating m.v. normal distribution
-  # - Mref      > mean vector 'true'/reference m.v. normal distribution
-  # - Stest     > covariance matrix approximating m.v. normal distribution
-  # - Sref      > covariance matrix 'true'/reference m.v. normal distribution
-  # - symmetric > logical indicating if original symmetric version of KL div.
-  #               should be calculated
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (class(Mtest) != "numeric"){
     stop("Input (Mtest) is of wrong class")
   }
@@ -3585,12 +3262,6 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
     return(as.numeric(KLd))
   }
 }
-
-
-
-
-
-
 
 
 
@@ -3648,25 +3319,10 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 #' evaluateSfit(P, Cx, diag = FALSE, fileType = "pdf", nameExt = "test")}
 #'
 #' @importFrom stats cov2cor qqplot
-#' @export evaluateSfit
+#' @export
 evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
                          dir = getwd()){
-  ##############################################################################
-  # - Function aiding the visual inspection of the fit of the estimated
-  #   (possibly regularized) precision matrix vis-a-vis the sample
-  #   covariance matrix
-  # - Phat     > (regularized) estimate of the precision matrix
-  # - S        > sample covariance matrix
-  # - diag     > logical determining treatment diagonal elements for plots
-  # - fileType > signifies filetype of output
-  # - nameExt  > character giving extension of default output names.
-  #              Circumvents overwriting of output when working in single
-  #              directory.
-  # - dir      > specifies the directory in which the visual output is stored
-  ##############################################################################
-
   # Dependencies
-  # require("base")
   # require("graphics")
 
   if (!is.matrix(Phat)){
@@ -3835,16 +3491,11 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 
 
 
-
 ##------------------------------------------------------------------------------
 ##
 ## Functions for Visualization
 ##
 ##------------------------------------------------------------------------------
-
-
-
-
 
 
 
@@ -3912,41 +3563,10 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' ridgePathS(Cx, .001, 50, 200, plotType = "pcor")
 #'
 #' @importFrom stats cov2cor
-#' @export ridgePathS
+#' @export
 ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
                         target = default.target(S), plotType = "pcor",
                         diag = FALSE, vertical = FALSE, value, verbose = TRUE){
-  ##############################################################################
-  # - Function that visualizes the regularization path
-  # - Regularization path may be visualized for (partial) correlations,
-  #   covariances and precision elements
-  # - S         > sample covariance/correlation matrix
-  # - lambdaMin > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid
-  #               [lambdaMin, lambdaMax]
-  # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators,
-  #               default = default.target(S)
-  # - plotType  > specificies the elements for which the regularization path is
-  #               to be visualized.
-  #               Must be one of {"pcor", "cor", "cov", "prec"},
-  #               default = "pcor"
-  # - diag      > logical indicating if the diagonal elements should be retained
-  #               for plotting, default = FALSE.
-  # - vertical  > optional argument for visualization vertical line in graph
-  #               output, default = FALSE
-  #               Can be used to indicate the value of, e.g., the optimal
-  #               penalty as indicated by some
-  #               routine. Can be used to assess the whereabouts of this optimal
-  #               penalty along the regularization path.
-  # - value     > indicates constant on which to base vertical line when
-  #               vertical = TRUE
-  # - verbose   > logical indicating if intermediate output should be printed
-  #               on screen
-  ##############################################################################
-  # Dependencies
-  # require("base")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
@@ -4123,11 +3743,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
 }
 
 
-
 if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
-
-
-
 
 
 
@@ -4195,24 +3811,9 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' ## Visualize sparsified partial correlation matrix as heatmap
 #' edgeHeat(PC0)
 #'
-#' @export edgeHeat
+#' @export
 edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
                      diag = TRUE, legend = TRUE, main = ""){
-  ##############################################################################
-  # - function that visualizes precision matrix as a heatmap
-  # - can be used to assess (visually) the performance of set of graphical
-  #   modeling techniques
-  # - M         > Precision matrix
-  # - lowColor  > determines color scale in the negative range, default = "blue"
-  # - highColor > determines color scale in the positive range, default = "red"
-  # - textsize  > set textsize row and column labels, default = 10
-  # - diag      > logical determining treatment diagonal elements M. If FALSE,
-  #               then the diagonal elements are given the midscale color of
-  #               white; only when M is a square matrix
-  # - legend    > optional inclusion of color legend, default = TRUE
-  # - main      > character specifying the main title, default = ""
-  ##############################################################################
-
   # Dependencies
   #require("ggplot2")
   #require("reshape")
@@ -4425,7 +4026,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #'                       cut = 0.07, prune = TRUE)
 #' Coordinates
 #'
-#' @export Ugraph
+#' @export
 Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                    lay = "layout_in_circle", coords = NULL, Vsize = 15,
                    Vcex = 1, Vcolor = "orangered", VBcolor = "darkred",
@@ -4433,50 +4034,6 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                    label = "", Lcex = 1.3, PTcex = 4, cut = .5,
                    scale = 10, pEcolor = "black", nEcolor = "grey",
                    main = ""){
-  ##############################################################################
-  # - Function that visualizes the sparsified precision matrix as an undirected
-  #   graph
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - M       > (Possibly sparsified) precision matrix
-  # - type    > graph type: 'plain' gives plain undirected graph. 'fancy' gives
-  #             undirected graph in which dashed lines indicate negative partial
-  #             correlations while solid lines indicate positive partial
-  #             correlations, and in which grey lines indicate strong edges.
-  #             'weighted' gives an undirected graph in which edge thickness
-  #             indicates the strenght of the partial correlations. Grey lines
-  #             then indicate negative partial correlations while black lines
-  #             represent positive partial correlations.
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_in_circle.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  # - Vsize   > gives vertex size, default = 15
-  # - Vcex    > gives size vertex labels, default = 1
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  # - prune   > logical indicating if vertices of degree 0 should be removed
-  # - legend  > optional inclusion of color legend, default = FALSE
-  # - label   > character label for the endogenous variables, default = "";
-  #             only when legend = TRUE
-  # - Lcex    > scaling legend box, default = 1.3; only when legend = TRUE
-  # - PTcex   > scaling node in legend box, default = 4; only when legend = TRUE
-  # - cut     > cut-off for indication of strong edge, default = .5; only when
-  #             type = "fancy"
-  # - scale   > scale factor for visualizing strenght of edges, default = 10;
-  #             only when type = "weighted"
-  # - pEcolor > gives edge color for edges tied to positive precision elements,
-  #             default = "black"; only when type = "weighted"
-  # - nEcolor > gives edge color for edges tied to negative precision elements,
-  #             default = "grey"; only when type = "weighted"
-  # - main    > character specifying heading figure, default = ""
-  ##############################################################################
 
   # Dependencies
   # require("igraph")
@@ -4792,36 +4349,8 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' Ugraph(PCsparse, "fancy")
 #' \dontrun{GGMnetworkStats(PCsparse)}
 #'
-#' @export GGMnetworkStats
+#' @export
 GGMnetworkStats <- function(sparseP, as.table = FALSE){
-  ##############################################################################
-  # - Function that calculates various network statistics from a sparse matrix
-  # - Input matrix is assumed to be a sparse precision of partial correlation
-  #   matrix
-  # - The sparse precision matrix is taken to represent a conditional
-  #   independence graph
-  # - sparseP  > sparse precision/partial correlation matrix
-  # - as.table > logical indicating if output should be returned as table;
-  #              default = FALSE
-  #
-  # - NOTES (network statistics produced):
-  # - Node degree
-  # - Betweenness centrality
-  # - Closeness centrality
-  # - Eigenvalue centrality
-  # - Number of negative edges for each node
-  # - Number of positive edges for each node
-  # - Assessment if network/graph is chordal (triangulated)
-  # - Mutual information of each variate with all other variates
-  # - Variance of each variate (based on inverse sparsified precision matrix)
-  # - Partial variance of each variate (= 1 when input matrix is partial
-  #   correlation matrix)
-  # - Future versions of this function may include additional statistics
-  #
-  # - REFERENCE:
-  # - Newman, M.E.J. (2010), "Networks: an introduction",
-  #   Oxford University Press
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -5054,75 +4583,13 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
                          Vcex = .6, VBcolor = "darkblue", VLcolor = "black",
                          all.edges = TRUE, prune = TRUE, legend = TRUE,
                          scale = 1, Lcex = .8, PTcex = 2, main = ""){
-  ##############################################################################
-  # - Function that expresses the covariance between a pair of variables as a
-  #   sum of path weights
-  # - The sum of path weights is based on the shortest paths connecting the pair
-  #   in an undirected graph
-  # - P0            > sparse precision/partial correlation matrix
-  # - node1         > start node of the path
-  # - node2         > end node of the path
-  # - neiExpansions > a numeric determining how many times the neighborhood
-  #                   around the start and end node should be expanded in the
-  #                   search for shortest paths between the node pair.
-  #                   Default = 2
-  # - verbose       > logical indicating if output should also be printed on
-  #                   screen. Default = TRUE
-  # - graph         > Optional argument for visualization strongest paths,
-  #                   default = TRUE
-  # - nrPaths	      > indicates the number of paths with the highest
-  #                   contribution to the marginal covariance
-  #                   between the indicated node pair (node1 and node2) to be
-  #                   visualized/highlighted;
-  #                   only when graph = TRUE
-  # - lay           > determines layout of the graph. Most layouts in
-  #                   'layout{igraph}' are accepted. Default =
-  #                   layout_in_circle.
-  # - coords  >       matrix of coordinates to determine layout of the graph.
-  #                   The row dimension should equal the number of (pruned)
-  #                   vertices. The column dimension should equal 2
-  #                   (for 2D layouts) or 3 (for 3D layouts). Enables one,
-  #                   e.g., to layout the graph according to the coordinates
-  #                   of a previous call to Ugraph. If both the the lay and the
-  #                   coords arguments are not NULL, the lay argument takes
-  #                   precedence
-  # - nodecol       > gives color of node1 and node2; only when graph = TRUE
-  # - Vsize   	    > gives vertex size, default = 15; only when graph = TRUE
-  # - Vcex    	    > gives size vertex labels, default = .6; only when
-  #                   graph = TRUE
-  # - VBcolor     	> gives color of the vertex border, default = "darkblue";
-  #                   only when graph = TRUE
-  # - VLcolor      	> gives color of the vertex labels, default = "black";
-  #                   only when graph = TRUE
-  # - all.edges     > logical indicating if edges other than those implied by
-  #                   the 'nrPaths' paths between
-  #                   node1 and node2 should also be visualized. Default = TRUE;
-  #                   only when graph = TRUE
-  # - prune         > logical indicating if vertices of degree 0 should be
-  #                   removed. Default = TRUE; only when graph = TRUE
-  # - legend        > optional inclusion of color legend, default = TRUE; only
-  #                   when graph = TRUE
-  # - scale         > scale factor for visualizing strenght of edges,
-  #                   default = 1. It is a relative scaling
-  #                   factor, in the sense that the edges implied by the
-  #                   'nrPaths' paths between node1 and node2 have edge
-  #                   thickness that is twice this scaling factor (so it is
-  #                   a scaling factor vis-a-vis the unimplied edges); only
-  #                   when all.edges = TRUE
-  # - Lcex          > scaling legend box, default = .8; only when legend = TRUE
-  # - PTcex         > scaling node in legend box, default = 2; only when
-  #                   legend = TRUE
-  # - main          > character specifying heading figure, default = ""
-  #
   # - NOTES:
   # - As in Jones & West (2005), paths whose weights have an opposite sign to
   #   the marginal covariance (between endnodes of the path) are referred to
   #   as 'moderating paths' while paths whose weights have the same sign as the
   #   marginal covariance are referred to as 'mediating' paths
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("igraph")
   # require("reshape")
 
@@ -5559,30 +5026,12 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 #'
 #' ## Employ the wrapper function
 #' theWorks <- fullMontyS(X, lambdaMin = .5, lambdaMax = 30)}
-#'
 #' @export fullMontyS
 fullMontyS <- function(Y, lambdaMin, lambdaMax,
                        target = default.target(covML(Y)), dir = getwd(),
                        fileTypeFig = "pdf", FDRcut = .9, nOutput = TRUE,
                        verbose = TRUE){
-  ##############################################################################
-  # - Function that forms a wrapper around the rags2ridges functionalities
-  # - Invokes functionalities to get from data to graph and topology summaries
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter
-  # - lambdaMax   > maximum value penalty parameter
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - dir         > specifies the directory in which the (visual) output is
-  #                 stored
-  # - fileTypeFig > signifies filetype of visual output; Should be one of
-  #                 {"pdf", "eps"}
-  # - FDRcut      > cut-off for partial correlation element selection based on
-  #                 local FDR thresholding. Default = .9.
-  # - nOutput     > logical indicating if numeric output should be given
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  #
+
   # - NOTES:
   # - Always uses the alternative ridge estimator by van Wieringen and Peeters
   #   (2015)
@@ -5593,10 +5042,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
   # - Network statistics calculated on sparsified partial correlation network
   # - There are no elaborate input checks as these are all covered by the
   #   indvidual functions invoked
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("stats")
   # require("graphics")
   # require("Hmisc")
@@ -5672,9 +5119,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
 
 
-
-
-
 ################################################################################
 ################################################################################
 ##------------------------------------------------------------------------------
@@ -5686,9 +5130,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 ################################################################################
 
 # See R/rags2ridgesFused.R
-
-
-
 
 
 
@@ -5706,11 +5147,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
 
 
-
-
-
-
-
 #' Moments of the sample covariance matrix.
 #'
 #' Calculates the moments of the sample covariance matrix. It assumes that the
@@ -5718,7 +5154,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 #' constitute the sample covariance matrix follow a Wishart-distribution with
 #' scale parameter \eqn{\mathbf{\Sigma}} and shape parameter \eqn{\nu}. The
 #' latter is equal to the number of summands in the sample covariance estimate.
-#'
 #'
 #' @param Sigma Positive-definite \code{matrix}, the scale parameter
 #' \eqn{\mathbf{\Sigma}} of the Wishart distribution.
@@ -5743,36 +5178,9 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 #' # that is assumed to Wishart-distributed random variable with the
 #' # above scale parameter Sigma and shape parameter equal to 40.
 #' momentS(Sigma, 40, 2)
-#'
-#' @export momentS
-momentS <- function(Sigma,
-                    shape,
-                    moment=1){
-
-	########################################################################
-	#
-	# DESCRIPTION:
-	# Returns the moments of a Wishart-distributed random variable.
-	# Only those explicitly given in Lesac, Massam (2004) are implemented.
-	#
-	# ARGUMENTS:
-	# -> Sigma	: Positive-definite 'matrix', the scale parameter of
-	#                 the Wishart distribution.
-	# -> shape	: A 'numeric', the shape parameter of the Wishart
-	#                 distribution. Should exceed the number of variates.
-	# -> moment	: An 'integer'. Should be in the set
-	#                 {-4, -3, -2, -1, 0, 1, 2, 3, 4} (only those are
-	#                 explicitly specified in Lesac, Massam, 2004).
-	#
-	# DEPENDENCIES:
-	# Currently, none.
-	#
-	# NOTES:
-   	# ....
-	#
-	########################################################################
-
-	# input checks
+#' @export
+momentS <- function(Sigma, shape, moment = 1) {
+	# Input checks
 	if (shape < nrow(Sigma) + 1){
 		stop("shape parameter should exceed the number of variates")
 	}
@@ -5850,12 +5258,6 @@ momentS <- function(Sigma,
 
 
 
-
-
-
-
-
-
 #' Prune square matrix to those variables having nonzero entries
 #'
 #' Convenience function that prunes a square matrix to those variables
@@ -5884,12 +5286,8 @@ momentS <- function(Sigma,
 #' ## Prune sparsified partial correlation matrix
 #' PC0P <- pruneMatrix(PC0)
 #'
-#' @export pruneMatrix
+#' @export
 pruneMatrix <- function(M){
-  ##############################################################################
-  # - Function that prunes a matrix to those variables implied in edges
-  # - M > (Possibly sparsified) precision matrix
-  ##############################################################################
 
   # Dependencies
   # require("igraph")
@@ -5913,10 +5311,6 @@ pruneMatrix <- function(M){
     return(Mprune)
   }
 }
-
-
-
-
 
 
 
@@ -5968,17 +5362,9 @@ pruneMatrix <- function(M){
 #' ## To union of features implied by edge
 #' MatsPrune <- Union(Mats$P1$sparseParCor, Mats$P2$sparseParCor)
 #'
-#' @export Union
+#' @importFrom reshape melt
+#' @export
 Union <- function(M1, M2){
-  ##############################################################################
-  # - Function that subsets square matrices to union of features implied
-  #   in edges
-  # - M1 > Sparsified (precision) matrix
-  # - M2 > Sparsified (precision) matrix
-  ##############################################################################
-
-  # Dependencies
-  # require("reshape")
 
   if (!is.matrix(M1)){
     stop("M1 should be a matrix")
@@ -6016,11 +5402,6 @@ Union <- function(M1, M2){
     return(list(M1subset = M1s, M2subset = M2s))
   }
 }
-
-
-
-
-
 
 
 
@@ -6099,48 +5480,15 @@ Union <- function(M1, M2){
 #'
 #' ## Search and visualize communities
 #' Commy <- Communities(PC0)
-#'
-#' @export Communities
+#' @export
 Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
                         Vsize = 15, Vcex = 1, Vcolor = "orangered",
                         VBcolor = "darkred", VLcolor = "black", main = ""){
-  ##############################################################################
-  # - Function that computes and visualizes community-structures
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - P       > Sparsified precision matrix
-  # - graph   > Logical indicating if also a graph should be returned.
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_with_fr.
-  #             Only used when graph = TRUE.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  #             Only used when graph = TRUE.
-  # - Vsize   > gives vertex size, default = 15
-  #             Only used when graph = TRUE.
-  # - Vcex    > gives size vertex labels, default = 1
-  #             Only used when graph = TRUE.
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector.
-  #             Only used when graph = TRUE.
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  #             Only used when graph = TRUE.
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  #             Only used when graph = TRUE.
-  # - main    > character specifying heading figure, default = ""
-  #             Only used when graph = TRUE.
-  #
   # NOTES
   # - Communities on the basis of the assumption of undirected graphs
   # - Will be expanded and bettered
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("igraph")
   # require("reshape")
 
@@ -6301,11 +5649,6 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 
 
 
-
-
-
-
-
 #' Visualize the differential graph
 #'
 #' Function visualizing the differential graph, i.e., the network of edges that
@@ -6386,39 +5729,14 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' ## Visualize differential graph
 #' DiffGraph(PC0, PC02)
 #'
-#' @export DiffGraph
+#' @export
 DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
                       Vsize = 15, Vcex = 1, Vcolor = "orangered",
                       VBcolor = "darkred", VLcolor = "black",
                       P1color = "red", P2color = "green", main = ""){
-  ##############################################################################
-  # - Function that visualized a differential graph, i.e., the edges that are
-  #   unique for 2 class-specific graphs over the same vertices
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - P1      > Sparsified precision matrix for class 1
-  # - P2      > Sparsified precision matrix for class 2
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_with_fr.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  # - Vsize   > gives vertex size, default = 15
-  # - Vcex    > gives size vertex labels, default = 1
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector.
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  # - P1color > gives color of edges unique to P1, default = "red"
-  # - P2color > gives color of edges unique to P1, default = "green"
-  # - main    > character specifying heading figure, default = ""
-  #
+
   # NOTES
   # - Will be expanded with legend options
-  ##############################################################################
 
   # Dependencies
   # require("igraph")

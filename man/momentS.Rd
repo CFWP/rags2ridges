@@ -38,7 +38,6 @@ Sigma <- matrix(c(1, 0.5, 0, 0.5, 1, 0, 0, 0, 1), byrow=TRUE, ncol=3)
 # that is assumed to Wishart-distributed random variable with the
 # above scale parameter Sigma and shape parameter equal to 40.
 momentS(Sigma, 40, 2)
-
 }
 \references{
 Lesac, G., Massam, H. (2004), "All invariant moments of the

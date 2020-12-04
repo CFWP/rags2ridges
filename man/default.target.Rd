@@ -30,17 +30,24 @@ implies a situation of rotation equivariant estimation (see
 \code{\link{ridgeP}}).
 }
 \details{
-The function can generate the following default target matrices: \itemize{
+The function can generate the following default target matrices:
+\itemize{
 \item \code{DAIE}: Diagonal matrix with average of inverse nonzero
-eigenvalues of S as entries; \item \code{DIAES}: Diagonal matrix with
-inverse of average of eigenvalues of S as entries; \item \code{DUPV}:
+eigenvalues of S as entries;
+\item \code{DIAES}: Diagonal matrix with
+inverse of average of eigenvalues of S as entries;
+\item \code{DUPV}:
 Diagonal matrix with unit partial variance as entries (identity matrix);
 \item \code{DAPV}: Diagonal matrix with average of inverse variances of
-\code{S} as entries; \item \code{DCPV}: Diagonal matrix with constant
+\code{S} as entries;
+\item \code{DCPV}: Diagonal matrix with constant
 partial variance as entries. Allows one to use other constant than DAIE,
-DIAES, DUPV, DAPV, and in a sense Null; \item \code{DEPV}: Diagonal matrix
-with the inverse variances of \code{S} as entries; \item \code{Null}: Null
-matrix. } The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not
+DIAES, DUPV, DAPV, and in a sense Null;
+\item \code{DEPV}: Diagonal matrix
+with the inverse variances of \code{S} as entries;
+\item \code{Null}: Null matrix.
+}
+The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not
 data-driven in the sense that the input matrix \code{S} only provides
 information on the size of the desired target. The targets \code{DAIE},
 \code{DIAES}, \code{DAPV}, and \code{DEPV} are data-driven in the sense that
