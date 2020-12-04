@@ -94,18 +94,20 @@ is then particularly speedy as the (relatively) expensive matrix square root
 can then be circumvented.
 }
 \examples{
+set.seed(333)
 
 ## Obtain some (high-dimensional) data
-p = 25
-n = 10
-set.seed(333)
-X = matrix(rnorm(n*p), nrow = n, ncol = p)
-colnames(X)[1:25] = letters[1:25]
+p <- 25
+n <- 10
+X <- matrix(rnorm(n*p), nrow = n, ncol = p)
+colnames(X)[1:p] = letters[1:p]
 Cx <- covML(X)
 
 ## Obtain regularized precision matrix
-ridgeP(Cx, lambda = 10, type = "Alt")
-
+P <- ridgeP(Cx, lambda = 10, type = "Alt")
+summary(P)
+print(P)
+plot(P)
 }
 \references{
 van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation

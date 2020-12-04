@@ -1183,18 +1183,20 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
 #' 8623. Springer, pp. 170-179.
 #' @examples
+#' set.seed(333)
 #'
 #' ## Obtain some (high-dimensional) data
-#' p = 25
-#' n = 10
-#' set.seed(333)
-#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
-#' colnames(X)[1:25] = letters[1:25]
+#' p <- 25
+#' n <- 10
+#' X <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:p] = letters[1:p]
 #' Cx <- covML(X)
 #'
 #' ## Obtain regularized precision matrix
-#' ridgeP(Cx, lambda = 10, type = "Alt")
-#'
+#' P <- ridgeP(Cx, lambda = 10, type = "Alt")
+#' summary(P)
+#' print(P)
+#' plot(P)
 #' @export
 ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
@@ -1221,47 +1223,46 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
     stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
   }
-  else{
-    # Calculate Ridge estimator
-    # Alternative estimator
-    if (type == "Alt"){
-      if (!isSymmetric(target)) {
-        stop("Shrinkage target should be symmetric")
-      } else if (dim(target)[1] != dim(S)[1]) {
-        stop("S and target should be of the same dimension")
-      } else {
-        P_Alt <- .armaRidgeP(S, target, lambda)
-      }
-      dimnames(P_Alt) <- dimnames(S)
-      return(symm(P_Alt))
-    }
 
-    # Archetypal I
-    if (type == "ArchI"){
-      if (lambda > 1){
-        stop("lambda should be in (0,1] for this type of Ridge estimator")
-      } else if (!isSymmetric(target)){
-        stop("Shrinkage target should be symmetric")
-      } else if (dim(target)[1] != dim(S)[1]){
-        stop("S and target should be of the same dimension")
-      } else if (any(eigen(target, symmetric = TRUE,
-                           only.values = TRUE)$values <= 0)){
-        stop("Target should always be p.d. for this type of ridge estimator")
-      } else {
-        P_ArchI <- solve((1-lambda) * S + lambda * solve(target))
-        return(symm(P_ArchI))
-      }
+  # Calculate Ridge estimator
+  # Alternative estimator
+  if (type == "Alt"){
+    if (!isSymmetric(target)) {
+      stop("Shrinkage target should be symmetric")
+    } else if (dim(target)[1] != dim(S)[1]) {
+      stop("S and target should be of the same dimension")
+    } else {
+      P <- .armaRidgeP(S, target, lambda)
     }
+    dimnames(P) <- dimnames(S)
+  }
 
-    # Archetypal II
-    if (type == "ArchII"){
-      P_ArchII <- solve(S + lambda * diag(nrow(S)))
-      return(symm(P_ArchII))
+  # Archetypal I
+  if (type == "ArchI"){
+    if (lambda > 1){
+      stop("lambda should be in (0,1] for this type of Ridge estimator")
+    } else if (!isSymmetric(target)){
+      stop("Shrinkage target should be symmetric")
+    } else if (dim(target)[1] != dim(S)[1]){
+      stop("S and target should be of the same dimension")
+    } else if (any(eigen(target, symmetric = TRUE,
+                         only.values = TRUE)$values <= 0)){
+      stop("Target should always be p.d. for this type of ridge estimator")
+    } else {
+      P <- solve((1 - lambda) * S + lambda * solve(target))
     }
   }
+
+  # Archetypal II
+  if (type == "ArchII"){
+    P <- solve(S + lambda * diag(nrow(S)))
+  }
+
+  # Set class and return
+  attr(P, "lambda") <- lambda
+  class(P) <- c("ridgeP", class(P))
+  return(symm(P))
 }
-
-
 
 
 ##------------------------------------------------------------------------------
