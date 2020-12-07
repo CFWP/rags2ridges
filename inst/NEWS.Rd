@@ -3,6 +3,16 @@
 
 \title{News for Package \cpkg{rags2ridges}}
 
+\section{Changes in version 2.2.4}{
+  \subsection{Adjustments:}{
+    \itemize{
+      \item Documentation roxygenized.
+      \item More selective importing and exporting.
+      \item S3 implementation of ridgeP output.
+    }
+  }
+}
+
 \section{Changes in version 2.2.3}{
   \subsection{Documentation:}{
     \itemize{
