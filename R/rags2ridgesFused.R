@@ -73,7 +73,7 @@ isSymmetricPD <- function(M) {
 #'   symmetric positive definite and \code{FASLE} if not. In practice, it tests
 #'   if all eigenvalues are larger than -tol*|l| where l is the largest
 #'   eigenvalue. More
-#'   \href{http://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
+#'   \href{https://scicomp.stackexchange.com/questions/12979/testing-if-a-matrix-is-positive-semi-definite}{here.}
 #'
 #' @export
 isSymmetricPSD <- function(M, tol = 1e-4) {
