@@ -580,7 +580,7 @@ covML <- function(Y, cor = FALSE){
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
-  else if (class(cor) != "logical"){
+  else if (!is.logical(cor)){
     stop("Input (cor) is of wrong class")
   }
   else {
@@ -1424,7 +1424,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
-  else if (class(cor) != "logical"){
+  else if (!is.logical(cor)){
     stop("Input (cor) is of wrong class")
   }
   else if (!(output %in% c("all", "light"))){
@@ -1675,7 +1675,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
   { stop("Input (step) should be integer") }
   if (step <= 0)
   { stop("Input (step) should be a positive integer") }
-  if (class(cor) != "logical")
+  if (!is.logical(cor))
   { stop("Input (cor) is of wrong class") }
   if (!(output %in% c("all", "light")))
   { stop("Input (output) should be one of {'all', 'light'}") }
@@ -1856,7 +1856,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
       { stop("Input (lambdaInit) must be larger than lambdaMin") }
     if (lambdaInit > lambdaMax)
       { stop("Input (lambdaInit) must be smaller than lambdaMax") }
-    if (class(cor) != "logical")
+    if (!is.logical(cor))
       { stop("Input (cor) is of wrong class") }
     if (class(fold) != "numeric" & class(fold) != "integer")
       { stop("Input (fold) is of wrong class") }
