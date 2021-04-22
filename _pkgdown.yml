@@ -4,6 +4,8 @@ template:
   params:
     bootswatch: simplex
 
+url: https://cfwp.github.io/rags2ridges/
+
 news:
 - one_page: true
 
