@@ -1,11 +1,44 @@
 # News for Package [rags2ridges](https://cran.r-project.org/package=rags2ridges)
 
 
-# Version 2.2.2
-
+# Version 2.2.5
 ## Documentation:
   * Improved documentation and added new [pkgdown](https://cran.r-project.org/package=pkgdown) documentation website.
+  * NEWS file moved to markdown format instead of .Rd and available on the website
 
+
+# Version 2.2.4
+
+## Adjustments:
+  *  Documentation roxygenized.
+  *  More selective importing and exporting.
+  *  S3 implementation of `ridgeP` output.
+
+
+# Version 2.2.3
+
+## Documentation:
+  * Updated `CITATION` file
+  * Updated `README` file
+
+## Bug fixes:
+  * Fixed bug in `GGMpathStats`:
+    Incorrectly stated before that all igraph layouts were supported.
+    Now they indeed are supported.
+
+## Adjustments:
+  * Bioconductor dependencies are now automatically installed upon first 
+    installation of rags2ridges.
+  * `GGMpathStats` now has additional visualization options: It can handle all 
+    layout functions supported by igraph. Moreover, it is now possible to 
+    specify custom coordinates for node-placement.
+
+
+# Version 2.2.2
+
+## Notifications:
+  * Hot fix due to class changes in "matrix". No major visible user changes.
+  * `CNplot` function again updated: higher max. iterations for Lanczos method
 
 # Version 2.2.1
 
