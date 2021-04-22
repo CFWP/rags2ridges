@@ -5,3 +5,4 @@ Rprof.out
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.github$
