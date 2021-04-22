@@ -13,8 +13,8 @@
 ##             Amsterdam, the Netherlands
 ## Email:	     cf.peeters@vumc.nl
 ##
-## Version: 2.2
-## Last Update:	13/04/2017
+## Version: 2.2.4
+## Last Update:	07/12/2020
 ## Description:	Ridge estimation for high-dimensional precision matrices
 ##              Includes supporting functions for (integrative) graphical modeling
 ##
@@ -35,12 +35,13 @@
 ##       Intelligence Methods for Bioinformatics and Biostatistics. Lecture
 ##       Notes in Computer Science, vol. 8623. Springer, pp. 170-179.
 ##   [3] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., &
-##       van Wieringen, W.N. (2015).
+##       van Wieringen, W.N. (2020).
 ##       "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from
-##       Multiple High-Dimensional Data Classes", arXiv:1509.07982v1 [stat.ME].
-## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2016).
+##       Multiple High-Dimensional Data Classes", Journal of Machine Learning
+##       Research, vol. 21(26): 1-52.
+## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
-##       Determination", arXiv:1608.04123 [stat.CO].
+##       Evaluation", Computational Statistics, vol. 35: 629-646.
 ##
 ################################################################################
 ################################################################################
@@ -428,17 +429,45 @@
 ##
 ##------------------------------------------------------------------------------
 
+
+
+
+
+
+
+#' Symmetrize matrix
+#'
+#' Function that symmetrizes matrices.
+#'
+#' Large objects that are symmetric sometimes fail to be recognized as such by
+#' R due to rounding under machine precision. This function symmetrizes for
+#' computational purposes matrices that are symmetric in numeric ideality.
+#'
+#' @param M (In numeric ideality symmetric) square \code{matrix}.
+#' @return A symmetric \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCV(X, 10, 30, 10, target = diag(diag(1/covML(X))))
+#'
+#' ## Check symmetry
+#' ## OPT$optPrec is symmetric by definition
+#' ## But is not recognized as such due to rounding peculiarities
+#' isSymmetric(OPT$optPrec)
+#'
+#' ## Symmetrize
+#' symm(OPT$optPrec)
+#'
+#' @export symm
 symm <- function(M){
-  ##############################################################################
-  # - Large objects that are symmetric sometimes fail to be recognized as such
-  #   by R due to rounding under machine precision. This function symmetrizes
-  #   for computational purposes matrices that are symmetric in numeric ideality
-  # - M > symmetric (in numeric ideality) square matrix
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (!is.matrix(M)){
     stop("M should be a matrix")
   }
@@ -448,26 +477,47 @@ symm <- function(M){
   else {
     # Symmetrize
     Msym <- (M + t(M))/2
-
-    # Return
     return(Msym)
   }
 }
 
 
 
+#' Transform real matrix into an adjacency matrix
+#'
+#' Function that transforms a real matrix into an adjacency matrix. Intended
+#' use: Turn sparsified precision matrix into an adjacency matrix for
+#' undirected graphical representation.
+#'
+#'
+#' @param M (Possibly sparsified precision) \code{matrix}.
+#' @param diag A \code{logical} indicating if the diagonal elements should be
+#' retained.
+#' @return Function returns an adjacency \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}},
+#' \code{\link{edgeHeat}}, \code{\link{Ugraph}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' P <- ridgeP(Cx, lambda = 10, type = "Alt")
+#'
+#' ## Obtain sparsified partial correlation matrix
+#' PC0 <- sparsify(P, threshold = "localFDR", FDRcut = .8)
+#'
+#' ## Obtain adjacency matrix
+#' adjacentMat(PC0$sparsePrecision)
+#'
+#' @export
 adjacentMat <- function(M, diag = FALSE){
-  ##############################################################################
-  # - Function that transforms a real matrix into an adjacency matrix
-  # - Intended use: Turn sparsified precision matrix into an adjacency matrix
-  #   for undirected graph
-  # - M    > (sparsified precision) matrix
-  # - diag > logical indicating if the diagonal elements should be retained
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (!is.matrix(M)){
     stop("M should be a matrix")
   }
@@ -484,28 +534,53 @@ adjacentMat <- function(M, diag = FALSE){
       diag(AM) <- 1
     }
 
-    # Return
     return(AM)
   }
 }
 
 
 
+#' Maximum likelihood estimation of the covariance matrix
+#'
+#' Function that gives the maximum likelihood estimate of the covariance
+#' matrix.
+#'
+#' The function gives the maximum likelihood (ML) estimate of the covariance
+#' matrix. The input matrix \code{Y} assumes that the variables are represented
+#' by the columns. Note that when the input data is standardized, the ML
+#' covariance matrix of the scaled data is computed. If a correlation matrix is
+#' desired, use \code{cor = TRUE}.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param cor A \code{logical} indicating if the correlation matrix should be
+#' returned
+#' @return Function returns the maximum likelihood estimate of the covariance
+#' \code{matrix}. In case \code{cor = TRUE}, the correlation matrix is
+#' returned.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain ML estimate covariance matrix
+#' Cx <- covML(X)
+#'
+#' ## Obtain correlation matrix
+#' Cx <- covML(X, cor = TRUE)
+#'
+#' @importFrom stats cor
+#' @export covML
 covML <- function(Y, cor = FALSE){
-  ##############################################################################
-  # - function that gives the maximum likelihood estimate of the covariance
-  # - Y   > (raw) data matrix, assumed to have variables in columns
-  # - cor > logical indicating if the correlation matrix should be returned
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
-
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
-  else if (class(cor) != "logical"){
+  else if (!is.logical(cor)){
     stop("Input (cor) is of wrong class")
   }
   else {
@@ -524,36 +599,59 @@ covML <- function(Y, cor = FALSE){
 
 
 
+#' Maximum likelihood estimation of the covariance matrix with assumptions on
+#' its structure
+#'
+#' Function that performs maximum likelihood estimation of the covariance
+#' matrix, with various types of assumptions on its structure.
+#'
+#' The function gives the maximum likelihood estimate of the covariance matrix.
+#' The input matrix \code{Y} assumes that the variables are represented by the
+#' columns.
+#'
+#' When simultaneously \code{covMat=NULL}, \code{corMat=NULL},
+#' \code{corType="none"} and \code{varType="none"} the \code{covML}-function is
+#' invoked and the regular maximum likelihood estimate of the covariance matrix
+#' is returned.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param covMat A positive-definite covariance \code{matrix}. When specified,
+#' the to-be-estimated covariance matrix is assumed to be proportional to the
+#' specified covariance matrix. Hence, only a constant needs to estimated.
+#' @param corMat A positive-definite correlation \code{matrix}. When specified,
+#' the to-be-estimated covariance matrix is assumed to have this correlation
+#' structure. Hence, only the marginal variances need to be estimated.
+#' @param corType A \code{character}, either \code{"none"} (no structure on the
+#' correlation among variate assumed) or \code{"equi"} (variates are
+#' equi-correlated).
+#' @param varType A \code{character}, either \code{"none"} (no structure on the
+#' marginal variances of the variates assumed) or \code{"common"} (variates
+#' have equal marginal variances).
+#' @param nInit An \code{integer} specifying the maximum number of iterations
+#' for likelihood maximization when \code{corType="equi"} .
+#' @return The maximum likelihood estimate of the covariance \code{matrix}
+#' under the specified assumptions on its structure.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{covML}}
+#' @examples
+#'
+#' ## Obtain some data
+#' p = 10
+#' n = 100
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:10] = letters[1:10]
+#'
+#' ## Obtain maximum likelihood estimate covariance matrix
+#' Cx <- covMLknown(X, corType="equi", varType="common")
+#'
+#' @importFrom stats optim
+#' @export
 covMLknown <- function(Y, covMat = NULL, corMat = NULL,
                        corType = "none", varType = "none", nInit = 100){
-  ##############################################################################
-  # - Maximum likelihood estimation of the covariance matrix, with various
-  #   types of assumptions on the structure of this matrix.
-  # - Y	      > (raw) data matrix, assumed to have variables in columns
-  # - covMat  > A positive-definite covariance 'matrix'. When specified, the
-  #             to-be-estimated covariance matrix is assumed to be proportional
-  #             to the specified covariance matrix. Hence, only a constant needs
-  #             to be estimated
-  # - corMat  > A positive-definite correlation 'matrix'. When specified, the
-  #             to-be-estimated covariance matrix is assumed to have this
-  #             correlation structure. Hence, only the variances need to
-  #		          be estimated.
-  # - corType > character that is either "none" (no structure on the correlation
-  #             among variate assumed) or "equi" (variates are equi-correlated).
-  # - varType	> character that is either "none" (no structure on the marginal
-  #             variances of the variates assumed) or "common" (variates have
-  #             equal marginal variances).
-  # - nInit   > Maximum number of iterations for likelihood maximization
-  #             when corType='equi'.
-  #
-  # NOTES:
-  # - Future version should a.o. also allow a first order autoregressive
-  #   correlation assumption.
-  ##############################################################################
 
-  # Dependencies
-  # require("base")
-  # require("stats")
+  # TODO: Future version should a.o. also allow a first order autoregressive
+  #   correlation assumption.
 
   # center data
   Ys <- scale(Y, center = TRUE, scale = FALSE)
@@ -574,8 +672,10 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
       a1 <- sum(diag(Sml))
       a2 <- (ncol(Ys)-1) * a1 - sum(Sml)
       p <- nrow(Sml)
-      minLoglikEqui <- function(rho, p, a1, a2){
-        (p-1) * log(1-rho) +  log((p-1) * rho + 1) + ((1-rho) * ((p-1) * rho + 1))^(-1) * (a1 + a2 * rho) }
+      minLoglikEqui <- function(rho, p, a1, a2) {
+        (p-1) * log(1-rho) +  log((p-1) * rho + 1) +
+          ((1-rho) * ((p-1) * rho + 1))^(-1) * (a1 + a2 * rho)
+      }
       rho <- optim(par=0.1, fn=minLoglikEqui, method="Brent", lower=-1/(p-1)
                    + .Machine$double.eps, upper=1-.Machine$double.eps, p=ncol(Ys),
                    a1=a1, a2=a2)$par
@@ -635,22 +735,58 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 
 
 
+#' Evaluate numerical properties square matrix
+#'
+#' Function that evaluates various numerical properties of a square input
+#' matrix. The intended use is to evaluate the various numerical properties of
+#' what is assumed to be a covariance matrix. Another use is to evaluate the
+#' various numerical properties of a (regularized) precision matrix.
+#'
+#' The function evaluates various numerical properties of a covariance or
+#' precision input matrix. The function assesses if the input matrix is
+#' symmetric, if all its eigenvalues are real, if all its eigenvalues are
+#' strictly positive, and if it is a diagonally dominant matrix. In addition,
+#' the function calculates the trace, the determinant, and the spectral
+#' condition number of the input matrix. See, e.g., Harville (1997) for more
+#' details on the mentioned (numerical) matrix properties.
+#'
+#' @param S Covariance or (regularized) precision \code{matrix}.
+#' @param verbose A \code{logical} indicating if output should be printed on
+#' screen.
+#' @return \item{symm}{A \code{logical} indicating if the matrix is symmetric.}
+#' \item{realEigen}{A \code{logical} indicating if the eigenvalues are real.}
+#' \item{posEigen}{A \code{logical} indicating if the eigenvalues are strictly
+#' positive.} \item{dd}{A \code{logical} indicating if the matrix is diagonally
+#' dominant.} \item{trace}{A \code{numerical} giving the value of the trace.}
+#' \item{det}{A \code{numerical} giving the value of the determinant.}
+#' \item{condNumber}{A \code{numerical} giving the value of the spectral
+#' condition number.}
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
+#' @references Harville, D.A.(1997). Matrix algebra from a statistician's
+#' perspective. New York: Springer-Verlag.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Evaluate numerical properties covariance matrix
+#' ## Obtain, e.g., value trace
+#' Seval <- evaluateS(Cx); Seval
+#' Seval$trace
+#'
+#' ## Evaluate numerical properties precision matrix after regularization
+#' P <- ridgeP(Cx, lambda = 10, type = 'Alt')
+#' Peval <- evaluateS(P); Peval
+#'
+#' @importFrom stats cov2cor
+#' @export evaluateS
 evaluateS <- function(S, verbose = TRUE){
-  ##############################################################################
-  # - Function evualuating various properties of an input matrix
-  # - Intended use is to evaluate the various properties of what is assumed to
-  #   be a covariance matrix
-  # - Another use is to evaluate the various properties of a (regularized)
-  #   precision matrix
-  # - S       > sample covariance/correlation matrix or (regularized) precision
-  #             matrix
-  # - verbose > logical indicating if output should be printed on screen
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
-
   if (!is.matrix(S)){
     stop("S should be a matrix")
   }
@@ -701,20 +837,49 @@ evaluateS <- function(S, verbose = TRUE){
 
 
 
+
+
+
+
+
+
+#' Compute partial correlation matrix or standardized precision matrix
+#'
+#' Function computing the partial correlation matrix or standardized precision
+#' matrix from an input precision matrix.
+#'
+#' The function assumes that the input \code{matrix} is a precision matrix. If
+#' \code{pc = FALSE} the standardized precision matrix, rather than the partial
+#' correlation matrix, is given as the output value. The standardized precision
+#' matrix is equal to the partial correlation matrix up to the sign of
+#' off-diagonal entries.
+#'
+#' @param P (Possibly regularized) precision \code{matrix}.
+#' @param pc A \code{logical} indicating if the partial correlation matrix
+#' should be computed.
+#' @return A partial correlation \code{matrix} or a standardized precision
+#' \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' P <- ridgeP(Cx, lambda = 10, type = "Alt")
+#'
+#' ## Obtain partial correlation matrix
+#' pcor(P)
+#'
+#' @importFrom stats cov2cor
+#' @export pcor
 pcor <- function(P, pc = TRUE){
-  ##############################################################################
-  # - Function computing partial correlation/standardized precision matrix from
-  #   a precision matrix
-  # - P  > precision matrix (possibly regularized inverse of covariance or
-  #        correlation matrix)
-  # - pc > logical indicating if the partial correlation matrix should be
-  #        computed
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
-
   if (!is.matrix(P)){
     stop("P should be a matrix")
   }
@@ -740,20 +905,78 @@ pcor <- function(P, pc = TRUE){
 
 
 
+#' Generate a (data-driven) default target for usage in ridge-type shrinkage
+#' estimation
+#'
+#' Function that generates a (data-driven) default target for usage in (type I)
+#' ridge shrinkage estimation of the precision matrix (see
+#' \code{\link{ridgeP}}). The target that is generated is to be understood in
+#' precision terms. Most options for target generation result in a target that
+#' implies a situation of rotation equivariant estimation (see
+#' \code{\link{ridgeP}}).
+#'
+#' The function can generate the following default target matrices:
+#' \itemize{
+#' \item \code{DAIE}: Diagonal matrix with average of inverse nonzero
+#' eigenvalues of S as entries;
+#' \item \code{DIAES}: Diagonal matrix with
+#' inverse of average of eigenvalues of S as entries;
+#' \item \code{DUPV}:
+#' Diagonal matrix with unit partial variance as entries (identity matrix);
+#' \item \code{DAPV}: Diagonal matrix with average of inverse variances of
+#' \code{S} as entries;
+#' \item \code{DCPV}: Diagonal matrix with constant
+#' partial variance as entries. Allows one to use other constant than DAIE,
+#' DIAES, DUPV, DAPV, and in a sense Null;
+#' \item \code{DEPV}: Diagonal matrix
+#' with the inverse variances of \code{S} as entries;
+#' \item \code{Null}: Null matrix.
+#' }
+#' The targets \code{DUPV}, \code{DCPV}, and \code{Null} are not
+#' data-driven in the sense that the input matrix \code{S} only provides
+#' information on the size of the desired target. The targets \code{DAIE},
+#' \code{DIAES}, \code{DAPV}, and \code{DEPV} are data-driven in the sense that
+#' the input matrix \code{S} provides the information for the diagonal entries.
+#' The argument \code{fraction} is only used when \code{type = "DAIE"}. The
+#' argument \code{const} is only used when \code{type = "DCPV"}. All types
+#' except \code{DEPV} and \code{Null} lead to rotation equivariant alternative
+#' and archetypal Type I ridge estimators. The target \code{Null} also leads to
+#' a rotation equivariant alternative Type II ridge estimator (see
+#' \code{\link{ridgeP}}). Note that the \code{DIAES}, \code{DAPV}, and
+#' \code{DEPV} targets amount to the identity matrix when the sample covariance
+#' matrix \code{S} is standardized to be the correlation matrix. The same goes,
+#' naturally, for the \code{DCPV} target when \code{const} is specified to be
+#' 1.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param type A \code{character} determining the type of default target. Must
+#' be one of: "DAIE", "DIAES", "DUPV", "DAPV", "DCPV", "DEPV", "Null".
+#' @param fraction A \code{numeric} indicating the fraction of the largest
+#' eigenvalue below which an eigenvalue is considered zero.
+#' @param const A \code{numeric} constant representing the partial variance.
+#' @return Function returns a target \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
+#' @references van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation
+#' of Inverse Covariance Matrices from High-Dimensional Data, Computational
+#' Statistics & Data Analysis, vol. 103: 284-303.  Also available as
+#' arXiv:1403.0904v3 [stat.ME].
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain default diagonal target matrix
+#' default.target(Cx)
+#'
+#' @export
 default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   ##############################################################################
-  # - Function that generates a (data-driven) default target for usage in
-  #   ridge-type shrinkage estimation
-  # - The target that is generated is to be understood in precision terms
-  # - See function 'ridgeS'
-  # S        > sample covariance/correlation matrix
-  # type     > character determining the type of default target;
-  #            default = "DAIE" (see notes below)
-  # fraction > fraction of largest eigenvalue below which an eigenvalue is
-  #            considered zero. Only when type = "DAIE".
-  # const    > numeric constant that represents the partial variance.
-  #            Only when type = "DCPV"
-  #
   # Notes:
   # - The van Wieringen-Peeters type I estimator and the archetypal I estimator
   #   utilize a p.d. target
@@ -777,9 +1000,6 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   #   archetype I ridge estimators
   # - Null also leads to a rotation equivariant alternative Type II estimator
   ##############################################################################
-
-  # Dependencies
-  # require("base")
 
   if (!is.matrix(S)){
     stop("Input (S) should be a matrix")
@@ -854,13 +1074,10 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
       target <- matrix(0, ncol(S), nrow(S))
     }
 
-    # Return
-    colnames(target) = rownames(target) <- rownames(S)
+    colnames(target) <- rownames(target) <- rownames(S)
     return(target)
   }
 }
-
-
 
 
 ##------------------------------------------------------------------------------
@@ -869,21 +1086,120 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 ##
 ##------------------------------------------------------------------------------
 
+
+
+#' Ridge estimation for high-dimensional precision matrices
+#'
+#' Function that calculates various Ridge estimators for high-dimensional
+#' precision matrices.
+#'
+#' @details
+#' The function can calculate various ridge estimators for high-dimensional
+#' precision matrices. Current (well-known) ridge estimators can be roughly
+#' divided in two archetypes. The first archetypal form employs a convex
+#' combination of \eqn{\mathbf{S}} and a positive definite (p.d.) target matrix
+#'   \eqn{\mathbf{T}}:
+#'   \eqn{\hat{\mathbf{\Omega}}^{\mathrm{I}}(\lambda_{\mathrm{I}})
+#'   = [(1-\lambda_{\mathrm{I}}) \mathbf{S} + \lambda_{\mathrm{I}}\mathbf{T}]^{-1}},
+#' with \eqn{\lambda_{\mathrm{I}} \in (0,1]}.
+#' A common target choice is for \eqn{\mathbf{T}} to be diagonal with
+#'   \eqn{(\mathbf{T})_{jj} = (\mathbf{S})_{jj}} for \eqn{j=1, \ldots, p}.
+#' The second archetypal form can be given as
+#'   \eqn{\hat{\mathbf{\Omega}}^{\mathrm{II}}(\lambda_{\mathrm{II}})
+#'    = (\mathbf{S} + \lambda_{\mathrm{II}} \mathbf{I}_{p})^{-1}}
+#' with \eqn{\lambda_{\mathrm{II}} \in (0, \infty)}. Viewed from a penalized
+#' estimation perspective, the two archetypes utilize penalties that do not
+#' coincide with the matrix-analogue of the common ridge penalty. van Wieringen
+#' and Peeters (2015) derive analytic expressions for alternative Type I and
+#' Type II ridge precision estimators based on a proper L2-penalty. Their
+#' alternative Type I estimator (target shrinkage) takes the form
+#'   \deqn{
+#'     \hat{\mathbf{\Omega}}^{\mathrm{I}a}(\lambda_{a})
+#'     = \left\{
+#'         \left[\lambda_{a}\mathbf{I}_{p} + \frac{1}{4}(\mathbf{S} -
+#'               \lambda_{a}\mathbf{T})^{2}\right]^{1/2} +
+#'         \frac{1}{2}(\mathbf{S} - \lambda_{a}\mathbf{T})
+#'       \right\}^{-1},
+#'   }
+#' while their alternative Type II estimator can be given as a special case of
+#' the former:
+#'   \deqn{
+#'     \hat{\mathbf{\Omega}}^{\mathrm{II}a}(\lambda_{a}) =
+#'     \left\{
+#'       \left[\lambda_{a}\mathbf{I}_{p} +
+#'               \frac{1}{4}\mathbf{S}^{2}\right]^{1/2} +
+#'       \frac{1}{2}\mathbf{S}
+#'     \right\}^{-1}.
+#'   }
+#' These alternative estimators were shown to be superior to the archetypes in
+#' terms of risk under various loss functions (van Wieringen and Peeters, 2015).
+#'
+#' The \code{lambda} parameter in \code{ridgeP} generically indicates the
+#' penalty parameter. It must be chosen in accordance with the type of ridge
+#' estimator employed. The domains for the penalty parameter in the archetypal
+#' estimators are given above. The domain for \code{lambda} in the alternative
+#' estimators is \eqn{(0, \infty)}. The \code{type} parameter specifies the type
+#' of ridge estimator. Specifying \code{type = "ArchI"} leads to usage of the
+#' archetypal I estimator while specifying \code{type = "ArchII"} leads to usage
+#' of the archetypal II estimator. In the latter situation the argument
+#' \code{target} remains unused. Specifying \code{type = "Alt"} enables usage of
+#' the alternative ridge estimators: when \code{type = "Alt"} and the
+#' \code{target} matrix is p.d. one obtains the alternative Type I estimator;
+#' when \code{type = "Alt"} and the \code{target} matrix is specified to be the
+#' null-matrix one obtains the alternative Type II estimator.
+#'
+#' The Type I estimators thus employ target shrinkage. The default target for
+#' both the archetype and alternative is \code{default.target(S)}. When
+#' \code{target} is not the null-matrix it is expected to be p.d. for the
+#' alternative type I estimator. The target is always expected to be p.d. in
+#' case of the archetypal I estimator. The archetypal Type I ridge estimator is
+#' rotation equivariant when the target is of the form \eqn{\mu\mathbf{I}_{p}}
+#' with \eqn{\mu \in (0,\infty)}. The archetypal Type II estimator is rotation
+#' equivariant by definition. When the target is of the form
+#' \eqn{\varphi\mathbf{I}_{p}} with \eqn{\varphi \in [0,\infty)}, then the
+#' alternative ridge estimator is rotation equivariant. Its analytic computation
+#' is then particularly speedy as the (relatively) expensive matrix square root
+#' can then be circumvented.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param lambda A \code{numeric} representing the value of the penalty
+#' parameter.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @return Function returns a regularized precision \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Anders E. Bilgrau
+#' @seealso \code{\link{default.target}}
+#' @references van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation
+#' of Inverse Covariance Matrices from High-Dimensional Data, Computational
+#' Statistics & Data Analysis, vol. 103: 284-303. Also available as
+#' arXiv:1403.0904v3 [stat.ME].
+#'
+#' van Wieringen, W.N. & Peeters, C.F.W. (2015). Application of a New Ridge
+#' Estimator of the Inverse Covariance Matrix to the Reconstruction of
+#' Gene-Gene Interaction Networks. In: di Serio, C., Lio, P., Nonis, A., and
+#' Tagliaferri, R. (Eds.) `Computational Intelligence Methods for
+#' Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
+#' 8623. Springer, pp. 170-179.
+#' @examples
+#' set.seed(333)
+#'
+#' ## Obtain some (high-dimensional) data
+#' p <- 25
+#' n <- 10
+#' X <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:p] = letters[1:p]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' P <- ridgeP(Cx, lambda = 10, type = "Alt")
+#' summary(P)
+#' print(P)
+#' plot(P)
+#' @export
 ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
-  # - Function that calculates ridge estimators of a precision matrix
-  # - Version that uses the RcppArmadillo implementation
-  # - S       > sample covariance matrix
-  # - lambda  > penalty parameter (choose in accordance with type of Ridge
-  #             estimator)
-  # - type    > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - Alt     > van Wieringen-Peeters alternative ridge estimator of a precision
-  #             matrix
-  # - ArchI   > Archetypal I ridge estimator of a precision matrix
-  # - ArchII  > Archetypal II ridge estimator of a precision matrix
-  # - target  > target (precision terms) for Type I estimators,
-  #             default = default.target(S)
-  #
   # - NOTES:
   # - When type = "Alt" and target is p.d., one obtains the
   #   van Wieringen-Peeters type I estimator
@@ -907,47 +1223,46 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
   else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
     stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
   }
-  else{
-    # Calculate Ridge estimator
-    # Alternative estimator
-    if (type == "Alt"){
-      if (!isSymmetric(target)) {
-        stop("Shrinkage target should be symmetric")
-      } else if (dim(target)[1] != dim(S)[1]) {
-        stop("S and target should be of the same dimension")
-      } else {
-        P_Alt <- .armaRidgeP(S, target, lambda)
-      }
-      dimnames(P_Alt) <- dimnames(S)
-      return(symm(P_Alt))
-    }
 
-    # Archetypal I
-    if (type == "ArchI"){
-      if (lambda > 1){
-        stop("lambda should be in (0,1] for this type of Ridge estimator")
-      } else if (!isSymmetric(target)){
-        stop("Shrinkage target should be symmetric")
-      } else if (dim(target)[1] != dim(S)[1]){
-        stop("S and target should be of the same dimension")
-      } else if (any(eigen(target, symmetric = TRUE,
-                           only.values = TRUE)$values <= 0)){
-        stop("Target should always be p.d. for this type of ridge estimator")
-      } else {
-        P_ArchI <- solve((1-lambda) * S + lambda * solve(target))
-        return(symm(P_ArchI))
-      }
+  # Calculate Ridge estimator
+  # Alternative estimator
+  if (type == "Alt"){
+    if (!isSymmetric(target)) {
+      stop("Shrinkage target should be symmetric")
+    } else if (dim(target)[1] != dim(S)[1]) {
+      stop("S and target should be of the same dimension")
+    } else {
+      P <- .armaRidgeP(S, target, lambda)
     }
+    dimnames(P) <- dimnames(S)
+  }
 
-    # Archetypal II
-    if (type == "ArchII"){
-      P_ArchII <- solve(S + lambda * diag(nrow(S)))
-      return(symm(P_ArchII))
+  # Archetypal I
+  if (type == "ArchI"){
+    if (lambda > 1){
+      stop("lambda should be in (0,1] for this type of Ridge estimator")
+    } else if (!isSymmetric(target)){
+      stop("Shrinkage target should be symmetric")
+    } else if (dim(target)[1] != dim(S)[1]){
+      stop("S and target should be of the same dimension")
+    } else if (any(eigen(target, symmetric = TRUE,
+                         only.values = TRUE)$values <= 0)){
+      stop("Target should always be p.d. for this type of ridge estimator")
+    } else {
+      P <- solve((1 - lambda) * S + lambda * solve(target))
     }
   }
+
+  # Archetypal II
+  if (type == "ArchII"){
+    P <- solve(S + lambda * diag(nrow(S)))
+  }
+
+  # Set class and return
+  attr(P, "lambda") <- lambda
+  class(P) <- c("ridgeP", class(P))
+  return(symm(P))
 }
-
-
 
 
 ##------------------------------------------------------------------------------
@@ -956,28 +1271,117 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 ##
 ##------------------------------------------------------------------------------
 
+
+#' Select optimal penalty parameter by approximate leave-one-out
+#' cross-validation
+#'
+#' Function that selects the optimal penalty parameter for the
+#' \code{\link{ridgeP}} call by usage of approximate leave-one-out
+#' cross-validation. Its output includes (a.o.) the precision matrix under the
+#' optimal value of the penalty parameter.
+#'
+#' The function calculates an approximate leave-one-out cross-validated
+#' (aLOOCV) negative log-likelihood score (using a regularized ridge estimator
+#' for the precision matrix) for each value of the penalty parameter contained
+#' in the search grid. The utilized aLOOCV score was proposed by Lian (2011)
+#' and Vujacic et al. (2014). The aLOOCV negative log-likeliho od score is
+#' computationally more efficient than its non-approximate counterpart (see
+#' \code{\link{optPenalty.LOOCV}}). For details on the aLOOCV negative
+#' log-likelihood score see Lian (2011) and Vujacic et al (2014). For scalar
+#' matrix targets (see \code{\link{default.target}}) the complete solution path
+#' of the alternative Type I and II ridge estimators (see \code{\link{ridgeP}})
+#' depends on only 1 eigendecomposition and 1 matrix inversion, making the
+#' determination of the optimal penalty value particularly efficient (see van
+#' Wieringen and Peeters, 2015).
+#'
+#' The value of the penalty parameter that achieves the lowest aLOOCV negative
+#' log-likelihood score is deemed optimal. The penalty parameter must be
+#' positive such that \code{lambdaMin} must be a positive scalar. The maximum
+#' allowable value of \code{lambdaMax} depends on the type of ridge estimator
+#' employed. For details on the type of ridge estimator one may use (one of:
+#' "Alt", "ArchI", "ArchII") see \code{\link{ridgeP}}. The ouput consists of an
+#' object of class list (see below). When \code{output = "light"} (default)
+#' only the \code{optLambda} and \code{optPrec} elements of the list are given.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param cor A \code{logical} indicating if the evaluation of the approximate
+#' LOOCV score should be performed on the correlation scale.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param output A \code{character} indicating if the output is either heavy or
+#' light. Must be one of: "all", "light".
+#' @param graph A \code{logical} indicating if the grid search for the optimal
+#' penalty parameter should be visualized.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @return An object of class list: \item{optLambda}{A \code{numeric} giving
+#' the optimal value of the penalty parameter.} \item{optPrec}{A \code{matrix}
+#' representing the precision matrix of the chosen type (see
+#' \code{\link{ridgeS}}) under the optimal value of the penalty parameter.}
+#' \item{lambdas}{A \code{numeric} vector representing all values of the
+#' penalty parameter for which approximate cross-validation was performed; Only
+#' given when \code{output = "all"}.} \item{aLOOCVs}{A \code{numeric} vector
+#' representing the approximate cross-validated negative log-likelihoods for
+#' each value of the penalty parameter given in \code{lambdas}; Only given when
+#' \code{output = "all"}.}
+#' @note When \code{cor = TRUE} correlation matrices are used in the
+#' computation of the approximate (cross-validated) negative log-likelihood
+#' score, i.e., the sample covariance matrix is a matrix on the correlation
+#' scale. When performing evaluation on the correlation scale the data are
+#' assumed to be standardized. If \code{cor = TRUE} and one wishes to used the
+#' default target specification one may consider using \code{target =
+#' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
+#' assumption of standardized data.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}},
+#' \code{\link{optPenalty.LOOCVauto}}, \cr \code{\link{default.target}},
+#' \code{\link{covML}}
+#' @references Lian, H. (2011). Shrinkage tuning parameter selection in
+#' precision matrices estimation. Journal of Statistical Planning and
+#' Inference, 141: 2839-2848.
+#'
+#' van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation of Inverse
+#' Covariance Matrices from High-Dimensional Data, Computational Statistics &
+#' Data Analysis, vol. 103: 284-303. Also available as arXiv:1403.0904v3
+#' [stat.ME].
+#'
+#' Vujacic, I., Abbruzzo, A., and Wit, E.C. (2014). A computationally fast
+#' alternative to cross-validation in penalized Gaussian graphical models.
+#' arXiv: 1309.6216v2 [stat.ME].
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30, step = 400); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' ## Another example with standardized data
+#' X <- scale(X, center = TRUE, scale = TRUE)
+#' OPT  <- optPenalty.aLOOCV(X, lambdaMin = .001, lambdaMax = 30,
+#'                           step = 400, cor = TRUE,
+#'                           target = default.target(covML(X, cor = TRUE))); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' @export
 optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
                               cor = FALSE, target = default.target(covML(Y)),
                               output = "light", graph = TRUE, verbose = TRUE) {
-  ##############################################################################
-  # - Function that selects the optimal penalty parameter by approximate
-  #   leave-one-out cross-validation
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
-  # - step        > determines the coarseness in searching the grid
-  #                 [lambdaMin, lambdaMax]
-  # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - cor         > logical indicating if evaluation of the LOOCV score should be
-  #                 performed on the correlation matrix
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - output      > must be one of {"all", "light"}, default = "light"
-  # - graph       > Optional argument for visualization optimal penalty
-  #                 selection, default = TRUE
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -1020,7 +1424,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
-  else if (class(cor) != "logical"){
+  else if (!is.logical(cor)){
     stop("Input (cor) is of wrong class")
   }
   else if (!(output %in% c("all", "light"))){
@@ -1138,30 +1542,109 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 
+
+
+
+
+
+
+#' Select optimal penalty parameter by \eqn{K}-fold cross-validation
+#'
+#' Function that selects the optimal penalty parameter for the
+#' \code{\link{ridgeP}} call by usage of \eqn{K}-fold cross-validation. Its
+#' output includes (a.o.) the precision matrix under the optimal value of the
+#' penalty parameter.
+#'
+#' The function calculates a cross-validated negative log-likelihood score
+#' (using a regularized ridge estimator for the precision matrix) for each
+#' value of the penalty parameter contained in the search grid by way of
+#' \eqn{K}-fold cross-validation. The value of the penalty parameter that
+#' achieves the lowest cross-validated negative log-likelihood score is deemed
+#' optimal. The penalty parameter must be positive such that \code{lambdaMin}
+#' must be a positive scalar. The maximum allowable value of \code{lambdaMax}
+#' depends on the type of ridge estimator employed. For details on the type of
+#' ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see
+#' \code{\link{ridgeP}}. The ouput consists of an object of class list (see
+#' below). When \code{output = "light"} (default) only the \code{optLambda} and
+#' \code{optPrec} elements of the list are given.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param fold A \code{numeric} or \code{integer} specifying the number of
+#' folds to apply in the cross-validation.
+#' @param cor A \code{logical} indicating if the evaluation of the LOOCV score
+#' should be performed on the correlation scale.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param output A \code{character} indicating if the output is either heavy or
+#' light. Must be one of: "all", "light".
+#' @param graph A \code{logical} indicating if the grid search for the optimal
+#' penalty parameter should be visualized.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @return An object of class list: \item{optLambda}{A \code{numeric} giving
+#' the optimal value of the penalty parameter.} \item{optPrec}{A \code{matrix}
+#' representing the precision matrix of the chosen type (see
+#' \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
+#' \item{lambdas}{A \code{numeric} vector representing all values of the
+#' penalty parameter for which cross-validation was performed; Only given when
+#' \code{output = "all"}.} \item{LLs}{A \code{numeric} vector representing the
+#' mean of cross-validated negative log-likelihoods for each value of the
+#' penalty parameter given in \code{lambdas}; Only given when \code{output =
+#' "all"}.}
+#' @note When \code{cor = TRUE} correlation matrices are used in the
+#' computation of the (cross-validated) negative log-likelihood score, i.e.,
+#' the \eqn{K}-fold sample covariance matrix is a matrix on the correlation
+#' scale. When performing evaluation on the correlation scale the data are
+#' assumed to be standardized. If \code{cor = TRUE} and one wishes to used the
+#' default target specification one may consider using \code{target =
+#' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
+#' assumption of standardized data.
+#'
+#' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
+#' performes leave-one-out cross-validation.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.kCVauto}},
+#' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
+#' \code{\link{covML}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty using K = n
+#' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' ## Another example with standardized data
+#' X <- scale(X, center = TRUE, scale = TRUE)
+#' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
+#'                        target = default.target(covML(X, cor = TRUE))); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' ## Another example using K = 5
+#' OPT  <- optPenalty.kCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, fold = 5); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' @export
 optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
                            cor = FALSE, target = default.target(covML(Y)),
                            type = "Alt", output = "light", graph = TRUE,
                            verbose = TRUE) {
-  ##############################################################################
-  # - Function that selects the optimal penalty parameter by leave-one-out
-  #   cross-validation
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax   > maximum value penalty parameter (dependent on 'type')
-  # - step        > determines the coarseness in searching the grid
-  #                 [lambdaMin, lambdaMax]
-  # - fold        > cross-validation fold, default gives LOOCV
-  # - cor         > logical indicating if evaluation of the LOOCV score should be
-  #                 performed on the correlation matrix
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - type        > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - output      > must be one of {"all", "light"}, default = "light"
-  # - graph       > Optional argument for visualization optimal penalty
-  #                 selection, default = TRUE
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -1192,7 +1675,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
   { stop("Input (step) should be integer") }
   if (step <= 0)
   { stop("Input (step) should be a positive integer") }
-  if (class(cor) != "logical")
+  if (!is.logical(cor))
   { stop("Input (cor) is of wrong class") }
   if (!(output %in% c("all", "light")))
   { stop("Input (output) should be one of {'all', 'light'}") }
@@ -1255,31 +1738,101 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 
 
 
+
+
+
+
+
+
+#' Automatic search for optimal penalty parameter
+#'
+#' Function that performs an 'automatic' search for the optimal penalty
+#' parameter for the \code{\link{ridgeP}} call by employing Brent's method to
+#' the calculation of a cross-validated negative log-likelihood score.
+#'
+#' The function determines the optimal value of the penalty parameter by
+#' application of the Brent algorithm (1971) to the \eqn{K}-fold
+#' cross-validated negative log-likelihood score (using a regularized ridge
+#' estimator for the precision matrix). The search for the optimal value is
+#' automatic in the sense that in order to invoke the root-finding abilities of
+#' the Brent method, only a minimum value and a maximum value for the penalty
+#' parameter need to be specified as well as a starting penalty value. The
+#' value at which the \eqn{K}-fold cross-validated negative log-likelihood
+#' score is minimized is deemed optimal. The function employs the Brent
+#' algorithm as implemented in the
+#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim}
+#' function.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param lambdaInit A \code{numeric} giving the initial (starting) value for
+#' the penalty parameter.
+#' @param fold A \code{numeric} or \code{integer} specifying the number of
+#' folds to apply in the cross-validation.
+#' @param cor A \code{logical} indicating if the evaluation of the LOOCV score
+#' should be performed on the correlation scale.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @return An object of class \code{list}: \item{optLambda}{A \code{numeric}
+#' giving the optimal value for the penalty parameter.} \item{optPrec}{A
+#' \code{matrix} representing the precision matrix of the chosen type (see
+#' \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
+#' @note When \code{cor = TRUE} correlation matrices are used in the
+#' computation of the (cross-validated) negative log-likelihood score, i.e.,
+#' the \eqn{K}-fold sample covariance matrix is a matrix on the correlation
+#' scale. When performing evaluation on the correlation scale the data are
+#' assumed to be standardized. If \code{cor = TRUE} and one wishes to used the
+#' default target specification one may consider using \code{target =
+#' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
+#' assumption of standardized data.
+#'
+#' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
+#' performes leave-one-out cross-validation.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}},
+#' \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
+#' \code{\link{optPenalty.kCV}}, \cr \code{\link{default.target}},
+#' \code{\link{covML}}
+#' @references Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for
+#' Finding a Zero of a Function. Computer Journal 14: 422-425.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty using K = n
+#' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
+#' OPT$optLambda # Optimal penalty
+#' OPT$optPrec   # Regularized precision under optimal penalty
+#'
+#' ## Another example with standardized data
+#' X <- scale(X, center = TRUE, scale = TRUE)
+#' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
+#'                           target = default.target(covML(X, cor = TRUE))); OPT
+#' OPT$optLambda # Optimal penalty
+#' OPT$optPrec   # Regularized precision under optimal penalty
+#'
+#' ## Another example using K = 5
+#' OPT <- optPenalty.kCVauto(X, lambdaMin = .001, lambdaMax = 30, fold = 5); OPT
+#' OPT$optLambda # Optimal penalty
+#' OPT$optPrec   # Regularized precision under optimal penalty
+#'
+#' @importFrom stats optim
+#' @export
 optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
                                lambdaInit = (lambdaMin + lambdaMax)/2,
                                fold = nrow(Y), cor = FALSE,
                                target = default.target(covML(Y)),
                                type = "Alt") {
-    ##############################################################################
-    # - Function that determines the optimal value of the penalty parameter by
-    #   application of the Brent algorithm to the (leave-one-out) cross-validated
-    #   log-likelihood
-    # - Y          > (raw) Data matrix, variables in columns
-    # - lambdaMin  > minimum value penalty parameter (dependent on 'type')
-    # - lambdaMax  > maximum value penalty parameter (dependent on 'type')
-    # - lambdaInit > initial value for lambda for starting optimization
-    # - fold       > cross-validation fold, default gives LOOCV
-    # - cor        > logical indicating if evaluation of the LOOCV score should be
-    #                performed on the correlation matrix
-    # - target     > target (precision terms) for Type I estimators,
-    #                default = default.target(covML(Y))
-    # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-    ##############################################################################
-
-    # Dependencies
-    # require("base")
-    # require("stats")
-
     # input checks
     if (!is.matrix(Y))
       { stop("Input (Y) should be a matrix") }
@@ -1303,7 +1856,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
       { stop("Input (lambdaInit) must be larger than lambdaMin") }
     if (lambdaInit > lambdaMax)
       { stop("Input (lambdaInit) must be smaller than lambdaMax") }
-    if (class(cor) != "logical")
+    if (!is.logical(cor))
       { stop("Input (cor) is of wrong class") }
     if (class(fold) != "numeric" & class(fold) != "integer")
       { stop("Input (fold) is of wrong class") }
@@ -1329,264 +1882,346 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 
 
 
-CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
-                   target = default.target(S), norm = "2",
-                   Iaids = FALSE, vertical = FALSE, value = 1e-100,
-                   main = "", nOutput = FALSE, verbose = TRUE){
-  #############################################################################
-  # - Function that visualizes the spectral condition number against the
-  #   regularization parameter
-  # - Can be used to heuristically determine the (minimal) value of the
-  #   penalty parameter
-  # - The ridge estimators operate by shrinking the eigenvalues
-  # - This is especially the case when targets are used that lead to
-  #   rotation equivariant estimators
-  # - Maximum shrinkage (under rotation equivariance) implies that all
-  #   eigenvalues will be equal
-  # - Ratio of maximum and minimum eigenvalue of P can then function
-  #   as a heuristic
-  # - It's point of stabilization can give an acceptable value for the penalty
-  # - The ratio boils down to the (spectral) condition number of a matrix
-  # - S         > sample covariance/correlation matrix
-  # - lambdaMin > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid
-  #               [lambdaMin, lambdaMax]. The steps on the grid are equidistant
-  #               on the log scale
-  # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators,
-  #               default = default.target(S)
-  # - norm      > indicates the norm under which the condition number is to be
-  #               estimated. Default is the L2-norm. The L1-norm can be (cheaply)
-  #               approximated
-  # - Iaids     > logical indicating if interpretational aids should also be
-  #               visualized. The aids are the approximate loss in digits of
-  #               accuracy and an approximation of the acceleration along the
-  #               curve. Default = FALSE
-  # - vertical  > optional argument for visualization vertical line in graph
-  #               output, default = FALSE. Can be used to indicate the value of,
-  #               e.g., the optimal penalty as indicated by some routine. Can
-  #               be used to assess if this optimal penalty will lead to a
-  #               well-conditioned estimate
-  # - value     > indicates constant on which to base vertical line when
-  #               vertical = TRUE. Default is a very small value
-  # - main      > logical indicating if plot should contain type of estimator
-  #               as main title
-  # - nOutput   > logical indicating if numeric output should be given
-  #               (lambdas and condition numbers)
-  # - verbose   > logical indicating if process information should be printed
-  #               on-screen
-  #############################################################################
 
+#' Visualize the spectral condition number against the regularization parameter
+#'
+#' Function that visualizes the spectral condition number of the regularized
+#' precision matrix against the domain of the regularization parameter. The
+#' function can be used to heuristically determine an acceptable (minimal)
+#' value for the penalty parameter.
+#'
+#' Under certain target choices the proposed ridge estimators (see
+#' \code{\link{ridgeP}}) are rotation equivariant, i.e., the eigenvectors of
+#' \eqn{\mathbf{S}} are left intact. Such rotation equivariant situations help
+#' to understand the effect of the ridge penalty on the precision estimate: The
+#' effect can be understood in terms of shrinkage of the eigenvalues of the
+#' unpenalized precision estimate \eqn{\mathbf{S}^{-1}}. Maximum shrinkage
+#' implies that all eigenvalues are forced to be equal (in the rotation
+#' equivariant situation). The spectral condition number w.r.t. inversion
+#' (ratio of maximum to minimum eigenvalue) of the regularized precision matrix
+#' may function as a heuristic in determining the (minimal) value of the
+#' penalty parameter. A matrix with a high condition number is near-singular
+#' (the relative distance to the set of singular matrices equals the reciprocal
+#' of the condition number; Demmel, 1987) and its inversion is numerically
+#' unstable. Such a matrix is said to be ill-conditioned. Numerically,
+#' ill-conditioning will mean that small changes in the penalty parameter lead
+#' to dramatic changes in the condition number. From a numerical point of view
+#' one can thus track the domain of the penalty parameter for which the
+#' regularized precision matrix is ill-conditioned. When plotting the condition
+#' number against the (domain of the) penalty parameter, there is a point of
+#' relative stabilization (when working in the \eqn{p > n} situation) that can
+#' be characterized by a leveling-off of the acceleration along the curve when
+#' plotting the condition number against the (chosen) domain of the penalty
+#' parameter. This suggest the following fast heuristic for determining the
+#' (minimal) value of the penalty parameter: The value of the penalty parameter
+#' for which the spectral condition number starts to stabilize may be termed an
+#' acceptable (minimal) value.
+#'
+#' The function outputs a graph of the (spectral) matrix condition number over
+#' the domain [\code{lambdaMin}, \code{lambdaMax}]. When \code{norm = "2"} the
+#' spectral condition number is calculated. It is determined by exact
+#' calculation using the spectral decomposition. For most purposes this exact
+#' calculation is fast enough, especially when considering rotation equivariant
+#' situations (see \code{\link{ridgeP}}). For such situations the amenities for
+#' fast eigenvalue calculation as provided by
+#' \href{https://CRAN.R-project.org/package=RSpectra}{RSpectra} are used
+#' internally. When exact computation of the spectral condition number is
+#' deemed too costly one may approximate the computationally friendly
+#' L1-condition number. This approximation is accessed through the
+#' \link[base:kappa]{rcond} function (Anderson et al. 1999).
+#'
+#' When \code{Iaids = TRUE} the basic condition number plot is amended/enhanced
+#' with two additional plots (over the same domain of the penalty parameter as
+#' the basic plot): The approximate loss in digits of accuracy (for the
+#' operation of inversion) and an approximation to the second-order derivative
+#' of the curvature in the basic plot. These interpretational aids can enhance
+#' interpretation of the basic condition number plot and may support choosing a
+#' value for the penalty parameter (see Peeters, van de Wiel, & van Wieringen,
+#' 2016). When \code{vertical = TRUE} a vertical line is added at the constant
+#' \code{value}. This option can be used to assess if the optimal penalty
+#' obtained by, e.g., the routines \code{\link{optPenalty.LOOCV}} or
+#' \code{\link{optPenalty.aLOOCV}}, has led to a precision estimate that is
+#' well-conditioned.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param norm A \code{character} indicating the norm under which the condition
+#' number is to be calculated/estimated. Must be one of: "1", "2".
+#' @param Iaids A \code{logical} indicating if the basic condition number plot
+#' should be amended with interpretational aids.
+#' @param vertical A \code{logical} indicating if output graph should come with
+#' a vertical line at a pre-specified value for the penalty parameter.
+#' @param value A \code{numeric} indicating a pre-specified value for the
+#' penalty parameter.
+#' @param main A \code{character} with which to specify the main title of the
+#' output graph.
+#' @param nOutput A \code{logical} indicating if numeric output should be
+#' returned.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @param suppressChecks A \code{logical} indicating if the input checks should
+#' be suppressed.
+#' @return The function returns a graph. If \code{nOutput = TRUE} the function
+#' also returns an object of class \code{list}: \item{lambdas}{A \code{numeric}
+#' vector representing all values of the penalty parameter for which the
+#' condition number was calculated. The values of the penalty parameter are
+#' log-equidistant.} \item{conditionNumbers}{A \code{numeric} vector containing
+#' the condition number for each value of the penalty parameter given in
+#' \code{lambdas}.}
+#' @note The condition number of a (regularized) covariance matrix is
+#' equivalent to the condition number of its corresponding inverse, the
+#' (regularized) precision matrix. Please note that the \code{target} argument
+#' (for Type I ridge estimators) is assumed to be specified in precision terms.
+#' In case one is interested in the condition number of a Type I estimator
+#' under a covariance target, say \eqn{\mathbf{\Gamma}}, then just specify
+#' \code{target = solve}(\eqn{\mathbf{\Gamma}}).
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}},
+#' \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}},
+#' \code{\link{default.target}}
+#' @references Anderson, E, Bai, Z., ..., Sorenson, D. (1999). LAPACK Users'
+#' Guide (3rd ed.). Philadelphia, PA, USA: Society for Industrial and Applied
+#' Mathematics.
+#'
+#' Demmel, J.W. (1987). On condition numbers and the distance to the nearest
+#' ill-posed problem. Numerische Mathematik, 51: 251--289.
+#'
+#' Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020). The
+#' spectral condition number plot for regularization parameter evaluation.
+#' Computational Statistics, 35: 629--646.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Assess spectral condition number across grid of penalty parameter
+#' CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
+#'
+#' ## Include interpretational aids
+#' CNplot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000, Iaids = TRUE)
+#'
+#' @export
+CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
+                   target = default.target(S, type = "DUPV"), norm = "2",
+                   Iaids = FALSE, vertical = FALSE, value = 1e-100,
+                   main = "", nOutput = FALSE, verbose = TRUE,
+                   suppressChecks = FALSE){
   # Dependencies
   # require("base")
   # require("graphics")
   # require("Hmisc")
   # require("sfsmisc")
+  # require("RSpectra")
 
-  if (class(verbose) != "logical"){
-    stop("Input (verbose) is of wrong class")
+  if (!suppressChecks){
+    if (class(verbose) != "logical"){
+      stop("Input (verbose) is of wrong class")
+    }
+    if (verbose){
+      cat("Perform input checks...", "\n")
+    }
+    if (!is.matrix(S)){
+      stop("S should be a matrix")
+    }
+    else if (class(lambdaMin) != "numeric"){
+      stop("Input (lambdaMin) is of wrong class")
+    }
+    else if (length(lambdaMin) != 1){
+      stop("lambdaMin must be a scalar")
+    }
+    else if (lambdaMin <= 0){
+      stop("lambdaMin must be positive")
+    }
+    else if (class(lambdaMax) != "numeric"){
+      stop("Input (lambdaMax) is of wrong class")
+    }
+    else if (length(lambdaMax) != 1){
+      stop("lambdaMax must be a scalar")
+    }
+    else if (lambdaMax <= lambdaMin){
+      stop("lambdaMax must be larger than lambdaMin")
+    }
+    else if (class(step) != "numeric"){
+      stop("Input (step) is of wrong class")
+    }
+    else if (!.is.int(step)){
+      stop("step should be integer")
+    }
+    else if (step <= 0){
+      stop("step should be a positive integer")
+    }
+    else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
+      stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
+    }
+    else if (dim(target)[1] != dim(S)[1]){
+      stop("S and target should be of the same dimension")
+    }
+    else if (type == "ArchI" & lambdaMax > 1){
+      stop("lambda should be in (0,1] for this type of Ridge estimator")
+    }
+    else if (!(norm %in% c("2", "1"))){
+      stop("norm should be one of {'2', '1'}")
+    }
+    else if (class(Iaids) != "logical"){
+      stop("Input (Iaids) is of wrong class")
+    }
+    else if (class(vertical) != "logical"){
+      stop("Input (vertical) is of wrong class")
+    }
+    else if (vertical & (class(value) != "numeric")){
+      stop("Input (value) is of wrong class")
+    }
+    else if (vertical & (any(value <= 0))){
+      stop("Input (value) must be strictly positive")
+    }
+    else if (vertical & (length(value) != 1)){
+      stop("Input (value) must be a scalar")
+    }
+    else if (class(main) != "character"){
+      stop("Input (main) is of wrong class")
+    }
+    else if (class(nOutput) != "logical"){
+      stop("Input (nOutput) is of wrong class")
+    }
   }
-  if (verbose){
-    cat("Perform input checks...", "\n")
-  }
-  if (!is.matrix(S)){
-    stop("S should be a matrix")
-  }
-  else if (!isSymmetric(S)){
-    stop("S should be a covariance matrix")
-  }
-  else if (class(lambdaMin) != "numeric"){
-    stop("Input (lambdaMin) is of wrong class")
-  }
-  else if (length(lambdaMin) != 1){
-    stop("lambdaMin must be a scalar")
-  }
-  else if (lambdaMin <= 0){
-    stop("lambdaMin must be positive")
-  }
-  else if (class(lambdaMax) != "numeric"){
-    stop("Input (lambdaMax) is of wrong class")
-  }
-  else if (length(lambdaMax) != 1){
-    stop("lambdaMax must be a scalar")
-  }
-  else if (lambdaMax <= lambdaMin){
-    stop("lambdaMax must be larger than lambdaMin")
-  }
-  else if (class(step) != "numeric"){
-    stop("Input (step) is of wrong class")
-  }
-  else if (!.is.int(step)){
-    stop("step should be integer")
-  }
-  else if (step <= 0){
-    stop("step should be a positive integer")
-  }
-  else if (!(type %in% c("Alt", "ArchI", "ArchII"))){
-    stop("type should be one of {'Alt', 'ArchI', 'ArchII'}")
-  }
-  else if (!isSymmetric(target)){
-    stop("Shrinkage target should be symmetric")
-  }
-  else if (dim(target)[1] != dim(S)[1]){
-    stop("S and target should be of the same dimension")
-  }
-  else if (type == "Alt" & !all(target == 0) &
-           any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <= 0)){
-    stop("When target is not a null-matrix it should be p.d.")
-  }
-  else if (type == "ArchI" & lambdaMax > 1){
-    stop("lambda should be in (0,1] for this type of Ridge estimator")
-  }
-  else if (type == "ArchI" &
-           any(eigen(target, symmetric = TRUE, only.values = TRUE)$values <= 0)){
-    stop("Target should be p.d.")
-  }
-  else if (!(norm %in% c("2", "1"))){
-    stop("norm should be one of {'2', '1'}")
-  }
-  else if (class(Iaids) != "logical"){
-    stop("Input (Iaids) is of wrong class")
-  }
-  else if (class(vertical) != "logical"){
-    stop("Input (vertical) is of wrong class")
-  }
-  else if (vertical & (class(value) != "numeric")){
-    stop("Input (value) is of wrong class")
-  }
-  else if (vertical & (any(value <= 0))){
-    stop("Input (value) must be strictly positive")
-  }
-  else if (vertical & (length(value) != 1)){
-    stop("Input (value) must be a scalar")
-  }
-  else if (class(main) != "character"){
-    stop("Input (main) is of wrong class")
-  }
-  else if (class(nOutput) != "logical"){
-    stop("Input (nOutput) is of wrong class")
-  }
-  else {
-    # Set preliminaries
-    lambdas <- lseq(lambdaMin, lambdaMax, length = step)
-    condNR  <- numeric()
 
-    if (norm == "2"){
-      # Calculate spectral condition number ridge estimate on lambda grid
-      if (verbose){cat("Calculating spectral condition numbers...", "\n")}
-      if (type == "Alt" & all(target == 0)){
-        Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+  # Set preliminaries
+  lambdas <- lseq(lambdaMin, lambdaMax, length = step)
+  condNR  <- numeric()
+
+  if (norm == "2"){
+    # Calculate spectral condition number ridge estimate on lambda grid
+    if (verbose){cat("Calculating spectral condition numbers...", "\n")}
+    if (type == "Alt" & all(target == 0)){
+      Spectral <- eigs_sym(S, 2, which = "BE",
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
+      for (k in 1:length(lambdas)){
+        Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
+        condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+      }
+    } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
+               (length(unique(diag(target))) == 1)){
+      varPhi   <- unique(diag(target))
+      Spectral <- eigs_sym(S, 2, which = "BE",
+                           opts = list(retvec = FALSE, maxitr = 1000000))$values
+      for (k in 1:length(lambdas)){
+        Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
+        condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+      }
+    } else {
+      if (type == "Alt"){
         for (k in 1:length(lambdas)){
-          Eigshrink <- .armaEigShrink(Spectral, lambdas[k])
-          condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
+          Eigs      <- .armaEigShrinkAnyTarget(S, target = target, lambdas[k])
+          condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
         }
-      } else if (type == "Alt" & all(target[!diag(nrow(target))] == 0) &
+      } else if (type == "ArchI" & all(target[!diag(nrow(target))] == 0) &
                  (length(unique(diag(target))) == 1)){
         varPhi   <- unique(diag(target))
-        Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+        Spectral <- eigs_sym(S, 2, which = "BE",
+                             opts = list(retvec = FALSE, maxitr = 1000000))$values
         for (k in 1:length(lambdas)){
-          Eigshrink <- .armaEigShrink(Spectral, lambdas[k], cons = varPhi)
+          Eigshrink <- .armaEigShrinkArchI(Spectral, lambdas[k], cons = varPhi)
           condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
         }
       } else {
-        if (type == "Alt"){
+        if (type == "ArchI"){
           for (k in 1:length(lambdas)){
-            Eigs      <- .armaEigShrinkAnyTarget(S, target = target, lambdas[k])
+            P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+            Eigs      <- eigs_sym(P, 2, which = "BE",
+                                  opts = list(retvec = FALSE, maxitr = 1000000))$values
             condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
           }
-        } else if (type == "ArchI" & all(target[!diag(nrow(target))] == 0) &
-                   (length(unique(diag(target))) == 1)){
-          varPhi   <- unique(diag(target))
-          Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
+        }
+        if (type == "ArchII"){
+          Spectral <- eigs_sym(S, 2, which = "BE",
+                               opts = list(retvec = FALSE, maxitr = 1000000))$values
           for (k in 1:length(lambdas)){
-            Eigshrink <- .armaEigShrinkArchI(Spectral, lambdas[k], cons = varPhi)
-            condNR[k] <- as.numeric(max(Eigshrink)/min(Eigshrink))
-          }
-        } else {
-          if (type == "ArchI"){
-            for (k in 1:length(lambdas)){
-              P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-              Eigs      <- eigen(P, symmetric = TRUE, only.values = TRUE)$values
-              condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-            }
-          }
-          if (type == "ArchII"){
-            Spectral <- eigen(S, symmetric = TRUE, only.values = TRUE)$values
-            for (k in 1:length(lambdas)){
-              Eigs      <- Spectral + lambdas[k]
-              condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
-            }
+            Eigs      <- Spectral + lambdas[k]
+            condNR[k] <- as.numeric(max(Eigs)/min(Eigs))
           }
         }
       }
     }
+  }
 
-    if (norm == "1"){
-      # Calculate approximation to condition number under 1-norm
-      if (verbose){cat("Approximating condition number under 1-norm...", "\n")}
-      if (type == "Alt"){
-        for (k in 1:length(lambdas)){
-          P         <- .armaRidgeP(S, target = target, lambdas[k])
-          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        }
-      }
-      if (type != "Alt"){
-        for (k in 1:length(lambdas)){
-          P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
-          condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
-        }
+  if (norm == "1"){
+    # Calculate approximation to condition number under 1-norm
+    if (verbose){cat("Approximating condition number under 1-norm...", "\n")}
+    if (type == "Alt"){
+      for (k in 1:length(lambdas)){
+        P         <- .armaRidgeP(S, target = target, lambdas[k])
+        condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
       }
     }
-
-    if (Iaids) {
-      # Make calculations for interpretational aids
-      if (verbose){cat("Calculating interpretational aids...", "\n")}
-      dLoss   <- floor(log10(condNR))
-      logLamb <- log(lambdas)
-      delta   <- logLamb[2] - logLamb[1]
-      which   <- c(1, length(condNR))
-      Core    <- condNR[-which]
-      up      <- condNR[-c(which[2]-1, which[2])]
-      down    <- condNR[-c(which[1], which[1]+1)]
-      cdapp   <- (down - (2 * Core) + up)/(delta^2)
+    if (type != "Alt"){
+      for (k in 1:length(lambdas)){
+        P         <- .ridgeSi(S, lambdas[k], type = type, target = target)
+        condNR[k] <- as.numeric(1/rcond(P, norm = "O"))
+      }
     }
+  }
 
-    # Visualization
-    if (verbose){cat("Plotting...", "\n")}
-    if (norm == "2"){Ylab = "spectral condition number"}
-    if (norm == "1"){Ylab = "condition number under 1-norm"}
-    if (Iaids){par(mfrow=c(1,3))}
-    plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4",
-         xlab = "ln(penalty value)", ylab = Ylab, main = main)
-    axis(2, ylim = c(0,max(condNR)), col = "black", lwd = 1)
+  if (Iaids) {
+    # Make calculations for interpretational aids
+    if (verbose){cat("Calculating interpretational aids...", "\n")}
+    dLoss   <- floor(log10(condNR))
+    logLamb <- log(lambdas)
+    delta   <- logLamb[2] - logLamb[1]
+    which   <- c(1, length(condNR))
+    Core    <- condNR[-which]
+    up      <- condNR[-c(which[2]-1, which[2])]
+    down    <- condNR[-c(which[1], which[1]+1)]
+    cdapp   <- (down - (2 * Core) + up)/(delta^2)
+  }
+
+  # Visualization
+  if (verbose){cat("Plotting...", "\n")}
+  if (norm == "2"){Ylab = "spectral condition number"}
+  if (norm == "1"){Ylab = "condition number under 1-norm"}
+  if (Iaids){par(mfrow=c(1,3))}
+  plot(log(lambdas), type = "l", condNR, axes = FALSE, col = "blue4",
+       xlab = "ln(penalty value)", ylab = Ylab, main = main)
+  axis(2, ylim = c(0,max(condNR)), col = "black", lwd = 1)
+  axis(1, col = "black", lwd = 1)
+  minor.tick(nx = 10, ny = 0, tick.ratio = .4)
+  if (vertical){abline(v = log(value), col = "red")}
+  par(xpd = FALSE)
+  if (Iaids){
+    plot(log(lambdas), dLoss, axes = FALSE, type = "l",
+         col = "green3", xlab = "ln(penalty value)",
+         ylab = "approximate loss in digits of accuracy")
+    axis(2, ylim = c(0,max(dLoss)), col = "black", lwd = 1)
     axis(1, col = "black", lwd = 1)
     minor.tick(nx = 10, ny = 0, tick.ratio = .4)
     if (vertical){abline(v = log(value), col = "red")}
-    par(xpd = FALSE)
-    if (Iaids){
-      plot(log(lambdas), dLoss, axes = FALSE, type = "l",
-           col = "green3", xlab = "ln(penalty value)",
-           ylab = "approximate loss in digits of accuracy")
-      axis(2, ylim = c(0,max(dLoss)), col = "black", lwd = 1)
-      axis(1, col = "black", lwd = 1)
-      minor.tick(nx = 10, ny = 0, tick.ratio = .4)
-      if (vertical){abline(v = log(value), col = "red")}
-      xlimits <- range(log(lambdas))
-      plot(log(lambdas[-which]), cdapp, axes = FALSE, type = "l",
-           col = "orange", xlim = xlimits, xlab = "ln(penalty value)",
-           ylab = "approximation of acceleration")
-      axis(2, ylim = c(0,max(cdapp)), col = "black", lwd = 1)
-      axis(1, col = "black", lwd = 1)
-      minor.tick(nx = 10, ny = 0, tick.ratio = .4)
-      if (vertical){abline(v = log(value), col = "red")}
-      par(mfrow=c(1,1))
-    }
+    xlimits <- range(log(lambdas))
+    plot(log(lambdas[-which]), cdapp, axes = FALSE, type = "l",
+         col = "orange", xlim = xlimits, xlab = "ln(penalty value)",
+         ylab = "approximation of acceleration")
+    axis(2, ylim = c(0,max(cdapp)), col = "black", lwd = 1)
+    axis(1, col = "black", lwd = 1)
+    minor.tick(nx = 10, ny = 0, tick.ratio = .4)
+    if (vertical){abline(v = log(value), col = "red")}
+    par(mfrow=c(1,1))
+  }
 
-    # Possible output
-    if (nOutput){
-      return(list(lambdas = lambdas, conditionNumbers = condNR))
-    }
+  # Possible output
+  if (nOutput){
+    return(list(lambdas = lambdas, conditionNumbers = condNR))
   }
 }
 
@@ -1601,6 +2236,73 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 
 if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 
+
+#' Generate the distribution of the penalty parameter under the null hypothesis
+#' of block-independence
+#'
+#' Function that serves as a precursor function to the block-independence test
+#' (see \code{\link{GGMblockTest}}). It generates an empirical distribution of
+#' the penalty parameter under the null hypothesis of block independence (in
+#' the regularized precision matrix).
+#'
+#' This function can be viewed as a precursor to the function for the
+#' block-independence test (see \code{\link{GGMblockTest}}). The mentioned test
+#' evaluates the null hypothesis of block-independence against the alternative
+#' of block-dependence (presence of non-zero elements in the off-diagonal
+#' block) in the precision matrix using high-dimensional data. To accommodate
+#' the high-dimensionality the parameters of interest are estimated in a
+#' penalized manner (ridge-type penalization, see \code{\link{ridgeP}}).
+#' Penalization involves a degree of freedom (the penalty parameter) which
+#' needs to be fixed before testing. This function then generates an empirical
+#' distribution of this penalty parameter. Hereto the samples are permutated
+#' within block. The resulting permuted data sets represent the null
+#' hypothesis. To avoid the dependence on a single permutation, many permuted
+#' data sets are generated. For each permutation the optimal penalty parameter
+#' is determined by means of cross-validation (see
+#' \code{\link{optPenalty.LOOCVauto}}). The resulting optimal penalty
+#' parameters are returned. An estimate of the location (such as the median) is
+#' recommended for use in the block-independence test.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param id A \code{numeric} vector acting as an indicator variable for two
+#' blocks of the precision matrix. The blocks should be coded as \code{0} and
+#' \code{1}.
+#' @param nPerm A \code{numeric} or \code{integer} determining the number of
+#' permutations.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param lambdaInit A \code{numeric} giving the initial value for the penalty
+#' parameter for starting optimization.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param ncpus A \code{numeric} or \code{integer} indicating the desired
+#' number of cpus to be used.
+#' @return A \code{numeric} vector, representing the distribution of the (LOOCV
+#' optimal) penalty parameter under the null hypothesis of block-independence.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
+#' \code{\link{default.target}}, \code{\link{GGMblockTest}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 15
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:15] = letters[1:15]
+#' id <- c(rep(0, 10), rep(1, 5))
+#'
+#' ## Generate null distribution of the penalty parameter
+#' lambda0dist <- GGMblockNullPenalty(X, id, 5, 0.001, 10)
+#'
+#' ## Location of null distribution
+#' lambdaNull <- median(lambda0dist)
+#'
+#' @export GGMblockNullPenalty
 GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
                                 lambdaInit = (lambdaMin+lambdaMax)/2,
                                 target = default.target(covML(Y)),
@@ -1718,6 +2420,110 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 
 
 
+
+#' Test for block-indepedence
+#'
+#' Function performing a test that evaluates the null hypothesis of
+#' block-independence against the alternative of block-dependence (presence of
+#' non-zero elements in the off-diagonal block) in the precision matrix using
+#' high-dimensional data. The mentioned test is a permutation-based test (see
+#' details).
+#'
+#' The function performs a permutation test for the null hypothesis of
+#' block-independence against the alternative of block-dependence (presence of
+#' non-zero elements in the off-diagonal block) in the precision matrix using
+#' high-dimensional data. In the low-dimensional setting the common test
+#' statistic under multivariate normality (cf. Anderson, 2003) is:
+#' \deqn{
+#'   \log( \| \hat{\mathbf{\Sigma}}_a \| ) +
+#'   \log( \| \hat{\mathbf{\Sigma}}_b \| ) -
+#'   \log( \| \hat{\mathbf{\Sigma}}   \| ),
+#' }
+#' where the
+#' \eqn{\hat{\mathbf{\Sigma}}_a},
+#' \eqn{\hat{\mathbf{\Sigma}}_b},
+#' \eqn{\hat{\mathbf{\Sigma}}}
+#' are the estimates of the covariance matrix in the sub- and whole group(s),
+#' respectively.
+#'
+#' To accommodate the high-dimensionality the parameters of interest are
+#' estimated in a penalized manner (ridge-type penalization, see
+#' \code{\link{ridgeP}}). Penalization involves a degree of freedom (the
+#' penalty parameter: \code{lambda}) which needs to be fixed before testing. To
+#' decide on the penalty parameter for testing we refer to the
+#' \code{\link{GGMblockNullPenalty}} function. With an informed choice on the
+#' penalty parameter at hand, the null hypothesis is evaluated by permutation.
+#' Hereto the samples are permutated within block. The resulting permuted data
+#' set represents the null hypothesis. Many permuted data sets are generated.
+#' For each permutation the test statistic is calculated. The observed test
+#' statistic is compared to the null distribution from the permutations.
+#'
+#' The function implements an efficient permutation resampling algorithm (see
+#' van Wieringen et al., 2008, for details.): If the probability of a p-value
+#' being below \code{lowCiThres} is smaller than 0.001 (read: the test is
+#' unlikely to become significant), the permutation analysis is terminated and
+#' a p-value of unity (1) is reported.
+#'
+#' When \code{verbose = TRUE} also graphical output is generated: A histogram
+#' of the null-distribution. Note that, when \code{ncpus} is larger than 1,
+#' functionalities from
+#' \href{https://cran.r-project.org/package=snowfall}{snowfall} are imported.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param id A \code{numeric} vector acting as an indicator variable for two
+#' blocks of the precision matrix. The blocks should be coded as \code{0} and
+#' \code{1}.
+#' @param nPerm A \code{numeric} or \code{integer} determining the number of
+#' permutations.
+#' @param lambda A \code{numeric} representing the penalty parameter employed
+#' in the permutation test.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param lowCiThres A \code{numeric} taking a value between 0 and 1.
+#' Determines speed of efficient p-value calculation.
+#' @param ncpus A \code{numeric} or \code{integer} indicating the desired
+#' number of cpus to be used.
+#' @param verbose A \code{logical} indicating if information on progress and
+#' output should be printed on screen.
+#' @return An object of class list: \item{statistic}{A \code{numeric}
+#' representing the observed test statistic (i.e., likelihood ratio).}
+#' \item{pvalue}{A \code{numeric} giving the p-value for the block-independence
+#' test.} \item{nulldist}{A \code{numeric} vector representing the permutation
+#' null distribution for the test statistic.} \item{nperm}{A \code{numeric}
+#' indicating the number of permutations used for p-value calculation.}
+#' \item{remark}{A \code{"character"} that states whether the permutation
+#' algorithm was terminated prematurely or not.}
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
+#' \code{\link{default.target}}, \code{\link{GGMblockNullPenalty}}
+#' @references Anderson, T.W. (2003). An Introduction to Multivariate
+#' Statistical Analysis, 3rd Edition. John Wiley.
+#'
+#' van Wieringen, W.N., van de Wiel, M.A., and van der Vaart, A.W. (2008). A
+#' Test for Partial Differential Expression. Journal of the American
+#' Statistical Association 103: 1039-1049.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 15
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:15] = letters[1:15]
+#' id <- c(rep(0, 10), rep(1, 5))
+#'
+#' ## Generate null distribution of the penalty parameter
+#' lambda0dist <- GGMblockNullPenalty(X, id, 5, 0.001, 10)
+#'
+#' ## Location of null distribution
+#' lambdaNull <- median(lambda0dist)
+#'
+#' ## Perform test
+#' testRes <- GGMblockTest(X, id, nPerm = 100, lambdaNull)
+#'
+#' @export
 GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
                           target = default.target(covML(Y)), type = "Alt",
                           lowCiThres = 0.1, ncpus = 1, verbose = TRUE) {
@@ -1809,8 +2615,8 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   }
   else {
     # Observed test statistics
-    S     <- solve(ridgeP(covML(Y), lambda = lambda,
-                          target = target, type = type))
+    S <- solve(ridgeP(covML(Y), lambda = lambda,
+                      target = target, type = type))
     llObs <- log(det(S[id == 0, id == 0, drop = FALSE])) +
       log(det(S[id == 1, id == 1, drop = FALSE])) - log(det(S))
 
@@ -1892,15 +2698,40 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 
 
 
+
+
+
+
+
+
+#' Mutual information between two sets of variates within a multivariate normal
+#' distribution
+#'
+#' Function computing the mutual information between two exhaustive and
+#' mutually exclusive splits of a set of multivariate normal random variables.
+#'
+#'
+#' @param S A positive-definite covariance \code{matrix}.
+#' @param split1 A \code{numeric}, indicating the variates (by column number)
+#' forming the first split. The second split is automatically formed from its
+#' complement.
+#' @return A \code{numeric}, the mutual information between the variates
+#' forming \code{split1} and those forming its complement.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}}.
+#' @references Cover, T.M., Thomas, J.A. (2012), Elements of information
+#' theory.
+#' @examples
+#'
+#' # create a covariance matrix
+#' Sigma <- covML(matrix(rnorm(100), ncol=5))
+#'
+#' # impulse response analysis
+#' GGMmutualInfo(Sigma, c(1,2))
+#'
+#' @export GGMmutualInfo
 GGMmutualInfo <- function(S, split1){
   ##############################################################################
-  # - Function that calculates the mutual information between two exhaustive and
-  #   mutually exclusive splits of normal p-variate random variable.
-  # - S      > Sample Covariance matrix.
-  # - split1 > A numeric indicating the variates (by column number) forming the
-  #            first split. The second split is automatically formed from its
-  #            complement.
-  #
   # NOTES:
   # - No dependencies at current
   ##############################################################################
@@ -1933,36 +2764,92 @@ GGMmutualInfo <- function(S, split1){
 ##
 ##------------------------------------------------------------------------------
 
+
+
+#' Determine the support of a partial correlation/precision matrix
+#'
+#' Function that determines the support of a partial correlation/precision
+#' matrix by thresholding and sparsifies it accordingly.
+#'
+#' The function transforms the possibly regularized input precision matrix to a
+#' partial correlation matrix. Subsequently, the support of this partial
+#' correlation matrix is determined. Support determination is performed either
+#' by simple thresholding on the absolute values of matrix entries
+#' (\code{threshold = "absValue"}) or by usage of local FDR (\code{threshold =
+#' "localFDR"}). A third option is to retain a prespecified number of matrix
+#' entries based on absolute values. For example, one could wish to retain
+#' those entries representing the ten strongest absolute partial correlations
+#' (\code{threshold = "top"}). As a variation on this theme, a fourth option
+#' (\code{threshold = "connected"}) retains the top edges such that the
+#' resulting graph is connected (this may result in dense graphs in practice).
+#' The argument \code{absValueCut} is only used when \code{threshold =
+#' "absValue"}. The argument \code{top} is only used when \code{threshold =
+#' "top"}. The argument \code{FDRcut} is only used when \code{threshold =
+#' "localFDR"}.
+#'
+#' The function is to some extent a wrapper around certain
+#' \href{https://cran.r-project.org/package=fdrtool}{fdrtool} functions when
+#' \code{threshold = "localFDR"}. In that case a mixture model is fitted to the
+#' nonredundant partial correlations by
+#' \href{https://cran.r-project.org/package=fdrtool}{fdrtool}. The decision to
+#' retain elements is then based on the argument \code{FDRcut}. Elements with a
+#' posterior probability \eqn{\geq} FDRcut (equalling 1 - local FDR) are
+#' retained. See Schaefer and Strimmer (2005) for further details on usage of
+#' local FDR in graphical modeling.
+#'
+#' @param P (Possibly regularized) precision \code{matrix}.
+#' @param threshold A \code{character} signifying type of sparsification by
+#' thresholding. Must be one of: "absValue", "connected", "localFDR", "top".
+#' @param absValueCut A \code{numeric} giving the cut-off for partial
+#' correlation element selection based on absolute value thresholding.
+#' @param FDRcut A \code{numeric} giving the cut-off for partial correlation
+#' element selection based on local false discovery rate (FDR) thresholding.
+#' @param top A \code{numeric} specifying the exact number of partial
+#' correlation elements to retain based on absolute value.
+#' @param output A \code{character} specifying the type of output required.
+#' Must be one of: "heavy", "light".
+#' @param verbose A \code{logical} indicating if intermediate output should be
+#' printed on screen.
+#' @return If the input \code{P} is a standardized precision (or partial
+#' correlation) matrix the function returns a sparsified precision (or partial
+#' correlation) \code{matrix} whenever \code{output = "heavy"}. If the input
+#' \code{P} is an unstandardized precision matrix the function returns an
+#' object of class \code{list} whenever \code{output = "heavy"}:
+#' \item{sparseParCor}{A \code{matrix} representing the sparsified partial
+#' correlation matrix.} \item{sparsePrecision}{A \code{matrix} representing the
+#' sparsified precision matrix.}
+#'
+#' When \code{output = "light"}, only the (matrix) positions of the zero and
+#' non-zero elements are returned in an object of class \code{list}:
+#' \item{zeros}{A \code{matrix} representing the row and column positions of
+#' zero entries.} \item{nonzeros}{A \code{matrix} representing the row and
+#' column positions of non-zero entries.}
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
+#' \code{\link{optPenalty.LOOCV}}
+#' @references Schaefer, J., and Strimmer, K. (2005). A shrinkage approach to
+#' large-scale covariance estimation and implications for functional genomics.
+#' Statistical Applications in Genetics and Molecular Biology, 4:32.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+#'
+#' ## Determine support regularized (standardized) precision under optimal penalty
+#' sparsify(OPT$optPrec, threshold = "localFDR")
+#'
+#' @export
 sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"),
                      absValueCut = .25, FDRcut = .9, top = 10,
                      output = "heavy", verbose = TRUE){
   ##############################################################################
-  # - Function that sparsifies/determines support of a partial correlation
-  #   matrix
-  # - Support can be determined by absolute value thresholding or by local FDR
-  #   thresholding
-  # - Local FDR operates on the nonredundant non-diagonal elements of a partial
-  #   correlation matrix
-  # - One can also choose to threshold based on the top X of absolute partial
-  #   correlations
-  # - One can also choose to threshold based on the minimum absolute partial
-  #   correlation for which the resulting graph is connected
-  # - Function is to some extent a wrapper around certain 'fdrtool' functions
-  # - P           > (possibly shrunken) precision matrix
-  # - threshold   > signifies type of thresholding
-  # - absValueCut > cut-off for partial correlation elements selection based on
-  #                 absolute value thresholding.
-  #                 Only when threshold = 'absValue'. Default = .25
-  # - FDRcut      > cut-off for partial correlation element selection based on
-  #                 local FDR thresholding
-  #                 Only when threshold = 'localFDR'. Default = .9
-  # - top         > partial correlation element selection based on retainment
-  #                 'top' number of absolute partial correlation.
-  #                 Only when threshold = 'top'. Default = 10
-  # - output      > must be one of {"heavy", "light"}, default = "heavy"
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen. Only when threshold = 'localFDR'. Default = TRUE.
-  #
   # NOTES:
   # - Input (P) may be the partial correlation matrix or the standardized
   #   precision matrix. These are identical up to the signs of off-diagonal
@@ -2134,14 +3021,81 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 ##
 ##------------------------------------------------------------------------------
 
+
+#' Evaluate regularized precision under various loss functions
+#'
+#' Function that evaluates an estimated and possibly regularized precision
+#' matrix under various loss functions. The loss functions are formulated in
+#' precision terms. This function may be used to estimate the risk (vis-a-vis,
+#' say, the true precision matrix) of the various ridge estimators employed.
+#'
+#' Let \eqn{\mathbf{\Omega}} denote a generic \eqn{(p \times p)} population precision matrix and let
+#' \eqn{\hat{\mathbf{\Omega}}(\lambda)} denote a generic ridge estimator of the precision matrix under
+#' generic regularization parameter \eqn{\lambda} (see also \code{\link{ridgeP}}). The function then
+#' considers the following loss functions:
+#'   \enumerate{
+#'     \item Squared Frobenius loss, given by:
+#'       \deqn{
+#'         L_{F}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda) -
+#'           \mathbf{\Omega}\|_{F}^{2};
+#'       }
+#'     \item Quadratic loss, given by:
+#'       \deqn{
+#'         L_{Q}[\hat{\mathbf{\Omega}}(\lambda), \mathbf{\Omega}] = \|\hat{\mathbf{\Omega}}(\lambda)
+#'         \mathbf{\Omega}^{-1} - \mathbf{I}_{p}\|_{F}^{2}.
+#'       }
+#'   }
+#' The argument \code{T} is considered to be the true precision matrix when \code{precision = TRUE}.
+#' If \code{precision} \code{= FALSE} the argument \code{T} is considered to represent the true covariance matrix.
+#' This statement is needed so that the loss is properly evaluated over the precision, i.e., depending
+#' on the value of the \code{logical} argument \code{precision} inversions are employed where needed.
+#'
+#' The function can be employed to assess the risk of a certain ridge precision estimator (see also \code{\link{ridgeP}}).
+#' The risk \eqn{\mathcal{R}_{f}} of the estimator \eqn{\hat{\mathbf{\Omega}}(\lambda)} given a loss function \eqn{L_{f}},
+#' with \eqn{f \in \{F, Q\}} can be defined as the expected loss:
+#'   \deqn{
+#'     \mathcal{R}_{f}[\hat{\mathbf{\Omega}}(\lambda)] =
+#'       \mathrm{E}\{L_{f}[\hat{\mathbf{\Omega}}(\lambda),
+#'                          \mathbf{\Omega}]\},
+#'   }
+#' which can be approximated by the mean or median of losses over repeated simulation runs.
+#'
+#' @param E Estimated (possibly regularized) precision \code{matrix}.
+#' @param T True (population) covariance or precision \code{matrix}.
+#' @param precision A \code{logical} indicating if T is a precision matrix.
+#' @param type A \code{character} indicating which loss function is to be used.
+#' Must be one of: "frobenius", "quadratic".
+#' @return Function returns a \code{numeric} representing the loss under the
+#' chosen loss function.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
+#' @references van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation
+#' of Inverse Covariance Matrices from High-Dimensional Data, Computational
+#' Statistics & Data Analysis, vol. 103: 284-303.  Also available as
+#' arXiv:1403.0904v3 [stat.ME].
+#' @examples
+#'
+#' ## Define population covariance
+#' set.seed(333)
+#' p = 25
+#' n = 1000
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Truecov <- covML(X)
+#'
+#' ## Obtain sample
+#' samples <- X[sample(nrow(X), 10), ]
+#' Cxx <- covML(samples)
+#'
+#' ## Obtain regularized precision
+#' P <- ridgeP(Cxx, 10, type = "Alt")
+#'
+#' ## Evaluate estimated precision against population
+#' ## precision under Frobenius loss
+#' loss(P, Truecov, precision = FALSE, type = "frobenius")
+#'
+#' @export
 loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
-  ##############################################################################
-  # - Function evualuating various loss functions on the precision
-  # - E         > Estimated (possibly regularized) precision matrix
-  # - T         > True (population) covariance or precision matrix
-  # - precision > Logical indicating if T is a precision matrix (when TRUE)
-  # - type      > character indicating which loss function is to be used
-  ##############################################################################
 
   if (!is.matrix(E)){
     stop("Input (E) is of wrong class")
@@ -2187,21 +3141,81 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 
 
 
+#' Kullback-Leibler divergence between two multivariate normal distributions
+#'
+#' Function calculating the Kullback-Leibler divergence between two
+#' multivariate normal distributions.
+#'
+#' @details
+#' The Kullback-Leibler (KL) information (Kullback and Leibler, 1951; also known
+#' as relative entropy) is a measure of divergence between two probability
+#' distributions. Typically, one distribution is taken to represent the `true'
+#' distribution and functions as the reference distribution while the other is
+#' taken to be an approximation of the true distribution. The criterion then
+#' measures the loss of information in approximating the reference distribution.
+#' The KL divergence between two \eqn{p}-dimensional multivariate normal
+#' distributions
+#'   \eqn{\mathcal{N}^{0}_{p}(\boldsymbol{\mu}_{0}, \mathbf{\Sigma}_{0})} and \eqn{\mathcal{N}^{1}_{p}(\boldsymbol{\mu}_{1}, \mathbf{\Sigma}_{1})}
+#' is given as
+#'   \deqn{
+#'     \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p}) =
+#'      \frac{1}{2}\left\{\mathrm{tr}(\mathbf{\Omega}_{1}\mathbf{\Sigma}_{0})
+#'      + (\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0})^{\mathrm{T}}
+#'      \mathbf{\Omega}_{1}(\boldsymbol{\mu}_{1} - \boldsymbol{\mu}_{0}) - p
+#'      - \ln|\mathbf{\Sigma}_{0}| + \ln|\mathbf{\Sigma}_{1}| \right\},
+#'   }
+#' where \eqn{\mathbf{\Omega} = \mathbf{\Sigma}^{-1}}. The KL divergence is not
+#' a proper metric as \eqn{\mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \|
+#' \mathcal{N}^{1}_{p}) \neq \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \|
+#' \mathcal{N}^{0}_{p})}. When \code{symmetric = TRUE} the function calculates
+#' the symmetric KL divergence (also referred to as Jeffreys information), given
+#' as
+#'   \deqn{
+#'     \mathrm{I}_{KL}(\mathcal{N}^{0}_{p} \| \mathcal{N}^{1}_{p}) +
+#'     \mathrm{I}_{KL}(\mathcal{N}^{1}_{p} \| \mathcal{N}^{0}_{p}).
+#'   }
+#'
+#' @param Mtest A \code{numeric} mean vector for the approximating multivariate
+#' normal distribution.
+#' @param Mref A \code{numeric} mean vector for the true/reference multivariate
+#' normal distribution.
+#' @param Stest A covariance \code{matrix} for the approximating multivariate
+#' normal distribution.
+#' @param Sref A covariance \code{matrix} for the true/reference multivariate
+#' normal distribution.
+#' @param symmetric A \code{logical} indicating if the symmetric version of
+#' Kullback-Leibler divergence should be calculated.
+#' @return Function returns a \code{numeric} representing the (symmetric)
+#' Kullback-Leibler divergence.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
+#' @references Kullback, S. and Leibler, R.A. (1951). On Information and
+#' Sufficiency. Annals of Mathematical Statistics 22: 79-86.
+#' @examples
+#'
+#' ## Define population
+#' set.seed(333)
+#' p = 25
+#' n = 1000
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cov0  <- covML(X)
+#' mean0 <- colMeans(X)
+#'
+#' ## Obtain sample from population
+#' samples <- X[sample(nrow(X), 10),]
+#' Cov1  <- covML(samples)
+#' mean1 <- colMeans(samples)
+#'
+#' ## Regularize singular Cov1
+#' P <- ridgeP(Cov1, 10)
+#' CovR <- solve(P)
+#'
+#' ## Obtain KL divergence
+#' KLdiv(mean1, mean0, CovR, Cov0)
+#'
+#' @export
 KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
-  ##############################################################################
-  # - Function that calculates the Kullback-Leibler divergence between two
-  #   normal distributions
-  # - Mtest     > mean vector approximating m.v. normal distribution
-  # - Mref      > mean vector 'true'/reference m.v. normal distribution
-  # - Stest     > covariance matrix approximating m.v. normal distribution
-  # - Sref      > covariance matrix 'true'/reference m.v. normal distribution
-  # - symmetric > logical indicating if original symmetric version of KL div.
-  #               should be calculated
-  ##############################################################################
-
-  # Dependencies
-  # require("base")
-
   if (class(Mtest) != "numeric"){
     stop("Input (Mtest) is of wrong class")
   }
@@ -2252,24 +3266,64 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 
 
 
+#' Visual inspection of the fit of a regularized precision matrix
+#'
+#' Function aiding the visual inspection of the fit of an estimated (possibly
+#' regularized) precision matrix vis-a-vis the sample covariance matrix.
+#'
+#' The function outputs various visualizations to aid the visual inspection of
+#' an estimated and possibly regularized precision matrix vis-a-vis the sample
+#' covariance matrix. The inverse of the estimated precision matrix \code{P} is
+#' taken to represent the estimated covariance matrix. The function then
+#' outputs a QQ-plot and a heatmap of the observed covariances against the
+#' estimated ones. The heatmap has the estimated covariances as
+#' lower-triangular elements and the observed covariances as the
+#' upper-triangular elements. The function outputs analogous plots for the
+#' estimated and observed correlations. In case the observed covariance matrix
+#' \code{S} is non-singular also a QQ-plot an a heatmap are generated for the
+#' estimated and observed partial correlations.
+#'
+#' The function generates files with extension \code{fileType} under default
+#' output names. These files are stored in the directory \code{dir} (default is
+#' the working directory). To avoid overwriting of files when working in a
+#' single directory one may employ the argument \code{nameExt}. By using
+#' \code{nameExt} the default output names are extended with a character of
+#' choice.
+#'
+#' @param Phat (Regularized) estimate of the precision \code{matrix}.
+#' @param S Sample covariance \code{matrix}
+#' @param diag A \code{logical} determining if the diagonal elements should be
+#' retained for plotting.
+#' @param fileType A \code{character} determining the output file type. Must be
+#' one of: "pdf", "eps".
+#' @param nameExt A \code{character} determining the extension of default
+#' output names generated by the function.
+#' @param dir A \code{character} specifying the directory in which the visual
+#' output is stored.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
+#' @examples
+#'
+#' \dontrun{
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' P <- ridgeP(Cx, lambda = 10, type = 'Alt')
+#'
+#' ## Evaluate visually fit of regularized precision matrix vis-a-vis sample covariance
+#' evaluateSfit(P, Cx, diag = FALSE, fileType = "pdf", nameExt = "test")}
+#'
+#' @importFrom stats cov2cor qqplot
+#' @export
 evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
                          dir = getwd()){
-  ##############################################################################
-  # - Function aiding the visual inspection of the fit of the estimated
-  #   (possibly regularized) precision matrix vis-a-vis the sample
-  #   covariance matrix
-  # - Phat     > (regularized) estimate of the precision matrix
-  # - S        > sample covariance matrix
-  # - diag     > logical determining treatment diagonal elements for plots
-  # - fileType > signifies filetype of output
-  # - nameExt  > character giving extension of default output names.
-  #              Circumvents overwriting of output when working in single
-  #              directory.
-  # - dir      > specifies the directory in which the visual output is stored
-  ##############################################################################
-
   # Dependencies
-  # require("base")
   # require("graphics")
 
   if (!is.matrix(Phat)){
@@ -2438,47 +3492,82 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 
 
 
-
 ##------------------------------------------------------------------------------
 ##
 ## Functions for Visualization
 ##
 ##------------------------------------------------------------------------------
 
+
+
+#' Visualize the regularization path
+#'
+#' Function that visualizes the regularization paths of the nonredundant
+#' elements of a regularized precision matrix against the (range of the)
+#' penalty parameter.
+#'
+#' The function visualizes the regularization path of the individual elements
+#' of a regularized precision matrix against the penalty parameter. The range
+#' of the penalty parameter is given by [\code{lambdaMin},\code{lambdaMax}].
+#' The penalty parameter must be positive such that \code{lambdaMin} must be a
+#' positive scalar. The maximum allowable value of \code{lambdaMax} depends on
+#' the type of ridge estimator employed. For details on the type of ridge
+#' estimator one may use (one of: "Alt", "ArchI", "ArchII") see
+#' \code{\link{ridgeP}}.
+#'
+#' Regularization paths may be visualized for (partial) correlations,
+#' covariances and precision elements. The type of element for which a
+#' visualization of the regularization paths is desired can be indicated by the
+#' argument \code{plotType}. When \code{vertical = TRUE} a vertical line is
+#' added at the constant \code{value}. This option can be used to assess
+#' whereabouts the optimal penalty obtained by, e.g., the routines
+#' \code{\link{optPenalty.LOOCV}} or \code{\link{optPenalty.aLOOCV}}, finds
+#' itself along the regularization path.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param plotType A \code{character} indicating the type of element for which
+#' a visualization of the regularization paths is desired. Must be one of:
+#' "pcor", "cor", "cov", "prec".
+#' @param diag A \code{logical} indicating if the diagonal elements should be
+#' retained for visualization.
+#' @param vertical A \code{logical} indicating if output graph should come with
+#' a vertical line at a pre-specified value for the penalty parameter.
+#' @param value A \code{numeric} indicating a pre-specified value for the
+#' penalty parameter.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}},
+#' \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}},
+#' \code{\link{default.target}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Visualize regularization paths
+#' ridgePathS(Cx, .001, 50, 200, plotType = "pcor")
+#'
+#' @importFrom stats cov2cor
+#' @export
 ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
                         target = default.target(S), plotType = "pcor",
                         diag = FALSE, vertical = FALSE, value, verbose = TRUE){
-  ##############################################################################
-  # - Function that visualizes the regularization path
-  # - Regularization path may be visualized for (partial) correlations,
-  #   covariances and precision elements
-  # - S         > sample covariance/correlation matrix
-  # - lambdaMin > minimum value penalty parameter (dependent on 'type')
-  # - lambdaMax > maximum value penalty parameter (dependent on 'type')
-  # - step      > determines the coarseness in searching the grid
-  #               [lambdaMin, lambdaMax]
-  # - type      > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
-  # - target    > target (precision terms) for Type I estimators,
-  #               default = default.target(S)
-  # - plotType  > specificies the elements for which the regularization path is
-  #               to be visualized.
-  #               Must be one of {"pcor", "cor", "cov", "prec"},
-  #               default = "pcor"
-  # - diag      > logical indicating if the diagonal elements should be retained
-  #               for plotting, default = FALSE.
-  # - vertical  > optional argument for visualization vertical line in graph
-  #               output, default = FALSE
-  #               Can be used to indicate the value of, e.g., the optimal
-  #               penalty as indicated by some
-  #               routine. Can be used to assess the whereabouts of this optimal
-  #               penalty along the regularization path.
-  # - value     > indicates constant on which to base vertical line when
-  #               vertical = TRUE
-  # - verbose   > logical indicating if intermediate output should be printed
-  #               on screen
-  ##############################################################################
-  # Dependencies
-  # require("base")
 
   if (class(verbose) != "logical"){
     stop("Input (verbose) is of wrong class")
@@ -2655,26 +3744,77 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
 }
 
 
-
 if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 
+
+
+
+#' Visualize (precision) matrix as a heatmap
+#'
+#' Function that visualizes a (precision) matrix as a heatmap. May be used to
+#' assess visually the elements of a single (possibly sparsified precision)
+#' matrix. May also be used in assessing the performance of edge selection
+#' techniques.
+#'
+#' This function utilizes
+#' \href{https://cran.r-project.org/package=ggplot2}{ggplot2} (Wickham, 2009) to
+#' visualize a matrix as a heatmap: a false color plot in which the individual
+#' matrix entries are represented by colors. \code{lowColor} determines the
+#' color scale for matrix entries in the negative range. \code{highColor}
+#' determines the color scale for matrix entries in the positive range. For the
+#' colors supported by the arguments \code{lowColor} and \code{highColor}, see
+#' \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}. White entries in
+#' the plot represent the midscale value of 0. One can opt to set the diagonal
+#' entries to the midscale color of white when one is interested in
+#' (heatmapping) the off-diagonal elements only. To achieve this, set
+#' \code{diag = FALSE}. Naturally, the \code{diag} argument is only used when
+#' the input matrix \code{M} is a square matrix.
+#'
+#' The intended use of the function is to visualize a, possibly sparsified,
+#' precision matrix as a heatmap. The function may also be used, in a graphical
+#' modeling setting, to assess the performance of edge selection techniques.
+#' However, the function is quite general, in the sense that it can represent
+#' any \code{matrix} as a heatmap.
+#'
+#' @param M (Possibly sparsified precision) \code{matrix}.
+#' @param lowColor A \code{character} that determines the color scale in the
+#' negative range.
+#' @param highColor A \code{character} that determines the color scale in the
+#' positive range.
+#' @param textsize A \code{numeric} scaling the text size of row and column
+#' labels.
+#' @param diag A \code{logical} determining if the diagonal elements of the
+#' matrix should be included in the color scaling. This argument is only used
+#' when \code{M} is a square \code{matrix}.
+#' @param legend A \code{logical} indicating whether a color legend should be
+#' included.
+#' @param main A \code{character} giving the main figure title.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{covML}}, \code{\link{ridgeP}}, \code{\link{sparsify}}
+#' @references Wickham, H. (2009). ggplot2: elegant graphics for data analysis.
+#' New York: Springer.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' P <- ridgeP(Cx, lambda = 10, type = "Alt")
+#'
+#' ## Obtain sparsified partial correlation matrix
+#' PC0 <- sparsify(P, threshold = "localFDR", FDRcut = .8)$sparseParCor
+#'
+#' ## Visualize sparsified partial correlation matrix as heatmap
+#' edgeHeat(PC0)
+#'
+#' @export
 edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
                      diag = TRUE, legend = TRUE, main = ""){
-  ##############################################################################
-  # - function that visualizes precision matrix as a heatmap
-  # - can be used to assess (visually) the performance of set of graphical
-  #   modeling techniques
-  # - M         > Precision matrix
-  # - lowColor  > determines color scale in the negative range, default = "blue"
-  # - highColor > determines color scale in the positive range, default = "red"
-  # - textsize  > set textsize row and column labels, default = 10
-  # - diag      > logical determining treatment diagonal elements M. If FALSE,
-  #               then the diagonal elements are given the midscale color of
-  #               white; only when M is a square matrix
-  # - legend    > optional inclusion of color legend, default = TRUE
-  # - main      > character specifying the main title, default = ""
-  ##############################################################################
-
   # Dependencies
   #require("ggplot2")
   #require("reshape")
@@ -2751,6 +3891,143 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 
 
 
+
+
+
+
+#' Visualize undirected graph
+#'
+#' Function that visualizes the sparsified precision matrix as an undirected
+#' graph.
+#'
+#' The intended use of this function is to visualize a sparsified
+#' precision/partial correlation matrix as an undirected graph. When \code{type
+#' = "plain"} a plain undirected graph is given representing the conditional
+#' (in)dependencies exemplified by the sparsified precision.
+#'
+#' When \code{type = "fancy"} a more elaborate graph is given in which dashed
+#' lines indicate negative partial correlations while solid lines indicate
+#' positive partial correlations, and in which grey lines indicate strong
+#' edges. Strong edges are deemed such by setting \code{cut}. If a the absolute
+#' value of a precision element \eqn{\geq} \code{cut} the corresponding edge is
+#' deemed strong and colored grey in the graph. The argument \code{cut} is thus
+#' only used when \code{type = "fancy"}.
+#'
+#' When \code{type = "weighted"} an undirected graph is given in which edge
+#' thickness represents the strength of the partial correlations. The
+#' \code{nEcolor} colored edges then represent negative partial correlations
+#' while \code{pEcolor} colored edges represent positive partial correlations.
+#' (Relative) edge thickness in this type of graph can be set by the argument
+#' \code{scale}. The arguments \code{scale}, \code{nEcolor}, and \code{pEcolor}
+#' are thus only used when \code{type = "weighted"}.
+#'
+#' The default layout gives a circular placement of the vertices. Most layout
+#' functions supported by \code{\link{igraph}} are supported (the function is
+#' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+#' layouts can be invoked by a \code{character} that mimicks a call to a
+#' \code{\link{igraph}} layout functions in the \code{lay} argument. When using
+#' \code{lay = NULL} one can specify the placement of vertices with the
+#' \code{coords} argument. The row dimension of this matrix should equal the
+#' number of (pruned) vertices. The column dimension then should equal 2 (for
+#' 2D layouts) or 3 (for 3D layouts). The \code{coords} argument can also be
+#' viewed as a convenience argument as it enables one, e.g., to layout a graph
+#' according to the coordinates of a previous call to \code{Ugraph}. If both
+#' the the lay and the coords arguments are not \code{NULL}, the lay argument
+#' takes precedence
+#'
+#' The legend allows one to specify the kind of variable the vertices
+#' represent, such as, e.g., mRNA transcripts. The arguments \code{label},
+#' \code{Lcex}, and \code{PTcex} are only used when \code{legend = TRUE}.
+#'
+#' If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by
+#' any edge) are removed. For the colors supported by the arguments
+#' \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and
+#' \code{nEcolor} see \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+#'
+#' @param M (Possibly sparsified) precision \code{matrix}
+#' @param type A \code{character} indicating the type of graph to be produced.
+#' Must be one of: "plain", "fancy", "weighted".
+#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' layout functions. Determines the placement of vertices.
+#' @param coords A \code{matrix} containing coordinates. Alternative to the
+#' lay-argument for determining the placement of vertices.
+#' @param Vsize A \code{numeric} determining the vertex size.
+#' @param Vcex A \code{numeric} determining the size of the vertex labels.
+#' @param Vcolor A \code{character} (scalar or vector) determining the vertex
+#' color.
+#' @param VBcolor A \code{character} determining the color of the vertex
+#' border.
+#' @param VLcolor A \code{character} determining the color of the vertex
+#' labels.
+#' @param prune A \code{logical} determining if vertices of degree 0 should be
+#' removed.
+#' @param legend A \code{logical} indicating if the graph should come with a
+#' legend.
+#' @param label A \code{character} giving a name to the legend label.
+#' @param Lcex A \code{numeric} determining the size of the legend box.
+#' @param PTcex A \code{numeric} determining the size of the exemplary vertex
+#' in the legend box.
+#' @param cut A \code{numeric} indicating the cut-off for indicating strong
+#' edges when \code{type = "fancy"}.
+#' @param scale A \code{numeric} representing a scale factor for visualizing
+#' strength of edges when \code{type = "weighted"}.
+#' @param pEcolor A \code{character} determining the color of the edges tied to
+#' positive precision elements. Only when \code{type = "weighted"}.
+#' @param nEcolor A \code{character} determining the color of the edges tied to
+#' negative precision elements. Only when \code{type = "weighted"}.
+#' @param main A \code{character} giving the main figure title.
+#' @return The function returns a graph. The function also returns a
+#' \code{matrix} object containing the coordinates of the vertices in the given
+#' graph.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}},
+#' \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
+#' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
+#' for complex network research. InterJournal, Complex Systems 1695.
+#' http://igraph.sf.net
+#'
+#' van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation of Inverse
+#' Covariance Matrices from High-Dimensional Data, Computational Statistics &
+#' Data Analysis, vol. 103: 284-303. Also available as arXiv:1403.0904v3
+#' [stat.ME].
+#'
+#' van Wieringen, W.N. & Peeters, C.F.W. (2015). Application of a New Ridge
+#' Estimator of the Inverse Covariance Matrix to the Reconstruction of
+#' Gene-Gene Interaction Networks. In: di Serio, C., Lio, P., Nonis, A., and
+#' Tagliaferri, R. (Eds.) `Computational Intelligence Methods for
+#' Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
+#' 8623. Springer, pp. 170-179.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+#'
+#' ## Determine support regularized standardized precision under optimal penalty
+#' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
+#'
+#' ## Obtain graphical representation
+#' Ugraph(PC0, type = "fancy", cut = 0.07)
+#'
+#' ## Obtain graphical representation with Fruchterman-Reingold layout
+#' Ugraph(PC0, type = "fancy", lay = "layout_with_fr", cut = 0.07)
+#'
+#' ## Add pruning
+#' Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
+#'        cut = 0.07, prune = TRUE)
+#'
+#' ## Obtain graph and its coordinates
+#' Coordinates <- Ugraph(PC0, type = "fancy", lay = "layout_with_fr",
+#'                       cut = 0.07, prune = TRUE)
+#' Coordinates
+#'
+#' @export
 Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                    lay = "layout_in_circle", coords = NULL, Vsize = 15,
                    Vcex = 1, Vcolor = "orangered", VBcolor = "darkred",
@@ -2758,50 +4035,6 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
                    label = "", Lcex = 1.3, PTcex = 4, cut = .5,
                    scale = 10, pEcolor = "black", nEcolor = "grey",
                    main = ""){
-  ##############################################################################
-  # - Function that visualizes the sparsified precision matrix as an undirected
-  #   graph
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - M       > (Possibly sparsified) precision matrix
-  # - type    > graph type: 'plain' gives plain undirected graph. 'fancy' gives
-  #             undirected graph in which dashed lines indicate negative partial
-  #             correlations while solid lines indicate positive partial
-  #             correlations, and in which grey lines indicate strong edges.
-  #             'weighted' gives an undirected graph in which edge thickness
-  #             indicates the strenght of the partial correlations. Grey lines
-  #             then indicate negative partial correlations while black lines
-  #             represent positive partial correlations.
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_in_circle.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  # - Vsize   > gives vertex size, default = 15
-  # - Vcex    > gives size vertex labels, default = 1
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  # - prune   > logical indicating if vertices of degree 0 should be removed
-  # - legend  > optional inclusion of color legend, default = FALSE
-  # - label   > character label for the endogenous variables, default = "";
-  #             only when legend = TRUE
-  # - Lcex    > scaling legend box, default = 1.3; only when legend = TRUE
-  # - PTcex   > scaling node in legend box, default = 4; only when legend = TRUE
-  # - cut     > cut-off for indication of strong edge, default = .5; only when
-  #             type = "fancy"
-  # - scale   > scale factor for visualizing strenght of edges, default = 10;
-  #             only when type = "weighted"
-  # - pEcolor > gives edge color for edges tied to positive precision elements,
-  #             default = "black"; only when type = "weighted"
-  # - nEcolor > gives edge color for edges tied to negative precision elements,
-  #             default = "grey"; only when type = "weighted"
-  # - main    > character specifying heading figure, default = ""
-  ##############################################################################
 
   # Dependencies
   # require("igraph")
@@ -2837,7 +4070,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){
@@ -3045,35 +4278,80 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 ##
 ##------------------------------------------------------------------------------
 
+
+
+
+
+
+
+#' Gaussian graphical model network statistics
+#'
+#' Function that calculates various network statistics from a sparse precision
+#' matrix. The sparse precision matrix is taken to represent the conditional
+#' indepence graph of a Gaussian graphical model.
+#'
+#' The function calculates various network statistics from a sparse matrix. The
+#' input matrix \code{P} is assumed to be a sparse precision or partial
+#' correlation matrix. The sparse matrix is taken to represent a conditional
+#' independence graph. In the Gaussian setting, conditional independence
+#' corresponds to zero entries in the (standardized) precision matrix. Each
+#' node in the graph represents a Gaussian variable, and each undirected edge
+#' represents conditional dependence in the sense of a nonzero corresponding
+#' precision entry.
+#'
+#' The function calculates various measures of centrality: node degree,
+#' betweenness centrality, closeness centrality, and eigenvalue centrality. It
+#' also calculates the number of positive and the number of negative edges for
+#' each node. In addition, for each variate the mutual information (with all
+#' other variates), the variance, and the partial variance is represented. It
+#' is also indicated if the graph is chordal (i.e., triangulated). For more
+#' information on network measures, consult, e.g., Newman (2010).
+#'
+#' @param sparseP Sparse precision/partial correlation \code{matrix}.
+#' @param as.table A \code{logical} indicating if the output should be in
+#' tabular format.
+#' @return An object of class \code{list} when \code{as.table = FALSE}:
+#' \item{degree}{A \code{numeric} vector with the node degree for each node.}
+#' \item{betweenness}{A \code{numeric} vector representing the betweenness
+#' centrality for each node.} \item{closeness}{A \code{numeric} vector
+#' representing the closeness centrality for each node.}
+#' \item{eigenCentrality}{A \code{numeric} vector representing the eigenvalue
+#' centrality for each node.} \item{nNeg}{An \code{integer} vector representing
+#' the number of negative edges for each node.} \item{nPos}{An \code{integer}
+#' vector representing the number of positive edges for each node.}
+#' \item{chordal}{A \code{logical} indicating if the implied graph is chordal.}
+#' \item{mutualInfo}{A \code{numeric} vector with the mutual information (with
+#' all other nodes) for each node.} \item{variance}{A \code{numeric} vector
+#' representing the variance of each node.} \item{partialVariance}{A
+#' \code{numeric} vector representing the partial variance of each node.} When
+#' \code{as.table = TRUE} the list items above (with the exception of
+#' \code{chordal}) are represented in tabular form as an object of class
+#' \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}},
+#' \code{\link{Ugraph}}
+#' @references Newman, M.E.J. (2010). "Networks: an introduction", Oxford
+#' University Press.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain sparsified partial correlation matrix
+#' Pridge   <- ridgeP(Cx, 10, type = "Alt")
+#' PCsparse <- sparsify(Pridge , threshold = "top")$sparseParCor
+#'
+#' ## Represent the graph and calculate GGM network statistics
+#' Ugraph(PCsparse, "fancy")
+#' \dontrun{GGMnetworkStats(PCsparse)}
+#'
+#' @export
 GGMnetworkStats <- function(sparseP, as.table = FALSE){
-  ##############################################################################
-  # - Function that calculates various network statistics from a sparse matrix
-  # - Input matrix is assumed to be a sparse precision of partial correlation
-  #   matrix
-  # - The sparse precision matrix is taken to represent a conditional
-  #   independence graph
-  # - sparseP  > sparse precision/partial correlation matrix
-  # - as.table > logical indicating if output should be returned as table;
-  #              default = FALSE
-  #
-  # - NOTES (network statistics produced):
-  # - Node degree
-  # - Betweenness centrality
-  # - Closeness centrality
-  # - Eigenvalue centrality
-  # - Number of negative edges for each node
-  # - Number of positive edges for each node
-  # - Assessment if network/graph is chordal (triangulated)
-  # - Mutual information of each variate with all other variates
-  # - Variance of each variate (based on inverse sparsified precision matrix)
-  # - Partial variance of each variate (= 1 when input matrix is partial
-  #   correlation matrix)
-  # - Future versions of this function may include additional statistics
-  #
-  # - REFERENCE:
-  # - Newman, M.E.J. (2010), "Networks: an introduction",
-  #   Oxford University Press
-  ##############################################################################
 
   # Dependencies
   # require("base")
@@ -3143,73 +4421,176 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 
 
 
+
+
+
+
+
+
+#' Gaussian graphical model node pair path statistics
+#'
+#' Function that calculates, for a specified node pair representing endpoints,
+#' path statistics from a sparse precision matrix. The sparse precision matrix
+#' is taken to represent the conditional independence graph of a Gaussian
+#' graphical model. The contribution to the observed covariance between the
+#' specified endpoints is calculated for each (heuristically) determined path
+#' between the endpoints.
+#'
+#' The conditional independence graph (as implied by the sparse precision
+#' matrix) is undirected. In undirected graphs origin and destination are
+#' interchangeable and are both referred to as 'endpoints' of a path. The
+#' function searches for shortest paths between the specified endpoints
+#' \code{node1} and \code{node2}. It searches for shortest paths that visit
+#' nodes only once. The shortest paths between the provided endpoints are
+#' determined heuristically by the following procedure. The search is initiated
+#' by application of the \code{get.all.shortest.paths}-function from the
+#' \code{\link{igraph}}-package, which yields all shortest paths between the
+#' nodes. Next, the neighborhoods of the endpoints are defined (excluding the
+#' endpoints themselves). Then, the shortest paths are found between: (a)
+#' \code{node1} and node \emph{Vs} in its neighborhood; (b) node \emph{Vs} in
+#' the \code{node1}-neighborhood and node \emph{Ve} in the
+#' \code{node2}-neighborhood; and (c) node \emph{Ve} in the
+#' \code{node2}-neighborhood and \code{node2}. These paths are glued and new
+#' shortest path candidates are obtained (preserving only novel paths). In
+#' additional iterations (specified by \code{neiExpansions}) the \code{node1}-
+#' and \code{node2}-neighborhood are expanded by including their neighbors
+#' (still excluding the endpoints) and shortest paths are again searched as
+#' described above.
+#'
+#' The contribution of a particular path to the observed covariance between the
+#' specified node pair is calculated in accordance with Theorem 1 of Jones and
+#' West (2005). As in Jones and West (2005), paths whose weights have an
+#' opposite sign to the marginal covariance (between endnodes of the path) are
+#' referred to as 'moderating paths' while paths whose weights have the same
+#' sign as the marginal covariance are referred to as 'mediating' paths. Such
+#' paths are visualized when \code{graph = TRUE}.
+#'
+#' All arguments following the \code{graph} argument are only (potentially)
+#' used when \code{graph = TRUE}. When \code{graph = TRUE} the conditional
+#' independence graph is returned with the paths highlighted that have the
+#' highest contribution to the marginal covariance between the specified
+#' endpoints. The number of paths highlighted is indicated by \code{nrPaths}.
+#' The edges of mediating paths are represented in green while the edges of
+#' moderating paths are represented in red. When \code{all.edges = TRUE} the
+#' edges other than those implied by the \code{nrPaths}-paths between
+#' \code{node1} and node2 are also visualized (in lightgrey). When
+#' \code{all.edges = FALSE} only the mediating and moderating paths implied by
+#' \code{nrPaths} are visualized.
+#'
+#' The default layout gives a circular placement of the vertices. Most layout
+#' functions supported by \code{\link{igraph}} are supported (the function is
+#' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+#' layouts can be invoked by a \code{character} that mimicks a call to a
+#' \code{\link{igraph}} layout functions in the \code{lay} argument. When using
+#' \code{lay = NULL} one can specify the placement of vertices with the
+#' \code{coords} argument. The row dimension of this matrix should equal the
+#' number of (pruned) vertices. The column dimension then should equal 2 (for
+#' 2D layouts) or 3 (for 3D layouts). The \code{coords} argument can also be
+#' viewed as a convenience argument as it enables one, e.g., to layout a graph
+#' according to the coordinates of a previous call to \code{Ugraph}. If both
+#' the the lay and the coords arguments are not \code{NULL}, the lay argument
+#' takes precedence
+#'
+#' The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend =
+#' TRUE}. If \code{prune = TRUE} the vertices of degree 0 (vertices not
+#' implicated by any edge) are removed. For the colors supported by the
+#' arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
+#' \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+#'
+#' @param P0 Sparse (possibly standardized) precision matrix.
+#' @param node1 A \code{numeric} specifying an endpoint. The numeric should
+#' correspond to a row/column of the precision matrix and as such represents
+#' the corresponding variable.
+#' @param node2 A \code{numeric} specifying a second endpoint. The numeric
+#' should correspond to a row/column of the precision matrix and as such
+#' represents the corresponding variable.
+#' @param neiExpansions A \code{numeric} determining how many times the
+#' neighborhood around the respective endpoints should be expanded in the
+#' search for shortest paths between the node pair.
+#' @param verbose A \code{logical} indicating if a summary of the results
+#' should be printed on screen.
+#' @param graph A \code{logical} indicating if the strongest paths should be
+#' visualized with a graph.
+#' @param nrPaths A \code{numeric} indicating the number of paths (with the
+#' highest contribution to the marginal covariance between the indicated node
+#' pair) to be visualized/highlighted.
+#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' layout functions. Determines the placement of vertices.
+#' @param coords A \code{matrix} containing coordinates. Alternative to the
+#' lay-argument for determining the placement of vertices.
+#' @param nodecol A \code{character} determining the color of \code{node1} and
+#' \code{node2}.
+#' @param Vsize A \code{numeric} determining the vertex size.
+#' @param Vcex A \code{numeric} determining the size of the vertex labels.
+#' @param VBcolor A \code{character} determining the color of the vertex
+#' borders.
+#' @param VLcolor A \code{character} determining the color of the vertex
+#' labels.
+#' @param all.edges A \code{logical} indicating if edges other than those
+#' implied by the \code{nrPaths}-paths between \code{node1} and node2 should
+#' also be visualized.
+#' @param prune A \code{logical} determining if vertices of degree 0 should be
+#' removed.
+#' @param legend A \code{logical} indicating if the graph should come with a
+#' legend.
+#' @param scale A \code{numeric} representing a scale factor for visualizing
+#' strenght of edges. It is a relative scaling factor, in the sense that the
+#' edges implied by the \code{nrPaths}-paths between \code{node1} and node2
+#' have edge thickness that is twice this scaling factor (so it is a scaling
+#' factor vis-a-vis the unimplied edges).
+#' @param Lcex A \code{numeric} determining the size of the legend box.
+#' @param PTcex A \code{numeric} determining the size of the exemplary lines in
+#' the legend box.
+#' @param main A \code{character} giving the main figure title.
+#' @return An object of class list: \item{pathStats}{A \code{matrix} specifying
+#' the paths, their respective lengths, and their respective contributions to
+#' the marginal covariance between the endpoints.} \item{paths}{A \code{list}
+#' representing the respective paths as numeric vectors.} \item{Identifier}{A
+#' \code{data.frame} in which each numeric from \code{paths} is connected to an
+#' identifier such as a variable name.}
+#' @note Eppstein (1998) describes a more sophisticated algorithm for finding
+#' the top \emph{k} shortest paths in a graph.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
+#' \code{\link{sparsify}}
+#' @references Eppstein, D. (1998). Finding the k Shortest Paths. SIAM Journal
+#' on computing 28: 652-673.
+#'
+#' Jones, B., and West, M. (2005). Covariance Decomposition in Undirected
+#' Gaussian Graphical Models. Biometrika 92: 779-786.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p <- 25
+#' n <- 10
+#' set.seed(333)
+#' X <- matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X) <- letters[1:p]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .5, lambdaMax = 30)
+#'
+#' ## Determine support regularized standardized precision under optimal penalty
+#' PC0 <- sparsify(OPT$optPrec, threshold = "localFDR")$sparseParCor
+#'
+#' ## Obtain information on mediating and moderating paths between nodes 14 and 23
+#' pathStats <- GGMpathStats(PC0, 14, 23, verbose = TRUE, prune = FALSE)
+#' pathStats
+#'
+#' @export GGMpathStats
 GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
-                         graph = TRUE, nrPaths = 2, lay = layout.circle,
-                         nodecol = "skyblue", Vsize = 15, Vcex = .6,
-                         VBcolor = "darkblue", VLcolor = "black",
+                         graph = TRUE, nrPaths = 2, lay = "layout_in_circle",
+                         coords = NULL, nodecol = "skyblue", Vsize = 15,
+                         Vcex = .6, VBcolor = "darkblue", VLcolor = "black",
                          all.edges = TRUE, prune = TRUE, legend = TRUE,
                          scale = 1, Lcex = .8, PTcex = 2, main = ""){
-  ##############################################################################
-  # - Function that expresses the covariance between a pair of variables as a
-  #   sum of path weights
-  # - The sum of path weights is based on the shortest paths connecting the pair
-  #   in an undirected graph
-  # - P0            > sparse precision/partial correlation matrix
-  # - node1         > start node of the path
-  # - node2         > end node of the path
-  # - neiExpansions > a numeric determining how many times the neighborhood
-  #                   around the start and end node should be expanded in the
-  #                   search for shortest paths between the node pair.
-  #                   Default = 2
-  # - verbose       > logical indicating if output should also be printed on
-  #                   screen. Default = TRUE
-  # - graph         > Optional argument for visualization strongest paths,
-  #                   default = TRUE
-  # - nrPaths	      > indicates the number of paths with the highest
-  #                   contribution to the marginal covariance
-  #                   between the indicated node pair (node1 and node2) to be
-  #                   visualized/highlighted;
-  #                   only when graph = TRUE
-  # - lay           > determines layout of the graph. All layouts in
-  #                   'layout{igraph}' are accepted. Default = layout.circle,
-  #                    giving circular layout; only when graph = TRUE
-  # - nodecol       > gives color of node1 and node2; only when graph = TRUE
-  # - Vsize   	    > gives vertex size, default = 15; only when graph = TRUE
-  # - Vcex    	    > gives size vertex labels, default = .6; only when
-  #                   graph = TRUE
-  # - VBcolor     	> gives color of the vertex border, default = "darkblue";
-  #                   only when graph = TRUE
-  # - VLcolor      	> gives color of the vertex labels, default = "black";
-  #                   only when graph = TRUE
-  # - all.edges     > logical indicating if edges other than those implied by
-  #                   the 'nrPaths' paths between
-  #                   node1 and node2 should also be visualized. Default = TRUE;
-  #                   only when graph = TRUE
-  # - prune         > logical indicating if vertices of degree 0 should be
-  #                   removed. Default = TRUE; only when graph = TRUE
-  # - legend        > optional inclusion of color legend, default = TRUE; only
-  #                   when graph = TRUE
-  # - scale         > scale factor for visualizing strenght of edges,
-  #                   default = 1. It is a relative scaling
-  #                   factor, in the sense that the edges implied by the
-  #                   'nrPaths' paths between node1 and node2 have edge
-  #                   thickness that is twice this scaling factor (so it is
-  #                   a scaling factor vis-a-vis the unimplied edges); only
-  #                   when all.edges = TRUE
-  # - Lcex          > scaling legend box, default = .8; only when legend = TRUE
-  # - PTcex         > scaling node in legend box, default = 2; only when
-  #                   legend = TRUE
-  # - main          > character specifying heading figure, default = ""
-  #
   # - NOTES:
   # - As in Jones & West (2005), paths whose weights have an opposite sign to
   #   the marginal covariance (between endnodes of the path) are referred to
   #   as 'moderating paths' while paths whose weights have the same sign as the
   #   marginal covariance are referred to as 'mediating' paths
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("igraph")
   # require("reshape")
 
@@ -3378,126 +4759,189 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
         } else if (nrPaths > length(paths)){
           stop("Input (nrPaths) cannot exceed the total number of paths ",
                "discerned")
-        } else if (class(nodecol) != "character"){
-          stop("Input (nodecol) is of wrong class")
-        } else if (length(nodecol) != 1){
-          stop("Length input (nodecol) must be one")
-        } else if (class(Vsize) != "numeric"){
-          stop("Input (Vsize) is of wrong class")
-        } else if (length(Vsize) != 1){
-          stop("Length input (Vsize) must be one")
-        } else if (Vsize <= 0){
-          stop("Input (Vsize) must be strictly positive")
-        } else if (class(Vcex) != "numeric"){
-          stop("Input (Vcex) is of wrong class")
-        } else if (length(Vcex) != 1){
-          stop("Length input (Vcex) must be one")
-        } else if (Vcex <= 0){
-          stop("Input (Vcex) must be strictly positive")
-        } else if (class(VBcolor) != "character"){
-          stop("Input (VBcolor) is of wrong class")
-        } else if (length(VBcolor) != 1){
-          stop("Length input (VBcolor) must be one")
-        } else if (class(VLcolor) != "character"){
-          stop("Input (VLcolor) is of wrong class")
-        } else if (length(VLcolor) != 1){
-          stop("Length input (VLcolor) must be one")
-        } else if (class(all.edges) != "logical"){
-          stop("Input (all.edges) is of wrong class")
-        } else if (class(prune) != "logical"){
-          stop("Input (prune) is of wrong class")
-        } else if (class(legend) != "logical"){
-          stop("Input (legend) is of wrong class")
-        } else if (class(main) != "character"){
-          stop("Input (main) is of wrong class")
-        } else {
-          # Preliminaries
-          AM <- adjacentMat(P0)
-          GA <- graph.adjacency(AM, mode = "undirected")
-          colnames(P0) = rownames(P0) <- seq(1, ncol(P0), by = 1)
-          Mmelt <- melt(P0)
-          Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
-          Mmelt <- Mmelt[Mmelt$value != 0,]
+        } else if (!((length(intersect(lay,c("layout_as_star", "layout_as_tree",
+                                             "layout_in_circle", "layout_nicely",
+                                             "layout_with_dh", "layout_with_gem",
+                                             "layout_with_graphopt", "layout_on_grid",
+                                             "layout_with_mds", "layout_components",
+                                             "layout_on_sphere", "layout_randomly",
+                                             "layout_with_fr", "layout_with_kk",
+                                             "layout_with_lgl"))) > 0) | is.null(lay))){
+          stop("lay should be 'NULL' or one of
+               {'layout_as_star', 'layout_as_tree',
+               'layout_in_circle', 'layout_nicely',
+               'layout_with_dh', 'layout_with_gem',
+               'layout_with_graphopt', 'layout_on_grid',
+               'layout_with_mds', 'layout_components',
+               'layout_on_sphere', 'layout_randomly',
+               'layout_with_fr', 'layout_with_kk',
+               'layout_with_lgl'}")
+        } else if (!is.null(coords) & !inherits(coords, "matrix")){
+          stop("Input (coords) is of wrong class")
+      } else if (is.null(lay) & is.null(coords)){
+        stop("Input (lay) and input (coords) cannot be both NULL")
+      } else if (class(nodecol) != "character"){
+        stop("Input (nodecol) is of wrong class")
+      } else if (length(nodecol) != 1){
+        stop("Length input (nodecol) must be one")
+      } else if (class(Vsize) != "numeric"){
+        stop("Input (Vsize) is of wrong class")
+      } else if (length(Vsize) != 1){
+        stop("Length input (Vsize) must be one")
+      } else if (Vsize <= 0){
+        stop("Input (Vsize) must be strictly positive")
+      } else if (class(Vcex) != "numeric"){
+        stop("Input (Vcex) is of wrong class")
+      } else if (length(Vcex) != 1){
+        stop("Length input (Vcex) must be one")
+      } else if (Vcex <= 0){
+        stop("Input (Vcex) must be strictly positive")
+      } else if (class(VBcolor) != "character"){
+        stop("Input (VBcolor) is of wrong class")
+      } else if (length(VBcolor) != 1){
+        stop("Length input (VBcolor) must be one")
+      } else if (class(VLcolor) != "character"){
+        stop("Input (VLcolor) is of wrong class")
+      } else if (length(VLcolor) != 1){
+        stop("Length input (VLcolor) must be one")
+      } else if (class(all.edges) != "logical"){
+        stop("Input (all.edges) is of wrong class")
+      } else if (class(prune) != "logical"){
+        stop("Input (prune) is of wrong class")
+      } else if (class(legend) != "logical"){
+        stop("Input (legend) is of wrong class")
+      } else if (class(main) != "character"){
+        stop("Input (main) is of wrong class")
+      } else {
+        # Preliminaries
+        AM <- adjacentMat(P0)
+        GA <- graph.adjacency(AM, mode = "undirected")
+        if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
+        colnames(P0) = rownames(P0) <- seq(1, ncol(P0), by = 1)
+        Mmelt <- melt(P0)
+        Mmelt <- Mmelt[Mmelt$X1 > Mmelt$X2,]
+        Mmelt <- Mmelt[Mmelt$value != 0,]
 
-          # Determine if path is mediating or moderating and color accordingly
-          for (k in 1:nrPaths){
-            Path <- unlist(paths[k])
-            if (sign(covNo1No2) == sign(pathStats[k,2])){COL = "green"}
-            if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}
-            for (i in 1:(length(Path) - 1)){
-              if (Path[i] > Path[i + 1]){
-                tempX1 <- Path[i]
-                tempX2 <- Path[i + 1]
-              } else {
-                tempX1 <- Path[i + 1]
-                tempX2 <- Path[i]
-              }
-              row <- which(Mmelt$X1 == tempX1 & Mmelt$X2 == tempX2)
-              E(GA)[row]$color <- COL
-            }
+        # Layout specification
+        if(is.null(lay)){
+          if(dim(coords)[1] != length(V(GA))){
+            stop("Row dimension of input (coords) does not match the
+                 number of vertices to be plotted")
+          } else if (dim(coords)[2] > 3){
+            stop("Column dimension of input (coords) exceeds the number
+                 of dimensions that can be visualized")
+          } else {lays = coords}
           }
+        else{
+          if(lay == "layout_as_star"){
+            lays = igraph::layout_as_star(GA)}
+          if(lay == "layout_as_tree")
+          {lays = igraph::layout_as_tree(GA)}
+          if(lay == "layout_in_circle"){
+            lays = igraph::layout_in_circle(GA)}
+          if(lay == "layout_nicely"){
+            lays = igraph::layout_nicely(GA)}
+          if(lay == "layout_with_dh"){
+            lays = igraph::layout_with_dh(GA)}
+          if(lay == "layout_with_gem"){
+            lays = igraph::layout_with_gem(GA)}
+          if(lay == "layout_with_graphopt"){
+            lays = igraph::layout_with_graphopt(GA)}
+          if(lay == "layout_on_grid"){
+            lays = igraph::layout_on_grid(GA)}
+          if(lay == "layout_with_mds"){
+            lays = igraph::layout_with_mds(GA)}
+          if(lay == "layout_components"){
+            lays = igraph::layout_components(GA)}
+          if(lay == "layout_on_sphere"){
+            lays = igraph::layout_on_sphere(GA)}
+          if(lay == "layout_randomly"){
+            lays = igraph::layout_randomly(GA)}
+          if(lay == "layout_with_fr"){
+            lays = igraph::layout_with_fr(GA)}
+          if(lay == "layout_with_kk"){
+            lays = igraph::layout_with_kk(GA)}
+          if(lay == "layout_with_lgl"){
+            lays = igraph::layout_with_lgl(GA)}
+        }
 
-          # Coloring nodes
-          V(GA)$color <- "white"
-          V(GA)$color[node1] <- nodecol
-          V(GA)$color[node2] <- nodecol
-
-          # Produce graph
-          if (all.edges){
-            if (class(scale) != "numeric"){
-              stop("Input (scale) is of wrong class")
-            } else if (length(scale) != 1){
-              stop("Length input (scale) must be one")
-            } else if (scale <= 0){
-              stop("Input (scale) must be strictly positive")
+        # Determine if path is mediating or moderating and color accordingly
+        for (k in 1:nrPaths){
+          Path <- unlist(paths[k])
+          if (sign(covNo1No2) == sign(pathStats[k,2])){COL = "green"}
+          if (sign(covNo1No2) != sign(pathStats[k,2])){COL = "red"}
+          for (i in 1:(length(Path) - 1)){
+            if (Path[i] > Path[i + 1]){
+              tempX1 <- Path[i]
+              tempX2 <- Path[i + 1]
             } else {
-              E(GA)[is.na(E(GA)$color)]$color <- "grey"
-              E(GA)$weight <- 1
-              E(GA)[E(GA)$color == "green"]$weight <- 2
-              E(GA)[E(GA)$color == "red"]$weight   <- 2
-              if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
-              plot(GA, layout = lay, vertex.size = Vsize,
-                   vertex.label.family = "sans", vertex.label.cex = Vcex,
-                   edge.width = scale*abs(E(GA)$weight),
-                   vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
-                   vertex.label.color = VLcolor, main = main)
+              tempX1 <- Path[i + 1]
+              tempX2 <- Path[i]
             }
+            row <- which(Mmelt$X1 == tempX1 & Mmelt$X2 == tempX2)
+            E(GA)[row]$color <- COL
+          }
+        }
+
+        # Coloring nodes
+        V(GA)$color <- "white"
+        V(GA)$color[node1] <- nodecol
+        V(GA)$color[node2] <- nodecol
+
+        # Produce graph
+        if (all.edges){
+          if (class(scale) != "numeric"){
+            stop("Input (scale) is of wrong class")
+          } else if (length(scale) != 1){
+            stop("Length input (scale) must be one")
+          } else if (scale <= 0){
+            stop("Input (scale) must be strictly positive")
           } else {
-            if (prune){GA <- delete.vertices(GA, which(degree(GA) < 1))}
-            plot(GA, layout = lay, vertex.size = Vsize,
+            E(GA)[is.na(E(GA)$color)]$color <- "grey"
+            E(GA)$weight <- 1
+            E(GA)[E(GA)$color == "green"]$weight <- 2
+            E(GA)[E(GA)$color == "red"]$weight   <- 2
+            plot(GA, layout = lays, vertex.size = Vsize,
                  vertex.label.family = "sans", vertex.label.cex = Vcex,
+                 edge.width = scale*abs(E(GA)$weight),
                  vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
                  vertex.label.color = VLcolor, main = main)
           }
+        } else {
+          plot(GA, layout = lays, vertex.size = Vsize,
+               vertex.label.family = "sans", vertex.label.cex = Vcex,
+               vertex.color = V(GA)$color, vertex.frame.color = VBcolor,
+               vertex.label.color = VLcolor, main = main)
+        }
 
-          # Legend
-          if (legend){
-            if (class(Lcex) != "numeric"){
-              stop("Input (Lcex) is of wrong class")
-            } else if (length(Lcex) != 1){
-              stop("Length input (Lcex) must be one")
-            } else if (Lcex <= 0){
-              stop("Input (Lcex) must be strictly positive")
-            } else if (class(PTcex) != "numeric"){
-              stop("Input (PTcex) is of wrong class")
-            } else if (length(PTcex) != 1){
-              stop("Length input (PTcex) must be one")
-            } else if (PTcex <= 0){
-              stop("Input (PTcex) must be strictly positive")
-            } else {
-              legend("bottomright", c("mediating path", "moderating path"),
-                     lty=c(1,1), col = c("green", "red"), cex = Lcex,
-                     pt.cex = PTcex)
-            }
+        # Legend
+        if (legend){
+          if (class(Lcex) != "numeric"){
+            stop("Input (Lcex) is of wrong class")
+          } else if (length(Lcex) != 1){
+            stop("Length input (Lcex) must be one")
+          } else if (Lcex <= 0){
+            stop("Input (Lcex) must be strictly positive")
+          } else if (class(PTcex) != "numeric"){
+            stop("Input (PTcex) is of wrong class")
+          } else if (length(PTcex) != 1){
+            stop("Length input (PTcex) must be one")
+          } else if (PTcex <= 0){
+            stop("Input (PTcex) must be strictly positive")
+          } else {
+            legend("bottomright", c("mediating path", "moderating path"),
+                   lty=c(1,1), col = c("green", "red"), cex = Lcex,
+                   pt.cex = PTcex)
           }
         }
       }
+    }
 
-      # Return
-      Numeric    <- rownames(adjMat)
-      VarName    <- Names
-      identifier <- data.frame(Numeric, VarName)
-      return(list(pathStats = pathStats, paths = paths,
+    # Return
+    Numeric    <- rownames(adjMat)
+    VarName    <- Names
+    identifier <- data.frame(Numeric, VarName)
+    return(list(pathStats = pathStats, paths = paths,
                   Identifier = identifier))
     }
   }
@@ -3512,28 +4956,83 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 ##
 ##------------------------------------------------------------------------------
 
+
+
+
+
+
+
+#' Wrapper function
+#'
+#' Function that forms a wrapper around certain \code{rags2ridges}
+#' functionalities. More specifically, it (automatically) invokes
+#' functionalities to get from high-dimensional data to a penalized precision
+#' estimate, to the corresponding conditional independence graph and topology
+#' summaries.
+#'
+#' The wrapper always uses the alternative ridge precision estimator (see
+#' \code{\link{ridgeP}}) with \code{target} as the target matrix. The optimal
+#' value for the penalty parameter is determined by employing Brent's method to
+#' the calculation of a cross-validated negative log-likelihood score (see
+#' \code{\link{optPenalty.LOOCVauto}}). The support of the regularized
+#' precision matrix is determined by way of local FDR thresholding (see
+#' \code{\link{sparsify}}). The corresponding conditional independence graph is
+#' visualized using \code{\link{Ugraph}} with \code{type = "fancy"}. This
+#' visualization as well as the calculation of network statistics (see
+#' \code{\link{GGMnetworkStats}}) is based on the standardization of the
+#' regularized and sparsified precision matrix to a partial correlation matrix.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param dir A \code{character} specifying the directory in which the (visual)
+#' output is to be stored.
+#' @param fileTypeFig A \code{character} determining the file type of visual
+#' output. Must be one of: "pdf", "eps".
+#' @param FDRcut A \code{numeric} indicating the cut-off for partial
+#' correlation element selection based on local FDR thresholding.
+#' @param nOutput A \code{logical} indicating if numeric output should be
+#' returned.
+#' @param verbose A \code{logical} indicating if progress updates should be
+#' printed on screen.
+#' @return The function stores in the specified directory \code{dir} a
+#' condition number plot (either .pdf or .eps file), a visualization of the
+#' network (either .pdf or .eps file), and a file containing network statistics
+#' (.txt file). When \code{nOutput = TRUE} the function also returns an object
+#' of class \code{list}: \item{optLambda}{A \code{numeric} giving the optimal
+#' value of the penalty parameter.} \item{optPrec}{A \code{matrix} representing
+#' the regularized precision matrix under the optimal value of the penalty
+#' parameter.} \item{sparseParCor}{A \code{matrix} representing the sparsified
+#' partial correlation matrix.} \item{networkStats}{A \code{matrix} giving the
+#' calculated network statistics.}
+#' @note We consider this to be a preliminary version of an envisioned wrapper
+#' than will take better form with subsequent versions of \code{rags2ridges}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{conditionNumberPlot}},
+#' \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}},
+#' \code{\link{Ugraph}}, \code{\link{GGMnetworkStats}}
+#' @examples
+#'
+#' \dontrun{
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Employ the wrapper function
+#' theWorks <- fullMontyS(X, lambdaMin = .5, lambdaMax = 30)}
+#' @export fullMontyS
 fullMontyS <- function(Y, lambdaMin, lambdaMax,
                        target = default.target(covML(Y)), dir = getwd(),
                        fileTypeFig = "pdf", FDRcut = .9, nOutput = TRUE,
                        verbose = TRUE){
-  ##############################################################################
-  # - Function that forms a wrapper around the rags2ridges functionalities
-  # - Invokes functionalities to get from data to graph and topology summaries
-  # - Y           > (raw) Data matrix, variables in columns
-  # - lambdaMin   > minimum value penalty parameter
-  # - lambdaMax   > maximum value penalty parameter
-  # - target      > target (precision terms) for Type I estimators,
-  #                 default = default.target(covML(Y))
-  # - dir         > specifies the directory in which the (visual) output is
-  #                 stored
-  # - fileTypeFig > signifies filetype of visual output; Should be one of
-  #                 {"pdf", "eps"}
-  # - FDRcut      > cut-off for partial correlation element selection based on
-  #                 local FDR thresholding. Default = .9.
-  # - nOutput     > logical indicating if numeric output should be given
-  # - verbose     > logical indicating if intermediate output should be printed
-  #                 on screen
-  #
+
   # - NOTES:
   # - Always uses the alternative ridge estimator by van Wieringen and Peeters
   #   (2015)
@@ -3544,10 +5043,8 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
   # - Network statistics calculated on sparsified partial correlation network
   # - There are no elaborate input checks as these are all covered by the
   #   indvidual functions invoked
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("stats")
   # require("graphics")
   # require("Hmisc")
@@ -3623,9 +5120,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 
 
 
-
-
-
 ################################################################################
 ################################################################################
 ##------------------------------------------------------------------------------
@@ -3637,9 +5131,6 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 ################################################################################
 
 # See R/rags2ridgesFused.R
-
-
-
 
 
 
@@ -3656,34 +5147,40 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
 # See R/rags2ridgesMisc.R
 
 
-momentS <- function(Sigma,
-                    shape,
-                    moment=1){
-
-	########################################################################
-	#
-	# DESCRIPTION:
-	# Returns the moments of a Wishart-distributed random variable.
-	# Only those explicitly given in Lesac, Massam (2004) are implemented.
-	#
-	# ARGUMENTS:
-	# -> Sigma	: Positive-definite 'matrix', the scale parameter of
-	#                 the Wishart distribution.
-	# -> shape	: A 'numeric', the shape parameter of the Wishart
-	#                 distribution. Should exceed the number of variates.
-	# -> moment	: An 'integer'. Should be in the set
-	#                 {-4, -3, -2, -1, 0, 1, 2, 3, 4} (only those are
-	#                 explicitly specified in Lesac, Massam, 2004).
-	#
-	# DEPENDENCIES:
-	# Currently, none.
-	#
-	# NOTES:
-   	# ....
-	#
-	########################################################################
-
-	# input checks
+#' Moments of the sample covariance matrix.
+#'
+#' Calculates the moments of the sample covariance matrix. It assumes that the
+#' summands (the outer products of the samples' random data vector) that
+#' constitute the sample covariance matrix follow a Wishart-distribution with
+#' scale parameter \eqn{\mathbf{\Sigma}} and shape parameter \eqn{\nu}. The
+#' latter is equal to the number of summands in the sample covariance estimate.
+#'
+#' @param Sigma Positive-definite \code{matrix}, the scale parameter
+#' \eqn{\mathbf{\Sigma}} of the Wishart distribution.
+#' @param shape A \code{numeric}, the shape parameter \eqn{\nu} of the Wishart
+#' distribution. Should exceed the number of variates (number of rows or
+#' columns of \code{Sigma}).
+#' @param moment An \code{integer}. Should be in the set \eqn{\{-4, -3, -2, -1,
+#' 0, 1, 2, 3, 4\}} (only those are explicitly specified in Lesac, Massam,
+#' 2004).
+#' @return The \eqn{r}-th moment of a sample covariance matrix:
+#' \eqn{E(\mathbf{S}^r)}.
+#' @author Wessel N. van Wieringen.
+#' @references Lesac, G., Massam, H. (2004), "All invariant moments of the
+#' Wishart distribution", \emph{Scandinavian Journal of Statistics}, 31(2),
+#' 295-318.
+#' @examples
+#'
+#' # create scale parameter
+#' Sigma <- matrix(c(1, 0.5, 0, 0.5, 1, 0, 0, 0, 1), byrow=TRUE, ncol=3)
+#'
+#' # evaluate expectation of the square of a sample covariance matrix
+#' # that is assumed to Wishart-distributed random variable with the
+#' # above scale parameter Sigma and shape parameter equal to 40.
+#' momentS(Sigma, 40, 2)
+#' @export
+momentS <- function(Sigma, shape, moment = 1) {
+	# Input checks
 	if (shape < nrow(Sigma) + 1){
 		stop("shape parameter should exceed the number of variates")
 	}
@@ -3761,11 +5258,36 @@ momentS <- function(Sigma,
 
 
 
+#' Prune square matrix to those variables having nonzero entries
+#'
+#' Convenience function that prunes a square matrix to those variables
+#' (features) having nonzero row (column) entries (i.e., to features implied in
+#' graphical connections).
+#'
+#'
+#' @param M (Possibly sparsified) square \code{matrix}.
+#' @return A pruned \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+#'
+#' ## Determine support regularized standardized precision under optimal penalty
+#' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
+#'
+#' ## Prune sparsified partial correlation matrix
+#' PC0P <- pruneMatrix(PC0)
+#'
+#' @export
 pruneMatrix <- function(M){
-  ##############################################################################
-  # - Function that prunes a matrix to those variables implied in edges
-  # - M > (Possibly sparsified) precision matrix
-  ##############################################################################
 
   # Dependencies
   # require("igraph")
@@ -3792,16 +5314,57 @@ pruneMatrix <- function(M){
 
 
 
+#' Subset 2 square matrices to union of variables having nonzero entries
+#'
+#' Convenience function that subsets 2 square matrices (over the same features)
+#' to the union of features that have nonzero row (column) entries (i.e.,
+#' features implied in graphical connections).
+#'
+#' Say you have 2 class-specific precision matrices that are estimated over the
+#' same variables/features. For various reasons (such as, e.g., the desire to
+#' visualize pruned class-specific networks in the same coordinates) one may
+#' want to prune these matrices to those features that are implied in graphical
+#' connections in at least 1 class.
+#'
+#' @param M1 (Possibly sparsified) square \code{matrix}.
+#' @param M2 (Possibly sparsified) square \code{matrix} over the same features
+#' as \code{M1}.
+#' @return An object of class list: \item{M1subset}{A pruned \code{matrix} for
+#' class 1.} \item{M2subset}{A pruned \code{matrix} for class 2.}
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{Ugraph}}
+#' @examples
+#'
+#' ## Invoke data
+#' data(ADdata)
+#'
+#' ## Subset
+#' ADclass1 <- ADmetabolites[, sampleInfo$ApoEClass == "Class 1"]
+#' ADclass2 <- ADmetabolites[, sampleInfo$ApoEClass == "Class 2"]
+#'
+#' ## Transpose data
+#' ADclass1 <- t(ADclass1)
+#' ADclass2 <- t(ADclass2)
+#'
+#' ## Correlations for subsets
+#' rAD1 <- cor(ADclass1)
+#' rAD2 <- cor(ADclass2)
+#'
+#' ## Simple precision estimates
+#' P1 <- ridgeP(rAD1, 2)
+#' P2 <- ridgeP(rAD2, 2)
+#' Plist = list(P1 = P1, P2 = P2)
+#'
+#' ## Threshold matrices
+#' Mats <- sparsify.fused(Plist, threshold = "top", top = 20)
+#'
+#' ## Prune sparsified partial correlation matrices
+#' ## To union of features implied by edge
+#' MatsPrune <- Union(Mats$P1$sparseParCor, Mats$P2$sparseParCor)
+#'
+#' @importFrom reshape melt
+#' @export
 Union <- function(M1, M2){
-  ##############################################################################
-  # - Function that subsets square matrices to union of features implied
-  #   in edges
-  # - M1 > Sparsified (precision) matrix
-  # - M2 > Sparsified (precision) matrix
-  ##############################################################################
-
-  # Dependencies
-  # require("reshape")
 
   if (!is.matrix(M1)){
     stop("M1 should be a matrix")
@@ -3842,46 +5405,90 @@ Union <- function(M1, M2){
 
 
 
+
+#' Search and visualize community-structures
+#'
+#' Function that searches for and visualizes community-structures in graphs.
+#'
+#' Communities in a network are groups of vertices (modules) that are densely
+#' connected within. Community search is performed by the Girvan-Newman
+#' algorithm (Newman and Girvan, 2004).
+#'
+#' When \code{graph = TRUE} the community structure in the graph is visualized.
+#' The default layout is according to the Fruchterman-Reingold algorithm
+#' (1991). Most layout functions supported by \code{\link{igraph}} are
+#' supported (the function is partly a wrapper around certain
+#' \code{\link{igraph}} functions). The igraph layouts can be invoked by a
+#' \code{character} that mimicks a call to a \code{\link{igraph}} layout
+#' functions in the \code{lay} argument. When using \code{lay = NULL} one can
+#' specify the placement of vertices with the \code{coords} argument. The row
+#' dimension of this matrix should equal the number of vertices. The column
+#' dimension then should equal 2 (for 2D layouts) or 3 (for 3D layouts). The
+#' \code{coords} argument can also be viewed as a convenience argument as it
+#' enables one, e.g., to layout a graph according to the coordinates of a
+#' previous call to \code{Ugraph}. If both the the lay and the coords arguments
+#' are not \code{NULL}, the lay argument takes precedence. Communities are
+#' indicated by color markings.
+#'
+#' @param P Sparsified precision \code{matrix}
+#' @param graph A \code{logical} indicating if the results should be
+#' visualized.
+#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' layout functions. Determines the placement of vertices.
+#' @param coords A \code{matrix} containing coordinates. Alternative to the
+#' lay-argument for determining the placement of vertices.
+#' @param Vsize A \code{numeric} determining the vertex size.
+#' @param Vcex A \code{numeric} determining the size of the vertex labels.
+#' @param Vcolor A \code{character} (scalar or vector) determining the vertex
+#' color.
+#' @param VBcolor A \code{character} determining the color of the vertex
+#' border.
+#' @param VLcolor A \code{character} determining the color of the vertex
+#' labels.
+#' @param main A \code{character} giving the main figure title.
+#' @return An object of class list: \item{membership}{\code{numeric} vector
+#' indicating, for each vertex, community membership.}
+#' \item{modularityscore}{\code{numeric} scalar indicating the modularity value
+#' of the community structure.}
+#'
+#' When \code{graph = TRUE} the function also returns a graph.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{Ugraph}}
+#' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
+#' for complex network research. InterJournal, Complex Systems 1695.
+#' http://igraph.sf.net
+#'
+#' Fruchterman, T.M.J., and Reingold, E.M. (1991). Graph Drawing by
+#' Force-Directed Placement. Software: Practice & Experience, 21: 1129-1164.
+#'
+#' Newman, M. and Girvan, M. (2004). Finding and evaluating community structure
+#' in networks. Physical Review E, 69: 026113.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+#'
+#' ## Determine support regularized standardized precision under optimal penalty
+#' PC0 <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
+#'
+#' ## Search and visualize communities
+#' Commy <- Communities(PC0)
+#' @export
 Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
                         Vsize = 15, Vcex = 1, Vcolor = "orangered",
                         VBcolor = "darkred", VLcolor = "black", main = ""){
-  ##############################################################################
-  # - Function that computes and visualizes community-structures
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - P       > Sparsified precision matrix
-  # - graph   > Logical indicating if also a graph should be returned.
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_with_fr.
-  #             Only used when graph = TRUE.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  #             Only used when graph = TRUE.
-  # - Vsize   > gives vertex size, default = 15
-  #             Only used when graph = TRUE.
-  # - Vcex    > gives size vertex labels, default = 1
-  #             Only used when graph = TRUE.
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector.
-  #             Only used when graph = TRUE.
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  #             Only used when graph = TRUE.
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  #             Only used when graph = TRUE.
-  # - main    > character specifying heading figure, default = ""
-  #             Only used when graph = TRUE.
-  #
   # NOTES
   # - Communities on the basis of the assumption of undirected graphs
   # - Will be expanded and bettered
-  ##############################################################################
 
   # Dependencies
-  # require("base")
   # require("igraph")
   # require("reshape")
 
@@ -3919,7 +5526,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
              'layout_with_fr', 'layout_with_kk',
              'layout_with_lgl'}")
       }
-      else if (!is.null(coords) & class(coords) != "matrix"){
+      else if (!is.null(coords) & !inherits(coords, "matrix")){
         stop("Input (coords) is of wrong class")
       }
       else if (is.null(lay) & is.null(coords)){
@@ -4041,38 +5648,95 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 
 
 
+
+#' Visualize the differential graph
+#'
+#' Function visualizing the differential graph, i.e., the network of edges that
+#' are unique for 2 class-specific graphs over the same vertices
+#'
+#' Say you have 2 class-specific precision matrices that are estimated over the
+#' same variables/features. This function visualizes in a single graph the
+#' edges that are unique to the respective classes. Hence, it gives the
+#' differential graph. Edges unique to \code{P1} are colored according to
+#' \code{P1color}. Edges unique to \code{P2} are colored according to
+#' \code{P2color}. Dashed lines indicate negative precision elements while
+#' solid lines indicate positive precision elements.
+#'
+#' The default layout is according to the Fruchterman-Reingold algorithm
+#' (1991). Most layout functions supported by \code{\link{igraph}} are
+#' supported (the function is partly a wrapper around certain
+#' \code{\link{igraph}} functions). The igraph layouts can be invoked by a
+#' \code{character} that mimicks a call to a \code{\link{igraph}} layout
+#' functions in the \code{lay} argument. When using \code{lay = NULL} one can
+#' specify the placement of vertices with the \code{coords} argument. The row
+#' dimension of this matrix should equal the number of vertices. The column
+#' dimension then should equal 2 (for 2D layouts) or 3 (for 3D layouts). The
+#' \code{coords} argument can also be viewed as a convenience argument as it
+#' enables one, e.g., to layout a graph according to the coordinates of a
+#' previous call to \code{Ugraph}. If both the the lay and the coords arguments
+#' are not \code{NULL}, the lay argument takes precedence.
+#'
+#' @param P1 Sparsified precision \code{matrix} for class 1.
+#' @param P2 Sparsified precision \code{matrix} for class 2.
+#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' layout functions. Determines the placement of vertices.
+#' @param coords A \code{matrix} containing coordinates. Alternative to the
+#' lay-argument for determining the placement of vertices.
+#' @param Vsize A \code{numeric} determining the vertex size.
+#' @param Vcex A \code{numeric} determining the size of the vertex labels.
+#' @param Vcolor A \code{character} (scalar or vector) determining the vertex
+#' color.
+#' @param VBcolor A \code{character} determining the color of the vertex
+#' border.
+#' @param VLcolor A \code{character} determining the color of the vertex
+#' labels.
+#' @param P1color A \code{character} determining the color of edges unique to
+#' P1.
+#' @param P2color A \code{character} determining the color of edges unique to
+#' P2.
+#' @param main A \code{character} giving the main figure title.
+#' @return The function returns a graph.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{Ugraph}}
+#' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
+#' for complex network research. InterJournal, Complex Systems 1695.
+#' http://igraph.sf.net
+#'
+#' Fruchterman, T.M.J., and Reingold, E.M. (1991). Graph Drawing by
+#' Force-Directed Placement. Software: Practice & Experience, 21: 1129-1164.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data, class 1
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain some (high-dimensional) data, class 2
+#' set.seed(123456)
+#' X2 = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X2)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty, classes 1 and 2
+#' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100)
+#' OPT2 <- optPenalty.LOOCV(X2, lambdaMin = .5, lambdaMax = 30, step = 100)
+#'
+#' ## Determine support regularized standardized precision under optimal penalty
+#' PC0  <- sparsify(symm(OPT$optPrec), threshold = "localFDR")$sparseParCor
+#' PC02 <- sparsify(symm(OPT2$optPrec), threshold = "localFDR")$sparseParCor
+#'
+#' ## Visualize differential graph
+#' DiffGraph(PC0, PC02)
+#'
+#' @export
 DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
                       Vsize = 15, Vcex = 1, Vcolor = "orangered",
                       VBcolor = "darkred", VLcolor = "black",
                       P1color = "red", P2color = "green", main = ""){
-  ##############################################################################
-  # - Function that visualized a differential graph, i.e., the edges that are
-  #   unique for 2 class-specific graphs over the same vertices
-  # - Function is partly a wrapper around certain 'igraph' functions
-  # - P1      > Sparsified precision matrix for class 1
-  # - P2      > Sparsified precision matrix for class 2
-  # - lay     > determines layout of the graph. Most layouts in 'layout{igraph}'
-  #             are accepted. Default = layout_with_fr.
-  # - coords  > matrix of coordinates to determine layout of the graph.
-  #             The row dimension should equal the number of (pruned) vertices.
-  #             The column dimension should equal 2 (for 2D layouts) or
-  #             3 (for 3D layouts). Enables one, e.g., to layout the graph
-  #             according to the coordinates of a previous call to Ugraph.
-  #             If both the the lay and the coords arguments are not NULL,
-  #             the lay argument takes precedence
-  # - Vsize   > gives vertex size, default = 15
-  # - Vcex    > gives size vertex labels, default = 1
-  # - Vcolor  > gives vertex color, default = "orangered", must be character.
-  #             May also be a character vector.
-  # - VBcolor > gives color of the vertex border, default = "darkred"
-  # - VLcolor > gives color of the vertex labels, default = "black"
-  # - P1color > gives color of edges unique to P1, default = "red"
-  # - P2color > gives color of edges unique to P1, default = "green"
-  # - main    > character specifying heading figure, default = ""
-  #
+
   # NOTES
   # - Will be expanded with legend options
-  ##############################################################################
 
   # Dependencies
   # require("igraph")
@@ -4111,7 +5775,7 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
          'layout_with_fr', 'layout_with_kk',
          'layout_with_lgl'}")
   }
-  else if (!is.null(coords) & class(coords) != "matrix"){
+  else if (!is.null(coords) & !inherits(coords, "matrix")){
     stop("Input (coords) is of wrong class")
   }
   else if (is.null(lay) & is.null(coords)){

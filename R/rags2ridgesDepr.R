@@ -9,6 +9,67 @@
 ################################################################################
 
 
+
+
+
+
+
+
+#' Visualize the spectral condition number against the regularization parameter
+#'
+#' This function is now deprecated. Please use \code{CNplot} instead.
+#'
+#' See \code{CNplot}.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param norm A \code{character} indicating the norm under which the condition
+#' number is to be calculated/estimated. Must be one of: "1", "2".
+#' @param digitLoss A \code{logical} indicating if the approximate loss in
+#' digits of accuracy should also be visualized in the output graph.
+#' @param rlDist A \code{logical} indicating if the relative distance to the
+#' set of singular matrices should also be visualized in the output graph.
+#' @param vertical A \code{logical} indicating if output graph should come with
+#' a vertical line at a pre-specified value for the penalty parameter.
+#' @param value A \code{numeric} indicating a pre-specified value for the
+#' penalty parameter.
+#' @param main A \code{logical} indicating if output graph should contain type
+#' of estimator as main title.
+#' @param nOutput A \code{logical} indicating if numeric output should be
+#' returned.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @return The function returns a graph. If \code{nOutput = TRUE} the function
+#' also returns an object of class \code{list}: \item{lambdas}{A \code{numeric}
+#' vector representing all values of the penalty parameter for which the
+#' condition number was calculated.} \item{conditionNumbers}{A \code{numeric}
+#' vector containing the condition number for each value of the penalty
+#' parameter given in \code{lambdas}.}
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{CNplot}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Assess spectral condition number across grid of penalty parameter
+#' conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
+#'
+#' @export conditionNumberPlot
 conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
                                 target = default.target(S), norm = "2",
                                 digitLoss = FALSE, rlDist = FALSE,
@@ -262,6 +323,42 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 
+
+
+
+
+
+
+#' Ridge estimation for high-dimensional precision matrices
+#'
+#' This function is now deprecated. Please use \code{ridgeP} instead.
+#'
+#' See \code{ridgeP}.
+#'
+#' @param S Sample covariance \code{matrix}.
+#' @param lambda A \code{numeric} representing the value of the penalty
+#' parameter.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @return Function returns a regularized precision \code{matrix}.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#' Cx <- covML(X)
+#'
+#' ## Obtain regularized precision matrix
+#' ridgeS(Cx, lambda = 10, type = "Alt")
+#'
+#' @export ridgeS
 ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
   ##############################################################################
   # - Function that calculates Ridge estimators of a precision matrix
@@ -369,6 +466,97 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 
 
 
+
+
+
+
+
+
+#' Select optimal penalty parameter by leave-one-out cross-validation
+#'
+#' This function is now deprecated. Please use \code{optPenalty.kCV} instead.
+#'
+#' Function that selects the optimal penalty parameter for the
+#' \code{\link{ridgeP}} call by usage of leave-one-out cross-validation. Its
+#' output includes (a.o.) the precision matrix under the optimal value of the
+#' penalty parameter.
+#'
+#' The function calculates a cross-validated negative log-likelihood score
+#' (using a regularized ridge estimator for the precision matrix) for each
+#' value of the penalty parameter contained in the search grid by way of
+#' leave-one-out cross-validation. The value of the penalty parameter that
+#' achieves the lowest cross-validated negative log-likelihood score is deemed
+#' optimal. The penalty parameter must be positive such that \code{lambdaMin}
+#' must be a positive scalar. The maximum allowable value of \code{lambdaMax}
+#' depends on the type of ridge estimator employed. For details on the type of
+#' ridge estimator one may use (one of: "Alt", "ArchI", "ArchII") see
+#' \code{\link{ridgeP}}. The ouput consists of an object of class list (see
+#' below). When \code{output = "light"} (default) only the \code{optLambda} and
+#' \code{optPrec} elements of the list are given.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param step An \code{integer} determining the number of steps in moving
+#' through the grid [\code{lambdaMin}, \code{lambdaMax}].
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @param cor A \code{logical} indicating if the evaluation of the LOOCV score
+#' should be performed on the correlation scale.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param output A \code{character} indicating if the output is either heavy or
+#' light. Must be one of: "all", "light".
+#' @param graph A \code{logical} indicating if the grid search for the optimal
+#' penalty parameter should be visualized.
+#' @param verbose A \code{logical} indicating if information on progress should
+#' be printed on screen.
+#' @return An object of class list: \item{optLambda}{A \code{numeric} giving
+#' the optimal value of the penalty parameter.} \item{optPrec}{A \code{matrix}
+#' representing the precision matrix of the chosen type (see
+#' \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
+#' \item{lambdas}{A \code{numeric} vector representing all values of the
+#' penalty parameter for which cross-validation was performed; Only given when
+#' \code{output = "all"}.} \item{LLs}{A \code{numeric} vector representing the
+#' mean of cross-validated negative log-likelihoods for each value of the
+#' penalty parameter given in \code{lambdas}; Only given when \code{output =
+#' "all"}.}
+#' @note When \code{cor = TRUE} correlation matrices are used in the
+#' computation of the (cross-validated) negative log-likelihood score, i.e.,
+#' the leave-one-out sample covariance matrix is a matrix on the correlation
+#' scale. When performing evaluation on the correlation scale the data are
+#' assumed to be standardized. If \code{cor = TRUE} and one wishes to used the
+#' default target specification one may consider using \code{target =
+#' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
+#' assumption of standardized data.
+#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
+#' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
+#' \code{\link{covML}}
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' ## Another example with standardized data
+#' X <- scale(X, center = TRUE, scale = TRUE)
+#' OPT  <- optPenalty.LOOCV(X, lambdaMin = .5, lambdaMax = 30, step = 100, cor = TRUE,
+#'                          target = default.target(covML(X, cor = TRUE))); OPT
+#' OPT$optLambda	# Optimal penalty
+#' OPT$optPrec	  # Regularized precision under optimal penalty
+#'
+#' @export optPenalty.LOOCV
 optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
                              cor = FALSE, target = default.target(covML(Y)),
                              output = "light", graph = TRUE, verbose = TRUE) {
@@ -498,6 +686,89 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 
 
 
+
+
+
+
+
+
+#' Automatic search for optimal penalty parameter
+#'
+#' This function is now deprecated. Please use \code{optPenalty.kCVauto}
+#' instead.
+#'
+#' Function that performs an 'automatic' search for the optimal penalty
+#' parameter for the \code{\link{ridgeP}} call by employing Brent's method to
+#' the calculation of a cross-validated negative log-likelihood score.
+#'
+#' The function determines the optimal value of the penalty parameter by
+#' application of the Brent algorithm (1971) to the (leave-one-out)
+#' cross-validated negative log-likelihood score (using a regularized ridge
+#' estimator for the precision matrix). The search for the optimal value is
+#' automatic in the sense that in order to invoke the root-finding abilities of
+#' the Brent method, only a minimum value and a maximum value for the penalty
+#' parameter need to be specified as well as a starting penalty value. The
+#' value at which the (leave-one-out) cross-validated negative log-likelihood
+#' score is minimized is deemed optimal. The function employs the Brent
+#' algorithm as implemented in the
+#' \href{https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html}{optim}
+#' function.
+#'
+#' @param Y Data \code{matrix}. Variables assumed to be represented by columns.
+#' @param lambdaMin A \code{numeric} giving the minimum value for the penalty
+#' parameter.
+#' @param lambdaMax A \code{numeric} giving the maximum value for the penalty
+#' parameter.
+#' @param lambdaInit A \code{numeric} giving the initial (starting) value for
+#' the penalty parameter.
+#' @param cor A \code{logical} indicating if the evaluation of the LOOCV score
+#' should be performed on the correlation scale.
+#' @param target A target \code{matrix} (in precision terms) for Type I ridge
+#' estimators.
+#' @param type A \code{character} indicating the type of ridge estimator to be
+#' used. Must be one of: "Alt", "ArchI", "ArchII".
+#' @return An object of class \code{list}: \item{optLambda}{A \code{numeric}
+#' giving the optimal value for the penalty parameter.} \item{optPrec}{A
+#' \code{matrix} representing the precision matrix of the chosen type (see
+#' \code{\link{ridgeP}}) under the optimal value of the penalty parameter.}
+#' @note When \code{cor = TRUE} correlation matrices are used in the
+#' computation of the (cross-validated) negative log-likelihood score, i.e.,
+#' the leave-one-out sample covariance matrix is a matrix on the correlation
+#' scale. When performing evaluation on the correlation scale the data are
+#' assumed to be standardized. If \code{cor = TRUE} and one wishes to used the
+#' default target specification one may consider using \code{target =
+#' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
+#' assumption of standardized data.
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @seealso \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}},
+#' \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
+#' \code{\link{optPenalty.LOOCV}}, \cr \code{\link{default.target}},
+#' \code{\link{covML}}
+#' @references Brent, R.P. (1971). An Algorithm with Guaranteed Convergence for
+#' Finding a Zero of a Function. Computer Journal 14: 422-425.
+#' @examples
+#'
+#' ## Obtain some (high-dimensional) data
+#' p = 25
+#' n = 10
+#' set.seed(333)
+#' X = matrix(rnorm(n*p), nrow = n, ncol = p)
+#' colnames(X)[1:25] = letters[1:25]
+#'
+#' ## Obtain regularized precision under optimal penalty
+#' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30); OPT
+#' OPT$optLambda # Optimal penalty
+#' OPT$optPrec   # Regularized precision under optimal penalty
+#'
+#' ## Another example with standardized data
+#' X <- scale(X, center = TRUE, scale = TRUE)
+#' OPT <- optPenalty.LOOCVauto(X, lambdaMin = .001, lambdaMax = 30, cor = TRUE,
+#'                             target = default.target(covML(X, cor = TRUE))); OPT
+#' OPT$optLambda # Optimal penalty
+#' OPT$optPrec   # Regularized precision under optimal penalty
+#'
+#' @importFrom stats optim
+#' @export optPenalty.LOOCVauto
 optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
                                  lambdaInit = (lambdaMin + lambdaMax)/2,
                                  cor = FALSE, target = default.target(covML(Y)),
@@ -516,10 +787,6 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   #                default = default.target(covML(Y))
   # - type       > must be one of {"Alt", "ArchI", "ArchII"}, default = "Alt"
   ##############################################################################
-
-  # Dependencies
-  # require("base")
-  # require("stats")
 
   # input checks
   if (!is.matrix(Y)){
