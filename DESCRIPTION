@@ -1,7 +1,7 @@
 Package: rags2ridges
 Type: Package
 Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
-Version: 2.2.4
+Version: 2.2.5
 Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
 Authors@R: c(
     person(given = c("Carel", "F.W."),

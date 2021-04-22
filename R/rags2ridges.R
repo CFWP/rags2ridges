@@ -5,19 +5,6 @@
 ## Name: rags2ridges
 ## Authors: Carel F.W. Peeters, Anders E. Bilgrau, and Wessel N. van Wieringen
 ##
-## Maintainer: Carel F.W. Peeters
-##             Statistics for Omics Research Unit
-##             Dept. of Epidemiology & Biostatistics
-##             Amsterdam Public Health research institute
-##             VU University medical center
-##             Amsterdam, the Netherlands
-## Email:	     cf.peeters@vumc.nl
-##
-## Version: 2.2.4
-## Last Update:	07/12/2020
-## Description:	Ridge estimation for high-dimensional precision matrices
-##              Includes supporting functions for (integrative) graphical modeling
-##
 ## Code files: rags2ridges.R      >> master file/core module
 ##             rags2ridgesFused.R >> fused module
 ##             rags2ridgesMisc.R  >> miscellaneous module
