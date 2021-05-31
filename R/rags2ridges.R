@@ -432,7 +432,7 @@
 #'
 #' @param M (In numeric ideality symmetric) square \code{matrix}.
 #' @return A symmetric \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @examples
 #'
 #' ## Obtain some (high-dimensional) data
@@ -481,7 +481,7 @@ symm <- function(M){
 #' @param diag A \code{logical} indicating if the diagonal elements should be
 #' retained.
 #' @return Function returns an adjacency \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}},
 #' \code{\link{edgeHeat}}, \code{\link{Ugraph}}
 #' @examples
@@ -544,7 +544,7 @@ adjacentMat <- function(M, diag = FALSE){
 #' @return Function returns the maximum likelihood estimate of the covariance
 #' \code{matrix}. In case \code{cor = TRUE}, the correlation matrix is
 #' returned.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}
 #' @examples
 #'
@@ -618,7 +618,7 @@ covML <- function(Y, cor = FALSE){
 #' for likelihood maximization when \code{corType="equi"} .
 #' @return The maximum likelihood estimate of the covariance \code{matrix}
 #' under the specified assumptions on its structure.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{covML}}
 #' @examples
 #'
@@ -748,7 +748,7 @@ covMLknown <- function(Y, covMat = NULL, corMat = NULL,
 #' \item{det}{A \code{numerical} giving the value of the determinant.}
 #' \item{condNumber}{A \code{numerical} giving the value of the spectral
 #' condition number.}
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
 #' @references Harville, D.A.(1997). Matrix algebra from a statistician's
 #' perspective. New York: Springer-Verlag.
@@ -846,7 +846,7 @@ evaluateS <- function(S, verbose = TRUE){
 #' should be computed.
 #' @return A partial correlation \code{matrix} or a standardized precision
 #' \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
 #' @examples
 #'
@@ -942,7 +942,7 @@ pcor <- function(P, pc = TRUE){
 #' eigenvalue below which an eigenvalue is considered zero.
 #' @param const A \code{numeric} constant representing the partial variance.
 #' @return Function returns a target \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
 #' @references van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation
 #' of Inverse Covariance Matrices from High-Dimensional Data, Computational
@@ -1156,7 +1156,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 #' @param target A target \code{matrix} (in precision terms) for Type I ridge
 #' estimators.
 #' @return Function returns a regularized precision \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Anders E. Bilgrau
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Anders E. Bilgrau
 #' @seealso \code{\link{default.target}}
 #' @references van Wieringen, W.N. & Peeters, C.F.W. (2016). Ridge Estimation
 #' of Inverse Covariance Matrices from High-Dimensional Data, Computational
@@ -1327,7 +1327,7 @@ ridgeP <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' default target specification one may consider using \code{target =
 #' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
 #' assumption of standardized data.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}},
 #' \code{\link{optPenalty.LOOCVauto}}, \cr \code{\link{default.target}},
 #' \code{\link{covML}}
@@ -1597,7 +1597,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #'
 #' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
 #' performes leave-one-out cross-validation.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.kCVauto}},
 #' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
 #' \code{\link{covML}}
@@ -1780,7 +1780,7 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
 #'
 #' Under the default setting of the fold-argument, \code{fold = nrow(Y)}, one
 #' performes leave-one-out cross-validation.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}},
 #' \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{optPenalty.kCV}}, \cr \code{\link{default.target}},
@@ -1971,7 +1971,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
 #' In case one is interested in the condition number of a Type I estimator
 #' under a covariance target, say \eqn{\mathbf{\Gamma}}, then just specify
 #' \code{target = solve}(\eqn{\mathbf{\Gamma}}).
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}},
 #' \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{default.target}}
@@ -2270,7 +2270,7 @@ if(getRversion() >= "2.15.1") utils::globalVariables("rags2ridges")
 #' number of cpus to be used.
 #' @return A \code{numeric} vector, representing the distribution of the (LOOCV
 #' optimal) penalty parameter under the null hypothesis of block-independence.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
 #' \code{\link{default.target}}, \code{\link{GGMblockTest}}
 #' @examples
@@ -2482,7 +2482,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
 #' indicating the number of permutations used for p-value calculation.}
 #' \item{remark}{A \code{"character"} that states whether the permutation
 #' algorithm was terminated prematurely or not.}
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
 #' \code{\link{default.target}}, \code{\link{GGMblockNullPenalty}}
 #' @references Anderson, T.W. (2003). An Introduction to Multivariate
@@ -2704,7 +2704,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
 #' complement.
 #' @return A \code{numeric}, the mutual information between the variates
 #' forming \code{split1} and those forming its complement.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}}.
 #' @references Cover, T.M., Thomas, J.A. (2012), Elements of information
 #' theory.
@@ -2811,7 +2811,7 @@ GGMmutualInfo <- function(S, split1){
 #' \item{zeros}{A \code{matrix} representing the row and column positions of
 #' zero entries.} \item{nonzeros}{A \code{matrix} representing the row and
 #' column positions of non-zero entries.}
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{optPenalty.LOOCV}}
 #' @references Schaefer, J., and Strimmer, K. (2005). A shrinkage approach to
@@ -3054,7 +3054,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 #' Must be one of: "frobenius", "quadratic".
 #' @return Function returns a \code{numeric} representing the loss under the
 #' chosen loss function.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
 #' @references van Wieringen, W.N. & Peeters, C.F.W. (2016).  Ridge Estimation
 #' of Inverse Covariance Matrices from High-Dimensional Data, Computational
@@ -3174,7 +3174,7 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #' Kullback-Leibler divergence should be calculated.
 #' @return Function returns a \code{numeric} representing the (symmetric)
 #' Kullback-Leibler divergence.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}}
 #' @references Kullback, S. and Leibler, R.A. (1951). On Information and
 #' Sufficiency. Annals of Mathematical Statistics 22: 79-86.
@@ -3287,7 +3287,7 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
 #' output names generated by the function.
 #' @param dir A \code{character} specifying the directory in which the visual
 #' output is stored.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}
 #' @examples
 #'
@@ -3533,7 +3533,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
 #' penalty parameter.
 #' @param verbose A \code{logical} indicating if information on progress should
 #' be printed on screen.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}},
 #' \code{\link{optPenalty.LOOCV}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{default.target}}
@@ -3776,7 +3776,7 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' @param legend A \code{logical} indicating whether a color legend should be
 #' included.
 #' @param main A \code{character} giving the main figure title.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{covML}}, \code{\link{ridgeP}}, \code{\link{sparsify}}
 #' @references Wickham, H. (2009). ggplot2: elegant graphics for data analysis.
 #' New York: Springer.
@@ -3966,7 +3966,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' @return The function returns a graph. The function also returns a
 #' \code{matrix} object containing the coordinates of the vertices in the given
 #' graph.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCV}},
 #' \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
@@ -4314,7 +4314,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 #' \code{as.table = TRUE} the list items above (with the exception of
 #' \code{chordal}) are represented in tabular form as an object of class
 #' \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{covML}}, \code{\link{sparsify}},
 #' \code{\link{Ugraph}}
 #' @references Newman, M.E.J. (2010). "Networks: an introduction", Oxford
@@ -4537,7 +4537,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' identifier such as a variable name.}
 #' @note Eppstein (1998) describes a more sophisticated algorithm for finding
 #' the top \emph{k} shortest paths in a graph.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
 #' \code{\link{sparsify}}
 #' @references Eppstein, D. (1998). Finding the k Shortest Paths. SIAM Journal
@@ -4998,7 +4998,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 #' calculated network statistics.}
 #' @note We consider this to be a preliminary version of an envisioned wrapper
 #' than will take better form with subsequent versions of \code{rags2ridges}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{conditionNumberPlot}},
 #' \code{\link{optPenalty.LOOCVauto}}, \code{\link{sparsify}},
 #' \code{\link{Ugraph}}, \code{\link{GGMnetworkStats}}
@@ -5254,7 +5254,7 @@ momentS <- function(Sigma, shape, moment = 1) {
 #'
 #' @param M (Possibly sparsified) square \code{matrix}.
 #' @return A pruned \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @examples
 #'
 #' ## Obtain some (high-dimensional) data
@@ -5318,7 +5318,7 @@ pruneMatrix <- function(M){
 #' as \code{M1}.
 #' @return An object of class list: \item{M1subset}{A pruned \code{matrix} for
 #' class 1.} \item{M2subset}{A pruned \code{matrix} for class 2.}
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{Ugraph}}
 #' @examples
 #'
@@ -5439,7 +5439,7 @@ Union <- function(M1, M2){
 #' of the community structure.}
 #'
 #' When \code{graph = TRUE} the function also returns a graph.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{Ugraph}}
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
 #' for complex network research. InterJournal, Complex Systems 1695.
@@ -5683,7 +5683,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' P2.
 #' @param main A \code{character} giving the main figure title.
 #' @return The function returns a graph.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{Ugraph}}
 #' @references Csardi, G. and Nepusz, T. (2006). The igraph software package
 #' for complex network research. InterJournal, Complex Systems 1695.

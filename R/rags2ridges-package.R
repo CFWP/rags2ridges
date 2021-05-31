@@ -20,7 +20,7 @@
 #' @name ADdata
 #' @aliases ADdata ADmetabolites sampleInfo variableInfo
 #' @docType data
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @source de Leeuw, F., Peeters, C.F.W., Kester, M.I., Harms, A.C., Struys,
 #' E., Hankemeijer, T., van Vlijmen, H.W.T., van Duijn, C.M., Scheltens, P.,
 #' Demirkan, A., van de Wiel, M.A., van der Flier, W.M., and Teunissen, C.E.
@@ -121,7 +121,7 @@ NULL
 #' @aliases rags2ridges-package rags2ridges
 #' @docType package
 #' @author Carel F.W. Peeters, Anders Ellern Bilgrau, Wessel, N. van Wieringen
-#' \cr Maintainer: Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' \cr Maintainer: Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @references Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
 #' van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
 #' Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of

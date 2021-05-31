@@ -54,7 +54,7 @@
 #' condition number was calculated.} \item{conditionNumbers}{A \code{numeric}
 #' vector containing the condition number for each value of the penalty
 #' parameter given in \code{lambdas}.}
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{CNplot}}
 #' @examples
 #'
@@ -343,7 +343,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
 #' @param target A target \code{matrix} (in precision terms) for Type I ridge
 #' estimators.
 #' @return Function returns a regularized precision \code{matrix}.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}
 #' @examples
 #'
@@ -531,7 +531,7 @@ ridgeS <- function(S, lambda, type = "Alt", target = default.target(S)){
 #' default target specification one may consider using \code{target =
 #' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
 #' assumption of standardized data.
-#' @author Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N. van Wieringen
+#' @author Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N. van Wieringen
 #' @seealso \code{\link{ridgeP}}, \code{\link{optPenalty.LOOCVauto}},
 #' \code{\link{optPenalty.aLOOCV}}, \cr \code{\link{default.target}},
 #' \code{\link{covML}}
@@ -739,7 +739,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
 #' default target specification one may consider using \code{target =
 #' default.target(covML(Y, cor = TRUE))}. This gives a default target under the
 #' assumption of standardized data.
-#' @author Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@@vumc.nl>
+#' @author Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@@wur.nl>
 #' @seealso \code{\link{GGMblockNullPenalty}}, \code{\link{GGMblockTest}},
 #' \code{\link{ridgeP}}, \code{\link{optPenalty.aLOOCV}},
 #' \code{\link{optPenalty.LOOCV}}, \cr \code{\link{default.target}},

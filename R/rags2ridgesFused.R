@@ -28,7 +28,7 @@
 #'   is symmetric positive (semi)definite and \code{FALSE} if not.  If \code{M}
 #'   is not even symmetric, the function throws an error.
 #'
-#' @author Anders Ellern Bilgrau Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{isSymmetric}}
@@ -114,7 +114,7 @@ isSymmetricPSD <- function(M, tol = 1e-4) {
 #'
 #' @return Returns \code{TRUE} if all tests are passed, throws error if not.
 #'
-#' @author Anders Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel N.
+#' @author Anders Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel N.
 #'   van Wieringen
 #'
 #' @seealso \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}}
@@ -193,7 +193,7 @@ is.Xlist <- function(Xlist, Ylist = FALSE, semi = FALSE) {
 #'
 #' @return A \code{list} of \eqn{K} covariance target matrices of the same size.
 #'
-#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel
 #'   N. van Wieringen
 #'
 #' @seealso \code{\link{default.target}}
@@ -341,7 +341,7 @@ default.target.fused <- function(Slist, ns, type = "DAIE", by, ...) {
 #'   \code{n} has length 1 the \code{list} structure is dropped and the matrix
 #'   is returned.
 #'
-#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel
 #'   N. van Wieringen
 #'
 #' @examples
@@ -592,7 +592,7 @@ createS <- function(n, p,
 #' @note It is currently necessary to \code{require("KEGGgraph")} (or
 #'   \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{kegg.target}}
@@ -686,7 +686,7 @@ getKEGGPathway <- function(kegg.id) {
 #' @note It is currently nessesary to \code{require("KEGGgraph")} (or
 #'   \code{require("KEGGgraph")}) due to a bug in \pkg{KEGGgraph}.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{getKEGGPathway}}, \code{\link{default.target}}, and
@@ -851,7 +851,7 @@ kegg.target <- function(Y, kegg.id, method = "linreg", organism = "hsa",
 #'   Similarly, \code{pooledP} returns the pooled precision matrix, i.e. a
 #'   \code{numeric} matrix with the same size as the elements of \code{Plist}.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @examples
@@ -961,7 +961,7 @@ pooledP <- function(Plist, ns, subset = rep(TRUE, length(ns)), mle = TRUE) {
 #'   symmetric) fused Kullback-Leibler divergence.
 #'
 #' @author Anders Ellern Bilgrau, Wessel N. van Wieringen, Carel F.W. Peeters
-#'   <cf.peeters@@vumc.nl>
+#'   <carel.peeters@@wur.nl>
 #'
 #' @seealso \code{\link{KLdiv}}
 #'
@@ -1144,7 +1144,7 @@ KLdiv.fused <- function(MtestList, MrefList, StestList, SrefList, ns,
 #' @note For extreme fusion penalties in \code{lambda} the algorithm is quite
 #'   sensitive to the initial values given in \code{Plist}.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{default.penalty}} \cr \code{\link{ridgeP}} for the
@@ -1732,7 +1732,7 @@ optPenalty.fused.grid <-
 #'
 #' @return Invisibly returns the object (\code{x}).
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{optPenalty.fused.grid}}
@@ -1988,7 +1988,7 @@ optPenalty.fused.auto <-
 #'   penalty} \item{fcvl}{The \code{numeric} \code{matrix} of evaluations of the
 #'   loss function}
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso See also \code{\link{default.penalty}}, \code{optPenalty.LOOCV}.
@@ -2281,7 +2281,7 @@ optPenalty.fused <- function(Ylist, Tlist, lambda = default.penalty(Ylist),
 #'   class of penalty graphs to be used.  The output is suitable as input for
 #'   the penalty matrix used in \code{\link{optPenalty.fused.auto}}.
 #'
-#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel
 #'   N. van Wieringen
 #'
 #' @seealso \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}},
@@ -2471,7 +2471,7 @@ default.penalty <- function(G, df,
 #' @return Returns a \code{list} values containing the observed test statistic
 #'   and the test statistic under the null distribution.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel, N. van Wieringen
 #'
 #' @seealso \code{\link{ridgeP.fused}}
@@ -2573,7 +2573,7 @@ fused.test <- function(Ylist, Tlist, lambda,
 #'
 #' @return Invisibly returns the object.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{fused.test}}, \code{\link{hist.ptest}}
@@ -2671,7 +2671,7 @@ hist.ptest <- function(x, add.extra = TRUE, ...) {
 #'
 #' @return Invisibly returns \code{x} with extra additions.
 #'
-#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>,
+#' @author Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>,
 #'   Wessel N. van Wieringen
 #'
 #' @seealso \code{\link{fused.test}}, \code{\link{print.ptest}}
@@ -2724,7 +2724,7 @@ plot.ptest <- function(x, add.extra = TRUE, ...) {
 #'   \code{\link{sparsify}}.
 #'
 #' @author Anders Ellern Bilgrau, Wessel N. van Wierigen, Carel F.W. Peeters
-#'   <cf.peeters@@vumc.nl>
+#'   <carel.peeters@@wur.nl>
 #'
 #' @seealso \code{\link{sparsify}}
 #'
@@ -2766,7 +2766,7 @@ sparsify.fused <- function(Plist, ...) {
 #' @return A \code{data.frame} of the various network statistics for each
 #' class. The names of \code{Plist} is prefixed to column-names.
 #'
-#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel
 #' N. van Wieringen
 #'
 #' @seealso \code{\link{GGMnetworkStats}}
@@ -2809,7 +2809,7 @@ GGMnetworkStats.fused <- function(Plist) {
 #' @note The function currently fails if no paths are present in one of the
 #'   groups.
 #'
-#' @author Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@@vumc.nl>, Wessel
+#' @author Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@@wur.nl>, Wessel
 #'   N. van Wieringen
 #'
 #' @seealso \code{\link{GGMpathStats}}
