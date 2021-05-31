@@ -2,11 +2,11 @@ Package: rags2ridges
 Type: Package
 Title: Ridge Estimation of Precision Matrices from High-Dimensional Data
 Version: 2.2.5
-Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
+Maintainer: Carel F.W. Peeters <carel.peeters@wur.nl>
 Authors@R: c(
     person(given = c("Carel", "F.W."),
            family = "Peeters",
-           email = "cf.peeters@vumc.nl",
+           email = "carel.peeters@wur.nl",
            role = c("aut", "cre", "cph")),
     person(given = c("Anders", "Ellern"),
            family = "Bilgrau",
@@ -30,7 +30,7 @@ Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool,
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
-URL: https://cfwp.github.io/rags2ridges, https://github.com/CFWP/rags2ridges, http://www.bigstatistics.nl/carel-fw-peeters
+URL: https://cfwp.github.io/rags2ridges, https://github.com/CFWP/rags2ridges
 Suggests: 
     KEGGgraph,
     testthat,
