@@ -45,6 +45,6 @@ Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
 \code{\link{ridgeP.fused}}, \code{\link{optPenalty.fused}}
 }
 \author{
-Anders Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N.
+Anders Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N.
   van Wieringen
 }

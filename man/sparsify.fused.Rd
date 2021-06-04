@@ -43,5 +43,5 @@ round(res[[2]]$sparsePrecision, 1)
 }
 \author{
 Anders Ellern Bilgrau, Wessel N. van Wierigen, Carel F.W. Peeters
-  <cf.peeters@vumc.nl>
+  <carel.peeters@wur.nl>
 }

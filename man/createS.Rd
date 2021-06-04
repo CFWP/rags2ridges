@@ -169,6 +169,6 @@ lapply(createS(n = c(1e5, 1e5), p = 5, Plist = list(P, P+1)), solve)
 
 }
 \author{
-Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
+Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel
   N. van Wieringen
 }

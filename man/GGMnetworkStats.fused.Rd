@@ -42,6 +42,6 @@ SPlist <- lapply(PCsparse, "[[", "sparsePrecision") # Get sparse precisions
 \code{\link{GGMnetworkStats}}
 }
 \author{
-Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
+Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel
 N. van Wieringen
 }

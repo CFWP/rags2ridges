@@ -105,5 +105,5 @@ Bioinformatics and Biostatistics'.  Lecture Notes in Computer Science, vol.
 }
 \author{
 Carel F.W. Peeters, Anders Ellern Bilgrau, Wessel, N. van Wieringen
-\cr Maintainer: Carel F.W. Peeters <cf.peeters@vumc.nl>
+\cr Maintainer: Carel F.W. Peeters <carel.peeters@wur.nl>
 }

@@ -135,5 +135,5 @@ Statistical Association 103: 1039-1049.
 \code{\link{default.target}}, \code{\link{GGMblockNullPenalty}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

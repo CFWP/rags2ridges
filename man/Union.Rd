@@ -62,5 +62,5 @@ MatsPrune <- Union(Mats$P1$sparseParCor, Mats$P2$sparseParCor)
 \code{\link{Ugraph}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

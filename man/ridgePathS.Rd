@@ -96,5 +96,5 @@ ridgePathS(Cx, .001, 50, 200, plotType = "pcor")
 \code{\link{default.target}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

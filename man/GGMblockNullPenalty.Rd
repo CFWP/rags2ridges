@@ -96,5 +96,5 @@ lambdaNull <- median(lambda0dist)
 \code{\link{default.target}}, \code{\link{GGMblockTest}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

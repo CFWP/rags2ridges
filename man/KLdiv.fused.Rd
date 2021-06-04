@@ -55,5 +55,5 @@ KLdiv.fused(StestList = Stest, SrefList = Sref, ns = n, symmetric = TRUE)
 }
 \author{
 Anders Ellern Bilgrau, Wessel N. van Wieringen, Carel F.W. Peeters
-  <cf.peeters@vumc.nl>
+  <carel.peeters@wur.nl>
 }

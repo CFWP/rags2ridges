@@ -43,6 +43,6 @@ variableInfo
 
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }
 \keyword{datasets}

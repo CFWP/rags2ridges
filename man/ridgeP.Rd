@@ -126,5 +126,5 @@ Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
 \code{\link{default.target}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Anders E. Bilgrau
+Carel F.W. Peeters <carel.peeters@wur.nl>, Anders E. Bilgrau
 }

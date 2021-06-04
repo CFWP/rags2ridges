@@ -109,5 +109,5 @@ in networks. Physical Review E, 69: 026113.
 \code{\link{Ugraph}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

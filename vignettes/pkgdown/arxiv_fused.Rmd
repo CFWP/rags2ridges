@@ -2,7 +2,7 @@
 title: Targeted ridge estimation paper
 output: html_document
 vignette: >
-  %\VignetteIndexEntry{Targeted fused ridge estimation paper}
+  %\VignetteIndexEntry{Targeted ridge estimation paper}
   %\VignettePackage{rags2ridges}
 pkgdown:
   as_is: true

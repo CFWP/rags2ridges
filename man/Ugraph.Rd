@@ -185,5 +185,5 @@ Bioinformatics and Biostatistics'. Lecture Notes in Computer Science, vol.
 \code{\link{optPenalty.aLOOCV}}, \code{\link{sparsify}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

@@ -90,5 +90,5 @@ New York: Springer.
 \code{\link{covML}}, \code{\link{ridgeP}}, \code{\link{sparsify}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

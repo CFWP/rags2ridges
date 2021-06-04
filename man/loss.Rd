@@ -90,5 +90,5 @@ arXiv:1403.0904v3 [stat.ME].
 \code{\link{covML}}, \code{\link{ridgeP}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

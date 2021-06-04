@@ -209,5 +209,5 @@ Gaussian Graphical Models. Biometrika 92: 779-786.
 \code{\link{sparsify}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

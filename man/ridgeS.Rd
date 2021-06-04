@@ -45,5 +45,5 @@ ridgeS(Cx, lambda = 10, type = "Alt")
 \code{\link{ridgeP}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

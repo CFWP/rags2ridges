@@ -54,6 +54,6 @@ Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
 \code{\link{fused.test}}, \code{\link{print.ptest}}
 }
 \author{
-Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
+Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>,
   Wessel N. van Wieringen
 }

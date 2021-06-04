@@ -41,6 +41,6 @@ res <- GGMpathStats.fused(SPlist, node1 = 3, node2 = 4, graph = FALSE)
 \code{\link{GGMpathStats}}
 }
 \author{
-Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
+Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel
   N. van Wieringen
 }

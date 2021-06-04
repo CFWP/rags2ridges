@@ -176,5 +176,5 @@ Computational Statistics, 35: 629--646.
 \code{\link{default.target}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

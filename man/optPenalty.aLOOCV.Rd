@@ -143,5 +143,5 @@ arXiv: 1309.6216v2 [stat.ME].
 \code{\link{covML}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

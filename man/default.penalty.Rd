@@ -86,6 +86,6 @@ Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
   \code{\link{default.target}}
 }
 \author{
-Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
+Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel
   N. van Wieringen
 }

@@ -71,5 +71,5 @@ Cx <- covMLknown(X, corType="equi", varType="common")
 \code{\link{covML}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

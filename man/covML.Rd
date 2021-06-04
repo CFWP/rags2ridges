@@ -48,5 +48,5 @@ Cx <- covML(X, cor = TRUE)
 \code{\link{ridgeP}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

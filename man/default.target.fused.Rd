@@ -58,6 +58,6 @@ default.target.fused(Slist, ns, by = c("A", "A", "B", "B"))
 \code{\link{default.target}}
 }
 \author{
-Anders E. Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel
+Anders E. Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel
   N. van Wieringen
 }

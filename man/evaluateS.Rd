@@ -65,5 +65,5 @@ perspective. New York: Springer-Verlag.
 \code{\link{covML}}, \code{\link{ridgeP}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

@@ -115,5 +115,5 @@ Finding a Zero of a Function. Computer Journal 14: 422-425.
 \code{\link{covML}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

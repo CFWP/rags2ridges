@@ -108,5 +108,5 @@ Statistical Applications in Genetics and Molecular Biology, 4:32.
 \code{\link{optPenalty.LOOCV}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

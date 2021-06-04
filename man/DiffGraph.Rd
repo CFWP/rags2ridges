@@ -119,5 +119,5 @@ Force-Directed Placement. Software: Practice & Experience, 21: 1129-1164.
 \code{\link{Ugraph}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

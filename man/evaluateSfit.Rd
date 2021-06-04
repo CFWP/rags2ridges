@@ -76,5 +76,5 @@ evaluateSfit(P, Cx, diag = FALSE, fileType = "pdf", nameExt = "test")}
 \code{\link{ridgeP}}, \code{\link{covML}}
 }
 \author{
-Wessel N. van Wieringen, Carel F.W. Peeters <cf.peeters@vumc.nl>
+Wessel N. van Wieringen, Carel F.W. Peeters <carel.peeters@wur.nl>
 }

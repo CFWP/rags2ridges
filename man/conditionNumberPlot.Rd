@@ -95,5 +95,5 @@ conditionNumberPlot(Cx, lambdaMin = .0001, lambdaMax = 50, step = 1000)
 \code{\link{CNplot}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>
+Carel F.W. Peeters <carel.peeters@wur.nl>
 }

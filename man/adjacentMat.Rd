@@ -45,5 +45,5 @@ adjacentMat(PC0$sparsePrecision)
 \code{\link{edgeHeat}}, \code{\link{Ugraph}}
 }
 \author{
-Carel F.W. Peeters <cf.peeters@vumc.nl>, Wessel N. van Wieringen
+Carel F.W. Peeters <carel.peeters@wur.nl>, Wessel N. van Wieringen
 }

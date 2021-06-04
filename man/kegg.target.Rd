@@ -70,6 +70,6 @@ print(T[1:10, 1:10])
   \code{\link{default.target.fused}}
 }
 \author{
-Anders Ellern Bilgrau, Carel F.W. Peeters <cf.peeters@vumc.nl>,
+Anders Ellern Bilgrau, Carel F.W. Peeters <carel.peeters@wur.nl>,
   Wessel N. van Wieringen
 }
