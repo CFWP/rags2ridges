@@ -13,11 +13,11 @@ articles:
 - title: Targeted ridge estimation paper
   desc: 'Proper targeted ridge precision matrix estimation'
   contents:
-  - pkgdown/arxiv
+  - pkgdown/arxiv_fused
 - title: Targeted fused ridge estimation paper
   desc: 'Targeted fused ridge estimation of multiple precision matrices'
   contents:
-  - pkgdown/arxiv_fused
+  - pkgdown/arxiv
 
 reference:
 - title: Core ridge functions
