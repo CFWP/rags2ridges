@@ -203,7 +203,7 @@ $$
 https://stats.stackexchange.com/questions/181376/is-correlation-transitive
 
 [^3]:
-https://emilkirkegaard.dk/en/?p=5796
+https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/
 
 [^4]:
 https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/
