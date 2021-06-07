@@ -31,7 +31,7 @@ Imports: igraph, stats, methods, expm, reshape, ggplot2, Hmisc, fdrtool,
 LinkingTo: Rcpp, RcppArmadillo
 KeepSource: yes
 License: GPL (>= 2)
-URL: https://cfwp.github.io/rags2ridges, https://github.com/CFWP/rags2ridges
+URL: https://cfwp.github.io/rags2ridges, https://github.com/CFWP/rags2ridges/
 Suggests: 
     KEGGgraph,
     testthat,
