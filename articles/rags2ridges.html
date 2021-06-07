@@ -121,42 +121,42 @@ P = S^{-1}
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">20</span>
 <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span>, dataset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">X</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="co"># Show 4 first of the n rows</span></code></pre></div>
-<pre><code>##           A      B     C      D      E       F
-## [1,] -1.019 -0.269 -1.38 -1.514 -0.879 -0.7122
-## [2,]  0.697 -1.735 -1.48  1.063 -0.623  1.3086
-## [3,] -0.263 -0.365 -0.77  0.864 -0.319 -0.0492
-## [4,]  0.241 -0.219  1.67  0.453 -0.255 -0.3760</code></pre>
+<pre><code>##           A      B       C      D       E      F
+## [1,] -0.164  1.076  0.0245 -0.227  1.6833  1.166
+## [2,] -1.886 -0.164  0.6881 -0.634 -0.7858 -0.301
+## [3,]  0.359 -0.987 -0.3533  2.674 -0.0604  1.353
+## [4,] -1.517  1.169 -0.7055 -0.639 -0.1316 -0.284</code></pre>
 <p>Here the columns corresponds to features A, B, C, and so on.</p>
 <p>When can then arrive a the MLE using <code><a href="../reference/covML.html">covML()</a></code> which <em>centers</em> X (subtracting the column means) and then computes the estimate:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/covML.html">covML</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></code></pre></div>
-<pre><code>##         A       B      C       D       E      F
-## A  0.8723 -0.4724  0.257 -0.0693 -0.0783  0.409
-## B -0.4724  1.2657 -0.131 -0.0612  0.2356  0.154
-## C  0.2573 -0.1307  1.189 -0.1215 -0.1614 -0.189
-## D -0.0693 -0.0612 -0.121  0.9528  0.1758 -0.247
-## E -0.0783  0.2356 -0.161  0.1758  0.6215  0.128
-## F  0.4090  0.1541 -0.189 -0.2468  0.1282  0.777</code></pre>
+<pre><code>##        A      B        C        D       E      F
+## A  0.928 -0.359  0.01099  0.45727 -0.1757 -0.140
+## B -0.359  0.703 -0.19033 -0.16917  0.1826 -0.151
+## C  0.011 -0.190  0.96076 -0.00663 -0.0834  0.193
+## D  0.457 -0.169 -0.00663  0.92770 -0.2119  0.183
+## E -0.176  0.183 -0.08340 -0.21193  0.6498 -0.155
+## F -0.140 -0.151  0.19331  0.18271 -0.1547  1.176</code></pre>
 <p>Using <code><a href="https://rdrr.io/r/stats/cor.html">cov2cor()</a></code> the well-known correlation matrix could be obtained.</p>
 <p>By default, <code><a href="../reference/createS.html">createS()</a></code> simulates zero-mean i.i.d. normal variables (corresponding to <span class="math inline">\(\Sigma=\Omega=I\)</span> being the identity matrix), but it has plenty of possibilities for more intricate covariance structures. The <code>S</code> matrix could have been obtained directly had we omitted the <code>dataset</code> argument, leaving it to be the default <code>FALSE</code>. The <code><a href="../reference/rmvnormal.html">rmvnormal()</a></code> function is utilized by <code><a href="../reference/createS.html">createS()</a></code> to generate the normal sample.</p>
 <p>We can obtain the precision estimate <code>P</code> using <code><a href="https://rdrr.io/r/base/solve.html">solve()</a></code> to invert <code>S</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span></code></pre></div>
-<pre><code>##        A       B       C       D       E      F
-## A  3.284  1.3451 -0.9577 -0.4797  0.2917 -2.428
-## B  1.345  1.4218 -0.3424 -0.0917 -0.2124 -1.067
-## C -0.958 -0.3424  1.1976  0.3004  0.0388  0.952
-## D -0.480 -0.0917  0.3004  1.3645 -0.5114  0.861
-## E  0.292 -0.2124  0.0388 -0.5114  2.0039 -0.595
-## F -2.428 -1.0671  0.9518  0.8612 -0.5950  3.379</code></pre>
+<pre><code>##         A      B       C       D       E      F
+## A  1.9308  0.866  0.0572 -0.8606  0.1198  0.481
+## B  0.8660  2.045  0.3079 -0.1770 -0.2861  0.304
+## C  0.0572  0.308  1.1365  0.0796  0.0665 -0.144
+## D -0.8606 -0.177  0.0796  1.6003  0.2654 -0.352
+## E  0.1198 -0.286  0.0665  0.2654  1.7849  0.160
+## F  0.4806  0.304 -0.1442 -0.3518  0.1602  1.046</code></pre>
 <p>That’s it! Everything goes well here only because <span class="math inline">\(n &lt; p\)</span>. However, when <span class="math inline">\(p\)</span> is close to <span class="math inline">\(n\)</span>, the estimate become unstable and varies wildly and when <span class="math inline">\(p\)</span> exceeds <span class="math inline">\(n\)</span> one can no longer invert <span class="math inline">\(S\)</span> and this strategy fails:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">25</span>
 <span class="va">S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span><span class="op">)</span>  <span class="co"># Direct to S</span>
 <span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 1.13606e-18</code></pre>
+<pre><code>## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 2.85643e-18</code></pre>
 <p>Note that this is now a <span class="math inline">\(25 \times 25\)</span> precision matrix we are trying to estimate. Datasets where <span class="math inline">\(p &gt; n\)</span> are starting to be common, so what now?</p>
 <p>To solve the problem, <strong>rags2ridges</strong> adds a so-called ridge penalty to the likelihood above — this method is also called <span class="math inline">\(L_2\)</span> shrinkage and works by “shrinking” the eigenvalues of <span class="math inline">\(S\)</span> in a particular manner to combat that they “explode” when <span class="math inline">\(p \geq n\)</span>.</p>
 <p>The core problem that <strong>rags2ridges</strong> solves is that</p>
@@ -167,14 +167,14 @@ P = S^{-1}
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ridgeP.html">ridgeP</a></span><span class="op">(</span><span class="va">S2</span>, lambda <span class="op">=</span> <span class="fl">1.17</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">P2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span> <span class="co"># Showing only the 7 first cols and rows</span></code></pre></div>
-<pre><code>##         A       B        C       D        E       F       G
-## A  3.4677 -0.0668 -0.37433 -0.3376 -0.26826  0.1742 -0.2238
-## B -0.0668  3.5643 -0.04672 -0.0867 -0.17252 -0.1323  0.1115
-## C -0.3743 -0.0467  4.03411 -0.3014 -0.00619  0.1859 -0.1172
-## D -0.3376 -0.0867 -0.30135  4.2062 -0.18342  0.0218 -0.3434
-## E -0.2683 -0.1725 -0.00619 -0.1834  4.11176 -0.0802 -0.2004
-## F  0.1742 -0.1323  0.18593  0.0218 -0.08017  4.1793  0.0343
-## G -0.2238  0.1115 -0.11725 -0.3434 -0.20039  0.0343  3.6484</code></pre>
+<pre><code>##         A       B       C       D      E       F       G
+## A  4.5530  0.3372 -0.0330 -0.1143 0.2438 -0.0700  0.0865
+## B  0.3372  4.5196 -0.1173 -0.0293 0.0490  0.0754 -0.1402
+## C -0.0330 -0.1173  4.4723 -0.0068 0.0840  0.3491  0.0168
+## D -0.1143 -0.0293 -0.0068  4.6896 0.0203 -0.0871  0.0839
+## E  0.2438  0.0490  0.0840  0.0203 3.8492  0.3974  0.2128
+## F -0.0700  0.0754  0.3491 -0.0871 0.3974  4.1002 -0.4028
+## G  0.0865 -0.1402  0.0168  0.0839 0.2128 -0.4028  4.3029</code></pre>
 <p>And voilà, we have our estimate. We will now discuss the penalty parameters and target matrix and how to choose them.</p>
 </div>
 <div id="the-penalty-parameter" class="section level3">
@@ -186,9 +186,9 @@ P = S^{-1}
 <span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optPenalty.kCVauto.html">optPenalty.kCVauto</a></span><span class="op">(</span><span class="va">Y</span>, lambdaMin <span class="op">=</span> <span class="fl">0.001</span>, lambdaMax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></code></pre></div>
 <pre><code>## List of 2
-##  $ optLambda: num 0.293
-##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 2.542984 0.377164 0.021417 0.000828 -0.053382 ...
-##   ..- attr(*, "lambda")= num 0.293
+##  $ optLambda: num 1.89
+##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 1.8647 -0.0143 0.0545 -0.0342 0.1155 ...
+##   ..- attr(*, "lambda")= num 1.89
 ##   ..- attr(*, "dimnames")=List of 2
 ##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...
 ##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</code></pre>
@@ -253,7 +253,7 @@ P(\lambda)
 = \Bigg\{ \bigg[ \lambda I_{p\times p} + \frac{1}{4}(S - \lambda T)^{2} \bigg]^{1/2} + \frac{1}{2}(S -\lambda T) \Bigg\}^{-1}
 \]</span><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p><a href="https://stats.stackexchange.com/questions/181376/is-correlation-transitive" class="uri">https://stats.stackexchange.com/questions/181376/is-correlation-transitive</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://emilkirkegaard.dk/en/?p=5796" class="uri">https://emilkirkegaard.dk/en/?p=5796</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/" class="uri">https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
 <li id="fn4"><p><a href="https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/" class="uri">https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
