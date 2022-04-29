@@ -80,6 +80,10 @@ Calls of interest to \emph{miscellaneous module}: \itemize{ \item
 \code{rags2ridges:::.rags2logo()} ~~(Warm welcome) }
 }
 \references{
+Peeters, C.F.W., Bilgrau, A.E., and van Wieringen, W.N. (2022).
+rags2ridges: A One-Stop-l2-Shop for Graphical Modeling of High-Dimensional
+Precision Matrices. Journal of Statistical Software, vol. 102(4): 1-32.
+
 Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and
 van Wieringen, W.N. (2020).  Targeted Fused Ridge Estimation of Inverse
 Covariance Matrices from Multiple High-Dimensional Data Classes.  Journal of

@@ -46,9 +46,10 @@ The `vignette("rags2ridges")` provides a light introduction to **rags2ridges** a
 
 Relevant publications to **rags2ridges** include (ordered according to year):
 
- 1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2021). 
-    *"rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data"*. 
-    R package, version 2.2.5
+ 1. Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2022). 
+    *"rags2ridges: A One-Stop-l2-Shop for Graphical Modeling of High-Dimensional Precision Matrices"*. 
+    Journal of Statistical Software, vol. 102(4):1-32.
+    ([doi:10.18637/jss.v102.i04](https://doi.org/10.18637/jss.v102.i04)).
  2. Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020)
     *"The Spectral Condition Number Plot for Regularization Parameter Evaluation"*,
     Computational Statistics, vol. 35:629-646

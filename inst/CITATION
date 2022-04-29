@@ -1,88 +1,17 @@
-citHeader("To cite the rags2ridges package in publications please use:")
-
-year <- sub(".*(2[[:digit:]]{3})-.*", "\\1", meta$Date, perl = TRUE)
-vers <- paste("R package version", meta$Version)
-
-citEntry(entry="Manual",
-    title = "rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data",
-    author = personList(as.person("C.F.W. Peeters"),
-                        as.person("A.E. Bilgrau"),
-                        as.person("W.N. van Wieringen")),
-    year = year,
-    note = vers,
-    url = "https://CRAN.R-project.org/package=rags2ridges",
-    textVersion =
-      paste("Peeters, C.F.W., Bilgrau, A.E., and van Wieringen, W.N. (",
-            year,
-            ") rags2ridges: Ridge Estimation of Precision Matrices from High-Dimensional Data. ",
-            vers,
-            ". https://CRAN.R-project.org/package=rags2ridges", sep = "")
-)
-
-citEntry(entry="Article",
-    title = "The Spectral Condition Number Plot for Regularization Parameter Evaluation",
-    author = personList(as.person("C.F.W. Peeters"),
-                        as.person("M.A. van de Wiel"),
-                        as.person("W.N. van Wieringen")),
-    journal = "Computational Statistics",
-    volume = "35",
-    number = "",
-    pages =  "629-646",
-    year = 2020,
-    textVersion =
-      paste("Peeters, C.F.W., van de Wiel, M.A., and van Wieringen, W.N. (2020). ",
-		        "The Spectral Condition Number Plot for Regularization Parameter Evaliation. ",
-        	  "Computational Statistics, vol. 35: 629-646.", sep = "")
-)
-
-citEntry(entry="Article",
-    title = "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes",
-    author = personList(as.person("A.E. Bilgrau"),
-                        as.person("C.F.W. Peeters"),
-                        as.person("P.S. Eriksen"),
-                        as.person("M. Boegsted"),
-                        as.person("W.N. van Wieringen")),
-    journal = "Journal of Machine Learning Research",
-    volume = "21",
-    number = "26",
-    pages =  "1-52",
-    year = 2020,
-    textVersion =
-      paste("Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. (2020). ",
-		        "Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes. ",
-        	  "Journal of Machine Learning Research, vol. 21(26): 1-52.", sep = "")
-)
-
-citEntry(entry="Article",
-    title = "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data",
-    author = personList(as.person("W.N. van Wieringen"),
-                        as.person("C.F.W. Peeters")),
-    journal = "Computational Statistics & Data Analysis",
-    volume = "103",
-    number = "",
-    pages =  "284-303",
-    year = 2016,
-    textVersion =
-      paste("van Wieringen, W.N. and Peeters, C.F.W. (2016). ",
-		        "Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data. ",
-        	  "Computational Statistics & Data Analysis, vol. 103: 284-303.", sep = "")
-)
-
-citEntry(entry="InCollection",
-    title = "Application of a New Ridge Estimator of the Inverse Covariance Matrix to the Reconstruction of Gene-Gene Interaction Networks",
-    author = personList(as.person("W.N. van Wieringen"),
-                        as.person("C.F.W. Peeters")),
-    booktitle = "Computational Intelligence Methods for Bioinformatics and Biostatistics",
-    publisher = "Springer International Publishing",
-    year = 2015,
-    editor = "C. di Serio, P. Lio, A. Nonis, and R. Tagliaferri",
-    pages = 170-179,
-    series = "Lecture Notes in Computer Science",
-    volume = 8623,
-    textVersion =
-      paste("van Wieringen, W.N. and Peeters, C.F.W. (2015). ",
-		        "Application of a New Ridge Estimator of the Inverse Covariance Matrix to the Reconstruction of Gene-Gene               Interaction Networks. ", "In: ", "C. di Serio, P. Lio, A. Nonis, and R. Tagliaferri (Eds.) ",
-		        "Computational Intelligence Methods for Bioinformatics and Biostatistics. ",
-        	  "Lecture Notes in Computer Science, vol. 8623. ",
-        	  "Springer International Publishing, pp. 170-179.", sep = "")
+bibentry(bibtype = "Article",
+  title        = "{rags2ridges}: A One-Stop-$\\ell_2$-Shop for Graphical Modeling of High-Dimensional Precision Matrices",
+  author       = c(person(given = c("Carel", "F.", "W."),
+                          family = "Peeters",
+                          email = "carel.peeters@wur.nl"),
+                   person(given = c("Anders", "Ellern"),
+                          family = "Bilgrau"),
+                   person(given = c("Wessel", "N."),
+                          family = "van Wieringen")),
+  journal      = "Journal of Statistical Software",
+  year         = "2022",
+  volume       = "102",
+  number       = "4",
+  pages        = "1--32",
+  doi          = "10.18637/jss.v102.i04",
+  header       = "To cite rags2ridges in publications use:"
 )
