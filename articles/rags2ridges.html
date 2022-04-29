@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,18 +33,12 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rags2ridges</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">2.2.5</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.6</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-<li>
-  <a href="../index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
 <li>
   <a href="../articles/rags2ridges.html">Get started</a>
 </li>
@@ -58,7 +54,7 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/CFWP/rags2ridges/">
+  <a href="https://github.com/CFWP/rags2ridges/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -79,7 +75,7 @@
       <h1 data-toc-skip>Introduction to rags2ridges</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/CFWP/rags2ridges/blob/master/vignettes/rags2ridges.Rmd"><code>vignettes/rags2ridges.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/CFWP/rags2ridges/blob/HEAD/vignettes/rags2ridges.Rmd" class="external-link"><code>vignettes/rags2ridges.Rmd</code></a></small>
       <div class="hidden name"><code>rags2ridges.Rmd</code></div>
 
     </div>
@@ -88,25 +84,25 @@
     
 <p><strong>rags2ridges</strong> is an R-package for <em>fast</em> and <em>proper</em> L2-penalized estimation of precision (and covariance) matrices also called <strong>ridge estimation</strong>. Its L2-penalty features the ability to shrink towards a target matrix, allowing for incorporation of prior knowledge. Likewise, it also features a <em>fused</em> L2 ridge penalty allows for simultaneous estimation of multiple matrices. The package also contains additional functions for post-processing the L2-penalized estimates — useful for feature selection and when doing graphical modelling. The <em>fused</em> ridge estimation is useful when dealing with grouped data as when doing meta or integrative analysis.</p>
 <p>This vignette provides a light introduction on how to get started with regular ridge estimation of precision matrices and further steps.</p>
-<div id="getting-started" class="section level2">
-<h2 class="hasAnchor">
-<a href="#getting-started" class="anchor"></a>Getting started</h2>
-<div id="package-installation" class="section level3">
-<h3 class="hasAnchor">
-<a href="#package-installation" class="anchor"></a>Package installation</h3>
+<div class="section level2">
+<h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
+</h2>
+<div class="section level3">
+<h3 id="package-installation">Package installation<a class="anchor" aria-label="anchor" href="#package-installation"></a>
+</h3>
 <p>The README details how to install the <strong>rags2ridges</strong> package. When installed, the package is loaded as seen below where we also define a function for adding pretty names to a matrix.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://cfwp.github.io/rags2ridges/">rags2ridges</a></span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://cfwp.github.io/rags2ridges/">rags2ridges</a></span><span class="op">)</span></code></pre></div>
 </div>
-<div id="small-theoretical-primer-and-package-usage" class="section level3">
-<h3 class="hasAnchor">
-<a href="#small-theoretical-primer-and-package-usage" class="anchor"></a>Small theoretical primer and package usage</h3>
+<div class="section level3">
+<h3 id="small-theoretical-primer-and-package-usage">Small theoretical primer and package usage<a class="anchor" aria-label="anchor" href="#small-theoretical-primer-and-package-usage"></a>
+</h3>
 <p>The sample variance-covariance matrix, or simply <em>covariance matrix</em>, is well-known and ubiquitous. It is given by</p>
 <p><span class="math display">\[
 S = \frac{1}{n - 1}XX^T
 \]</span></p>
 <p>where <span class="math inline">\(X\)</span> is the <span class="math inline">\(n \times p\)</span> data matrix that is zero-centered with each <span class="math inline">\(p\)</span>-dimensional observations in the rows. I.e. each row of <span class="math inline">\(X\)</span> is an observation and each column is feature. Often high-dimensional data is organised this way (or transposed).</p>
-<p>That <span class="math inline">\(X\)</span> is zero-centered simply means that the column means has been subtracted the columns. The very similar estimate <span class="math inline">\(S = \frac{1}{n}XX^T\)</span> without <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction">Bessel’s correction</a> is the maximum likelihood estimate in a multivariate normal model with mean <span class="math inline">\(0\)</span> and covariance <span class="math inline">\(\Sigma\)</span>. The likelihood function in this case is given by</p>
+<p>That <span class="math inline">\(X\)</span> is zero-centered simply means that the column means has been subtracted the columns. The very similar estimate <span class="math inline">\(S = \frac{1}{n}XX^T\)</span> without <a href="https://en.wikipedia.org/wiki/Bessel%27s_correction" class="external-link">Bessel’s correction</a> is the maximum likelihood estimate in a multivariate normal model with mean <span class="math inline">\(0\)</span> and covariance <span class="math inline">\(\Sigma\)</span>. The likelihood function in this case is given by</p>
 <p><span class="math display">\[
 \ell(\Omega; S) = \ln|\Omega| - \text{tr}(S\Omega)
 \]</span></p>
@@ -120,43 +116,43 @@ P = S^{-1}
 <code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">6</span>
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">20</span>
 <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span>, dataset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">X</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="co"># Show 4 first of the n rows</span></code></pre></div>
-<pre><code>##           A      B       C      D       E      F
-## [1,] -0.164  1.076  0.0245 -0.227  1.6833  1.166
-## [2,] -1.886 -0.164  0.6881 -0.634 -0.7858 -0.301
-## [3,]  0.359 -0.987 -0.3533  2.674 -0.0604  1.353
-## [4,] -1.517  1.169 -0.7055 -0.639 -0.1316 -0.284</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">X</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="co"># Show 4 first of the n rows</span></code></pre></div>
+<pre><code><span class="co">##           A       B      C      D       E      F</span>
+<span class="co">## [1,]  0.362  0.8144  0.371 -0.476 -0.7871  0.150</span>
+<span class="co">## [2,]  0.699 -0.0662  0.835  1.338  0.1379  1.596</span>
+<span class="co">## [3,] -1.098 -0.4533  0.190 -0.442 -1.0100  0.385</span>
+<span class="co">## [4,]  1.610  0.0106 -0.901  1.162 -0.0795 -0.361</span></code></pre>
 <p>Here the columns corresponds to features A, B, C, and so on.</p>
 <p>When can then arrive a the MLE using <code><a href="../reference/covML.html">covML()</a></code> which <em>centers</em> X (subtracting the column means) and then computes the estimate:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/covML.html">covML</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></code></pre></div>
-<pre><code>##        A      B        C        D       E      F
-## A  0.928 -0.359  0.01099  0.45727 -0.1757 -0.140
-## B -0.359  0.703 -0.19033 -0.16917  0.1826 -0.151
-## C  0.011 -0.190  0.96076 -0.00663 -0.0834  0.193
-## D  0.457 -0.169 -0.00663  0.92770 -0.2119  0.183
-## E -0.176  0.183 -0.08340 -0.21193  0.6498 -0.155
-## F -0.140 -0.151  0.19331  0.18271 -0.1547  1.176</code></pre>
-<p>Using <code><a href="https://rdrr.io/r/stats/cor.html">cov2cor()</a></code> the well-known correlation matrix could be obtained.</p>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##          A       B        C      D      E       F</span>
+<span class="co">## A  1.07678 -0.2405 -0.00748  0.358  0.248 -0.0380</span>
+<span class="co">## B -0.24052  0.8687  0.08991 -0.367  0.213 -0.1600</span>
+<span class="co">## C -0.00748  0.0899  1.00217 -0.107 -0.226  0.0617</span>
+<span class="co">## D  0.35755 -0.3665 -0.10711  0.756  0.279  0.1136</span>
+<span class="co">## E  0.24795  0.2134 -0.22640  0.279  1.267  0.2292</span>
+<span class="co">## F -0.03800 -0.1600  0.06174  0.114  0.229  0.4710</span></code></pre>
+<p>Using <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov2cor()</a></code> the well-known correlation matrix could be obtained.</p>
 <p>By default, <code><a href="../reference/createS.html">createS()</a></code> simulates zero-mean i.i.d. normal variables (corresponding to <span class="math inline">\(\Sigma=\Omega=I\)</span> being the identity matrix), but it has plenty of possibilities for more intricate covariance structures. The <code>S</code> matrix could have been obtained directly had we omitted the <code>dataset</code> argument, leaving it to be the default <code>FALSE</code>. The <code><a href="../reference/rmvnormal.html">rmvnormal()</a></code> function is utilized by <code><a href="../reference/createS.html">createS()</a></code> to generate the normal sample.</p>
-<p>We can obtain the precision estimate <code>P</code> using <code><a href="https://rdrr.io/r/base/solve.html">solve()</a></code> to invert <code>S</code>:</p>
+<p>We can obtain the precision estimate <code>P</code> using <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve()</a></code> to invert <code>S</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span></code></pre></div>
-<pre><code>##         A      B       C       D       E      F
-## A  1.9308  0.866  0.0572 -0.8606  0.1198  0.481
-## B  0.8660  2.045  0.3079 -0.1770 -0.2861  0.304
-## C  0.0572  0.308  1.1365  0.0796  0.0665 -0.144
-## D -0.8606 -0.177  0.0796  1.6003  0.2654 -0.352
-## E  0.1198 -0.286  0.0665  0.2654  1.7849  0.160
-## F  0.4806  0.304 -0.1442 -0.3518  0.1602  1.046</code></pre>
+<code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">##        A      B        C        D      E       F</span>
+<span class="co">## A  1.235  0.383 -0.17508 -0.37124 -0.348  0.5119</span>
+<span class="co">## B  0.383  2.096 -0.34143  0.96271 -0.879  0.9834</span>
+<span class="co">## C -0.175 -0.341  1.14235  0.00969  0.378 -0.4663</span>
+<span class="co">## D -0.371  0.963  0.00969  2.17008 -0.575  0.0523</span>
+<span class="co">## E -0.348 -0.879  0.37816 -0.57493  1.363 -0.9009</span>
+<span class="co">## F  0.512  0.983 -0.46628  0.05230 -0.901  2.9858</span></code></pre>
 <p>That’s it! Everything goes well here only because <span class="math inline">\(n &lt; p\)</span>. However, when <span class="math inline">\(p\)</span> is close to <span class="math inline">\(n\)</span>, the estimate become unstable and varies wildly and when <span class="math inline">\(p\)</span> exceeds <span class="math inline">\(n\)</span> one can no longer invert <span class="math inline">\(S\)</span> and this strategy fails:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">25</span>
 <span class="va">S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span><span class="op">)</span>  <span class="co"># Direct to S</span>
-<span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span></code></pre></div>
-<pre><code>## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 2.85643e-18</code></pre>
+<span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 3.32437e-20</span></code></pre>
 <p>Note that this is now a <span class="math inline">\(25 \times 25\)</span> precision matrix we are trying to estimate. Datasets where <span class="math inline">\(p &gt; n\)</span> are starting to be common, so what now?</p>
 <p>To solve the problem, <strong>rags2ridges</strong> adds a so-called ridge penalty to the likelihood above — this method is also called <span class="math inline">\(L_2\)</span> shrinkage and works by “shrinking” the eigenvalues of <span class="math inline">\(S\)</span> in a particular manner to combat that they “explode” when <span class="math inline">\(p \geq n\)</span>.</p>
 <p>The core problem that <strong>rags2ridges</strong> solves is that</p>
@@ -166,44 +162,44 @@ P = S^{-1}
 <p>The core function of <strong>rags2ridges</strong> is <code>ridgeP</code> which computes this estimate in a fast manner.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ridgeP.html">ridgeP</a></span><span class="op">(</span><span class="va">S2</span>, lambda <span class="op">=</span> <span class="fl">1.17</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="va">P2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span> <span class="co"># Showing only the 7 first cols and rows</span></code></pre></div>
-<pre><code>##         A       B       C       D      E       F       G
-## A  4.5530  0.3372 -0.0330 -0.1143 0.2438 -0.0700  0.0865
-## B  0.3372  4.5196 -0.1173 -0.0293 0.0490  0.0754 -0.1402
-## C -0.0330 -0.1173  4.4723 -0.0068 0.0840  0.3491  0.0168
-## D -0.1143 -0.0293 -0.0068  4.6896 0.0203 -0.0871  0.0839
-## E  0.2438  0.0490  0.0840  0.0203 3.8492  0.3974  0.2128
-## F -0.0700  0.0754  0.3491 -0.0871 0.3974  4.1002 -0.4028
-## G  0.0865 -0.1402  0.0168  0.0839 0.2128 -0.4028  4.3029</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">P2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span> <span class="co"># Showing only the 7 first cols and rows</span></code></pre></div>
+<pre><code><span class="co">##          A       B       C       D       E       F        G</span>
+<span class="co">## A  3.40130 -0.0885  0.0221 -0.2339  0.0871 -0.0225  0.00293</span>
+<span class="co">## B -0.08853  3.1604  0.1323 -0.1400 -0.2459 -0.0821 -0.11015</span>
+<span class="co">## C  0.02211  0.1323  3.3019 -0.0567  0.2338 -0.1902 -0.06981</span>
+<span class="co">## D -0.23394 -0.1400 -0.0567  2.9099  0.2501 -0.1939 -0.07192</span>
+<span class="co">## E  0.08714 -0.2459  0.2338  0.2501  2.8368  0.0181 -0.11862</span>
+<span class="co">## F -0.02250 -0.0821 -0.1902 -0.1939  0.0181  2.7413 -0.01624</span>
+<span class="co">## G  0.00293 -0.1101 -0.0698 -0.0719 -0.1186 -0.0162  2.87575</span></code></pre>
 <p>And voilà, we have our estimate. We will now discuss the penalty parameters and target matrix and how to choose them.</p>
 </div>
-<div id="the-penalty-parameter" class="section level3">
-<h3 class="hasAnchor">
-<a href="#the-penalty-parameter" class="anchor"></a>The penalty parameter</h3>
+<div class="section level3">
+<h3 id="the-penalty-parameter">The penalty parameter<a class="anchor" aria-label="anchor" href="#the-penalty-parameter"></a>
+</h3>
 <p>The penalty parameter <span class="math inline">\(\lambda\)</span> (<code>lambda</code>) shrinks the values of <span class="math inline">\(P\)</span> such toward 0 (when <span class="math inline">\(T = 0\)</span>) — i.e. very larges values of <span class="math inline">\(\lambda\)</span> makes <span class="math inline">\(P\)</span> “small” and more stable whereas smaller values of <span class="math inline">\(\lambda\)</span> makes the <span class="math inline">\(P\)</span> tend toward the (possibly non-existent) <span class="math inline">\(S^{-1}\)</span>. So what <code>lambda</code> should you choose? One strategy for choosing <span class="math inline">\(\lambda\)</span> is selecting it to be stable yet precise (a bias-variance trade-off). Automatic k-fold cross-validation can be done with <code><a href="../reference/optPenalty.kCVauto.html">optPenalty.kCVauto()</a></code>is well suited for this:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">p</span>, dataset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optPenalty.kCVauto.html">optPenalty.kCVauto</a></span><span class="op">(</span><span class="va">Y</span>, lambdaMin <span class="op">=</span> <span class="fl">0.001</span>, lambdaMax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></code></pre></div>
-<pre><code>## List of 2
-##  $ optLambda: num 1.89
-##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 1.8647 -0.0143 0.0545 -0.0342 0.1155 ...
-##   ..- attr(*, "lambda")= num 1.89
-##   ..- attr(*, "dimnames")=List of 2
-##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...
-##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</code></pre>
+<span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></code></pre></div>
+<pre><code><span class="co">## List of 2</span>
+<span class="co">##  $ optLambda: num 0.483</span>
+<span class="co">##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 2.9857 0.441 0.0642 0.2161 0.297 ...</span>
+<span class="co">##   ..- attr(*, "lambda")= num 0.483</span>
+<span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
+<span class="co">##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</span>
+<span class="co">##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</span></code></pre>
 <p>As seen, the function returns a list with the optimal penalty parameter and corresponding ridge precision estimate. By default, the the functions performs leave-one-out cross validation. See ?optPenalty.kCVauto` for more information.</p>
 </div>
-<div id="the-target-matrix" class="section level3">
-<h3 class="hasAnchor">
-<a href="#the-target-matrix" class="anchor"></a>The target matrix</h3>
+<div class="section level3">
+<h3 id="the-target-matrix">The target matrix<a class="anchor" aria-label="anchor" href="#the-target-matrix"></a>
+</h3>
 <p>The target matrix <span class="math inline">\(T\)</span> is a matrix the same size as <span class="math inline">\(P\)</span> which the estimate is “shrunken” toward — i.e. for large values of <span class="math inline">\(\lambda\)</span> the estimate goes toward <span class="math inline">\(T\)</span>. The choice of the target is another subject. While one might first think that the all-zeros <span class="math inline">\(T = [0]\)</span> would be a default it is intuitively not a good target. This is because we’d like an estimate that is positive definite (the matrix-equivalent to at positive number) and the null-matrix is not positive definite.</p>
 <p>If one has a very good prior estimate or some other information this might used to construct the target. E.g. the function <code><a href="../reference/kegg.target.html">kegg.target()</a></code> utilizes the <em>Kyoto Encyclopedia of Genes and Genomes</em> (KEGG) database of gene and gene-networks together with pilot data to construct a target.</p>
 <p>In the absence of such knowledge, the default could be a data-driven diagonal matrix. The function <code><a href="../reference/default.target.html">default.target()</a></code> offers some different approaches to selecting this. A good choice here is often the diagonal matrix times the reciprocal mean of the eigenvalues of the sample covariance as entries. See <code><a href="../reference/default.target.html">?default.target</a></code> for more choices.</p>
 </div>
-<div id="gaussian-graphical-modeling-and-post-processing" class="section level3">
-<h3 class="hasAnchor">
-<a href="#gaussian-graphical-modeling-and-post-processing" class="anchor"></a>Gaussian graphical modeling and post processing</h3>
+<div class="section level3">
+<h3 id="gaussian-graphical-modeling-and-post-processing">Gaussian graphical modeling and post processing<a class="anchor" aria-label="anchor" href="#gaussian-graphical-modeling-and-post-processing"></a>
+</h3>
 <blockquote>
 <h4 id="what-is-so-interesting-with-the-precision-matrix-anyway-im-always-interested-in-correlations-and-thus-the-correlation-matrix.">What is so interesting with the precision matrix anyway? I’m always interested in correlations and thus the correlation matrix.</h4>
 </blockquote>
@@ -232,17 +228,17 @@ P = S^{-1}
 <p>After edge select <code><a href="../reference/GGMnetworkStats.html">GGMnetworkStats()</a></code> can be utilized to get summary statistics of the resulting graph topology.</p>
 </div>
 </div>
-<div id="concluding-remarks" class="section level2">
-<h2 class="hasAnchor">
-<a href="#concluding-remarks" class="anchor"></a>Concluding remarks</h2>
+<div class="section level2">
+<h2 id="concluding-remarks">Concluding remarks<a class="anchor" aria-label="anchor" href="#concluding-remarks"></a>
+</h2>
 <p>The <code><a href="../reference/fullMontyS.html">fullMontyS()</a></code> function is a convenience wrapper getting from the data through the penalized estimate to the corresponding conditional independence graph and topology summaries.</p>
-<p>For a full introduction to the theoretical properties as well as more context to the problem, see <a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141">van Wieringen &amp; Peeters (2016)</a>.</p>
-<p><strong>rags2ridges</strong> also comes with functionality for <em>targeted</em> and <em>grouped</em> (or, <em>fused</em>) graphical ridge regression called the fused graphical ridge. See <a href="https://arxiv.org/abs/1509.07982">[2]</a> below. The functions in this <code>rags2ridges</code> module are generally post-fixed with <code>.fused</code>.</p>
-<div id="references" class="section level3">
-<h3 class="hasAnchor">
-<a href="#references" class="anchor"></a>References</h3>
-<p><a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141">1.</a>. van Wieringen, W.N. and Peeters, C.F.W. <strong>(2016)</strong>. <a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141"><em>Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data.</em></a> Computational Statistics &amp; Data Analysis, vol. 103: 284-303.</p>
-<p><a href="https://arxiv.org/abs/1509.07982">2.</a> Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. <strong>(2015)</strong>. <a href="https://arxiv.org/abs/1509.07982"><em>Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.</em></a> arXiv:1509.07982 [stat.ME].</p>
+<p>For a full introduction to the theoretical properties as well as more context to the problem, see <a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141" class="external-link">van Wieringen &amp; Peeters (2016)</a>.</p>
+<p><strong>rags2ridges</strong> also comes with functionality for <em>targeted</em> and <em>grouped</em> (or, <em>fused</em>) graphical ridge regression called the fused graphical ridge. See <a href="https://arxiv.org/abs/1509.07982" class="external-link">[2]</a> below. The functions in this <code>rags2ridges</code> module are generally post-fixed with <code>.fused</code>.</p>
+<div class="section level3">
+<h3 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h3>
+<p><a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141" class="external-link">1.</a>. van Wieringen, W.N. and Peeters, C.F.W. <strong>(2016)</strong>. <a href="https://www.sciencedirect.com/science/article/pii/S0167947316301141" class="external-link"><em>Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data.</em></a> Computational Statistics &amp; Data Analysis, vol. 103: 284-303.</p>
+<p><a href="https://arxiv.org/abs/1509.07982" class="external-link">2.</a> Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. <strong>(2015)</strong>. <a href="https://arxiv.org/abs/1509.07982" class="external-link"><em>Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.</em></a> arXiv:1509.07982 [stat.ME].</p>
 </div>
 </div>
 <div class="footnotes">
@@ -252,9 +248,9 @@ P = S^{-1}
 P(\lambda) 
 = \Bigg\{ \bigg[ \lambda I_{p\times p} + \frac{1}{4}(S - \lambda T)^{2} \bigg]^{1/2} + \frac{1}{2}(S -\lambda T) \Bigg\}^{-1}
 \]</span><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-<li id="fn2"><p><a href="https://stats.stackexchange.com/questions/181376/is-correlation-transitive" class="uri">https://stats.stackexchange.com/questions/181376/is-correlation-transitive</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
-<li id="fn3"><p><a href="https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/" class="uri">https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p><a href="https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/" class="uri">https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p><a href="https://stats.stackexchange.com/questions/181376/is-correlation-transitive" class="external-link uri">https://stats.stackexchange.com/questions/181376/is-correlation-transitive</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p><a href="https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/" class="external-link uri">https://emilkirkegaard.dk/en/2016/02/causality-transitivity-and-correlation/</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/" class="external-link uri">https://terrytao.wordpress.com/2014/06/05/when-is-correlation-transitive/</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
   </div>
@@ -270,11 +266,13 @@ P(\lambda)
 
 
       <footer><div class="copyright">
-  <p>Developed by Carel F.W. Peeters, Anders Ellern Bilgrau, Wessel N. van Wieringen.</p>
+  <p></p>
+<p>Developed by Carel F.W. Peeters, Anders Ellern Bilgrau, Wessel N. van Wieringen.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
 </div>
 
       </footer>
@@ -282,6 +280,8 @@ P(\lambda)
 
   
 
+
+  
 
   </body>
 </html>
