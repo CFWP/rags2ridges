@@ -32,7 +32,7 @@ remotes::install_github("CFWP/rags2ridges")
 Note, that this version is in development and is different from the version at CRAN. As such, it may be unstable. Be sure that you have the
 [package development prerequisites](https://support.rstudio.com/hc/en-us/articles/200486498-Package-Development-Prerequisites) if you wish to install the package from the source.
 
-Visit [CRAN](https://cran.r-project.org/package=rags2ridges/news.html), [the documentation site](https://cfwp.github.io/rags2ridges/news/index.html), or run `news(package = "rags2ridges")` after installation to view the latest notable changes to **rags2ridges**. 
+Visit [CRAN](https://cran.r-project.org/web/packages/rags2ridges/news/news.html), [the documentation site](https://cfwp.github.io/rags2ridges/news/index.html), or run `news(package = "rags2ridges")` after installation to view the latest notable changes to **rags2ridges**. 
 
 For previous versions of **rags2ridges**, visit the [archive at CRAN.](https://cran.r-project.org/src/contrib/Archive/rags2ridges/)
 
@@ -68,6 +68,6 @@ Relevant publications to **rags2ridges** include (ordered according to year):
     In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
     `Computational Intelligence Methods for Bioinformatics and Biostatistics'.
     Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179
-    ([doi:10.1007/978-3-319-24462-4_15](https://link.springer.com/chapter/10.1007%2F978-3-319-24462-4_15)).
+    ([doi:10.1007/978-3-319-24462-4_15](https://link.springer.com/chapter/10.1007/978-3-319-24462-4_15)).
 
 Please cite the relevant publications if you use **rags2ridges**.
