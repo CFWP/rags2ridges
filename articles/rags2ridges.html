@@ -117,42 +117,42 @@ P = S^{-1}
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">20</span>
 <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span>, dataset <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">X</span>, n <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="co"># Show 4 first of the n rows</span></code></pre></div>
-<pre><code><span class="co">##           A       B      C      D       E      F</span>
-<span class="co">## [1,]  0.362  0.8144  0.371 -0.476 -0.7871  0.150</span>
-<span class="co">## [2,]  0.699 -0.0662  0.835  1.338  0.1379  1.596</span>
-<span class="co">## [3,] -1.098 -0.4533  0.190 -0.442 -1.0100  0.385</span>
-<span class="co">## [4,]  1.610  0.0106 -0.901  1.162 -0.0795 -0.361</span></code></pre>
+<pre><code><span class="co">##            A       B      C      D        E      F</span>
+<span class="co">## [1,]  1.1343 -0.5442 -0.577 0.9946 -0.71857  0.539</span>
+<span class="co">## [2,] -1.4179 -1.3048  0.119 0.2537 -1.55781  0.411</span>
+<span class="co">## [3,]  0.0399 -0.0507  0.461 0.0695 -0.80384 -0.366</span>
+<span class="co">## [4,]  0.6395  0.0111 -0.836 1.6653  0.00912  0.337</span></code></pre>
 <p>Here the columns corresponds to features A, B, C, and so on.</p>
 <p>When can then arrive a the MLE using <code><a href="../reference/covML.html">covML()</a></code> which <em>centers</em> X (subtracting the column means) and then computes the estimate:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">S</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/covML.html">covML</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##          A       B        C      D      E       F</span>
-<span class="co">## A  1.07678 -0.2405 -0.00748  0.358  0.248 -0.0380</span>
-<span class="co">## B -0.24052  0.8687  0.08991 -0.367  0.213 -0.1600</span>
-<span class="co">## C -0.00748  0.0899  1.00217 -0.107 -0.226  0.0617</span>
-<span class="co">## D  0.35755 -0.3665 -0.10711  0.756  0.279  0.1136</span>
-<span class="co">## E  0.24795  0.2134 -0.22640  0.279  1.267  0.2292</span>
-<span class="co">## F -0.03800 -0.1600  0.06174  0.114  0.229  0.4710</span></code></pre>
+<pre><code><span class="co">##         A       B      C         D      E         F</span>
+<span class="co">## A  0.8246 -0.0555 -0.109  0.206846  0.177  0.308653</span>
+<span class="co">## B -0.0555  1.4591  0.457 -0.031561  0.146 -0.168401</span>
+<span class="co">## C -0.1094  0.4568  0.892 -0.119071 -0.039 -0.124464</span>
+<span class="co">## D  0.2068 -0.0316 -0.119  0.983767 -0.166  0.000942</span>
+<span class="co">## E  0.1768  0.1465 -0.039 -0.166089  0.897 -0.269482</span>
+<span class="co">## F  0.3087 -0.1684 -0.124  0.000942 -0.269  0.977398</span></code></pre>
 <p>Using <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cov2cor()</a></code> the well-known correlation matrix could be obtained.</p>
 <p>By default, <code><a href="../reference/createS.html">createS()</a></code> simulates zero-mean i.i.d. normal variables (corresponding to <span class="math inline">\(\Sigma=\Omega=I\)</span> being the identity matrix), but it has plenty of possibilities for more intricate covariance structures. The <code>S</code> matrix could have been obtained directly had we omitted the <code>dataset</code> argument, leaving it to be the default <code>FALSE</code>. The <code><a href="../reference/rmvnormal.html">rmvnormal()</a></code> function is utilized by <code><a href="../reference/createS.html">createS()</a></code> to generate the normal sample.</p>
 <p>We can obtain the precision estimate <code>P</code> using <code><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve()</a></code> to invert <code>S</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">P</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">##        A      B        C        D      E       F</span>
-<span class="co">## A  1.235  0.383 -0.17508 -0.37124 -0.348  0.5119</span>
-<span class="co">## B  0.383  2.096 -0.34143  0.96271 -0.879  0.9834</span>
-<span class="co">## C -0.175 -0.341  1.14235  0.00969  0.378 -0.4663</span>
-<span class="co">## D -0.371  0.963  0.00969  2.17008 -0.575  0.0523</span>
-<span class="co">## E -0.348 -0.879  0.37816 -0.57493  1.363 -0.9009</span>
-<span class="co">## F  0.512  0.983 -0.46628  0.05230 -0.901  2.9858</span></code></pre>
+<pre><code><span class="co">##          A       B        C       D      E       F</span>
+<span class="co">## A  1.74743  0.0380  0.00116 -0.4763 -0.657 -0.7258</span>
+<span class="co">## B  0.03800  0.8430 -0.43823 -0.0621 -0.166  0.0317</span>
+<span class="co">## C  0.00116 -0.4382  1.40357  0.1920  0.217  0.1625</span>
+<span class="co">## D -0.47629 -0.0621  0.19203  1.2085  0.420  0.2788</span>
+<span class="co">## E -0.65707 -0.1663  0.21683  0.4200  1.549  0.6332</span>
+<span class="co">## F -0.72583  0.0317  0.16246  0.2788  0.633  1.4528</span></code></pre>
 <p>That’s it! Everything goes well here only because <span class="math inline">\(n &lt; p\)</span>. However, when <span class="math inline">\(p\)</span> is close to <span class="math inline">\(n\)</span>, the estimate become unstable and varies wildly and when <span class="math inline">\(p\)</span> exceeds <span class="math inline">\(n\)</span> one can no longer invert <span class="math inline">\(S\)</span> and this strategy fails:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">25</span>
 <span class="va">S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span><span class="op">)</span>  <span class="co"># Direct to S</span>
 <span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span></code></pre></div>
-<pre><code><span class="co">## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 3.32437e-20</span></code></pre>
+<pre><code><span class="co">## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 3.20315e-19</span></code></pre>
 <p>Note that this is now a <span class="math inline">\(25 \times 25\)</span> precision matrix we are trying to estimate. Datasets where <span class="math inline">\(p &gt; n\)</span> are starting to be common, so what now?</p>
 <p>To solve the problem, <strong>rags2ridges</strong> adds a so-called ridge penalty to the likelihood above — this method is also called <span class="math inline">\(L_2\)</span> shrinkage and works by “shrinking” the eigenvalues of <span class="math inline">\(S\)</span> in a particular manner to combat that they “explode” when <span class="math inline">\(p \geq n\)</span>.</p>
 <p>The core problem that <strong>rags2ridges</strong> solves is that</p>
@@ -163,14 +163,14 @@ P = S^{-1}
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ridgeP.html">ridgeP</a></span><span class="op">(</span><span class="va">S2</span>, lambda <span class="op">=</span> <span class="fl">1.17</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">P2</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">7</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">7</span><span class="op">]</span><span class="op">)</span> <span class="co"># Showing only the 7 first cols and rows</span></code></pre></div>
-<pre><code><span class="co">##          A       B       C       D       E       F        G</span>
-<span class="co">## A  3.40130 -0.0885  0.0221 -0.2339  0.0871 -0.0225  0.00293</span>
-<span class="co">## B -0.08853  3.1604  0.1323 -0.1400 -0.2459 -0.0821 -0.11015</span>
-<span class="co">## C  0.02211  0.1323  3.3019 -0.0567  0.2338 -0.1902 -0.06981</span>
-<span class="co">## D -0.23394 -0.1400 -0.0567  2.9099  0.2501 -0.1939 -0.07192</span>
-<span class="co">## E  0.08714 -0.2459  0.2338  0.2501  2.8368  0.0181 -0.11862</span>
-<span class="co">## F -0.02250 -0.0821 -0.1902 -0.1939  0.0181  2.7413 -0.01624</span>
-<span class="co">## G  0.00293 -0.1101 -0.0698 -0.0719 -0.1186 -0.0162  2.87575</span></code></pre>
+<pre><code><span class="co">##         A       B       C      D       E       F       G</span>
+<span class="co">## A  3.4820 -0.0560 -0.0372 0.0177 -0.1227 -0.0145 -0.0548</span>
+<span class="co">## B -0.0560  3.0848 -0.0385 0.0492  0.1359 -0.0995 -0.1179</span>
+<span class="co">## C -0.0372 -0.0385  3.3014 0.2283 -0.3269 -0.0458 -0.0764</span>
+<span class="co">## D  0.0177  0.0492  0.2283 2.8754  0.3063  0.0339  0.1237</span>
+<span class="co">## E -0.1227  0.1359 -0.3269 0.3063  3.2742  0.2059 -0.0233</span>
+<span class="co">## F -0.0145 -0.0995 -0.0458 0.0339  0.2059  3.3896  0.0831</span>
+<span class="co">## G -0.0548 -0.1179 -0.0764 0.1237 -0.0233  0.0831  3.6096</span></code></pre>
 <p>And voilà, we have our estimate. We will now discuss the penalty parameters and target matrix and how to choose them.</p>
 </div>
 <div class="section level3">
@@ -182,9 +182,9 @@ P = S^{-1}
 <span class="va">opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/optPenalty.kCVauto.html">optPenalty.kCVauto</a></span><span class="op">(</span><span class="va">Y</span>, lambdaMin <span class="op">=</span> <span class="fl">0.001</span>, lambdaMax <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">opt</span><span class="op">)</span></code></pre></div>
 <pre><code><span class="co">## List of 2</span>
-<span class="co">##  $ optLambda: num 0.483</span>
-<span class="co">##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 2.9857 0.441 0.0642 0.2161 0.297 ...</span>
-<span class="co">##   ..- attr(*, "lambda")= num 0.483</span>
+<span class="co">##  $ optLambda: num 0.456</span>
+<span class="co">##  $ optPrec  : 'ridgeP' num [1:25, 1:25] 2.9374 -0.082 0.3565 -0.0217 0.1053 ...</span>
+<span class="co">##   ..- attr(*, "lambda")= num 0.456</span>
 <span class="co">##   ..- attr(*, "dimnames")=List of 2</span>
 <span class="co">##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</span>
 <span class="co">##   .. ..$ : chr [1:25] "A" "B" "C" "D" ...</span></code></pre>
