@@ -49,7 +49,7 @@ matrix entries are represented by colors. \code{lowColor} determines the
 color scale for matrix entries in the negative range. \code{highColor}
 determines the color scale for matrix entries in the positive range. For the
 colors supported by the arguments \code{lowColor} and \code{highColor}, see
-\url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}. White entries in
+\url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}. White entries in
 the plot represent the midscale value of 0. One can opt to set the diagonal
 entries to the midscale color of white when one is interested in
 (heatmapping) the off-diagonal elements only. To achieve this, set

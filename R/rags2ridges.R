@@ -3750,7 +3750,7 @@ if (getRversion() >= "2.15.1") utils::globalVariables(c("X1", "X2", "value"))
 #' color scale for matrix entries in the negative range. \code{highColor}
 #' determines the color scale for matrix entries in the positive range. For the
 #' colors supported by the arguments \code{lowColor} and \code{highColor}, see
-#' \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}. White entries in
+#' \url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}. White entries in
 #' the plot represent the midscale value of 0. One can opt to set the diagonal
 #' entries to the midscale color of white when one is interested in
 #' (heatmapping) the off-diagonal elements only. To achieve this, set
@@ -3929,7 +3929,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by
 #' any edge) are removed. For the colors supported by the arguments
 #' \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and
-#' \code{nEcolor} see \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+#' \code{nEcolor} see \url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}.
 #'
 #' @param M (Possibly sparsified) precision \code{matrix}
 #' @param type A \code{character} indicating the type of graph to be produced.
@@ -4482,7 +4482,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' TRUE}. If \code{prune = TRUE} the vertices of degree 0 (vertices not
 #' implicated by any edge) are removed. For the colors supported by the
 #' arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
-#' \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+#' \url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}.
 #'
 #' @param P0 Sparse (possibly standardized) precision matrix.
 #' @param node1 A \code{numeric} specifying an endpoint. The numeric should

@@ -130,7 +130,7 @@ represent, such as, e.g., mRNA transcripts. The arguments \code{label},
 If \code{prune = TRUE} the vertices of degree 0 (vertices not implicated by
 any edge) are removed. For the colors supported by the arguments
 \code{Vcolor}, \code{VBcolor}, \code{VLcolor}, \code{pEcolor}, and
-\code{nEcolor} see \url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+\code{nEcolor} see \url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}.
 }
 \examples{
 

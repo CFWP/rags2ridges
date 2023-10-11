@@ -1,7 +1,24 @@
 # News for Package [rags2ridges](https://cran.r-project.org/package=rags2ridges)
 
 
+# Version 2.2.7
+
+## Adjustments:
+  * Functions optPenaltyPchordal, ridgePchordal, ridgePsign, and support4ridgeP (temporarily) deprecated (for major adjustments)
+  
+## Documentation:
+  * Fixed URLs.
+
+
+# Version 2.2.6
+
+## Documentation:
+  * Canonicalization of URLs.
+  * Update of published papers 
+
+
 # Version 2.2.5
+
 ## Documentation:
   * Improved documentation and added new [pkgdown](https://cran.r-project.org/package=pkgdown) documentation website.
   * NEWS file moved to markdown format instead of .Rd and available on the website

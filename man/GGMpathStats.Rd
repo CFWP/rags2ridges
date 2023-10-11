@@ -171,7 +171,7 @@ The arguments \code{Lcex} and \code{PTcex} are only used when \code{legend =
 TRUE}. If \code{prune = TRUE} the vertices of degree 0 (vertices not
 implicated by any edge) are removed. For the colors supported by the
 arguments \code{nodecol}, \code{Vcolor}, and \code{VBcolor}, see
-\url{https://stat.columbia.edu/~tzheng/files/Rcolor.pdf}.
+\url{https://www.nceas.ucsb.edu/sites/default/files/2020-04/colorPaletteCheatsheet.pdf}.
 }
 \note{
 Eppstein (1998) describes a more sophisticated algorithm for finding
