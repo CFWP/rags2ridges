@@ -422,8 +422,6 @@ arma::mat armaRidgePScalarTarget(const arma::mat & S,
 //' @param S A sample covariance \code{matrix}.
 //' @param target A \code{numeric} symmetric positive definite target
 //' \code{matrix} of the same size as \code{S}.
-//' @param alpha The diagonal value on the scalar target matrix. A \code{double}
-//' of length 1.
 //' @param lambda The ridge penalty. A \code{double} of length 1.
 //' @param invert An \code{integer}. Should the estimate be computed using
 //' inversion?  Permitted values are \code{0L}, \code{1L}, and \code{2L} meaning

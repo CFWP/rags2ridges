@@ -780,7 +780,7 @@ evaluateS <- function(S, verbose = TRUE){
   else if (nrow(S) != ncol(S)){
     stop("S should be a square matrix")
   }
-  else if (class(verbose) != "logical"){
+  else if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   else {
@@ -994,7 +994,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
   else if (!isSymmetric(S)){
     stop("Input (S) should be a symmetric matrix")
   }
-  else if (class(type) != "character"){
+  else if (!inherits(type, "character")){
     stop("Input (type) is of wrong class")
   }
   else if (!(type %in% c("DAIE", "DIAES", "DUPV", "DAPV",
@@ -1007,7 +1007,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
     # Diagonal matrix with average of inverse nonzero eigenvalues of S as
     # entries
     if (type == "DAIE"){
-      if (class(fraction) != "numeric"){
+      if (!inherits(fraction, "numeric")){
         stop("Input (fraction) is of wrong class")
       } else if (length(fraction) != 1){
         stop("Length input (fraction) must be one")
@@ -1040,7 +1040,7 @@ default.target <- function(S, type = "DAIE", fraction = 1e-04, const){
 
     # Diagonal matrix with constant partial variance as entries
     if (type == "DCPV"){
-      if (class(const) != "numeric"){
+      if (!inherits(const, "numeric")){
         stop("Input (const) is of wrong class")
       } else if (length(const) != 1){
         stop("Length input (const) must be one")
@@ -1375,7 +1375,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # require("graphics")
   # require("sfsmisc")
 
-  if (class(verbose) != "logical"){
+  if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   if (verbose){
@@ -1384,7 +1384,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -1393,7 +1393,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMin <= 0){
     stop("Input (lambdaMin) must be positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -1402,7 +1402,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMax <= lambdaMin){
     stop("Input (lambdaMax) must be larger than lambdaMin")
   }
-  else if (class(step) != "numeric"){
+  else if (!inherits(step, "numeric")){
     stop("Input (step) is of wrong class")
   }
   else if (!.is.int(step)){
@@ -1417,7 +1417,7 @@ optPenalty.aLOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (!(output %in% c("all", "light"))){
     stop("Input (output) should be one of {'all', 'light'}")
   }
-  else if (class(graph) != "logical"){
+  else if (!inherits(graph, "logical")){
     stop("Input (graph) is of wrong class")
   }
   else {
@@ -1639,24 +1639,24 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
   # require("graphics")
   # require("sfsmisc")
 
-  if (class(verbose) != "logical")
+  if (!inherits(verbose, "logical"))
   { stop("Input (verbose) is of wrong class") }
   if (verbose){ cat("Perform input checks...", "\n") }
   if (!is.matrix(Y))
   { stop("Input (Y) should be a matrix") }
-  if (class(lambdaMin) != "numeric")
+  if (!inherits(lambdaMin, "numeric"))
   { stop("Input (lambdaMin) is of wrong class") }
   if (length(lambdaMin) != 1)
   { stop("Input (lambdaMin) must be a scalar") }
   if (lambdaMin <= 0)
   { stop("Input (lambdaMin) must be positive") }
-  if (class(lambdaMax) != "numeric")
+  if (!inherits(lambdaMax, "numeric"))
   { stop("Input (lambdaMax) is of wrong class") }
   if (length(lambdaMax) != 1)
   { stop("Input (lambdaMax) must be a scalar") }
   if (lambdaMax <= lambdaMin)
   { stop("Input (lambdaMax) must be larger than lambdaMin") }
-  if (class(step) != "numeric")
+  if (!inherits(step, "numeric"))
   { stop("Input (step) is of wrong class") }
   if (!.is.int(step))
   { stop("Input (step) should be integer") }
@@ -1666,9 +1666,9 @@ optPenalty.kCV <- function(Y, lambdaMin, lambdaMax, step, fold = nrow(Y),
   { stop("Input (cor) is of wrong class") }
   if (!(output %in% c("all", "light")))
   { stop("Input (output) should be one of {'all', 'light'}") }
-  if (class(graph) != "logical")
+  if (!inherits(graph, "logical"))
   { stop("Input (graph) is of wrong class") }
-  if (class(fold) != "numeric" & class(fold) != "integer")
+  if (!inherits(fold, "numeric") & !inherits(fold, "integer"))
   { stop("Input (fold) is of wrong class") }
   if ((fold <=  1) | (fold > nrow(Y)))
   { stop("Input (fold) out of range") }
@@ -1823,19 +1823,19 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
     # input checks
     if (!is.matrix(Y))
       { stop("Input (Y) should be a matrix") }
-    if (class(lambdaMin) != "numeric")
+    if (!inherits(lambdaMin, "numeric"))
       { stop("Input (lambdaMin) is of wrong class") }
     if (length(lambdaMin) != 1)
       { stop("Input (lambdaMin) must be a scalar") }
     if (lambdaMin <= 0)
       { stop("Input (lambdaMin) must be positive") }
-    if (class(lambdaMax) != "numeric")
+    if (!inherits(lambdaMax, "numeric"))
       { stop("Input (lambdaMax) is of wrong class") }
     if (length(lambdaMax) != 1)
       { stop("Input (lambdaMax) must be a scalar") }
     if (lambdaMax <= lambdaMin)
       { stop("Input (lambdaMax) must be larger than lambdaMin") }
-    if (class(lambdaInit) != "numeric")
+    if (!inherits(lambdaInit, "numeric"))
       { stop("Input (lambdaInit) is of wrong class") }
     if (length(lambdaInit) != 1)
       { stop("Input (lambdaInit) must be a scalar") }
@@ -1845,7 +1845,7 @@ optPenalty.kCVauto <- function(Y, lambdaMin, lambdaMax,
       { stop("Input (lambdaInit) must be smaller than lambdaMax") }
     if (!is.logical(cor))
       { stop("Input (cor) is of wrong class") }
-    if (class(fold) != "numeric" & class(fold) != "integer")
+    if (!inherits(fold, "numeric") & !inherits(fold, "integer"))
       { stop("Input (fold) is of wrong class") }
     if ((fold <=  1) | (fold > nrow(Y)))
       { stop("Input (fold) out of range") }
@@ -2015,7 +2015,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   # require("RSpectra")
 
   if (!suppressChecks){
-    if (class(verbose) != "logical"){
+    if (!inherits(verbose, "logical")){
       stop("Input (verbose) is of wrong class")
     }
     if (verbose){
@@ -2024,7 +2024,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (!is.matrix(S)){
       stop("S should be a matrix")
     }
-    else if (class(lambdaMin) != "numeric"){
+    else if (!inherits(lambdaMin, "numeric")){
       stop("Input (lambdaMin) is of wrong class")
     }
     else if (length(lambdaMin) != 1){
@@ -2033,7 +2033,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     else if (lambdaMin <= 0){
       stop("lambdaMin must be positive")
     }
-    else if (class(lambdaMax) != "numeric"){
+    else if (!inherits(lambdaMax, "numeric")){
       stop("Input (lambdaMax) is of wrong class")
     }
     else if (length(lambdaMax) != 1){
@@ -2042,7 +2042,7 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     else if (lambdaMax <= lambdaMin){
       stop("lambdaMax must be larger than lambdaMin")
     }
-    else if (class(step) != "numeric"){
+    else if (!inherits(step, "numeric")){
       stop("Input (step) is of wrong class")
     }
     else if (!.is.int(step)){
@@ -2063,13 +2063,13 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     else if (!(norm %in% c("2", "1"))){
       stop("norm should be one of {'2', '1'}")
     }
-    else if (class(Iaids) != "logical"){
+    else if (!inherits(Iaids, "logical")){
       stop("Input (Iaids) is of wrong class")
     }
-    else if (class(vertical) != "logical"){
+    else if (!inherits(vertical, "logical")){
       stop("Input (vertical) is of wrong class")
     }
-    else if (vertical & (class(value) != "numeric")){
+    else if (vertical & !inherits(value, "numeric")){
       stop("Input (value) is of wrong class")
     }
     else if (vertical & (any(value <= 0))){
@@ -2078,10 +2078,10 @@ CNplot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     else if (vertical & (length(value) != 1)){
       stop("Input (value) must be a scalar")
     }
-    else if (class(main) != "character"){
+    else if (!inherits(main, "character")){
       stop("Input (main) is of wrong class")
     }
-    else if (class(nOutput) != "logical"){
+    else if (!inherits(nOutput, "logical")){
       stop("Input (nOutput) is of wrong class")
     }
   }
@@ -2325,7 +2325,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (sum(is.na(Y)) != 0){
     stop("Input (Y) should not contain missings")
   }
-  else if (class(id) != "numeric" & class(id) != "integer"){
+  else if (!inherits(id, "numeric") & !inherits(id, "integer")){
     stop("Input (id) is of wrong class")
   }
   else if (!(all(unique(id) %in% c(0, 1)))){
@@ -2334,7 +2334,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (length(id) != ncol(Y)){
     stop("Column dimension input (Y) does not match with length input (id)")
   }
-  else if (class(nPerm) != "numeric" & class(nPerm) != "integer"){
+  else if (!inherits(nPerm, "numeric") & !inherits(nPerm, "integer")){
     stop("Input (nPerm) is of wrong class")
   }
   else if (!.is.int(nPerm)){
@@ -2343,7 +2343,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (nPerm <= 0){
     stop("Input (nPerm) must be strictly positive")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -2352,7 +2352,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (lambdaMin <= 0){
     stop("Input (lambdaMin) must be strictly positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -2361,7 +2361,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (lambdaMax <= lambdaMin){
     stop("Input (lambdaMax) must be larger than input (lambdaMin)")
   }
-  else if (class(lambdaInit) != "numeric"){
+  else if (!inherits(lambdaInit, "numeric")){
     stop("Input (lambdaInit) is of wrong class")
   }
   else if (length(lambdaInit) != 1){
@@ -2373,7 +2373,7 @@ GGMblockNullPenalty <- function(Y, id, nPerm = 25, lambdaMin, lambdaMax,
   else if (lambdaMax <= lambdaInit){
     stop("Input (lambdaInit) must be smaller than input (lambdaMax)")
   }
-  else if (class(ncpus) != "numeric" & class(ncpus) != "integer"){
+  else if (!inherits(ncpus, "numeric") & !inherits(ncpus, "integer")){
     stop("Input (ncpus) is of wrong class")
   }
   else if (!.is.int(ncpus)){
@@ -2552,7 +2552,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (sum(is.na(Y)) != 0){
     stop("Input (Y) should not contain missings")
   }
-  else if (class(id) != "numeric" & class(id) != "integer"){
+  else if (!inherits(id, "numeric") & !inherits(id, "integer")){
     stop("Input (id) is of wrong class")
   }
   else if (!(all(unique(id) %in% c(0, 1)))){
@@ -2561,7 +2561,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (length(id) != ncol(Y)){
     stop("Column dimension input (Y) does not match with length input (id)")
   }
-  else if (class(nPerm) != "numeric" & class(nPerm) != "integer"){
+  else if (!inherits(nPerm, "numeric") & !inherits(nPerm, "integer")){
     stop("Input (nPerm) is of wrong class")
   }
   else if (!.is.int(nPerm)){
@@ -2570,7 +2570,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (nPerm <= 0){
     stop("Input (nPerm) must be strictly positive")
   }
-  else if (class(lambda) != "numeric"){
+  else if (!inherits(lambda, "numeric")){
     stop("Input (lambda) is of wrong class")
   }
   else if (length(lambda) != 1){
@@ -2579,7 +2579,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (lambda <= 0){
     stop("Input (lambda) must be strictly positive")
   }
-  else if (class(lowCiThres) != "numeric"){
+  else if (!inherits(lowCiThres, "numeric")){
     stop("Input (lowCiThres) is of wrong class")
   }
   else if (length(lowCiThres) != 1){
@@ -2588,7 +2588,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (lowCiThres <= 0 | lowCiThres >= 1){
     stop("Input (lowCiThres) must be in the interval (0,1)")
   }
-  else if (class(ncpus) != "numeric" & class(ncpus) != "integer"){
+  else if (!inherits(ncpus, "numeric") & !inherits(ncpus, "integer")){
     stop("Input (ncpus) is of wrong class")
   }
   else if (!.is.int(ncpus)){
@@ -2597,7 +2597,7 @@ GGMblockTest <- function (Y, id, nPerm = 1000, lambda,
   else if (ncpus <= 0){
     stop("Input (ncpus) must be strictly positive")
   }
-  else if (class(verbose) != "logical"){
+  else if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   else {
@@ -2895,7 +2895,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
 
     # Obtain sparsified matrix
     if (threshold == "top"){
-      if (class(top) != "numeric"){
+      if (!inherits(top, "numeric")){
         stop("Input (top) is of wrong class")
       } else if (length(top) != 1){
         stop("Input (top) must be a scalar")
@@ -2933,7 +2933,7 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
     }
 
     if (threshold == "absValue"){
-      if (class(absValueCut) != "numeric"){
+      if (!inherits(absValueCut, "numeric")){
         stop("Input (absValueCut) is of wrong class")
       } else if (length(absValueCut) != 1){
         stop("Input (absValueCut) must be a scalar")
@@ -2950,13 +2950,13 @@ sparsify <- function(P, threshold = c("absValue", "connected", "localFDR", "top"
     }
 
     if (threshold == "localFDR"){
-      if (class(FDRcut) != "numeric"){
+      if (!inherits(FDRcut, "numeric")){
         stop("Input (FDRcut) is of wrong class")
       } else if (length(FDRcut) != 1){
         stop("Input (FDRcut) must be a scalar")
       } else if (FDRcut <= 0 | FDRcut >= 1){
         stop("Input (FDRcut) must be in the interval (0,1)")
-      } else if (class(verbose) != "logical"){
+      } else if (!inherits(verbose, "logical")){
         stop("Input (verbose) is of wrong class")
       } else {
         lFDRs <- 1 - fdrtool(PC[upper.tri(PC)], "correlation",
@@ -3099,7 +3099,7 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
   else if (dim(E)[1] != dim(T)[1]){
     stop("E and T should be of the same dimension")
   }
-  else if (class(precision) != "logical"){
+  else if (!inherits(precision, "logical")){
     stop("Input (precision) is of wrong class")
   }
   else if (missing(type)){
@@ -3203,10 +3203,10 @@ loss <- function(E, T, precision = TRUE, type = c("frobenius", "quadratic")){
 #'
 #' @export
 KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
-  if (class(Mtest) != "numeric"){
+  if (!inherits(Mtest, "numeric")){
     stop("Input (Mtest) is of wrong class")
   }
-  else if (class(Mref) != "numeric"){
+  else if (!inherits(Mref, "numeric")){
     stop("Input (Mref) is of wrong class")
   }
   else if (length(Mtest) != length(Mref)){
@@ -3230,7 +3230,7 @@ KLdiv <- function(Mtest, Mref, Stest, Sref, symmetric = FALSE){
   else if (dim(Sref)[1] != length(Mref)){
     stop("Column and row dimension of Sref should correspond to length Mref")
   }
-  else if (class(symmetric) != "logical"){
+  else if (!inherits(symmetric, "logical")){
     stop("Input (symmetric) is of wrong class")
   }
   else {
@@ -3331,7 +3331,7 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
   else if (all(diag(S) == 1)){
     stop("Input (S) should be a nonstandardized covariance matrix")
   }
-  else if (class(diag) != "logical"){
+  else if (!inherits(diag, "logical")){
     stop("Input (diag) is of wrong class")
   }
   else if (missing(fileType)){
@@ -3340,10 +3340,10 @@ evaluateSfit <- function(Phat, S, diag = FALSE, fileType = "pdf", nameExt = "",
   else if (!(fileType %in% c("pdf", "eps"))){
     stop("fileType should be one of {'pdf', 'eps'}")
   }
-  else if (class(nameExt) != "character"){
+  else if (!inherits(nameExt, "character")){
     stop("Input (nameExt) is of wrong class")
   }
-  else if (class(dir) != "character"){
+  else if (!inherits(dir, "character")){
     stop("Specify directory for output as 'character'")
   }
   else {
@@ -3556,7 +3556,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
                         target = default.target(S), plotType = "pcor",
                         diag = FALSE, vertical = FALSE, value, verbose = TRUE){
 
-  if (class(verbose) != "logical"){
+  if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   if (verbose){
@@ -3568,7 +3568,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   if (!isSymmetric(S)){
     stop("Input (S) should be a covariance matrix")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -3577,7 +3577,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMin <= 0){
     stop("Input (lambdaMin) must be positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -3586,7 +3586,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMax <= lambdaMin){
     stop("lambdaMax must be larger than lambdaMin")
   }
-  else if (class(step) != "numeric") {
+  else if (!inherits(step, "numeric")) {
     stop("Input (step) is of wrong class")
   }
   else if (!.is.int(step)){
@@ -3595,7 +3595,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
-  else if (class(plotType) != "character") {
+  else if (!inherits(plotType, "character")) {
     stop("Input (plotType) is of wrong class")
   }
   else if (!(plotType %in% c("pcor", "cor", "cov", "prec"))){
@@ -3605,10 +3605,10 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
     stop("Input (plotType) should be exactly one of {'pcor', 'cor', 'cov', ",
          "'prec'}")
   }
-  if (class(diag) != "logical") {
+  if (!inherits(diag, "logical")) {
     stop("Input (diag) is of wrong class")
   }
-  else if (class(vertical) != "logical"){
+  else if (!inherits(vertical, "logical")){
     stop("Input (vertical) is of wrong class")
   }
   else {
@@ -3717,7 +3717,7 @@ ridgePathS <- function (S, lambdaMin, lambdaMax, step, type = "Alt",
     if (vertical){
       if (missing(value)){
         stop("Need to specify input (value)")
-      } else if (class(value) != "numeric"){
+      } else if (!inherits(value, "numeric")){
         stop("Input (value) is of wrong class")
       } else if (length(value) != 1){
         stop("Input (value) must be a scalar")
@@ -3809,19 +3809,19 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
   if (!is.matrix(M)){
     stop("Supply 'M' as matrix")
   }
-  else if (class(lowColor) != "character"){
+  else if (!inherits(lowColor, "character")){
     stop("Input (lowColor) is of wrong class")
   }
   else if (length(lowColor) != 1){
     stop("Length lowColor must be one")
   }
-  else if (class(highColor) != "character"){
+  else if (!inherits(highColor, "character")){
     stop("Input (highColor) is of wrong class")
   }
   else if (length(highColor) != 1){
     stop("Length highColor must be one")
   }
-  else if (class(textsize) != "numeric"){
+  else if (!inherits(textsize, "numeric")){
     stop("Input (textsize) is of wrong class")
   }
   else if (length(textsize) != 1){
@@ -3830,13 +3830,13 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
   else if (textsize <= 0){
     stop("textsize must be positive")
   }
-  else if (class(diag) != "logical"){
+  else if (!inherits(diag, "logical")){
     stop("Input (diag) is of wrong class")
   }
-  else if (class(legend) != "logical"){
+  else if (!inherits(legend, "logical")){
     stop("Input (legend) is of wrong class")
   }
-  else if (class(main) != "character"){
+  else if (!inherits(main, "character")){
     stop("Input (main) is of wrong class")
   }
   else {
@@ -4063,7 +4063,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (is.null(lay) & is.null(coords)){
     stop("Input (lay) and input (coords) cannot be both NULL")
   }
-  else if (class(Vsize) != "numeric"){
+  else if (!inherits(Vsize, "numeric")){
     stop("Input (Vsize) is of wrong class")
   }
   else if (length(Vsize) != 1){
@@ -4072,7 +4072,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (Vsize <= 0){
     stop("Vsize must be positive")
   }
-  else if (class(Vcex) != "numeric"){
+  else if (!inherits(Vcex, "numeric")){
     stop("Input (Vcex) is of wrong class")
   }
   else if (length(Vcex) != 1){
@@ -4081,32 +4081,32 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
   else if (Vcex <= 0){
     stop("Vcex must be positive")
   }
-  else if (class(Vcolor) != "character"){
+  else if (!inherits(Vcolor, "character")){
     stop("Input (Vcolor) is of wrong class")
   }
   else if (length(Vcolor) != 1 & length(Vcolor) != nrow(M)){
     stop("Length Vcolor must be either one
          or equal to row (or column) dimension of M")
   }
-  else if (class(VBcolor) != "character"){
+  else if (!inherits(VBcolor, "character")){
     stop("Input (VBcolor) is of wrong class")
   }
   else if (length(VBcolor) != 1){
     stop("Length VBcolor must be one")
   }
-  else if (class(VLcolor) != "character"){
+  else if (!inherits(VLcolor, "character")){
     stop("Input (VLcolor) is of wrong class")
   }
   else if (length(VLcolor) != 1){
     stop("Length VLcolor must be one")
   }
-  else if (class(prune) != "logical"){
+  else if (!inherits(prune, "logical")){
     stop("Input (prune) is of wrong class")
   }
-  else if (class(legend) != "logical"){
+  else if (!inherits(legend, "logical")){
     stop("Input (legend) is of wrong class")
   }
-  else if (class(main) != "character"){
+  else if (!inherits(main, "character")){
     stop("Input (main) is of wrong class")
   }
   else {
@@ -4168,7 +4168,7 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 
     # Fancy graph
     if (type == "fancy"){
-      if (class(cut) != "numeric"){
+      if (!inherits(cut, "numeric")){
         stop("Input (cut) is of wrong class")
       } else if (length(cut) != 1){
         stop("Length cut must be one")
@@ -4195,17 +4195,17 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 
     # Weighted graph
     if (type == "weighted"){
-      if (class(scale) != "numeric"){
+      if (!inherits(scale, "numeric")){
         stop("Input (scale) is of wrong class")
       } else if (length(scale) != 1){
         stop("Length scale must be one")
       } else if (scale <= 0){
         stop("scale must be positive")
-      } else if (class(pEcolor) != "character"){
+      } else if (!inherits(pEcolor, "character")){
         stop("Input (pEcolor) is of wrong class")
       } else if (length(pEcolor) != 1){
         stop("Length pEcolor must be one")
-      } else if (class(nEcolor) != "character"){
+      } else if (!inherits(nEcolor, "character")){
         stop("Input (nEcolor) is of wrong class")
       } else if (length(nEcolor) != 1){
         stop("Length nEcolor must be one")
@@ -4229,17 +4229,17 @@ Ugraph <- function(M, type = c("plain", "fancy", "weighted"),
 
     # Legend
     if (legend){
-      if (class(label) != "character"){
+      if (!inherits(label, "character")){
         stop("Input (label) is of wrong class")
       } else if (length(label) != 1){
         stop("Length label must be one")
-      } else if (class(Lcex) != "numeric"){
+      } else if (!inherits(Lcex, "numeric")){
         stop("Input (Lcex) is of wrong class")
       } else if (length(Lcex) != 1){
         stop("Length Lcex must be one")
       } else if (Lcex <= 0){
         stop("Lcex must be positive")
-      } else if (class(PTcex) != "numeric"){
+      } else if (!inherits(PTcex, "numeric")){
         stop("Input (PTcex) is of wrong class")
       } else if (length(PTcex) != 1){
         stop("Length PTcex must be one")
@@ -4350,7 +4350,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
   else if (!isSymmetric(sparseP)){
     stop("Input (sparseP) should be a symmetric matrix")
   }
-  else if (class(as.table) != "logical"){
+  else if (!inherits(as.table, "logical")){
     stop("Input (as.table) is of wrong class")
   }
   else{
@@ -4590,7 +4590,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
   else if (!evaluateS(P0, verbose = FALSE)$posEigen){
     stop("Input (P0) is expected to be positive definite")
   }
-  else if (class(node1) != "numeric"){
+  else if (!inherits(node1, "numeric")){
     stop("Input (node1) is of wrong class")
   }
   else if (length(node1) != 1){
@@ -4605,7 +4605,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
   else if (node1 > ncol(P0)){
     stop("Input (node1) cannot exceed the number of variables in P0")
   }
-  else if (class(node2) != "numeric"){
+  else if (!inherits(node2, "numeric")){
     stop("Input (node2) is of wrong class")
   }
   else if (length(node2) != 1){
@@ -4623,7 +4623,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
   else if (node1 == node2){
     stop("Inputs (node1 and node2) cannot be equal")
   }
-  else if (class(neiExpansions) != "numeric"){
+  else if (!inherits(neiExpansions, "numeric")){
     stop("Input (neiExpansions) is of wrong class")
   }
   else if (length(neiExpansions) != 1){
@@ -4635,10 +4635,10 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
   else if (neiExpansions < 1){
     stop("Input (neiExpansions) cannot be zero or negative")
   }
-  else if (class(graph) != "logical"){
+  else if (!inherits(graph, "logical")){
     stop("Input (graph) is of wrong class")
   }
-  else if (class(verbose) != "logical"){
+  else if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   else {
@@ -4735,7 +4735,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 
       # Visualize
       if (graph){
-        if (class(nrPaths) != "numeric"){
+        if (!inherits(nrPaths, "numeric")){
           stop("Input (nrPaths) is of wrong class")
         } else if (length(nrPaths) != 1){
           stop("Length input (nrPaths) must be one")
@@ -4767,37 +4767,37 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
           stop("Input (coords) is of wrong class")
       } else if (is.null(lay) & is.null(coords)){
         stop("Input (lay) and input (coords) cannot be both NULL")
-      } else if (class(nodecol) != "character"){
+      } else if (!inherits(nodecol, "character")){
         stop("Input (nodecol) is of wrong class")
       } else if (length(nodecol) != 1){
         stop("Length input (nodecol) must be one")
-      } else if (class(Vsize) != "numeric"){
+      } else if (!inherits(Vsize, "numeric")){
         stop("Input (Vsize) is of wrong class")
       } else if (length(Vsize) != 1){
         stop("Length input (Vsize) must be one")
       } else if (Vsize <= 0){
         stop("Input (Vsize) must be strictly positive")
-      } else if (class(Vcex) != "numeric"){
+      } else if (!inherits(Vcex, "numeric")){
         stop("Input (Vcex) is of wrong class")
       } else if (length(Vcex) != 1){
         stop("Length input (Vcex) must be one")
       } else if (Vcex <= 0){
         stop("Input (Vcex) must be strictly positive")
-      } else if (class(VBcolor) != "character"){
+      } else if (!inherits(VBcolor, "character")){
         stop("Input (VBcolor) is of wrong class")
       } else if (length(VBcolor) != 1){
         stop("Length input (VBcolor) must be one")
-      } else if (class(VLcolor) != "character"){
+      } else if (!inherits(VLcolor, "character")){
         stop("Input (VLcolor) is of wrong class")
       } else if (length(VLcolor) != 1){
         stop("Length input (VLcolor) must be one")
-      } else if (class(all.edges) != "logical"){
+      } else if (!inherits(all.edges, "logical")){
         stop("Input (all.edges) is of wrong class")
-      } else if (class(prune) != "logical"){
+      } else if (!inherits(prune, "logical")){
         stop("Input (prune) is of wrong class")
-      } else if (class(legend) != "logical"){
+      } else if (!inherits(legend, "logical")){
         stop("Input (legend) is of wrong class")
-      } else if (class(main) != "character"){
+      } else if (!inherits(main, "character")){
         stop("Input (main) is of wrong class")
       } else {
         # Preliminaries
@@ -4877,7 +4877,7 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 
         # Produce graph
         if (all.edges){
-          if (class(scale) != "numeric"){
+          if (!inherits(scale, "numeric")){
             stop("Input (scale) is of wrong class")
           } else if (length(scale) != 1){
             stop("Length input (scale) must be one")
@@ -4903,13 +4903,13 @@ GGMpathStats <- function(P0, node1, node2, neiExpansions = 2, verbose = TRUE,
 
         # Legend
         if (legend){
-          if (class(Lcex) != "numeric"){
+          if (!inherits(Lcex, "numeric")){
             stop("Input (Lcex) is of wrong class")
           } else if (length(Lcex) != 1){
             stop("Length input (Lcex) must be one")
           } else if (Lcex <= 0){
             stop("Input (Lcex) must be strictly positive")
-          } else if (class(PTcex) != "numeric"){
+          } else if (!inherits(PTcex, "numeric")){
             stop("Input (PTcex) is of wrong class")
           } else if (length(PTcex) != 1){
             stop("Length input (PTcex) must be one")
@@ -5040,16 +5040,16 @@ fullMontyS <- function(Y, lambdaMin, lambdaMax,
   # require("reshape")
   # require("utils")
 
-  if (class(dir) != "character"){
+  if (!inherits(dir, "character")){
     stop("Specify directory for output (dir) as 'character'")
   }
   else if (!(fileTypeFig %in% c("pdf", "eps"))){
     stop("Input (fileTypeFig) should be one of {'pdf', 'eps'}")
   }
-  else if (class(nOutput) != "logical"){
+  else if (!inherits(nOutput, "logical")){
     stop("Input (nOutput) is of wrong class")
   }
-  else if (class(verbose) != "logical"){
+  else if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   else {
@@ -5519,7 +5519,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
       else if (is.null(lay) & is.null(coords)){
         stop("Input (lay) and input (coords) cannot be both NULL")
       }
-      else if (class(Vsize) != "numeric"){
+      else if (!inherits(Vsize, "numeric")){
         stop("Input (Vsize) is of wrong class")
       }
       else if (length(Vsize) != 1){
@@ -5528,7 +5528,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
       else if (Vsize <= 0){
         stop("Vsize must be positive")
       }
-      else if (class(Vcex) != "numeric"){
+      else if (!inherits(Vcex, "numeric")){
         stop("Input (Vcex) is of wrong class")
       }
       else if (length(Vcex) != 1){
@@ -5537,26 +5537,26 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
       else if (Vcex <= 0){
         stop("Vcex must be positive")
       }
-      else if (class(Vcolor) != "character"){
+      else if (!inherits(Vcolor, "character")){
         stop("Input (Vcolor) is of wrong class")
       }
       else if (length(Vcolor) != 1 & length(Vcolor) != nrow(P)){
         stop("Length Vcolor must be either one
              or equal to row (or column) dimension of P")
       }
-      else if (class(VBcolor) != "character"){
+      else if (!inherits(VBcolor, "character")){
         stop("Input (VBcolor) is of wrong class")
       }
       else if (length(VBcolor) != 1){
         stop("Length VBcolor must be one")
       }
-      else if (class(VLcolor) != "character"){
+      else if (!inherits(VLcolor, "character")){
         stop("Input (VLcolor) is of wrong class")
       }
       else if (length(VLcolor) != 1){
         stop("Length VLcolor must be one")
       }
-      else if (class(main) != "character"){
+      else if (!inherits(main, "character")){
         stop("Input (main) is of wrong class")
       }
       else {
@@ -5768,7 +5768,7 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
   else if (is.null(lay) & is.null(coords)){
     stop("Input (lay) and input (coords) cannot be both NULL")
   }
-  else if (class(Vsize) != "numeric"){
+  else if (!inherits(Vsize, "numeric")){
     stop("Input (Vsize) is of wrong class")
   }
   else if (length(Vsize) != 1){
@@ -5777,7 +5777,7 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
   else if (Vsize <= 0){
     stop("Vsize must be positive")
   }
-  else if (class(Vcex) != "numeric"){
+  else if (!inherits(Vcex, "numeric")){
     stop("Input (Vcex) is of wrong class")
   }
   else if (length(Vcex) != 1){
@@ -5786,38 +5786,38 @@ DiffGraph <- function(P1, P2, lay = "layout_with_fr", coords = NULL,
   else if (Vcex <= 0){
     stop("Vcex must be positive")
   }
-  else if (class(Vcolor) != "character"){
+  else if (!inherits(Vcolor, "character")){
     stop("Input (Vcolor) is of wrong class")
   }
   else if (length(Vcolor) != 1 & length(Vcolor) != nrow(P1)){
     stop("Length Vcolor must be either one
          or equal to row (or column) dimension of P1 (P2)")
   }
-  else if (class(VBcolor) != "character"){
+  else if (!inherits(VBcolor, "character")){
     stop("Input (VBcolor) is of wrong class")
   }
   else if (length(VBcolor) != 1){
     stop("Length VBcolor must be one")
   }
-  else if (class(VLcolor) != "character"){
+  else if (!inherits(VLcolor, "character")){
     stop("Input (VLcolor) is of wrong class")
   }
   else if (length(VLcolor) != 1){
     stop("Length VLcolor must be one")
   }
-  else if (class(P1color) != "character"){
+  else if (!inherits(P1color, "character")){
     stop("Input (P1color) is of wrong class")
   }
   else if (length(P1color) != 1){
     stop("Length P1color must be one")
   }
-  else if (class(P2color) != "character"){
+  else if (!inherits(P2color, "character")){
     stop("Input (P2color) is of wrong class")
   }
   else if (length(P2color) != 1){
     stop("Length P2color must be one")
   }
-  else if (class(main) != "character"){
+  else if (!inherits(main, "character")){
     stop("Input (main) is of wrong class")
   }
   else {

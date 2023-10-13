@@ -22,9 +22,6 @@
 \item{invert}{An \code{integer}. Should the estimate be computed using
 inversion?  Permitted values are \code{0L}, \code{1L}, and \code{2L} meaning
 "no", "yes", and "automatic" (default).}
-
-\item{alpha}{The diagonal value on the scalar target matrix. A \code{double}
-of length 1.}
 }
 \value{
 Returns a symmetric positive definite \code{matrix} of the same size

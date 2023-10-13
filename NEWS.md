@@ -5,6 +5,7 @@
 
 ## Adjustments:
   * Functions optPenaltyPchordal, ridgePchordal, ridgePsign, and support4ridgeP (temporarily) deprecated (for major adjustments)
+  * Replaced if() conditions comparing class() to string with evaluations using inherits()
   
 ## Documentation:
   * Fixed URLs.

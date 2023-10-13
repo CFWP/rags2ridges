@@ -126,7 +126,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   # require("Hmisc")
   # require("sfsmisc")
 
-  if (class(verbose) != "logical"){
+  if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   if (verbose){
@@ -138,7 +138,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (!isSymmetric(S)){
     stop("S should be a symmetric matrix")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -147,7 +147,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMin <= 0){
     stop("lambdaMin must be positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -156,7 +156,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMax <= lambdaMin){
     stop("lambdaMax must be larger than lambdaMin")
   }
-  else if (class(step) != "numeric"){
+  else if (!inherits(step, "numeric")){
     stop("Input (step) is of wrong class")
   }
   else if (!.is.int(step)){
@@ -188,22 +188,22 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
   else if (!(norm %in% c("2", "1"))){
     stop("norm should be one of {'2', '1'}")
   }
-  else if (class(digitLoss) != "logical"){
+  else if (!inherits(digitLoss, "logical")){
     stop("Input (digitLoss) is of wrong class")
   }
-  else if (class(rlDist) != "logical"){
+  else if (!inherits(rlDist, "logical")){
     stop("Input (rlDist) is of wrong class")
   }
   else if (digitLoss & rlDist){
     stop("Only one of 'digitLoss' and 'rlDist' may be TRUE")
   }
-  else if (class(vertical) != "logical"){
+  else if (!inherits(vertical, "logical")){
     stop("Input (vertical) is of wrong class")
   }
-  else if (class(main) != "logical"){
+  else if (!inherits(main, "logical")){
     stop("Input (main) is of wrong class")
   }
-  else if (class(nOutput) != "logical"){
+  else if (!inherits(nOutput, "logical")){
     stop("Input (nOutput) is of wrong class")
   }
   else {
@@ -303,7 +303,7 @@ conditionNumberPlot <- function(S, lambdaMin, lambdaMax, step, type = "Alt",
     if (vertical){
       if (missing(value)){
         stop("Need to specify input (value)")
-      } else if (class(value) != "numeric"){
+      } else if (!inherits(value, "numeric")){
         stop("Input (value) is of wrong class")
       } else if (length(value) != 1){
         stop("Input (value) must be a scalar")
@@ -586,7 +586,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   # require("graphics")
   # require("sfsmisc")
 
-  if (class(verbose) != "logical"){
+  if (!inherits(verbose, "logical")){
     stop("Input (verbose) is of wrong class")
   }
   if (verbose){
@@ -595,7 +595,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   if (!is.matrix(Y)){
     stop("Input (Y) should be a matrix")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -604,7 +604,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMin <= 0){
     stop("Input (lambdaMin) must be positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -613,7 +613,7 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (lambdaMax <= lambdaMin){
     stop("Input (lambdaMax) must be larger than lambdaMin")
   }
-  else if (class(step) != "numeric"){
+  else if (!inherits(step, "numeric")){
     stop("Input (step) is of wrong class")
   }
   else if (!.is.int(step)){
@@ -622,13 +622,13 @@ optPenalty.LOOCV <- function(Y, lambdaMin, lambdaMax, step, type = "Alt",
   else if (step <= 0){
     stop("Input (step) should be a positive integer")
   }
-  else if (class(cor) != "logical"){
+  else if (!inherits(cor, "logical")){
     stop("Input (cor) is of wrong class")
   }
   else if (!(output %in% c("all", "light"))){
     stop("Input (output) should be one of {'all', 'light'}")
   }
-  else if (class(graph) != "logical"){
+  else if (!inherits(graph, "logical")){
     stop("Input (graph) is of wrong class")
   }
   else {
@@ -795,7 +795,7 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   else if (sum(is.na(Y)) != 0){
     stop("Input matrix (Y) should not contain missings")
   }
-  else if (class(lambdaMin) != "numeric"){
+  else if (!inherits(lambdaMin, "numeric")){
     stop("Input (lambdaMin) is of wrong class")
   }
   else if (length(lambdaMin) != 1){
@@ -804,7 +804,7 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   else if (lambdaMin <= 0){
     stop("Input (lambdaMin) must be strictly positive")
   }
-  else if (class(lambdaMax) != "numeric"){
+  else if (!inherits(lambdaMax, "numeric")){
     stop("Input (lambdaMax) is of wrong class")
   }
   else if (length(lambdaMax) != 1){
@@ -813,7 +813,7 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   else if (lambdaMax <= lambdaMin){
     stop("Input (lambdaMax) must be larger than lambdaMin")
   }
-  else if (class(lambdaInit) != "numeric"){
+  else if (!inherits(lambdaInit, "numeric")){
     stop("Input (lambdaInit) is of wrong class")
   }
   else if (length(lambdaInit) != 1){
@@ -825,7 +825,7 @@ optPenalty.LOOCVauto <- function(Y, lambdaMin, lambdaMax,
   else if (lambdaMax <= lambdaInit){
     stop("Input (lambdaInit) must be smaller than input (lambdaMax)")
   }
-  else if (class(cor) != "logical"){
+  else if (!inherits(cor, "logical")){
     stop("Input (cor) is of wrong class")
   }
   else {
