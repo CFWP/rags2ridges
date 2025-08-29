@@ -24,7 +24,7 @@ DiffGraph(
 
 \item{P2}{Sparsified precision \code{matrix} for class 2.}
 
-\item{lay}{A \code{character} mimicking a call to \code{\link{igraph}}
+\item{lay}{A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 layout functions. Determines the placement of vertices.}
 
 \item{coords}{A \code{matrix} containing coordinates. Alternative to the
@@ -68,10 +68,10 @@ differential graph. Edges unique to \code{P1} are colored according to
 solid lines indicate positive precision elements.
 
 The default layout is according to the Fruchterman-Reingold algorithm
-(1991). Most layout functions supported by \code{\link{igraph}} are
+(1991). Most layout functions supported by \code{\link[igraph]{igraph}} are
 supported (the function is partly a wrapper around certain
-\code{\link{igraph}} functions). The igraph layouts can be invoked by a
-\code{character} that mimicks a call to a \code{\link{igraph}} layout
+\code{\link[igraph]{igraph}} functions). The igraph layouts can be invoked by a
+\code{character} that mimicks a call to a \code{\link[igraph]{igraph}} layout
 functions in the \code{lay} argument. When using \code{lay = NULL} one can
 specify the placement of vertices with the \code{coords} argument. The row
 dimension of this matrix should equal the number of vertices. The column

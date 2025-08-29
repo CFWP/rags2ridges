@@ -801,7 +801,7 @@ arma::mat armaFusedUpdateIII(int g0,
        continue;
      }
 
-     double factor = arma::is_finite(lambda(g0, g)) ? lambda(g0, g)/a : 1;
+     double factor = std::isfinite(lambda(g0, g)) ? lambda(g0, g)/a : 1;
 
      arma::mat P = Rcpp::as<arma::mat>(Rcpp::wrap(Plist[g]));
      arma::mat T = Rcpp::as<arma::mat>(Rcpp::wrap(Tlist[g]));
