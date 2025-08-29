@@ -5654,10 +5654,10 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #' solid lines indicate positive precision elements.
 #'
 #' The default layout is according to the Fruchterman-Reingold algorithm
-#' (1991). Most layout functions supported by \code{\link{igraph}} are
+#' (1991). Most layout functions supported by \code{\link[igraph]{igraph}} are
 #' supported (the function is partly a wrapper around certain
-#' \code{\link{igraph}} functions). The igraph layouts can be invoked by a
-#' \code{character} that mimicks a call to a \code{\link{igraph}} layout
+#' \code{\link[igraph]{igraph}} functions). The igraph layouts can be invoked by a
+#' \code{character} that mimicks a call to a \code{\link[igraph]{igraph}} layout
 #' functions in the \code{lay} argument. When using \code{lay = NULL} one can
 #' specify the placement of vertices with the \code{coords} argument. The row
 #' dimension of this matrix should equal the number of vertices. The column
@@ -5669,7 +5669,7 @@ Communities <- function(P, graph = TRUE, lay = "layout_with_fr", coords = NULL,
 #'
 #' @param P1 Sparsified precision \code{matrix} for class 1.
 #' @param P2 Sparsified precision \code{matrix} for class 2.
-#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' @param lay A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 #' layout functions. Determines the placement of vertices.
 #' @param coords A \code{matrix} containing coordinates. Alternative to the
 #' lay-argument for determining the placement of vertices.
