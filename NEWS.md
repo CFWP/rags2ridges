@@ -1,6 +1,12 @@
 # News for Package [rags2ridges](https://cran.r-project.org/package=rags2ridges)
 
 
+# Version 2.2.8
+
+## Documentation:
+  * Provided package anchors for all Rd \link{} targets to other packages.
+
+
 # Version 2.2.7
 
 ## Adjustments:

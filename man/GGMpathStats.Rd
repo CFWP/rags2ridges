@@ -53,7 +53,7 @@ visualized with a graph.}
 highest contribution to the marginal covariance between the indicated node
 pair) to be visualized/highlighted.}
 
-\item{lay}{A \code{character} mimicking a call to \code{\link{igraph}}
+\item{lay}{A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 layout functions. Determines the placement of vertices.}
 
 \item{coords}{A \code{matrix} containing coordinates. Alternative to the
@@ -120,7 +120,7 @@ function searches for shortest paths between the specified endpoints
 nodes only once. The shortest paths between the provided endpoints are
 determined heuristically by the following procedure. The search is initiated
 by application of the \code{get.all.shortest.paths}-function from the
-\code{\link{igraph}}-package, which yields all shortest paths between the
+\code{\link[igraph]{igraph}}-package, which yields all shortest paths between the
 nodes. Next, the neighborhoods of the endpoints are defined (excluding the
 endpoints themselves). Then, the shortest paths are found between: (a)
 \code{node1} and node \emph{Vs} in its neighborhood; (b) node \emph{Vs} in
@@ -154,10 +154,10 @@ edges other than those implied by the \code{nrPaths}-paths between
 \code{nrPaths} are visualized.
 
 The default layout gives a circular placement of the vertices. Most layout
-functions supported by \code{\link{igraph}} are supported (the function is
-partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+functions supported by \code{\link[igraph]{igraph}} are supported (the function is
+partly a wrapper around certain \code{\link[igraph]{igraph}} functions). The igraph
 layouts can be invoked by a \code{character} that mimicks a call to a
-\code{\link{igraph}} layout functions in the \code{lay} argument. When using
+\code{\link[igraph]{igraph}} layout functions in the \code{lay} argument. When using
 \code{lay = NULL} one can specify the placement of vertices with the
 \code{coords} argument. The row dimension of this matrix should equal the
 number of (pruned) vertices. The column dimension then should equal 2 (for

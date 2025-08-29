@@ -29,6 +29,10 @@
 ## 	 [4] Peeters, C.F.W., van de Wiel, M.A., & van Wieringen, W.N. (2020).
 ##       "The Spectral Condition Number Plot for Regularization Parameter
 ##       Evaluation", Computational Statistics, vol. 35: 629-646.
+##   [5] Peeters, C.F.W., Bilgrau, A.E., & van Wieringen, W.N. (2022).
+##       "rags2ridges: A One-Stop-l2-Shop for Graphical Modeling of
+##       High-Dimensional Precision Matrices", Journal of Statistical Software,
+##       vol. 102(4): 1–32.
 ##
 ################################################################################
 ################################################################################
@@ -3909,10 +3913,10 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' are thus only used when \code{type = "weighted"}.
 #'
 #' The default layout gives a circular placement of the vertices. Most layout
-#' functions supported by \code{\link{igraph}} are supported (the function is
-#' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+#' functions supported by \code{\link[igraph]{igraph}} are supported (the function is
+#' partly a wrapper around certain \code{\link[igraph]{igraph}} functions). The igraph
 #' layouts can be invoked by a \code{character} that mimicks a call to a
-#' \code{\link{igraph}} layout functions in the \code{lay} argument. When using
+#' \code{\link[igraph]{igraph}} layout functions in the \code{lay} argument. When using
 #' \code{lay = NULL} one can specify the placement of vertices with the
 #' \code{coords} argument. The row dimension of this matrix should equal the
 #' number of (pruned) vertices. The column dimension then should equal 2 (for
@@ -3934,7 +3938,7 @@ edgeHeat <- function(M, lowColor = "blue", highColor = "red", textsize = 10,
 #' @param M (Possibly sparsified) precision \code{matrix}
 #' @param type A \code{character} indicating the type of graph to be produced.
 #' Must be one of: "plain", "fancy", "weighted".
-#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' @param lay A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 #' layout functions. Determines the placement of vertices.
 #' @param coords A \code{matrix} containing coordinates. Alternative to the
 #' lay-argument for determining the placement of vertices.
@@ -4431,7 +4435,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' nodes only once. The shortest paths between the provided endpoints are
 #' determined heuristically by the following procedure. The search is initiated
 #' by application of the \code{get.all.shortest.paths}-function from the
-#' \code{\link{igraph}}-package, which yields all shortest paths between the
+#' \code{\link[igraph]{igraph}}-package, which yields all shortest paths between the
 #' nodes. Next, the neighborhoods of the endpoints are defined (excluding the
 #' endpoints themselves). Then, the shortest paths are found between: (a)
 #' \code{node1} and node \emph{Vs} in its neighborhood; (b) node \emph{Vs} in
@@ -4465,10 +4469,10 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' \code{nrPaths} are visualized.
 #'
 #' The default layout gives a circular placement of the vertices. Most layout
-#' functions supported by \code{\link{igraph}} are supported (the function is
-#' partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+#' functions supported by \code{\link[igraph]{igraph}} are supported (the function is
+#' partly a wrapper around certain \code{\link[igraph]{igraph}} functions). The igraph
 #' layouts can be invoked by a \code{character} that mimicks a call to a
-#' \code{\link{igraph}} layout functions in the \code{lay} argument. When using
+#' \code{\link[igraph]{igraph}} layout functions in the \code{lay} argument. When using
 #' \code{lay = NULL} one can specify the placement of vertices with the
 #' \code{coords} argument. The row dimension of this matrix should equal the
 #' number of (pruned) vertices. The column dimension then should equal 2 (for
@@ -4501,7 +4505,7 @@ GGMnetworkStats <- function(sparseP, as.table = FALSE){
 #' @param nrPaths A \code{numeric} indicating the number of paths (with the
 #' highest contribution to the marginal covariance between the indicated node
 #' pair) to be visualized/highlighted.
-#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' @param lay A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 #' layout functions. Determines the placement of vertices.
 #' @param coords A \code{matrix} containing coordinates. Alternative to the
 #' lay-argument for determining the placement of vertices.
@@ -5403,10 +5407,10 @@ Union <- function(M1, M2){
 #'
 #' When \code{graph = TRUE} the community structure in the graph is visualized.
 #' The default layout is according to the Fruchterman-Reingold algorithm
-#' (1991). Most layout functions supported by \code{\link{igraph}} are
+#' (1991). Most layout functions supported by \code{\link[igraph]{igraph}} are
 #' supported (the function is partly a wrapper around certain
-#' \code{\link{igraph}} functions). The igraph layouts can be invoked by a
-#' \code{character} that mimicks a call to a \code{\link{igraph}} layout
+#' \code{\link[igraph]{igraph}} functions). The igraph layouts can be invoked by a
+#' \code{character} that mimicks a call to a \code{\link[igraph]{igraph}} layout
 #' functions in the \code{lay} argument. When using \code{lay = NULL} one can
 #' specify the placement of vertices with the \code{coords} argument. The row
 #' dimension of this matrix should equal the number of vertices. The column
@@ -5420,7 +5424,7 @@ Union <- function(M1, M2){
 #' @param P Sparsified precision \code{matrix}
 #' @param graph A \code{logical} indicating if the results should be
 #' visualized.
-#' @param lay A \code{character} mimicking a call to \code{\link{igraph}}
+#' @param lay A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 #' layout functions. Determines the placement of vertices.
 #' @param coords A \code{matrix} containing coordinates. Alternative to the
 #' lay-argument for determining the placement of vertices.

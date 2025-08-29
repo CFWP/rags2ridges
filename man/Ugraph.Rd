@@ -32,7 +32,7 @@ Ugraph(
 \item{type}{A \code{character} indicating the type of graph to be produced.
 Must be one of: "plain", "fancy", "weighted".}
 
-\item{lay}{A \code{character} mimicking a call to \code{\link{igraph}}
+\item{lay}{A \code{character} mimicking a call to \code{\link[igraph]{igraph}}
 layout functions. Determines the placement of vertices.}
 
 \item{coords}{A \code{matrix} containing coordinates. Alternative to the
@@ -110,10 +110,10 @@ while \code{pEcolor} colored edges represent positive partial correlations.
 are thus only used when \code{type = "weighted"}.
 
 The default layout gives a circular placement of the vertices. Most layout
-functions supported by \code{\link{igraph}} are supported (the function is
-partly a wrapper around certain \code{\link{igraph}} functions). The igraph
+functions supported by \code{\link[igraph]{igraph}} are supported (the function is
+partly a wrapper around certain \code{\link[igraph]{igraph}} functions). The igraph
 layouts can be invoked by a \code{character} that mimicks a call to a
-\code{\link{igraph}} layout functions in the \code{lay} argument. When using
+\code{\link[igraph]{igraph}} layout functions in the \code{lay} argument. When using
 \code{lay = NULL} one can specify the placement of vertices with the
 \code{coords} argument. The row dimension of this matrix should equal the
 number of (pruned) vertices. The column dimension then should equal 2 (for
