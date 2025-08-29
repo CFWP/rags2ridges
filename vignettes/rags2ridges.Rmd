@@ -189,7 +189,7 @@ For a full introduction to the theoretical properties as well as more context to
 
 [2.][2] Bilgrau, A.E., Peeters, C.F.W., Eriksen, P.S., Boegsted, M., and van Wieringen, W.N. **(2015)**. [*Targeted Fused Ridge Estimation of Inverse Covariance Matrices from Multiple High-Dimensional Data Classes.*][2] arXiv:1509.07982 [stat.ME].
 
-[1]: https://www.sciencedirect.com/science/article/pii/S0167947316301141
+[1]: https://doi.org/10.1016/j.csda.2016.05.012
 [2]: https://arxiv.org/abs/1509.07982
 
 [^1]:

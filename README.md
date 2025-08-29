@@ -61,13 +61,13 @@ Relevant publications to **rags2ridges** include (ordered according to year):
  4. van Wieringen, W.N. & Peeters, C.F.W. (2016).
     *"Ridge Estimation of Inverse Covariance Matrices from High-Dimensional Data"*, 
     Computational Statistics & Data Analysis, vol. 103:284-303
-    ([doi:10.1016/j.csda.2016.05.012](https://www.sciencedirect.com/science/article/pii/S0167947316301141)).
+    ([doi:10.1016/j.csda.2016.05.012](https://doi.org/10.1016/j.csda.2016.05.012)).
  5. van Wieringen, W.N. & Peeters, C.F.W. (2015).
     *"Application of a New Ridge Estimator of the Inverse Covariance Matrix
     to the Reconstruction of Gene-Gene Interaction Networks"*.
     In: di Serio, C., Lio, P., Nonis, A., and Tagliaferri, R. (Eds.)
     `Computational Intelligence Methods for Bioinformatics and Biostatistics'.
     Lecture Notes in Computer Science, vol. 8623. Springer, pp. 170-179
-    ([doi:10.1007/978-3-319-24462-4_15](https://link.springer.com/chapter/10.1007/978-3-319-24462-4_15)).
+    ([doi:10.1007/978-3-319-24462-4_15](https://doi.org/10.1007/978-3-319-24462-4_15)).
 
 Please cite the relevant publications if you use **rags2ridges**.
