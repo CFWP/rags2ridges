@@ -26,8 +26,8 @@ test_that("isSymmetricPD works as intended", {
   pdS    <- createS(n = 15, p = 10)
   notpdS <- createS(n = 5, p = 10)
 
-  expect_that(isSymmetricPD(pdS),    is_true())
-  expect_that(isSymmetricPD(notpdS), is_false())
+  expect_true(isSymmetricPD(pdS))
+  expect_false(isSymmetricPD(notpdS))
 
 })
 
