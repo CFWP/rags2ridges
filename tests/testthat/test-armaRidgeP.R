@@ -63,7 +63,7 @@ for (type in tgt.types) {
     res <- armaRidgeP(S, tgt, l)
 
     test_that(paste("proper format for lambda =", l), {
-      expect_that(is.double(res), is_true())  # Returns numeric (dobule)
+      expect_true(is.double(res))  # Returns numeric (dobule)
       expect_that(res, is_a("matrix"))        # Returns a matrix
       expect_that(dim(res), equals(dim(S)))   # .. of the correct size
     })
@@ -94,10 +94,10 @@ for (type in tgt.types) {
       dd <- armaRidgeP(S, tgt, 1e-200)
       ee <- armaRidgeP(S, tgt, 1e-300)
 
-      expect_that(all(abs(aa) <= abs(bb)), is_true())
-      expect_that(all(abs(bb) <= abs(cc)), is_true())
-      expect_that(all(abs(cc) <= abs(dd)), is_true())
-      expect_that(all(abs(dd) <= abs(ee)), is_true())
+      expect_true(all(abs(aa) <= abs(bb)))
+      expect_true(all(abs(bb) <= abs(cc)))
+      expect_true(all(abs(cc) <= abs(dd)))
+      expect_true(all(abs(dd) <= abs(ee)))
     }
 
   })
@@ -117,7 +117,7 @@ source("reference-values.R")
 
 test_that("Test armaRidgeP in various special cases (by reference)", {
 
-  expect_that(any(!is.finite(armaRidgeP(Sbar, Tbar, aa))), is_false())
+  expect_false(any(!is.finite(armaRidgeP(Sbar, Tbar, aa))))
   expect_that(armaRidgeP(Sbar, Tbar, aa), equals(Tbar))
 
 })
