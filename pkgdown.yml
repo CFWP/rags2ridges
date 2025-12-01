@@ -5,7 +5,7 @@ articles:
   pkgdown/arxiv_fused: pkgdown/arxiv_fused.html
   pkgdown/arxiv: pkgdown/arxiv.html
   rags2ridges: rags2ridges.html
-last_built: 2025-12-01T09:30Z
+last_built: 2025-12-01T09:41Z
 urls:
   reference: https://cfwp.github.io/rags2ridges/reference
   article: https://cfwp.github.io/rags2ridges/articles
