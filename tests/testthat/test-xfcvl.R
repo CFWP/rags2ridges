@@ -23,7 +23,7 @@ for (i in 1:4) {
 }
 
 test_that(".xfcl functions works properly on degenerated data", {
-  expect_that(TRUE, is_true())  # To be tested
+  expect_true(TRUE)  # To be tested
 })
 
 # Expand tests
