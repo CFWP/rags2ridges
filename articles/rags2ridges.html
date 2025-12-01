@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rags2ridges</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.9</span>
       </span>
     </div>
 
@@ -151,7 +151,7 @@ P = S^{-1}
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
 <span><span class="va">S2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createS.html">createS</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n</span>, p <span class="op">=</span> <span class="va">p</span><span class="op">)</span>  <span class="co"># Direct to S</span></span>
 <span><span class="va">P2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/solve.html" class="external-link">solve</a></span><span class="op">(</span><span class="va">S2</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 2.00171e-18</span></span></code></pre>
+<pre><code><span><span class="co">## Error in solve.default(S2): system is computationally singular: reciprocal condition number = 9.52118e-20</span></span></code></pre>
 <p>Note that this is now a <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>25</mn><mo>×</mo><mn>25</mn></mrow><annotation encoding="application/x-tex">25 \times 25</annotation></semantics></math> precision matrix we are trying to estimate. Datasets where <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>&gt;</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">p &gt; n</annotation></semantics></math> are starting to be common, so what now?</p>
 <p>To solve the problem, <strong>rags2ridges</strong> adds a so-called ridge penalty to the likelihood above — this method is also called <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>L</mi><mn>2</mn></msub><annotation encoding="application/x-tex">L_2</annotation></semantics></math> shrinkage and works by “shrinking” the eigenvalues of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>S</mi><annotation encoding="application/x-tex">S</annotation></semantics></math> in a particular manner to combat that they “explode” when <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mo>≥</mo><mi>n</mi></mrow><annotation encoding="application/x-tex">p \geq n</annotation></semantics></math>.</p>
 <p>The core problem that <strong>rags2ridges</strong> solves is that</p>
@@ -269,7 +269,7 @@ P(\lambda)
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer>

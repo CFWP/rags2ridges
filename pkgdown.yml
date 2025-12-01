@@ -1,11 +1,11 @@
 pandoc: 2.7.3
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   pkgdown/arxiv_fused: pkgdown/arxiv_fused.html
   pkgdown/arxiv: pkgdown/arxiv.html
   rags2ridges: rags2ridges.html
-last_built: 2025-08-29T15:39Z
+last_built: 2025-12-01T09:30Z
 urls:
   reference: https://cfwp.github.io/rags2ridges/reference
   article: https://cfwp.github.io/rags2ridges/articles

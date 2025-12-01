@@ -18,7 +18,7 @@ where multiple classes of data is present for given a penalty matrix."><!-- math
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">rags2ridges</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">2.2.9</span>
       </span>
     </div>
 
@@ -189,40 +189,40 @@ matrix \(Lambda_f\).</p>
 <span class="r-in"><span><span class="co">#</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">res1</span> <span class="op">&lt;-</span> <span class="fu">ridgeP.fused</span><span class="op">(</span><span class="va">Slist</span>, <span class="va">ns</span>, lambda <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.3</span>, <span class="fl">2.1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 3.0367895493e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 1.8727083322e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 3.4766604330e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 6.3247273882e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 1.1531201870e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.1394821563e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 4.0747115949e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 8.0199482189e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 1.6404990566e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 10  | max diff = 3.5027458680e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 11  | max diff = 7.8261410914e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 3.0367895498e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 1.8727083275e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 3.4766604606e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 6.3247274439e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 1.1531202546e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.1394819648e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 4.0747116111e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 8.0199491806e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 1.6404941195e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 10  | max diff = 3.5027788010e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 11  | max diff = 7.8261562582e-09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Converged in 11 iterations, max diff &lt; 1.49e-08.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $class1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            A           B          C           D          E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A  9.4975989 -1.49128356  0.6957991 -0.31747217 -0.1956141</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> B -1.4912836 10.63983272  0.6973545  0.08555426  0.4562045</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A  9.4975989 -1.49128356  0.6957991 -0.31747218 -0.1956141</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> B -1.4912836 10.63983272  0.6973545  0.08555427  0.4562045</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> C  0.6957991  0.69735450 10.2926366 -0.32508052  0.4043885</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> D -0.3174722  0.08555426 -0.3250805 12.20187351 -0.1563601</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> D -0.3174722  0.08555427 -0.3250805 12.20187351 -0.1563601</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> E -0.1956141  0.45620446  0.4043885 -0.15636009 10.2099139</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $class2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>              A             B             C            D            E</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> A 582.29863021  -1.153538605   0.018545143  -0.35633520   0.21367572</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> B  -1.15353860 583.027411239  -0.008986424   0.17191072   0.94727569</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> C   0.01854514  -0.008986424 582.750267173  -0.30114793   1.19332408</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> A 582.29863022  -1.153538600   0.018545136  -0.35633520   0.21367573</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> B  -1.15353860 583.027411241  -0.008986427   0.17191072   0.94727569</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> C   0.01854514  -0.008986427 582.750267178  -0.30114793   1.19332407</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D  -0.35633520   0.171910724  -0.301147929 584.55616917  -0.03149909</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> E   0.21367572   0.947275691   1.193324078  -0.03149909 582.11233401</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> E   0.21367573   0.947275694   1.193324074  -0.03149909 582.11233401</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $class3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            A          B          C           D           E</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> A  1.1803062 -0.7396866  0.1106980 -0.17035973 -0.42346203</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> B -0.7396866  1.9505614  0.5917630  0.25788342  0.35790463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> C  0.1106980  0.5917630  1.5194527 -0.49385549  0.68022457</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> C  0.1106980  0.5917630  1.5194527 -0.49385550  0.68022457</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> D -0.1703597  0.2578834 -0.4938555  3.29199107  0.02844718</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> E -0.4234620  0.3579046  0.6802246  0.02844718  1.85210630</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -232,17 +232,17 @@ matrix \(Lambda_f\).</p>
 <span class="r-in"><span>                      <span class="fl">2.1</span>, <span class="fl">1.3</span>, <span class="fl">2.1</span>,</span></span>
 <span class="r-in"><span>                      <span class="fl">2.1</span>, <span class="fl">2.1</span>, <span class="fl">1.3</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">res2</span> <span class="op">&lt;-</span> <span class="fu">ridgeP.fused</span><span class="op">(</span><span class="va">Slist</span>, <span class="va">ns</span>, lambda <span class="op">=</span> <span class="va">mylambda</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 3.0367895493e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 1.8727083322e-02</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 3.4766604330e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 6.3247273882e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 1.1531201870e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.1394821563e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 4.0747115949e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 8.0199482189e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 1.6404990566e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 10  | max diff = 3.5027458680e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 11  | max diff = 7.8261410914e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 3.0367895498e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 1.8727083275e-02</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 3.4766604606e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 6.3247274439e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 1.1531202546e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.1394819648e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 4.0747116111e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 8.0199491806e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 1.6404941195e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 10  | max diff = 3.5027788010e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 11  | max diff = 7.8261562582e-09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Converged in 11 iterations, max diff &lt; 1.49e-08.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">res1</span>, <span class="va">res2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -259,15 +259,15 @@ matrix \(Lambda_f\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [2,]  2.1  1.3  2.1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [3,]  0.0  2.1  1.3</span>
 <span class="r-in"><span><span class="va">res3</span> <span class="op">&lt;-</span> <span class="fu">ridgeP.fused</span><span class="op">(</span><span class="va">Slist</span>, <span class="va">ns</span>, lambda <span class="op">=</span> <span class="va">mylambda</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 4.0122942069e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 7.3627641176e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 2.3634364338e-03</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 2.3185281854e-04</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 2.3785358600e-05</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.5863349741e-06</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 2.9566282889e-07</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 3.5137581769e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 4.3064653738e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 1   | max diff = 4.0122942179e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 7.3627639176e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 2.3634364062e-03</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 2.3185281719e-04</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 2.3785362212e-05</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 2.5863337329e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 2.9566291642e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 3.5137544538e-08</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 9   | max diff = 4.3064483834e-09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Converged in 9 iterations, max diff &lt; 1.49e-08.</span>
 <span class="r-in"><span><span class="co"># which similar to, but not the same as res1 and res2.</span></span></span>
 <span class="r-in"><span></span></span>
@@ -283,7 +283,7 @@ matrix \(Lambda_f\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 2   | max diff = 3.5457820795e+00</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 3   | max diff = 7.0068257338e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 4   | max diff = 7.2429885604e-01</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 8.4709534890e-01</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 5   | max diff = 8.4709534889e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 6   | max diff = 8.4070776325e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 7   | max diff = 6.3960573506e-01</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 8   | max diff = 3.3744898320e-01</span>
@@ -296,7 +296,7 @@ matrix \(Lambda_f\).</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 15  | max diff = 1.3693289378e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 16  | max diff = 1.8349573770e-07</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> i = 17  | max diff = 2.4726744801e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> i = 18  | max diff = 3.3509183752e-09</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> i = 18  | max diff = 3.3509183753e-09</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Converged in 18 iterations, max diff &lt; 1.49e-08.</span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">res4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $class1</span>
@@ -386,7 +386,7 @@ matrix \(Lambda_f\).</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
       </footer></div>
